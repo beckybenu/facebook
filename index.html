@@ -210,13 +210,13 @@
           </div>
         </div>
       </div>
-      <p class="nfc-instruction">Placez les deux téléphones dos à dos</p>
+      <p class="nfc-instruction">Sur l'autre téléphone : <strong>Recevoir → Scanner le QR code</strong></p>
       <p class="nfc-status" id="nfc-send-status">En attente...</p>
       <div class="nfc-qr-fallback">
-        <p>Ou partagez ce code QR :</p>
+        <p>Faites scanner ce code par l'autre téléphone :</p>
         <canvas id="qr-canvas"></canvas>
       </div>
-      <button class="secondary-btn" id="btn-simulate-send">Simuler le transfert</button>
+      <button class="primary-btn" id="btn-simulate-send" style="margin-top:12px">Confirmer l'envoi</button>
     </screen>
 
     <!-- ========== ÉCRAN RECEVOIR ========== -->
@@ -244,7 +244,20 @@
         </div>
         <p class="nfc-instruction">Approchez le téléphone de l'envoyeur</p>
         <p class="nfc-status" id="nfc-receive-status">NFC activé – en attente...</p>
-        <button class="secondary-btn" id="btn-simulate-receive">Simuler la réception</button>
+
+        <div class="scanner-box" id="scanner-box">
+          <video id="qr-video" playsinline></video>
+          <div class="scan-frame"></div>
+        </div>
+
+        <button class="primary-btn" id="btn-scan-qr" style="margin-top:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="21"/>
+          </svg>
+          Scanner le QR code
+        </button>
+        <button class="secondary-btn" id="btn-simulate-receive">Simuler (même appareil)</button>
       </div>
     </screen>
 
@@ -281,6 +294,7 @@
   </div>
 
   <script src="src/qrcode.min.js"></script>
+  <script src="src/jsQR.js"></script>
   <script src="src/app.js"></script>
 </body>
 </html>
