@@ -1,0 +1,16 @@
+{
+  "name": "PayTap – Transfert Sans Contact",
+  "short_name": "PayTap",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f1a",
+  "theme_color": "#6c63ff",
+  "description": "Transférez de l'argent sans contact entre deux téléphones via NFC",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

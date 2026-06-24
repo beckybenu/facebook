@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>PayTap – Transfert Sans Contact</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ========== ÉCRAN SPLASH ========== -->
+    <screen id="screen-splash" class="screen active">
+      <div class="splash-content">
+        <div class="logo-wrap">
+          <div class="logo-icon">
+            <svg viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" stroke="#6c63ff" stroke-width="3"/>
+              <path d="M20 32 Q32 18 44 32 Q32 46 20 32Z" fill="#6c63ff" opacity="0.7"/>
+              <circle cx="32" cy="32" r="5" fill="#fff"/>
+            </svg>
+          </div>
+          <h1 class="logo-name">PayTap</h1>
+          <p class="logo-sub">Transfert Sans Contact</p>
+        </div>
+        <div class="splash-loader">
+          <div class="loader-bar"><div class="loader-fill"></div></div>
+        </div>
+      </div>
+    </screen>
+
+    <!-- ========== ÉCRAN CONNEXION ========== -->
+    <screen id="screen-login" class="screen">
+      <div class="login-bg"></div>
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-avatar">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="14" r="8" fill="#6c63ff"/>
+              <ellipse cx="20" cy="34" rx="14" ry="8" fill="#6c63ff" opacity="0.6"/>
+            </svg>
+          </div>
+          <h2>Bienvenue</h2>
+          <p>Connectez-vous pour continuer</p>
+        </div>
+        <div class="form-group">
+          <label>Nom d'utilisateur</label>
+          <input type="text" id="login-user" placeholder="ex: Jean Dupont" autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label>Code PIN</label>
+          <div class="pin-row" id="pin-display">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="pin-pad">
+            <button class="pin-btn" data-v="1">1</button>
+            <button class="pin-btn" data-v="2">2</button>
+            <button class="pin-btn" data-v="3">3</button>
+            <button class="pin-btn" data-v="4">4</button>
+            <button class="pin-btn" data-v="5">5</button>
+            <button class="pin-btn" data-v="6">6</button>
+            <button class="pin-btn" data-v="7">7</button>
+            <button class="pin-btn" data-v="8">8</button>
+            <button class="pin-btn" data-v="9">9</button>
+            <button class="pin-btn pin-clear" data-v="C">⌫</button>
+            <button class="pin-btn" data-v="0">0</button>
+            <button class="pin-btn pin-ok" data-v="OK">OK</button>
+          </div>
+        </div>
+      </div>
+    </screen>
+
+    <!-- ========== TABLEAU DE BORD ========== -->
+    <screen id="screen-home" class="screen">
+      <div class="home-top">
+        <div class="home-header">
+          <div>
+            <p class="home-greeting">Bonjour,</p>
+            <h2 id="home-username">Utilisateur</h2>
+          </div>
+          <button class="icon-btn" id="btn-logout" title="Déconnexion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+          </button>
+        </div>
+        <div class="balance-card">
+          <p class="balance-label">Solde disponible</p>
+          <h1 class="balance-amount" id="home-balance">0,00 $</h1>
+          <p class="balance-iban" id="home-iban">IBAN: PT50•••• •••• 1234</p>
+          <div class="card-chip"></div>
+          <div class="card-wave">
+            <svg viewBox="0 0 80 40" fill="none">
+              <path d="M5 20 Q20 5 35 20 Q50 35 65 20 Q73 12 80 16" stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none"/>
+              <path d="M5 28 Q20 13 35 28 Q50 43 65 28" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-actions">
+        <button class="action-btn send" id="btn-go-send">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </span>
+          <span>Envoyer</span>
+        </button>
+        <button class="action-btn receive" id="btn-go-receive">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/>
+            </svg>
+          </span>
+          <span>Recevoir</span>
+        </button>
+        <button class="action-btn history" id="btn-go-history">
+          <span class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </span>
+          <span>Historique</span>
+        </button>
+      </div>
+
+      <div class="recent-section">
+        <h3>Transactions récentes</h3>
+        <div id="recent-list" class="tx-list">
+          <p class="empty-msg">Aucune transaction</p>
+        </div>
+      </div>
+    </screen>
+
+    <!-- ========== ÉCRAN ENVOYER ========== -->
+    <screen id="screen-send" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-target="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <h2>Envoyer de l'argent</h2>
+      </div>
+      <div class="send-body">
+        <div class="amount-display">
+          <span class="currency">$</span>
+          <span id="send-amount-display">0</span>
+        </div>
+        <div class="numpad">
+          <button class="num-btn" data-v="1">1</button>
+          <button class="num-btn" data-v="2">2</button>
+          <button class="num-btn" data-v="3">3</button>
+          <button class="num-btn" data-v="4">4</button>
+          <button class="num-btn" data-v="5">5</button>
+          <button class="num-btn" data-v="6">6</button>
+          <button class="num-btn" data-v="7">7</button>
+          <button class="num-btn" data-v="8">8</button>
+          <button class="num-btn" data-v="9">9</button>
+          <button class="num-btn" data-v=".">.</button>
+          <button class="num-btn" data-v="0">0</button>
+          <button class="num-btn del-btn" data-v="DEL">⌫</button>
+        </div>
+        <div class="send-note">
+          <input type="text" id="send-note" placeholder="Note (optionnel)" maxlength="60"/>
+        </div>
+        <button class="primary-btn" id="btn-activate-send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36M9.46 6.21a11.76 11.76 0 0 1 0 11.58M12.91 4.1a15.91 15.91 0 0 1 0 15.8M16.37 2a20.16 20.16 0 0 1 0 20"/>
+          </svg>
+          Activer l'envoi NFC
+        </button>
+      </div>
+    </screen>
+
+    <!-- ========== ÉCRAN NFC ENVOI ========== -->
+    <screen id="screen-nfc-send" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-target="send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <h2>Approcher les téléphones</h2>
+      </div>
+      <div class="nfc-scene">
+        <div class="nfc-phone sender">
+          <div class="phone-body">
+            <div class="phone-screen">
+              <span>ENVOI</span>
+              <strong id="nfc-send-amount">$0</strong>
+            </div>
+          </div>
+        </div>
+        <div class="nfc-waves" id="nfc-waves">
+          <div class="wave w1"></div>
+          <div class="wave w2"></div>
+          <div class="wave w3"></div>
+        </div>
+        <div class="nfc-phone receiver">
+          <div class="phone-body">
+            <div class="phone-screen">
+              <span>RECEPT.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="nfc-instruction">Sur l'autre téléphone : <strong>Recevoir → Scanner le QR code</strong></p>
+      <p class="nfc-status" id="nfc-send-status">En attente...</p>
+      <div class="nfc-qr-fallback">
+        <p>Faites scanner ce code par l'autre téléphone :</p>
+        <canvas id="qr-canvas"></canvas>
+      </div>
+      <button class="primary-btn" id="btn-simulate-send" style="margin-top:12px">Confirmer l'envoi</button>
+    </screen>
+
+    <!-- ========== ÉCRAN RECEVOIR ========== -->
+    <screen id="screen-receive" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-target="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <h2>Recevoir de l'argent</h2>
+      </div>
+      <div class="receive-body">
+        <div class="receive-nfc-area" id="receive-nfc-area">
+          <div class="receive-rings">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="nfc-center-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#6c63ff" stroke-width="2" width="36" height="36">
+                <path d="M6 8.32a7.43 7.43 0 0 1 0 7.36M9.46 6.21a11.76 11.76 0 0 1 0 11.58M12.91 4.1a15.91 15.91 0 0 1 0 15.8M16.37 2a20.16 20.16 0 0 1 0 20"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="nfc-instruction">Approchez le téléphone de l'envoyeur</p>
+        <p class="nfc-status" id="nfc-receive-status">NFC activé – en attente...</p>
+
+        <div class="scanner-box" id="scanner-box">
+          <video id="qr-video" playsinline></video>
+          <div class="scan-frame"></div>
+        </div>
+
+        <button class="primary-btn" id="btn-scan-qr" style="margin-top:8px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="21" y2="21"/>
+          </svg>
+          Scanner le QR code
+        </button>
+        <button class="secondary-btn" id="btn-simulate-receive">Simuler (même appareil)</button>
+      </div>
+    </screen>
+
+    <!-- ========== ÉCRAN SUCCÈS ========== -->
+    <screen id="screen-success" class="screen">
+      <div class="success-content">
+        <div class="success-circle">
+          <svg viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="38" stroke="#4ade80" stroke-width="3" class="success-ring"/>
+            <path d="M22 40 L35 53 L58 27" stroke="#4ade80" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="success-check"/>
+          </svg>
+        </div>
+        <h2 class="success-title">Transfert réussi !</h2>
+        <p class="success-amount" id="success-amount">$0,00</p>
+        <p class="success-msg" id="success-msg">Le transfert a été effectué avec succès.</p>
+        <div class="success-details" id="success-details"></div>
+        <button class="primary-btn" id="btn-success-home">Retour à l'accueil</button>
+      </div>
+    </screen>
+
+    <!-- ========== ÉCRAN HISTORIQUE ========== -->
+    <screen id="screen-history" class="screen">
+      <div class="screen-header">
+        <button class="back-btn" data-target="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <h2>Historique</h2>
+      </div>
+      <div id="history-list" class="tx-list full"></div>
+    </screen>
+
+  </div>
+
+  <script src="src/qrcode.min.js"></script>
+  <script src="src/jsQR.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
