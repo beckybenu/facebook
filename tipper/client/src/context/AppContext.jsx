@@ -14,7 +14,7 @@ export function AppProvider({ children }) {
   const toastTimer = useRef(null);
 
   // Préférences : thème, son, haptique
-  const [theme, setTheme] = useState(() => localStorage.getItem('tipper_theme') || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem('tipper_theme') || 'light');
   const [soundOn, setSoundOn] = useState(() => localStorage.getItem('tipper_sound') !== '0');
   const [hapticOn, setHapticOn] = useState(() => localStorage.getItem('tipper_haptic') !== '0');
 

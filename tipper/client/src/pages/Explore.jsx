@@ -56,9 +56,11 @@ export function Explore() {
           <input placeholder="🔍 Rechercher…" value={q} onChange={(e) => setQ(e.target.value)} />
         </div>
 
+        <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+          <button className={`pill ${urgent ? 'active' : ''}`} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setUrgent(!urgent)}>⚡ Urgent</button>
+          <button className="pill" style={{ flex: 1, justifyContent: 'center' }} onClick={() => setSheet(true)}>⇅ Trier : {sortLabel}</button>
+        </div>
         <div className="pill-row">
-          <button className={`pill ${urgent ? 'active' : ''}`} onClick={() => setUrgent(!urgent)}>⚡ Urgent</button>
-          <button className="pill" onClick={() => setSheet(true)}>↕ {sortLabel}</button>
           <button className={`pill ${cat === '' ? 'active' : ''}`} onClick={() => setCat('')}>Tout</button>
           {CATEGORIES.map((c) => (
             <button key={c.key} className={`pill ${cat === c.key ? 'active' : ''}`} onClick={() => setCat(cat === c.key ? '' : c.key)}>{c.icon} {c.label}</button>
