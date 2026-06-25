@@ -32,8 +32,8 @@ export function Ring({ progress = 0, size = 56, stroke = 6, children }) {
     <svg width={size} height={size} style={{ display: 'block' }}>
       <defs>
         <linearGradient id="ringg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#9a6bff" />
-          <stop offset="1" stopColor="#38d6ff" />
+          <stop offset="0" stopColor="#16181d" />
+          <stop offset="1" stopColor="#8a8f9c" />
         </linearGradient>
       </defs>
       <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.1)" strokeWidth={stroke} fill="none" />

@@ -9,7 +9,8 @@ export const CATEGORIES = [
 
 export const catLabel = (k) => CATEGORIES.find((c) => c.key === k)?.label || k;
 export const catIcon = (k) => CATEGORIES.find((c) => c.key === k)?.icon || '📌';
-export const catTint = (k) => CATEGORIES.find((c) => c.key === k)?.tint || '#FF6B4A';
+// Thème neutre : vignettes de catégories en gris (style Uber)
+export const catTint = () => '#6b7280';
 
 export const STATUS_LABEL = {
   open: 'Ouverte',
@@ -61,9 +62,9 @@ export function dateShort(iso) {
 export const initials = (name = '') =>
   name.split(' ').map((w) => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 
-// Couleur d'avatar déterministe à partir du nom
+// Avatar déterministe — nuances de gris neutres (style Uber)
 export function avatarColor(name = '') {
-  const palette = ['#FF6B4A', '#1FB6A6', '#6C8CFF', '#B36BFF', '#FFB020', '#FF5C8A', '#22B07D'];
+  const palette = ['#2b2e37', '#3a3d46', '#4a4e59', '#5b6072', '#22242b'];
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) % palette.length;
   return palette[h];

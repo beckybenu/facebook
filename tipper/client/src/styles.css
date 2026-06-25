@@ -539,3 +539,52 @@ body::after {
 .sheet { background: var(--bg-2); border: 1px solid var(--glass-border-2); border-bottom: none; width: 100%; max-width: 460px; border-radius: 26px 26px 0 0; padding: 22px 18px calc(22px + env(safe-area-inset-bottom)); box-shadow: var(--shadow); animation: up 0.26s cubic-bezier(0.2,0.7,0.2,1); }
 @keyframes up { from { transform: translateY(100%); } to { transform: none; } }
 .sheet .grip { width: 40px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.18); margin: 0 auto 16px; }
+
+/* ============================================================
+   THÈME NEUTRE NOIR & BLANC (style Uber)
+   Clair = accents charbon sur blanc · Sombre = accents blancs sur noir
+   ============================================================ */
+[data-theme="light"] {
+  --coral: #16181d; --coral-dark: #000; --iris: #16181d; --teal: #16181d; --mint: #16181d;
+  --pink: #16181d; --violet: #16181d; --cyan: #3a3d46; --amber: #16181d;
+  --grad-sunset: linear-gradient(135deg, #2b2e37 0%, #101216 100%);
+  --grad-iris:   linear-gradient(135deg, #2b2e37 0%, #101216 100%);
+  --grad-mint:   linear-gradient(135deg, #2b2e37 0%, #101216 100%);
+  --glow-sunset: 0 10px 26px rgba(0,0,0,0.16);
+  --glow-iris:   0 10px 26px rgba(0,0,0,0.16);
+  --glow-mint:   0 10px 26px rgba(0,0,0,0.16);
+}
+[data-theme="light"] .balance,
+[data-theme="light"] .now-hero,
+[data-theme="light"] .pro-card { background: linear-gradient(135deg, #23262e 0%, #0e1014 100%); color: #fff; }
+[data-theme="light"] .balance::after { background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 40%); }
+[data-theme="light"] .btn.teal { color: #fff; }
+[data-theme="light"] .tip-badge { color: #fff; }
+[data-theme="light"] .now-hero .nh-go { color: #16181d; }
+[data-theme="light"] .suggest { background: #efede7; color: #16181d; }
+[data-theme="light"] .kind-badge.instant,
+[data-theme="light"] .kind-badge.quest,
+[data-theme="light"] .kind-badge.boost { background: #ecebe4; color: #16181d; }
+
+[data-theme="dark"] {
+  --coral: #f4f4f6; --coral-dark: #fff; --iris: #f4f4f6; --teal: #f4f4f6; --mint: #f4f4f6;
+  --pink: #f4f4f6; --violet: #f4f4f6; --amber: #f4f4f6;
+  --grad-sunset: linear-gradient(135deg, #ffffff 0%, #e7e7ec 100%);
+  --grad-iris:   linear-gradient(135deg, #ffffff 0%, #e7e7ec 100%);
+  --grad-mint:   linear-gradient(135deg, #ffffff 0%, #e7e7ec 100%);
+  --glow-sunset: 0 10px 26px rgba(0,0,0,0.5);
+  --glow-iris:   0 10px 26px rgba(0,0,0,0.5);
+  --glow-mint:   0 10px 26px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .btn.coral,
+[data-theme="dark"] .btn.iris,
+[data-theme="dark"] .btn.teal { color: #16181d; }
+[data-theme="dark"] .tip-badge { color: #16181d; }
+[data-theme="dark"] .fab { color: #16181d; }
+[data-theme="dark"] .balance,
+[data-theme="dark"] .now-hero,
+[data-theme="dark"] .pro-card { background: linear-gradient(135deg, #1d1f26 0%, #0b0c10 100%); color: #fff; border: 1px solid var(--glass-border-2); }
+[data-theme="dark"] .now-hero .nh-go { color: #16181d; }
+[data-theme="dark"] .kind-badge.instant,
+[data-theme="dark"] .kind-badge.quest,
+[data-theme="dark"] .kind-badge.boost { background: rgba(255,255,255,0.14); color: #f4f4f6; }
