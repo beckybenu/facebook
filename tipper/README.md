@@ -95,6 +95,27 @@ Les clés VAPID sont **générées automatiquement** au premier démarrage et st
 L'utilisateur active les notifications depuis l'écran **Alertes** ou **Profil → Réglages**.
 > Les notifications push du navigateur nécessitent **HTTPS** (ou `localhost`). En local, `localhost` est autorisé.
 
+## ☁️ Déploiement (obtenir une URL publique)
+
+L'application est un **serveur Node unique** qui sert aussi le frontend buildé — donc déployable partout en un service.
+
+### Option A — Render (recommandé, gratuit, sans CLI)
+1. Poussez ce repo sur GitHub (déjà fait).
+2. Sur [render.com](https://render.com) → **New** → **Blueprint** → connectez ce dépôt.
+3. Render détecte `render.yaml` à la racine, build et déploie automatiquement.
+4. Vous obtenez une URL `https://tipper-xxxx.onrender.com` (HTTPS = notifications push OK).
+
+### Option B — Railway / Fly.io / Cloud Run (via Docker)
+Un `tipper/Dockerfile` universel est fourni :
+```bash
+# Railway : New Project → Deploy from Repo (détecte le Dockerfile)
+# Fly.io :
+fly launch --dockerfile tipper/Dockerfile
+```
+
+> Les comptes de démo sont recréés à chaque déploiement (`npm run seed` dans le build).
+> Pour la production, montez un disque persistant sur `server/data` afin de conserver la base SQLite et les clés VAPID.
+
 ## ⚙️ Configuration
 
 Voir `server/.env.example`. Tout fonctionne sans configuration ; copiez-le en `.env` pour personnaliser le port, le secret JWT ou fournir vos propres clés VAPID.
