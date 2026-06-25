@@ -1,4 +1,6 @@
-import { api } from './api.js';
+import { api, STANDALONE } from './api.js';
+
+const SW_PATH = `${import.meta.env.BASE_URL}sw.js`;
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -10,7 +12,7 @@ function urlBase64ToUint8Array(base64String) {
 export async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return null;
   try {
-    return await navigator.serviceWorker.register('/sw.js');
+    return await navigator.serviceWorker.register(SW_PATH);
   } catch (e) {
     console.warn('SW registration failed', e);
     return null;
@@ -26,6 +28,16 @@ export async function enablePush() {
   if (permission !== 'granted') throw new Error('Permission refusée');
 
   const reg = await navigator.serviceWorker.ready;
+
+  // Démo statique : pas de serveur push. On confirme avec une notification locale.
+  if (STANDALONE) {
+    reg.showNotification('🔔 Notifications activées', {
+      body: 'Vous recevrez vos alertes Tipper ici.',
+      icon: `${import.meta.env.BASE_URL}icon.svg`,
+    });
+    return true;
+  }
+
   const { key } = await api.vapidKey();
   let sub = await reg.pushManager.getSubscription();
   if (!sub) {

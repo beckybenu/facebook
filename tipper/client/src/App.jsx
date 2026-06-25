@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext.jsx';
+import { STANDALONE } from './api.js';
 import { Login, Signup } from './pages/Auth.jsx';
 import { Role } from './pages/Role.jsx';
 import { Categories } from './pages/Categories.jsx';
@@ -49,12 +50,14 @@ function Router() {
 }
 
 export default function App() {
+  // HashRouter sur GitHub Pages (pas de réécriture serveur), BrowserRouter sinon.
+  const RouterShell = STANDALONE ? HashRouter : BrowserRouter;
   return (
     <AppProvider>
-      <BrowserRouter>
+      <RouterShell>
         <Router />
         <Toast />
-      </BrowserRouter>
+      </RouterShell>
     </AppProvider>
   );
 }

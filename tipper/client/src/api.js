@@ -1,4 +1,12 @@
+import { localApi } from './localApi.js';
+
 const TOKEN_KEY = 'tipper_token';
+
+// Mode "standalone" : aucune API serveur (ex. démo statique GitHub Pages).
+// Toute la logique tourne dans le navigateur via localStorage.
+export const STANDALONE =
+  import.meta.env.VITE_STANDALONE === '1' ||
+  (typeof location !== 'undefined' && location.hostname.endsWith('github.io'));
 
 export function getToken() { return localStorage.getItem(TOKEN_KEY); }
 export function setToken(t) { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); }
@@ -18,7 +26,7 @@ async function request(path, { method = 'GET', body, isForm } = {}) {
   return data;
 }
 
-export const api = {
+export const api = STANDALONE ? localApi : {
   // auth
   signup: (b) => request('/auth/signup', { method: 'POST', body: b }),
   login: (b) => request('/auth/login', { method: 'POST', body: b }),
