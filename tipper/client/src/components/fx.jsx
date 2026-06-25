@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
 
 // Compteur animé (ease-out cubic)
 export function useCountUp(target, duration = 900) {
@@ -67,54 +66,22 @@ export function SkeletonMission() {
   );
 }
 
-// Tilt 3D premium (Framer Motion) avec reflet lumineux qui suit le doigt
-export function Tilt({ children, className, style, max = 14, onClick }) {
-  const x = useMotionValue(0.5);
-  const y = useMotionValue(0.5);
-  const spring = { stiffness: 220, damping: 18, mass: 0.4 };
-  const rotateX = useSpring(useTransform(y, [0, 1], [max, -max]), spring);
-  const rotateY = useSpring(useTransform(x, [0, 1], [-max, max]), spring);
-  const gx = useTransform(x, [0, 1], ['0%', '100%']);
-  const gy = useTransform(y, [0, 1], ['0%', '100%']);
-  const glare = useMotionTemplate`radial-gradient(180px circle at ${gx} ${gy}, rgba(255,255,255,0.35), transparent 60%)`;
-
-  function move(e) {
-    const r = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - r.left) / r.width);
-    y.set((e.clientY - r.top) / r.height);
-  }
-  function leave() { x.set(0.5); y.set(0.5); }
-
+// Tilt 3D au survol/pression
+export function Tilt({ children, className, style, max = 9, onClick }) {
+  const ref = useRef();
+  const move = (e) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${px * max}deg) rotateX(${-py * max}deg) scale(1.01)`;
+  };
+  const leave = () => { if (ref.current) ref.current.style.transform = ''; };
   return (
-    <motion.div
-      className={className}
-      style={{ ...style, position: 'relative', rotateX, rotateY, transformPerspective: 1000, transformStyle: 'preserve-3d' }}
-      onPointerMove={move} onPointerLeave={leave} onPointerCancel={leave} onClick={onClick}
-      whileTap={{ scale: 0.975 }}
-    >
+    <div ref={ref} className={className} style={{ transition: 'transform 0.25s ease', ...style }}
+      onPointerMove={move} onPointerLeave={leave} onPointerCancel={leave} onClick={onClick}>
       {children}
-      <motion.div aria-hidden style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none', background: glare, mixBlendMode: 'soft-light' }} />
-    </motion.div>
-  );
-}
-
-// Conteneur d'entrée en cascade (spring)
-export function Stagger({ children, className, style }) {
-  return (
-    <motion.div className={className} style={style} initial="hidden" animate="show"
-      variants={{ show: { transition: { staggerChildren: 0.06 } } }}>
-      {children}
-    </motion.div>
-  );
-}
-export function Item({ children, className, style, onClick }) {
-  return (
-    <motion.div className={className} style={style} onClick={onClick}
-      variants={{ hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0 } }}
-      transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-      whileTap={onClick ? { scale: 0.98 } : undefined}>
-      {children}
-    </motion.div>
+    </div>
   );
 }
 

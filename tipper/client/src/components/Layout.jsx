@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { useRef, useState, useLayoutEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
 import { initials, avatarColor } from '../constants.js';
@@ -26,29 +26,42 @@ export function Nav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { unreadNotif, unreadMsg } = useApp();
+  const refs = useRef({});
+  const [ind, setInd] = useState({ left: 0, width: 0, opacity: 0 });
+
   const items = [
     { key: 'home', ico: '🏠', label: 'Accueil', to: '/', re: /^\/$|^\/home/ },
     { key: 'explore', ico: '🧭', label: 'Explorer', to: '/explore', re: /^\/explore|^\/map|^\/ads/ },
-    { fab: true },
     { key: 'boite', ico: '💬', label: 'Boîte', to: '/messages', re: /^\/messages|^\/notifications/, badge: unreadMsg + unreadNotif },
-    { key: 'profil', ico: '👤', label: 'Profil', to: '/profile', re: /^\/profile|^\/wallet|^\/leaderboard|^\/admin/ },
+    { key: 'profil', ico: '👤', label: 'Profil', to: '/profile', re: /^\/profile|^\/wallet|^\/leaderboard/ },
   ];
-  const activeKey = items.find((i) => i.re && i.re.test(pathname))?.key;
+  const activeKey = items.find((i) => i.re.test(pathname))?.key;
+
+  useLayoutEffect(() => {
+    const el = refs.current[activeKey];
+    if (el) setInd({ left: el.offsetLeft, width: el.offsetWidth, opacity: 1 });
+    else setInd((s) => ({ ...s, opacity: 0 }));
+  }, [activeKey, unreadNotif, unreadMsg]);
+
   const go = (to) => { feedback('nav'); navigate(to); };
-  const spring = { type: 'spring', stiffness: 380, damping: 30 };
 
   return (
     <nav className="nav">
-      {items.map((it, i) => it.fab ? (
-        <motion.button key="fab" className="fab" whileTap={{ scale: 0.88 }} transition={spring}
-          onClick={() => { feedback('tap'); navigate('/now'); }} aria-label="Tipper Now">⚡</motion.button>
-      ) : (
-        <button key={it.key} className={`n ${activeKey === it.key ? 'active' : ''}`} onClick={() => go(it.to)}>
-          {activeKey === it.key && <motion.span className="nav-ind-fm" layoutId="navind" transition={spring} />}
-          {it.badge > 0 && <span className="nb">{Math.min(9, it.badge)}</span>}
-          <span className="nav-inner"><span className="ic">{it.ico}</span><span>{it.label}</span></span>
-        </button>
-      ))}
+      <span className="nav-ind" style={{ left: ind.left, width: ind.width, opacity: ind.opacity }} />
+      <button ref={(e) => (refs.current.home = e)} className={`n ${activeKey === 'home' ? 'active' : ''}`} onClick={() => go('/')}>
+        <span className="ic">🏠</span><span>Accueil</span>
+      </button>
+      <button ref={(e) => (refs.current.explore = e)} className={`n ${activeKey === 'explore' ? 'active' : ''}`} onClick={() => go('/explore')}>
+        <span className="ic">🧭</span><span>Explorer</span>
+      </button>
+      <button className="fab" onClick={() => { feedback('tap'); navigate('/now'); }} aria-label="Tipper Now">⚡</button>
+      <button ref={(e) => (refs.current.boite = e)} className={`n ${activeKey === 'boite' ? 'active' : ''}`} onClick={() => go('/messages')}>
+        {(unreadMsg + unreadNotif) > 0 && <span className="nb">{Math.min(9, unreadMsg + unreadNotif)}</span>}
+        <span className="ic">💬</span><span>Boîte</span>
+      </button>
+      <button ref={(e) => (refs.current.profil = e)} className={`n ${activeKey === 'profil' ? 'active' : ''}`} onClick={() => go('/profile')}>
+        <span className="ic">👤</span><span>Profil</span>
+      </button>
     </nav>
   );
 }
