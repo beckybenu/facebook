@@ -1,0 +1,95 @@
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { api, getToken, setToken } from '../api.js';
+
+const AppContext = createContext(null);
+export const useApp = () => useContext(AppContext);
+
+export function AppProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [unreadNotif, setUnreadNotif] = useState(0);
+  const [unreadMsg, setUnreadMsg] = useState(0);
+  const toastTimer = useRef(null);
+
+  const showToast = useCallback((message, kind = 'ok') => {
+    setToast({ message, kind });
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2600);
+  }, []);
+
+  const refreshBadges = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      const [n, t] = await Promise.all([api.notifications(), api.threads()]);
+      setUnreadNotif(n.unread || 0);
+      setUnreadMsg((t.threads || []).reduce((s, x) => s + (x.unread || 0), 0));
+    } catch { /* ignore */ }
+  }, []);
+
+  const loadUser = useCallback(async () => {
+    if (!getToken()) { setLoading(false); return; }
+    try {
+      const { user } = await api.me();
+      setUser(user);
+      refreshBadges();
+    } catch {
+      setToken(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshBadges]);
+
+  useEffect(() => { loadUser(); }, [loadUser]);
+
+  // Rafraîchit les badges périodiquement (fallback si push indisponible)
+  useEffect(() => {
+    if (!user) return;
+    const t = setInterval(refreshBadges, 20000);
+    return () => clearInterval(t);
+  }, [user, refreshBadges]);
+
+  const login = useCallback(async (email, password) => {
+    const { token, user } = await api.login({ email, password });
+    setToken(token); setUser(user); refreshBadges();
+    return user;
+  }, [refreshBadges]);
+
+  const signup = useCallback(async (payload) => {
+    const { token, user } = await api.signup(payload);
+    setToken(token); setUser(user);
+    return user;
+  }, []);
+
+  const logout = useCallback(() => {
+    setToken(null); setUser(null); setUnreadNotif(0); setUnreadMsg(0);
+  }, []);
+
+  // Géolocalisation -> enregistre la position de l'utilisateur
+  const captureLocation = useCallback(async () => {
+    if (!navigator.geolocation) throw new Error('Géolocalisation non disponible');
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { latitude, longitude } = pos.coords;
+            const { user } = await api.setLocation({ lat: latitude, lng: longitude });
+            setUser(user);
+            resolve(user);
+          } catch (e) { reject(e); }
+        },
+        (err) => reject(new Error(err.message || 'Position refusée')),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }, []);
+
+  const value = {
+    user, setUser, loading, login, signup, logout,
+    toast, showToast,
+    unreadNotif, unreadMsg, setUnreadNotif, refreshBadges,
+    captureLocation,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
