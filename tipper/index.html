@@ -3,13 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#08080d" />
+    <meta name="theme-color" content="#f4f3ee" />
     <link rel="icon" type="image/svg+xml" href="/facebook/tipper/icon.svg" />
     <link rel="manifest" href="/facebook/tipper/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/facebook/tipper/icon.svg" />
     <title>TIPPER — Pourboires & services entre particuliers</title>
-    <script type="module" crossorigin src="/facebook/tipper/assets/index-ryYpRXaO.js"></script>
-    <link rel="stylesheet" crossorigin href="/facebook/tipper/assets/index-BgCVAnWo.css">
+    <script>
+      // Applique le thème avant le rendu (évite le flash). Défaut : clair.
+      (function () {
+        var t = localStorage.getItem('tipper_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+    <script type="module" crossorigin src="/facebook/tipper/assets/index-C4bGOkm4.js"></script>
+    <link rel="stylesheet" crossorigin href="/facebook/tipper/assets/index-DJEzEBnF.css">
   </head>
   <body>
     <div id="root"></div>
