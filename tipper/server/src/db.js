@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   rating_count  INTEGER NOT NULL DEFAULT 0,
   referral_code TEXT,
   referred_by   TEXT,
+  banned        INTEGER NOT NULL DEFAULT 0,
   lat           REAL,
   lng           REAL,
   city          TEXT,
@@ -126,6 +127,13 @@ CREATE TABLE IF NOT EXISTS commissions (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS commission_payouts (
+  id         TEXT PRIMARY KEY,
+  admin_id   TEXT,
+  amount     REAL NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS disputes (
   id         TEXT PRIMARY KEY,
   ad_id      TEXT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
@@ -155,6 +163,7 @@ ensureColumn('users', 'rating_sum', 'rating_sum REAL NOT NULL DEFAULT 0');
 ensureColumn('users', 'rating_count', 'rating_count INTEGER NOT NULL DEFAULT 0');
 ensureColumn('users', 'referral_code', 'referral_code TEXT');
 ensureColumn('users', 'referred_by', 'referred_by TEXT');
+ensureColumn('users', 'banned', 'banned INTEGER NOT NULL DEFAULT 0');
 ensureColumn('ads', 'urgent', 'urgent INTEGER NOT NULL DEFAULT 0');
 ensureColumn('ads', 'scheduled_at', 'scheduled_at TEXT');
 ensureColumn('ads', 'delivered_app', 'delivered_app TEXT');

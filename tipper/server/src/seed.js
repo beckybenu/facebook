@@ -7,7 +7,7 @@ console.log('🌱 Réinitialisation des données de démo…');
 db.exec(`
   DELETE FROM messages; DELETE FROM notifications; DELETE FROM transactions;
   DELETE FROM applications; DELETE FROM reviews; DELETE FROM saved_ads;
-  DELETE FROM disputes; DELETE FROM commissions; DELETE FROM ads;
+  DELETE FROM disputes; DELETE FROM commissions; DELETE FROM commission_payouts; DELETE FROM ads;
   DELETE FROM push_subscriptions; DELETE FROM users;
 `);
 

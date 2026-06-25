@@ -49,6 +49,7 @@ export const api = STANDALONE ? localApi : {
   rate: (b) => request('/reviews', { method: 'POST', body: b }),
   leaderboard: (params = {}) => request(`/leaderboard?${new URLSearchParams(params)}`),
   adminStats: () => request('/admin/stats'),
+  adminAction: (action, payload) => request('/admin/action', { method: 'POST', body: { action, ...payload } }),
   // applications
   apply: (adId, message) => request(`/applications/ads/${adId}/apply`, { method: 'POST', body: { message } }),
   decide: (appId, action) => request(`/applications/${appId}/${action}`, { method: 'POST' }),

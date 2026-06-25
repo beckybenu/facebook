@@ -37,6 +37,7 @@ router.post('/login', (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
   }
+  if (user.banned) return res.status(403).json({ error: 'Compte suspendu — contactez le support' });
   res.json({ token: signToken(user), user: publicUser(user) });
 });
 

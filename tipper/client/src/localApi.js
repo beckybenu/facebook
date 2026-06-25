@@ -131,6 +131,7 @@ function currentUserId() {
 function requireUser(db) {
   const u = db.users.find((x) => x.id === currentUserId());
   if (!u) throw new Error('Authentification requise');
+  if (u.banned && !isAdminEmail(u.email)) throw new Error('Compte suspendu');
   return u;
 }
 
@@ -166,6 +167,45 @@ function pushNotif(db, userId, { type, title, body, data = {} }) {
 function addXp(db, userId, amount) {
   const u = db.users.find((x) => x.id === userId);
   if (u) u.xp = (u.xp || 0) + amount;
+}
+
+// Règlement d'une mission : commission 10%, paiement net du helper,
+// consolation en Points pour les autres. Réutilisé par confirm + admin.
+function settleMission(db, ad, app) {
+  const poster = db.users.find((x) => x.id === ad.user_id);
+  const worker = db.users.find((x) => x.id === app.user_id);
+  const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
+  const net = Math.round((ad.tip_amount - commission) * 100) / 100;
+  poster.reserved -= ad.tip_amount;
+  worker.available += net;
+  db.commission_total = (db.commission_total || 0) + commission;
+  db.commission_available = (db.commission_available != null ? db.commission_available : 0) + commission;
+  db.commissions = db.commissions || [];
+  db.commissions.push({ id: uid(), ad_id: ad.id, amount: commission, created_at: now() });
+  db.transactions.push({ id: uid(), user_id: poster.id, type: 'tip_out', amount: -ad.tip_amount, description: `Pourboire versé · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–10% commission) · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  app.status = 'completed'; ad.status = 'completed';
+  addXp(db, worker.id, 50); addXp(db, poster.id, 15);
+  pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: poster.id } });
+  for (const o of db.applications.filter((a) => a.ad_id === ad.id && a.user_id !== worker.id)) {
+    const ou = db.users.find((x) => x.id === o.user_id);
+    if (!ou) continue;
+    ou.points = (ou.points || 0) + CONSOLATION_POINTS;
+    if (['pending', 'accepted', 'delivered'].includes(o.status)) o.status = 'rejected';
+    pushNotif(db, ou.id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `La mission « ${ad.title} » a été attribuée, mais voici ${CONSOLATION_POINTS} points à échanger contre des Coins !`, data: { adId: ad.id } });
+  }
+  return { net, commission };
+}
+
+// Rembourse l'escrow au posteur et annule la mission
+function refundMission(db, ad, reason) {
+  const poster = db.users.find((x) => x.id === ad.user_id);
+  if (poster && poster.reserved >= ad.tip_amount && ad.status !== 'completed') {
+    poster.reserved -= ad.tip_amount; poster.available += ad.tip_amount;
+    db.transactions.push({ id: uid(), user_id: poster.id, type: 'escrow_refund', amount: ad.tip_amount, description: `Pourboire remboursé · ${ad.title}`, ad_id: ad.id, created_at: now() });
+    if (reason) pushNotif(db, poster.id, { type: 'dispute', title: '↩️ Remboursement', body: `« ${ad.title} » : ${reason}`, data: { adId: ad.id } });
+  }
+  ad.status = 'cancelled';
 }
 
 function adMeta(db, ad, viewer) {
@@ -228,6 +268,7 @@ export const localApi = {
     const db = load();
     const u = db.users.find((x) => x.email === String(email).toLowerCase());
     if (!u || u.password !== password) throw new Error('Email ou mot de passe incorrect');
+    if (u.banned) throw new Error('Compte suspendu — contactez le support');
     return { token: fakeToken(u.id), user: publicUser(db, u) };
   },
   async me() { const db = load(); return { user: publicUser(db, requireUser(db)) }; },
@@ -357,28 +398,8 @@ export const localApi = {
     const app = db.applications.find((a) => a.id === application_id && a.ad_id === id);
     if (!app || (app.status !== 'delivered' && app.status !== 'accepted')) throw new Error('Candidature non valide');
     if (u.reserved < ad.tip_amount) throw new Error('Escrow introuvable');
-    const worker = db.users.find((x) => x.id === app.user_id);
-    const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
-    const net = Math.round((ad.tip_amount - commission) * 100) / 100;
-    u.reserved -= ad.tip_amount;
-    worker.available += net;
-    db.commission_total = (db.commission_total || 0) + commission;
-    db.transactions.push({ id: uid(), user_id: u.id, type: 'tip_out', amount: -ad.tip_amount, description: `Pourboire versé · ${ad.title}`, ad_id: id, created_at: now() });
-    db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–10% commission) · ${ad.title}`, ad_id: id, created_at: now() });
-    app.status = 'completed'; ad.status = 'completed';
-    addXp(db, worker.id, 50); addXp(db, u.id, 15);
-    pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: id, review: true, rateeId: u.id } });
-
-    // Lot de consolation : les autres candidats reçoivent des Tipper Points
-    const others = db.applications.filter((a) => a.ad_id === id && a.user_id !== worker.id);
-    for (const o of others) {
-      const ou = db.users.find((x) => x.id === o.user_id);
-      if (!ou) continue;
-      ou.points = (ou.points || 0) + CONSOLATION_POINTS;
-      if (o.status === 'pending' || o.status === 'accepted' || o.status === 'delivered') o.status = 'rejected';
-      pushNotif(db, ou.id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `La mission « ${ad.title} » a été attribuée, mais voici ${CONSOLATION_POINTS} points à échanger contre des Coins !`, data: { adId: id } });
-    }
-    save(db); return { ok: true, net, commission };
+    const r = settleMission(db, ad, app);
+    save(db); return { ok: true, ...r };
   },
   // ── back-office admin ──
   async adminStats() {
@@ -399,16 +420,63 @@ export const localApi = {
         author: meta.author.full_name, applicants: meta.applicants_count, spots_left: meta.spots_left, is_full: meta.is_full, created_at: a.created_at };
     });
     const users = db.users.filter((x) => !isAdminEmail(x.email)).sort((a, b) => (b.xp || 0) - (a.xp || 0))
-      .map((x) => ({ id: x.id, full_name: x.full_name, email: x.email, city: x.city, available: x.available, points: x.points || 0, xp: x.xp || 0, verified: x.verified, rating: ratingOf(x), rating_count: x.rating_count }));
+      .map((x) => ({ id: x.id, full_name: x.full_name, email: x.email, city: x.city, available: x.available, points: x.points || 0, xp: x.xp || 0, verified: !!x.verified, banned: !!x.banned, rating: ratingOf(x), rating_count: x.rating_count }));
+    // Revenus des 14 derniers jours (commission par jour)
+    const revenue = [];
+    const cms = db.commissions || [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const key = d.toISOString().slice(0, 10);
+      const amount = cms.filter((c) => (c.created_at || '').slice(0, 10) === key).reduce((s, c) => s + c.amount, 0);
+      revenue.push({ date: key, amount: r2(amount) });
+    }
     return {
       kpis: {
         users: users.length, missions: db.ads.length, completed: completed.length,
         open: db.ads.filter((a) => a.status === 'open' || a.status === 'in_progress').length,
-        gmv, commission, disputes_open: disputes.filter((d) => d.status === 'open').length,
+        gmv, commission, commission_available: r2(db.commission_available != null ? db.commission_available : commission),
+        disputes_open: disputes.filter((d) => d.status === 'open').length,
         coins_in_circulation: r2(db.users.reduce((s, x) => s + (x.available || 0) + (x.reserved || 0), 0)),
       },
-      ads, disputes, users,
+      ads, disputes, users, revenue,
     };
+  },
+  async adminAction(action, payload = {}) {
+    const db = load(); const u = requireUser(db);
+    if (!isAdminEmail(u.email)) throw new Error('Accès réservé à l\'administrateur');
+    const ad = payload.ad_id ? db.ads.find((a) => a.id === payload.ad_id) : null;
+    const target = payload.user_id ? db.users.find((x) => x.id === payload.user_id) : null;
+    switch (action) {
+      case 'verify_user': if (!target) throw new Error('Utilisateur introuvable'); target.verified = !!payload.value; break;
+      case 'ban_user': if (!target) throw new Error('Utilisateur introuvable'); target.banned = !!payload.value;
+        pushNotif(db, target.id, { type: 'dispute', title: payload.value ? '⛔ Compte suspendu' : '✅ Compte réactivé', body: payload.value ? 'Votre compte a été suspendu par un administrateur.' : 'Votre compte est de nouveau actif.', data: {} }); break;
+      case 'refund_ad': if (!ad) throw new Error('Mission introuvable'); refundMission(db, ad, 'remboursé par un administrateur'); break;
+      case 'pay_ad': {
+        if (!ad) throw new Error('Mission introuvable');
+        const app = db.applications.find((a) => a.id === payload.application_id && a.ad_id === ad.id)
+          || db.applications.find((a) => a.ad_id === ad.id && ['accepted', 'delivered'].includes(a.status));
+        if (!app) throw new Error('Aucun participant à payer');
+        if ((db.users.find((x) => x.id === ad.user_id).reserved || 0) < ad.tip_amount) throw new Error('Escrow insuffisant');
+        settleMission(db, ad, app); break;
+      }
+      case 'resolve_dispute': {
+        const d = (db.disputes || []).find((x) => x.id === payload.dispute_id);
+        if (!d) throw new Error('Litige introuvable');
+        d.status = 'resolved'; d.outcome = payload.outcome || 'dismiss';
+        if (payload.outcome === 'refund') { const a = db.ads.find((x) => x.id === d.ad_id); if (a) refundMission(db, a, 'litige résolu : remboursement'); }
+        break;
+      }
+      case 'withdraw_commission': {
+        const avail = db.commission_available != null ? db.commission_available : (db.commission_total || 0);
+        if (avail <= 0) throw new Error('Aucune commission à encaisser');
+        u.available += avail;
+        db.commission_available = 0;
+        db.transactions.push({ id: uid(), user_id: u.id, type: 'credit', amount: avail, description: 'Encaissement des commissions Tipper', ad_id: null, created_at: now() });
+        break;
+      }
+      default: throw new Error('Action inconnue');
+    }
+    save(db); return { ok: true };
   },
   async dispute(id, reason) {
     const db = load(); const u = requireUser(db);

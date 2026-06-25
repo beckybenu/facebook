@@ -7,6 +7,7 @@ import db from '../db.js';
 import { authRequired, publicUser, addXp, isAdminEmail } from '../auth.js';
 import { distanceKm } from '../geo.js';
 import { notify } from '../notify.js';
+import { settleMission, refundMission } from '../settle.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, '..', '..', 'uploads');
@@ -146,52 +147,17 @@ router.post('/:id/confirm', authRequired, async (req, res) => {
   if (!app || !['accepted', 'delivered'].includes(app.status)) return res.status(400).json({ error: 'Candidature non valide' });
   const author = db.prepare('SELECT * FROM users WHERE id = ?').get(ad.user_id);
   if (author.reserved < ad.tip_amount) return res.status(400).json({ error: 'Escrow insuffisant' });
-
-  const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
-  const net = Math.round((ad.tip_amount - commission) * 100) / 100;
-  const others = db.prepare('SELECT * FROM applications WHERE ad_id = ? AND user_id != ?').all(ad.id, app.user_id);
-
-  const tx = db.transaction(() => {
-    db.prepare('UPDATE users SET reserved = reserved - ? WHERE id = ?').run(ad.tip_amount, author.id);
-    db.prepare('UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?').run(net, app.user_id);
-    db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
-      .run(nanoid(), author.id, 'tip_out', -ad.tip_amount, `Pourboire versé · ${ad.title}`, ad.id);
-    db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
-      .run(nanoid(), app.user_id, 'tip_in', net, `Pourboire reçu (–10% commission) · ${ad.title}`, ad.id);
-    db.prepare("INSERT INTO commissions (id, ad_id, amount) VALUES (?,?,?)").run(nanoid(), ad.id, commission);
-    db.prepare("UPDATE applications SET status = 'completed' WHERE id = ?").run(app.id);
-    db.prepare("UPDATE ads SET status = 'completed' WHERE id = ?").run(ad.id);
-    addXp(app.user_id, 50); addXp(author.id, 15);
-    // Consolation : les autres candidats reçoivent des Tipper Points
-    for (const o of others) {
-      db.prepare('UPDATE users SET points = points + ? WHERE id = ?').run(CONSOLATION_POINTS, o.user_id);
-      if (['pending', 'accepted', 'delivered'].includes(o.status)) db.prepare("UPDATE applications SET status = 'rejected' WHERE id = ?").run(o.id);
-    }
-  });
-  tx();
-  await notify(app.user_id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: author.id } });
-  for (const o of others) {
-    await notify(o.user_id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `Mission « ${ad.title} » attribuée, mais voici ${CONSOLATION_POINTS} points à échanger !`, data: { adId: ad.id } });
-  }
-  res.json({ ok: true, net, commission });
+  const r = await settleMission(ad, app);
+  res.json({ ok: true, ...r });
 });
 
 // Annulation -> remboursement de l'escrow
-router.post('/:id/cancel', authRequired, (req, res) => {
+router.post('/:id/cancel', authRequired, async (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
   if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
   if (ad.user_id !== req.user.id) return res.status(403).json({ error: 'Action réservée au demandeur' });
   if (ad.status === 'completed') return res.status(400).json({ error: 'Mission déjà terminée' });
-  const author = db.prepare('SELECT * FROM users WHERE id = ?').get(ad.user_id);
-  const tx = db.transaction(() => {
-    if (author.reserved >= ad.tip_amount) {
-      db.prepare('UPDATE users SET reserved = reserved - ?, wallet_balance = wallet_balance + ? WHERE id = ?').run(ad.tip_amount, ad.tip_amount, author.id);
-      db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
-        .run(nanoid(), author.id, 'escrow_refund', ad.tip_amount, `Pourboire remboursé · ${ad.title}`, ad.id);
-    }
-    db.prepare("UPDATE ads SET status = 'cancelled' WHERE id = ?").run(ad.id);
-  });
-  tx();
+  await refundMission(ad);
   res.json({ ok: true });
 });
 

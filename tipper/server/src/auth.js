@@ -24,6 +24,7 @@ export function authRequired(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(payload.id);
     if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
+    if (user.banned && !isAdminEmail(user.email)) return res.status(403).json({ error: 'Compte suspendu' });
     req.user = user;
     next();
   } catch {
