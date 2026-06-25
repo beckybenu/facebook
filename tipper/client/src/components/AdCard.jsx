@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { coin, catLabel, catIcon, catTint } from '../constants.js';
 import { Stars } from './Layout.jsx';
@@ -5,7 +6,10 @@ import { Stars } from './Layout.jsx';
 export function Mission({ ad, onToggleSave }) {
   const navigate = useNavigate();
   return (
-    <div className="mission fade-in" onClick={() => navigate(`/ads/${ad.id}`)}>
+    <motion.div className="mission" onClick={() => navigate(`/ads/${ad.id}`)}
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+      whileTap={{ scale: 0.98 }}>
       <div className="top">
         <div className="thumb" style={{ background: ad.photo ? 'transparent' : catTint(ad.category) }}>
           {ad.photo ? <img src={ad.photo} alt="" /> : catIcon(ad.category)}
@@ -37,6 +41,6 @@ export function Mission({ ad, onToggleSave }) {
         </div>
         <div className="tip-badge">{coin(ad.tip_amount)}</div>
       </div>
-    </div>
+    </motion.div>
   );
 }

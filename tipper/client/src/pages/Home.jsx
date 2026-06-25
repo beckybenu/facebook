@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Avatar } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
@@ -40,7 +41,7 @@ export function Home() {
           </div>
         }
       />
-      <div className="content stagger">
+      <div className="content">
         {/* Salutation */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <Avatar user={user} size="m" />
@@ -67,24 +68,24 @@ export function Home() {
         <div className="spacer" />
 
         {/* Action phare */}
-        <div className="now-hero" onClick={() => navigate('/now')}>
+        <motion.div className="now-hero" onClick={() => navigate('/now')} whileTap={{ scale: 0.985 }} transition={{ type: 'spring', stiffness: 380, damping: 24 }}>
           <div className="nh-t">⚡ Tipper Now</div>
           <div className="nh-s">Un besoin tout de suite ? Décrivez-le, l'IA s'occupe du reste.</div>
           <div className="nh-go">✦ Demander avec l'IA →</div>
-        </div>
+        </motion.div>
 
         {/* 2 grandes actions */}
         <div className="qa-grid">
-          <div className="action-tile" onClick={() => navigate('/explore')}>
+          <motion.div className="action-tile" onClick={() => navigate('/explore')} whileTap={{ scale: 0.96 }} transition={{ type: 'spring', stiffness: 400, damping: 22 }}>
             <div className="at-ic" style={{ background: 'rgba(54,224,160,0.16)' }}>🧭</div>
             <div className="at-t">Trouver une mission</div>
             <div className="at-s">Gagnez des pourboires</div>
-          </div>
-          <div className="action-tile" onClick={() => navigate('/categories')}>
+          </motion.div>
+          <motion.div className="action-tile" onClick={() => navigate('/categories')} whileTap={{ scale: 0.96 }} transition={{ type: 'spring', stiffness: 400, damping: 22 }}>
             <div className="at-ic" style={{ background: 'rgba(255,122,69,0.16)' }}>📣</div>
             <div className="at-t">Publier une mission</div>
             <div className="at-s">Demandez un service</div>
-          </div>
+          </motion.div>
         </div>
         <div className="spacer" />
 

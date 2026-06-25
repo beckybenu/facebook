@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import { STANDALONE } from './api.js';
 import { Login, Signup } from './pages/Auth.jsx';
@@ -45,10 +46,16 @@ function Splash() {
 
 function Router() {
   const { user } = useApp();
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const section = location.pathname.split('/')[1] || 'home';
   return (
-    <div className="route-anim" key={pathname.split('/')[1] || 'home'}>
-    <Routes>
+    <AnimatePresence mode="wait" initial={false}>
+    <motion.div key={section}
+      initial={{ opacity: 0, y: 14, scale: 0.992 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.992 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 30 }}>
+    <Routes location={location}>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
       <Route path="/" element={<Protected><Home /></Protected>} />
@@ -70,7 +77,8 @@ function Router() {
       <Route path="/u/:id" element={<Protected><PublicProfile /></Protected>} />
       <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
-    </div>
+    </motion.div>
+    </AnimatePresence>
   );
 }
 
