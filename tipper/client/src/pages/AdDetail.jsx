@@ -178,7 +178,7 @@ export function AdDetail() {
               <label>Un mot pour convaincre ? (optionnel)</label>
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, je peux vous aider rapidement…" />
             </div>
-            <button className="btn coral" disabled={busy} onClick={apply}>🙋 Postuler à cette mission</button>
+            <button className="btn coral lg" disabled={busy} onClick={apply}>🙋 Postuler à cette mission</button>
             <div className="suggest" style={{ marginTop: 10 }}>🎯 Même non retenu·e, vous gagnez des Tipper Points</div>
           </div>
         ) : <div className="card center muted">Complet — {ad.max_participants} participants atteints.</div>)}

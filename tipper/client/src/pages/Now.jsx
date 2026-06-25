@@ -90,7 +90,7 @@ export function Now() {
           ))}
         </div>
 
-        <button className="btn iris" onClick={() => analyse()}>✦ Générer ma mission</button>
+        <button className="btn iris lg" onClick={() => analyse()}>✦ Générer ma mission</button>
 
         {draft && (
           <div className="ai-draft fade-in" style={{ marginTop: 18 }}>
@@ -108,7 +108,7 @@ export function Now() {
               </div>
               <div className="hint">Bloqué en séquestre, libéré à la réussite · solde {coin(user.available)}</div>
             </div>
-            <button className="btn coral" disabled={busy} onClick={launch}>
+            <button className="btn coral lg" disabled={busy} onClick={launch}>
               {busy ? '…' : draft.kind === 'instant' ? '⚡ Lancer maintenant' : '🎯 Publier la quête'}
             </button>
           </div>

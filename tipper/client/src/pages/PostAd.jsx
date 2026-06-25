@@ -128,7 +128,7 @@ export function PostAd() {
           <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)} />
         </div>
 
-        <button className="btn coral" disabled={busy}>{busy ? 'Publication…' : 'Publier ma mission'}</button>
+        <button className="btn coral lg" disabled={busy}>{busy ? 'Publication…' : 'Publier ma mission'}</button>
         <div className="spacer" />
       </form>
     </Screen>
