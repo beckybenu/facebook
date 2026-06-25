@@ -54,7 +54,7 @@ export function Nav() {
       <button ref={(e) => (refs.current.explore = e)} className={`n ${activeKey === 'explore' ? 'active' : ''}`} onClick={() => go('/explore')}>
         <span className="ic">🧭</span><span>Explorer</span>
       </button>
-      <button className="fab" onClick={() => { feedback('tap'); navigate('/categories'); }} aria-label="Publier">＋</button>
+      <button className="fab" onClick={() => { feedback('tap'); navigate('/now'); }} aria-label="Tipper Now">＋</button>
       <button ref={(e) => (refs.current.boite = e)} className={`n ${activeKey === 'boite' ? 'active' : ''}`} onClick={() => go('/messages')}>
         {(unreadMsg + unreadNotif) > 0 && <span className="nb">{Math.min(9, unreadMsg + unreadNotif)}</span>}
         <span className="ic">💬</span><span>Boîte</span>

@@ -14,6 +14,8 @@ import { Notifications } from './pages/Notifications.jsx';
 import { Threads, Conversation } from './pages/Messages.jsx';
 import { Profile, PublicProfile, Leaderboard } from './pages/Profile.jsx';
 import { Admin } from './pages/Admin.jsx';
+import { Now } from './pages/Now.jsx';
+import { Track } from './pages/Track.jsx';
 import { Spinner } from './components/Layout.jsx';
 
 function Protected({ children }) {
@@ -50,6 +52,8 @@ function Router() {
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
       <Route path="/" element={<Protected><Home /></Protected>} />
+      <Route path="/now" element={<Protected><Now /></Protected>} />
+      <Route path="/track/:id" element={<Protected><Track /></Protected>} />
       <Route path="/categories" element={<Protected><Categories /></Protected>} />
       <Route path="/post/:category" element={<Protected><PostAd /></Protected>} />
       <Route path="/posted" element={<Protected><Posted /></Protected>} />

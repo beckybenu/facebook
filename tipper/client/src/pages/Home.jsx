@@ -25,8 +25,9 @@ export function Home() {
   }
 
   const lvl = user.level || { emoji: '🌱', name: 'Nouveau', progress: 0 };
-  const urgent = (ads || []).filter((a) => a.urgent && !a.is_mine).slice(0, 3);
-  const nearby = (ads || []).filter((a) => !a.is_mine).slice(0, 4);
+  const instant = (ads || []).filter((a) => a.kind === 'instant' && !a.is_mine).slice(0, 3);
+  const quests = (ads || []).filter((a) => a.kind === 'quest' && !a.is_mine).slice(0, 3);
+  const nearby = (ads || []).filter((a) => a.kind !== 'instant' && a.kind !== 'quest' && !a.is_mine).slice(0, 4);
 
   return (
     <Screen>
@@ -76,6 +77,13 @@ export function Home() {
         </div>
         <div className="spacer" />
 
+        {/* Tipper Now hero */}
+        <div className="now-hero" onClick={() => navigate('/now')}>
+          <div className="nh-t">⚡ Tipper Now</div>
+          <div className="nh-s">Plus de Coca au lac ? Décrivez votre besoin, un helper proche arrive en minutes.</div>
+          <div className="nh-go">✦ Demander avec l'IA →</div>
+        </div>
+
         {/* Quick actions */}
         <div className="qa-grid">
           <div className="qa" onClick={() => navigate('/categories')}>
@@ -112,18 +120,31 @@ export function Home() {
           </div>
         )}
 
-        {urgent.length > 0 && (
+        {!ads && <><SkeletonMission /><SkeletonMission /></>}
+
+        {instant.length > 0 && (
           <>
-            <div className="h-sec" style={{ marginTop: 6 }}>⚡ Urgent près de vous</div>
-            {!ads ? <SkeletonMission /> : urgent.map((a) => <Mission key={a.id} ad={a} />)}
+            <div className="h-sec" style={{ marginTop: 6 }}>⚡ Tipper Now · à proximité</div>
+            {instant.map((a) => <Mission key={a.id} ad={a} />)}
           </>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '8px 0 12px' }}>
-          <div className="h-sec" style={{ marginBottom: 0 }}>Missions récentes</div>
-          <button className="muted" style={{ fontSize: 13, fontWeight: 700 }} onClick={() => navigate('/explore')}>Tout voir →</button>
-        </div>
-        {!ads ? <><SkeletonMission /><SkeletonMission /></> : nearby.map((a) => <Mission key={a.id} ad={a} />)}
+        {quests.length > 0 && (
+          <>
+            <div className="h-sec" style={{ marginTop: 6 }}>🎯 Quests · primes au résultat 🌍</div>
+            {quests.map((a) => <Mission key={a.id} ad={a} />)}
+          </>
+        )}
+
+        {nearby.length > 0 && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '8px 0 12px' }}>
+              <div className="h-sec" style={{ marginBottom: 0 }}>Missions récentes</div>
+              <button className="muted" style={{ fontSize: 13, fontWeight: 700 }} onClick={() => navigate('/explore')}>Tout voir →</button>
+            </div>
+            {nearby.map((a) => <Mission key={a.id} ad={a} />)}
+          </>
+        )}
       </div>
     </Screen>
   );

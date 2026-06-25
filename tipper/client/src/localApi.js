@@ -5,7 +5,7 @@
 // Aucune donnée ne quitte l'appareil. Utilisé pour la démo statique (Pages).
 // ───────────────────────────────────────────────────────────────────────────
 
-const DB_KEY = 'tipper_db_v4';
+const DB_KEY = 'tipper_db_v5';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
 const COMMISSION = 0.10;          // commission Tipper sur chaque pourboire
@@ -72,21 +72,24 @@ function seed() {
   const mka = (author, category, title, price, tip, description, dLat, dLng, opts = {}) =>
     ads.push({
       id: uid(), user_id: author.id, category, title, price, tip_amount: tip, photo: null,
+      kind: opts.kind || 'standard',
       description, lat: author.lat + (dLat || 0), lng: author.lng + (dLng || 0), city: author.city,
       status: opts.status || 'open', urgent: !!opts.urgent, scheduled_at: opts.scheduled_at || null,
       delivered_app: null, created_at: opts.created_at || minutesAgo(opts.age || 120),
     });
 
   mka(sophie, 'automobile', 'Trouver un acheteur pour ma Mercedes S63 AMG', 64000, 2000,
-    "J'offre CHF 2000.- à celui qui me trouve un acheteur sérieux pour ma Mercedes S63 AMG 2016 (valeur CHF 64'000.-).", 0, 0, { age: 30 });
+    "J'offre 2000 🪙 à celui qui me trouve un acheteur sérieux pour ma Mercedes S63 AMG 2016 (valeur CHF 64'000.-).", 0, 0, { age: 30, kind: 'quest' });
+  mka(sophie, 'epicerie', 'Un Coca-Cola frais au lac 🏖️', 5, 10,
+    "Posée au bord du lac, plus de boisson ! Qui m'apporte un Coca bien frais ? Pourboire à l'arrivée.", 0.002, 0.001, { urgent: true, age: 4, kind: 'instant' });
   mka(sophie, 'epicerie', 'Un paquet de Marlboro rouge livré ce soir', 12, 8,
-    "Je n'ai pas le temps de sortir : qui m'apporte un paquet de cigarettes avant 21h ?", 0.002, 0.001, { urgent: true, age: 12 });
+    "Je n'ai pas le temps de sortir : qui m'apporte un paquet de cigarettes avant 21h ?", 0.002, 0.001, { urgent: true, age: 12, kind: 'instant' });
   mka(lucas, 'petit_service', 'Monter une armoire IKEA PAX', null, 45,
     "Besoin d'un coup de main pour monter une armoire ce week-end. ~1h de travail.", 0, 0, { scheduled_at: new Date(Date.now() + 86400000 * 2).toISOString(), age: 90 });
   mka(emma, 'administratif', "Aide pour ma déclaration d'impôts vaudoise", null, 80,
     "Je cherche quelqu'un de calé pour m'aider à remplir ma déclaration. Sur place ou en visio.", 0, 0, { age: 240 });
   mka(emma, 'immobilier', 'Trouver un studio à louer à Lausanne', null, 300,
-    'CHF 300.- à qui me déniche un studio (max CHF 1200/mois) proche du centre avant fin du mois.', 0.001, 0, { age: 300 });
+    '300 🪙 à qui me déniche un studio (max CHF 1200/mois) proche du centre avant fin du mois.', 0.001, 0, { age: 300, kind: 'quest' });
   mka(noah, 'loisirs', 'Partenaire de tennis dimanche matin', null, 20,
     "Cherche un joueur niveau intermédiaire pour 1h de tennis dimanche. Court réservé.", 0, 0, { scheduled_at: new Date(Date.now() + 86400000 * 3).toISOString(), age: 60 });
   mka(lea, 'petit_service', 'Promener mon chien 3 jours', null, 60,
@@ -217,6 +220,7 @@ function adMeta(db, ad, viewer) {
   const spotsLeft = Math.max(0, MAX_PARTICIPANTS - active.length);
   return {
     ...ad,
+    kind: ad.kind || 'standard',
     author: publicUser(db, author),
     applicants_count: apps.length,
     accepted_count: accepted.length,
@@ -359,7 +363,7 @@ export const localApi = {
     const photo = await fileToDataURL(photoFile && photoFile.size ? photoFile : null);
     const priceRaw = get('price');
     const ad = {
-      id: uid(), user_id: u.id, category, title,
+      id: uid(), user_id: u.id, category, title, kind: get('kind') || 'standard',
       price: priceRaw ? parseFloat(priceRaw) : null, tip_amount: tip, photo,
       description: get('description') || '', urgent: get('urgent') === '1' || get('urgent') === 'true',
       scheduled_at: get('scheduled_at') || null,

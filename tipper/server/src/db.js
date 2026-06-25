@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS ads (
   lat         REAL,
   lng         REAL,
   city        TEXT,
+  kind         TEXT NOT NULL DEFAULT 'standard', -- standard | instant | quest
   urgent       INTEGER NOT NULL DEFAULT 0,
   scheduled_at TEXT,
   delivered_app TEXT,
@@ -164,6 +165,7 @@ ensureColumn('users', 'rating_count', 'rating_count INTEGER NOT NULL DEFAULT 0')
 ensureColumn('users', 'referral_code', 'referral_code TEXT');
 ensureColumn('users', 'referred_by', 'referred_by TEXT');
 ensureColumn('users', 'banned', 'banned INTEGER NOT NULL DEFAULT 0');
+ensureColumn('ads', 'kind', "kind TEXT NOT NULL DEFAULT 'standard'");
 ensureColumn('ads', 'urgent', 'urgent INTEGER NOT NULL DEFAULT 0');
 ensureColumn('ads', 'scheduled_at', 'scheduled_at TEXT');
 ensureColumn('ads', 'delivered_app', 'delivered_app TEXT');

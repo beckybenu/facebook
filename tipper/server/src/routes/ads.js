@@ -90,7 +90,7 @@ router.get('/:id', authRequired, (req, res) => {
 });
 
 router.post('/', authRequired, upload.single('photo'), (req, res) => {
-  const { category, title, price, tip_amount, description, lat, lng, city, urgent, scheduled_at } = req.body || {};
+  const { category, title, price, tip_amount, description, lat, lng, city, urgent, scheduled_at, kind } = req.body || {};
   if (!CATEGORIES.includes(category)) return res.status(400).json({ error: 'Catégorie invalide' });
   if (!title) return res.status(400).json({ error: 'Le titre est requis' });
   const tip = parseFloat(tip_amount) || 0;
@@ -104,11 +104,12 @@ router.post('/', authRequired, upload.single('photo'), (req, res) => {
     db.prepare('UPDATE users SET wallet_balance = wallet_balance - ?, reserved = reserved + ? WHERE id = ?').run(tip, tip, req.user.id);
     db.prepare('INSERT INTO transactions (id, user_id, type, amount, description) VALUES (?,?,?,?,?)')
       .run(nanoid(), req.user.id, 'escrow_hold', -tip, `Pourboire bloqué · ${title}`);
-    db.prepare(`INSERT INTO ads (id, user_id, category, title, price, tip_amount, photo, description, lat, lng, city, urgent, scheduled_at)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    db.prepare(`INSERT INTO ads (id, user_id, category, title, price, tip_amount, photo, description, lat, lng, city, kind, urgent, scheduled_at)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
       id, req.user.id, category, title,
       price != null && price !== '' ? parseFloat(price) : null, tip, photo, description || '',
       lat ? parseFloat(lat) : req.user.lat, lng ? parseFloat(lng) : req.user.lng, city || req.user.city,
+      ['instant', 'quest'].includes(kind) ? kind : 'standard',
       urgent === '1' || urgent === 'true' ? 1 : 0, scheduled_at || null
     );
     addXp(req.user.id, 10);
