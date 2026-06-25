@@ -46,7 +46,7 @@ export function Profile() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
           <Avatar user={user} size="l" glow />
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 20, display: 'flex', alignItems: 'center', gap: 6 }}>{user.full_name} {user.verified && '✅'}</div>
+            <div style={{ fontWeight: 800, fontSize: 20, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>{user.full_name} {user.verified && '✅'} {user.pro && <span className="pro-badge">💎 PRO</span>}</div>
             <Stars value={user.rating} count={user.rating_count} />
             <div className="sub" style={{ fontSize: 13, marginTop: 2 }}>{user.city || 'Position non définie'}</div>
           </div>

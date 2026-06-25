@@ -1,10 +1,24 @@
 import { Router } from 'express';
 import { nanoid } from 'nanoid';
 import db from '../db.js';
-import { authRequired, publicUser } from '../auth.js';
+import { authRequired, publicUser, addRevenue, isPro } from '../auth.js';
 
 export const POINTS_PER_COIN = 10;
+const PRO_PRICE = 49;
 const router = Router();
+
+// Abonnement Tipper Pro (30 jours) — revenu récurrent plateforme
+router.post('/pro', authRequired, (req, res) => {
+  if (req.user.wallet_balance < PRO_PRICE) return res.status(400).json({ error: `Solde insuffisant (${PRO_PRICE} 🪙 requis)` });
+  const base = isPro(req.user) ? new Date(req.user.pro_until) : new Date();
+  const until = new Date(base.getTime() + 30 * 24 * 3600 * 1000).toISOString();
+  db.prepare('UPDATE users SET wallet_balance = wallet_balance - ?, pro_until = ? WHERE id = ?').run(PRO_PRICE, until, req.user.id);
+  db.prepare('INSERT INTO transactions (id, user_id, type, amount, description) VALUES (?,?,?,?,?)')
+    .run(nanoid(), req.user.id, 'subscription', -PRO_PRICE, 'Abonnement Tipper Pro (30 jours)');
+  addRevenue(PRO_PRICE, 'subscription', null);
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  res.json({ user: publicUser(user) });
+});
 
 // Stripe optionnel : activé seulement si la clé secrète est fournie
 let stripe = null;

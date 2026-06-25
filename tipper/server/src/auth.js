@@ -72,9 +72,18 @@ export function publicUser(u, { withBadges = true } = {}) {
     xp: u.xp || 0, level: levelInfo(u.xp || 0), rating: ratingOf(u), rating_count: u.rating_count || 0,
     badges: withBadges ? badgesOf(u) : [], saved, referral_code: u.referral_code,
     is_admin: isAdminEmail(u.email),
+    pro: isPro(u), pro_until: u.pro_until || null,
   };
 }
 
 export function addXp(userId, amount) {
   db.prepare('UPDATE users SET xp = xp + ? WHERE id = ?').run(amount, userId);
+}
+
+export const isPro = (u) => !!(u && u.pro_until && new Date(u.pro_until) > new Date());
+export const isBoosted = (ad) => !!(ad && ad.boosted_until && new Date(ad.boosted_until) > new Date());
+
+import { nanoid as _nano } from 'nanoid';
+export function addRevenue(amount, source, ad_id) {
+  db.prepare('INSERT INTO commissions (id, ad_id, amount, source) VALUES (?,?,?,?)').run(_nano(), ad_id || null, amount, source);
 }

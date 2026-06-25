@@ -92,6 +92,11 @@ export function AdDetail() {
     try { await api.cancelAd(id); await refreshMe(); showToast('Mission annulée, escrow remboursé'); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
+  async function boost() {
+    if (!confirm('Booster cette mission « À la une » pour 24h (20 🪙) ?')) return;
+    try { await api.boostAd(id); await refreshMe(); showToast('Mission boostée 🚀 elle passe en tête !'); load(); }
+    catch (e) { showToast(e.message, 'error'); }
+  }
   async function openDispute() {
     const reason = prompt('Décrivez le problème rencontré :');
     if (!reason) return;
@@ -212,6 +217,9 @@ export function AdDetail() {
                 </div>
               </div>
             ))}
+            {!closed && (ad.boosted
+              ? <div className="card center" style={{ background: 'rgba(255,210,63,0.1)', borderColor: 'rgba(255,210,63,0.3)' }}>🚀 <b>À la une</b> — votre mission est mise en avant</div>
+              : <button className="btn" style={{ background: 'linear-gradient(135deg,#ffd23f,#ff8a45)', color: '#2a1500', marginBottom: 10 }} onClick={boost}>🚀 Booster « À la une » · 20 🪙</button>)}
             {!closed && <button className="btn outline" style={{ color: 'var(--danger)' }} onClick={cancelAd}>Annuler la mission</button>}
           </>
         )}

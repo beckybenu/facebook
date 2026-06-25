@@ -19,6 +19,8 @@ router.get('/stats', authRequired, adminRequired, (_req, res) => {
   const commission = db.prepare('SELECT COALESCE(SUM(amount),0) s FROM commissions').get().s;
   const disputesOpen = db.prepare("SELECT COUNT(*) c FROM disputes WHERE status = 'open'").get().c;
   const circulating = db.prepare('SELECT COALESCE(SUM(wallet_balance + reserved),0) s FROM users').get().s;
+  const proUsers = db.prepare("SELECT COUNT(*) c FROM users WHERE pro_until IS NOT NULL AND pro_until > datetime('now')").get().c;
+  const bySource = (src) => r2(db.prepare('SELECT COALESCE(SUM(amount),0) s FROM commissions WHERE source = ?').get(src).s);
 
   const ads = db.prepare('SELECT * FROM ads ORDER BY created_at DESC LIMIT 200').all().map((a) => {
     const apps = db.prepare("SELECT COUNT(*) c FROM applications WHERE ad_id = ? AND status != 'rejected'").get(a.id).c;
@@ -46,7 +48,8 @@ router.get('/stats', authRequired, adminRequired, (_req, res) => {
 
   res.json({
     kpis: { users: usersCount, missions, completed, open, gmv: r2(gmv), commission: r2(commission),
-      commission_available: commissionAvailable(), disputes_open: disputesOpen, coins_in_circulation: r2(circulating) },
+      commission_available: commissionAvailable(), disputes_open: disputesOpen, coins_in_circulation: r2(circulating),
+      pro_users: proUsers, rev_commission: bySource('commission'), rev_boost: bySource('boost'), rev_subscription: bySource('subscription') },
     ads, users, disputes, revenue,
   });
 });

@@ -70,13 +70,19 @@ export function Admin() {
 
         <RevenueChart data={data.revenue} />
 
+        <div className="card" style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+          <div><div style={{ fontWeight: 800, color: 'var(--mint)' }}>{coin(k.rev_commission || 0)}</div><div className="t-s">Commissions</div></div>
+          <div><div style={{ fontWeight: 800, color: 'var(--amber)' }}>{coin(k.rev_boost || 0)}</div><div className="t-s">Boosts</div></div>
+          <div><div style={{ fontWeight: 800, color: 'var(--iris)' }}>{coin(k.rev_subscription || 0)}</div><div className="t-s">Abonnements</div></div>
+        </div>
+
         <div className="bento" style={{ marginBottom: 14 }}>
           <KPI label="Utilisateurs" value={k.users} accent="#8b5cff" ic="👥" />
           <KPI label="Missions" value={k.missions} accent="#38d6ff" ic="📋" />
           <KPI label="Terminées" value={k.completed} accent="#36e0a0" ic="✅" />
           <KPI label="En cours" value={k.open} accent="#ffb020" ic="⏳" />
+          <KPI label="Abonnés Pro" value={k.pro_users || 0} accent="#b79bff" ic="💎" />
           <KPI label="Litiges" value={k.disputes_open} accent="#ff5d6c" ic="⚠️" />
-          <KPI label="Coins circulant" value={Math.round(k.coins_in_circulation)} accent="#ff7a45" ic="🪙" />
         </div>
 
         <div className="pill-row" style={{ marginBottom: 8 }}>

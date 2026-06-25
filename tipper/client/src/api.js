@@ -59,6 +59,8 @@ export const api = STANDALONE ? localApi : {
   topup: (amount) => request('/wallet/topup', { method: 'POST', body: { amount } }),
   withdraw: (amount) => request('/wallet/withdraw', { method: 'POST', body: { amount } }),
   exchangePoints: (coins) => request('/wallet/exchange', { method: 'POST', body: { coins } }),
+  boostAd: (id) => request(`/ads/${id}/boost`, { method: 'POST' }),
+  subscribePro: () => request('/wallet/pro', { method: 'POST' }),
   checkout: (amount) => request('/wallet/checkout', { method: 'POST', body: { amount } }),
   dispute: (id, reason) => request(`/ads/${id}/dispute`, { method: 'POST', body: { reason } }),
   // notifications

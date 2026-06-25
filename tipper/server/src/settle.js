@@ -1,15 +1,17 @@
 import { nanoid } from 'nanoid';
 import db from './db.js';
-import { addXp } from './auth.js';
+import { addXp, isPro } from './auth.js';
 import { notify } from './notify.js';
 
 export const COMMISSION = 0.10;
+export const PRO_COMMISSION = 0.05;
 export const CONSOLATION_POINTS = 10;
 
-// Règlement d'une mission : commission 10%, net au helper, consolation en Points.
+// Règlement d'une mission : commission (5% Pro / 10%), net au helper, consolation.
 export async function settleMission(ad, app) {
   const poster = db.prepare('SELECT * FROM users WHERE id = ?').get(ad.user_id);
-  const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
+  const rate = isPro(poster) ? PRO_COMMISSION : COMMISSION;
+  const commission = Math.round(ad.tip_amount * rate * 100) / 100;
   const net = Math.round((ad.tip_amount - commission) * 100) / 100;
   const others = db.prepare('SELECT * FROM applications WHERE ad_id = ? AND user_id != ?').all(ad.id, app.user_id);
 
@@ -19,8 +21,8 @@ export async function settleMission(ad, app) {
     db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
       .run(nanoid(), poster.id, 'tip_out', -ad.tip_amount, `Pourboire versé · ${ad.title}`, ad.id);
     db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
-      .run(nanoid(), app.user_id, 'tip_in', net, `Pourboire reçu (–10% commission) · ${ad.title}`, ad.id);
-    db.prepare('INSERT INTO commissions (id, ad_id, amount) VALUES (?,?,?)').run(nanoid(), ad.id, commission);
+      .run(nanoid(), app.user_id, 'tip_in', net, `Pourboire reçu (–${Math.round(rate * 100)}% commission) · ${ad.title}`, ad.id);
+    db.prepare("INSERT INTO commissions (id, ad_id, amount, source) VALUES (?,?,?,'commission')").run(nanoid(), ad.id, commission);
     db.prepare("UPDATE applications SET status = 'completed' WHERE id = ?").run(app.id);
     db.prepare("UPDATE ads SET status = 'completed' WHERE id = ?").run(ad.id);
     addXp(app.user_id, 50); addXp(poster.id, 15);

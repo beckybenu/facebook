@@ -488,12 +488,23 @@ body::after {
 .kind-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 8px; }
 .kind-badge.instant { background: rgba(255,122,69,0.18); color: #ff9a6b; }
 .kind-badge.quest { background: rgba(139,92,255,0.2); color: #b79bff; }
+.kind-badge.boost { background: linear-gradient(135deg, #ffd23f, #ff8a45); color: #2a1500; }
+
+/* Tipper Pro */
+.pro-card { position: relative; overflow: hidden; border-radius: var(--r-lg); padding: 18px; color: #fff;
+  background: radial-gradient(120% 130% at 0% 0%, rgba(139,92,255,0.9), transparent 55%), linear-gradient(135deg, #1a1140, #3a2a8c); border: 1px solid rgba(255,255,255,0.14); }
+.pro-card .pro-t { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+.pro-card ul { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 7px; }
+.pro-card li { font-size: 13.5px; opacity: 0.95; display: flex; gap: 8px; }
+.pro-badge { display: inline-flex; align-items: center; gap: 4px; background: linear-gradient(135deg,#b79bff,#8b5cff); color: #fff; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 7px; }
 
 .ai-box { position: relative; }
 .ai-box textarea { width: 100%; min-height: 110px; border: 1.5px solid var(--glass-border-2); border-radius: 18px; padding: 16px; font-size: 17px; background: var(--surface-2); color: var(--text); outline: none; resize: none; }
 .ai-box textarea:focus { border-color: var(--iris); box-shadow: 0 0 0 4px rgba(139,92,255,0.18); }
 .ai-chip { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--glass-border); white-space: nowrap; }
 .ai-spark { position: absolute; right: 14px; bottom: 14px; font-size: 20px; animation: spark 1.6s ease infinite; }
+.mic-btn { position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--glass-border-2); font-size: 19px; display: grid; place-items: center; }
+.mic-btn.on { background: var(--grad-sunset); box-shadow: var(--glow-sunset); animation: pulse 1s ease infinite; }
 @keyframes spark { 0%,100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 
 .ai-draft { background: var(--surface); border: 1px solid var(--glass-border-2); border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow-sm); }

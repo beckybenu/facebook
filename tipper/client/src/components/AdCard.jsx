@@ -12,6 +12,7 @@ export function Mission({ ad, onToggleSave }) {
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', gap: 6, marginBottom: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+            {ad.boosted && <span className="kind-badge boost">🚀 À la une</span>}
             {ad.kind === 'instant' && <span className="kind-badge instant">⚡ Now</span>}
             {ad.kind === 'quest' && <span className="kind-badge quest">🎯 Quest</span>}
             <span className="tag cat">{catLabel(ad.category)}</span>

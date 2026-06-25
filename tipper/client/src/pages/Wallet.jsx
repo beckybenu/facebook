@@ -17,11 +17,18 @@ const TX = {
 };
 
 export function Wallet() {
-  const { setUser, showToast } = useApp();
+  const { user, setUser, showToast } = useApp();
   const [data, setData] = useState(null);
   const [amount, setAmount] = useState('');
   const [exchangeQty, setExchangeQty] = useState('');
   const [busy, setBusy] = useState(false);
+
+  async function goPro() {
+    if (!confirm('Passer Tipper Pro pour 49 🪙/mois ? (commission réduite à 5%, badge Pro, boosts)')) return;
+    setBusy(true);
+    try { const r = await api.subscribePro(); if (r.user) setUser(r.user); feedback('coin'); showToast('Bienvenue chez Tipper Pro 💎'); }
+    catch (e) { showToast(e.message, 'error'); } finally { setBusy(false); }
+  }
 
   const load = useCallback(async () => { try { setData(await api.wallet()); } catch (e) { showToast(e.message, 'error'); } }, [showToast]);
   useEffect(() => { load(); }, [load]);
@@ -71,6 +78,20 @@ export function Wallet() {
           <div className="lbl">Tipper Coins disponibles</div>
           <div className="amt"><Money value={data ? data.available : 0} format={coin} /></div>
           {data && data.reserved > 0 && <div className="escrow">🔒 {coin(data.reserved)} en séquestre</div>}
+        </div>
+        <div className="spacer" />
+
+        {/* Tipper Pro */}
+        <div className="pro-card">
+          <div className="pro-t">💎 Tipper Pro {user.pro && <span className="pro-badge">ACTIF</span>}</div>
+          <ul>
+            <li>✓ Commission réduite : <b>5%</b> au lieu de 10%</li>
+            <li>✓ Badge Pro & priorité dans les résultats</li>
+            <li>✓ Mises en avant « À la une » incluses</li>
+          </ul>
+          {user.pro
+            ? <div className="sub" style={{ color: '#cdbcff' }}>Abonnement actif jusqu'au {new Date(user.pro_until).toLocaleDateString('fr-CH')}</div>
+            : <button className="btn" style={{ background: '#fff', color: '#3a2a8c' }} disabled={busy} onClick={goPro}>Passer Pro · 49 🪙/mois</button>}
         </div>
         <div className="spacer" />
 

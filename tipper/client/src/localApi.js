@@ -8,8 +8,19 @@
 const DB_KEY = 'tipper_db_v5';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
-const COMMISSION = 0.10;          // commission Tipper sur chaque pourboire
+const COMMISSION = 0.10;          // commission Tipper standard sur chaque pourboire
+const PRO_COMMISSION = 0.05;      // commission réduite pour les membres Pro
 const CONSOLATION_POINTS = 10;    // Tipper Points pour un candidat non retenu
+const BOOST_COST = 20;            // coût d'un boost "À LA UNE" (24h)
+const PRO_PRICE = 49;             // abonnement Tipper Pro / mois
+const isPro = (u) => !!(u && u.pro_until && new Date(u.pro_until) > new Date());
+const isBoosted = (ad) => !!(ad && ad.boosted_until && new Date(ad.boosted_until) > new Date());
+const addRevenue = (db, amount, source, ad_id) => {
+  db.commission_total = (db.commission_total || 0) + amount;
+  db.commission_available = (db.commission_available != null ? db.commission_available : 0) + amount;
+  db.commissions = db.commissions || [];
+  db.commissions.push({ id: uid(), ad_id: ad_id || null, amount, source, created_at: now() });
+};
 export const POINTS_PER_COIN = 10; // 10 Tipper Points = 1 Tipper Coin
 const ADMIN_EMAILS = ['beckybenu@gmail.com', 'admin@tipper.app'];
 const isAdminEmail = (e) => ADMIN_EMAILS.includes((e || '').toLowerCase());
@@ -161,6 +172,7 @@ function publicUser(db, u) {
     lat: u.lat, lng: u.lng, city: u.city, created_at: u.created_at, verified: u.verified,
     xp: u.xp, level: levelInfo(u.xp), rating: ratingOf(u), rating_count: u.rating_count,
     badges: db ? badgesOf(db, u) : [], saved: u.saved || [], is_admin: isAdminEmail(u.email),
+    pro: isPro(u), pro_until: u.pro_until || null,
   };
 }
 
@@ -177,19 +189,17 @@ function addXp(db, userId, amount) {
 function settleMission(db, ad, app) {
   const poster = db.users.find((x) => x.id === ad.user_id);
   const worker = db.users.find((x) => x.id === app.user_id);
-  const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
+  const rate = isPro(poster) ? PRO_COMMISSION : COMMISSION;
+  const commission = Math.round(ad.tip_amount * rate * 100) / 100;
   const net = Math.round((ad.tip_amount - commission) * 100) / 100;
   poster.reserved -= ad.tip_amount;
   worker.available += net;
-  db.commission_total = (db.commission_total || 0) + commission;
-  db.commission_available = (db.commission_available != null ? db.commission_available : 0) + commission;
-  db.commissions = db.commissions || [];
-  db.commissions.push({ id: uid(), ad_id: ad.id, amount: commission, created_at: now() });
+  addRevenue(db, commission, 'commission', ad.id);
   db.transactions.push({ id: uid(), user_id: poster.id, type: 'tip_out', amount: -ad.tip_amount, description: `Pourboire versé · ${ad.title}`, ad_id: ad.id, created_at: now() });
   db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–10% commission) · ${ad.title}`, ad_id: ad.id, created_at: now() });
   app.status = 'completed'; ad.status = 'completed';
   addXp(db, worker.id, 50); addXp(db, poster.id, 15);
-  pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: poster.id } });
+  pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après ${Math.round(rate * 100)}% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: poster.id } });
   for (const o of db.applications.filter((a) => a.ad_id === ad.id && a.user_id !== worker.id)) {
     const ou = db.users.find((x) => x.id === o.user_id);
     if (!ou) continue;
@@ -221,6 +231,7 @@ function adMeta(db, ad, viewer) {
   return {
     ...ad,
     kind: ad.kind || 'standard',
+    boosted: isBoosted(ad),
     author: publicUser(db, author),
     applicants_count: apps.length,
     accepted_count: accepted.length,
@@ -325,6 +336,7 @@ export const localApi = {
     if (params.radius && viewer.lat != null) metas = metas.filter((a) => a.distance_km == null || a.distance_km <= Number(params.radius));
     const sort = params.sort || (viewer.lat != null ? 'distance' : 'recent');
     metas.sort((a, b) => {
+      if (a.boosted !== b.boosted) return a.boosted ? -1 : 1; // boostées en tête
       if (sort === 'tip') return b.tip_amount - a.tip_amount;
       if (sort === 'rating') return (b.author.rating || 0) - (a.author.rating || 0);
       if (sort === 'distance') return (a.distance_km == null ? 1e9 : a.distance_km) - (b.distance_km == null ? 1e9 : b.distance_km);
@@ -434,6 +446,7 @@ export const localApi = {
       const amount = cms.filter((c) => (c.created_at || '').slice(0, 10) === key).reduce((s, c) => s + c.amount, 0);
       revenue.push({ date: key, amount: r2(amount) });
     }
+    const bySource = (src) => r2(cms.filter((c) => (c.source || 'commission') === src).reduce((s, c) => s + c.amount, 0));
     return {
       kpis: {
         users: users.length, missions: db.ads.length, completed: completed.length,
@@ -441,6 +454,8 @@ export const localApi = {
         gmv, commission, commission_available: r2(db.commission_available != null ? db.commission_available : commission),
         disputes_open: disputes.filter((d) => d.status === 'open').length,
         coins_in_circulation: r2(db.users.reduce((s, x) => s + (x.available || 0) + (x.reserved || 0), 0)),
+        pro_users: db.users.filter((x) => isPro(x)).length,
+        rev_commission: bySource('commission'), rev_boost: bySource('boost'), rev_subscription: bySource('subscription'),
       },
       ads, disputes, users, revenue,
     };
@@ -606,6 +621,33 @@ export const localApi = {
     db.transactions.push({ id: uid(), user_id: u.id, type: 'debit', amount: -amount, description: 'Retrait bancaire', ad_id: null, created_at: now() });
     save(db); return { balance: u.available, available: u.available, reserved: u.reserved, user: publicUser(db, u) };
   },
+
+  // ── monétisation ──
+  async boostAd(adId) {
+    const db = load(); const u = requireUser(db);
+    const ad = db.ads.find((a) => a.id === adId);
+    if (!ad) throw new Error('Mission introuvable');
+    if (ad.user_id !== u.id) throw new Error('Action réservée à l\'auteur');
+    if (isBoosted(ad)) throw new Error('Cette mission est déjà à la une');
+    if (u.available < BOOST_COST) throw new Error(`Solde insuffisant (${BOOST_COST} 🪙 requis)`);
+    u.available -= BOOST_COST;
+    ad.boosted_until = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+    db.transactions.push({ id: uid(), user_id: u.id, type: 'boost', amount: -BOOST_COST, description: `Boost « À la une » · ${ad.title}`, ad_id: adId, created_at: now() });
+    addRevenue(db, BOOST_COST, 'boost', adId);
+    save(db); return { ok: true, boosted_until: ad.boosted_until };
+  },
+  async subscribePro() {
+    const db = load(); const u = requireUser(db);
+    if (u.available < PRO_PRICE) throw new Error(`Solde insuffisant (${PRO_PRICE} 🪙 requis)`);
+    u.available -= PRO_PRICE;
+    const base = isPro(u) ? new Date(u.pro_until) : new Date();
+    u.pro_until = new Date(base.getTime() + 30 * 24 * 3600 * 1000).toISOString();
+    db.transactions.push({ id: uid(), user_id: u.id, type: 'subscription', amount: -PRO_PRICE, description: 'Abonnement Tipper Pro (30 jours)', ad_id: null, created_at: now() });
+    addRevenue(db, PRO_PRICE, 'subscription', null);
+    pushNotif(db, u.id, { type: 'pro', title: '💎 Bienvenue chez Tipper Pro', body: 'Commission réduite à 5%, badge Pro et boosts. Merci !', data: {} });
+    save(db); return { user: publicUser(db, u) };
+  },
+  proInfo() { return { price: PRO_PRICE, boost_cost: BOOST_COST, commission: COMMISSION, pro_commission: PRO_COMMISSION }; },
 
   // ── notifications ──
   async vapidKey() { return { key: '' }; },

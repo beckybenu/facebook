@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
   referral_code TEXT,
   referred_by   TEXT,
   banned        INTEGER NOT NULL DEFAULT 0,
+  pro_until     TEXT,
   lat           REAL,
   lng           REAL,
   city          TEXT,
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS ads (
   kind         TEXT NOT NULL DEFAULT 'standard', -- standard | instant | quest
   urgent       INTEGER NOT NULL DEFAULT 0,
   scheduled_at TEXT,
+  boosted_until TEXT,
   delivered_app TEXT,
   status      TEXT NOT NULL DEFAULT 'open', -- open | in_progress | delivered | completed | cancelled
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
@@ -125,6 +127,7 @@ CREATE TABLE IF NOT EXISTS commissions (
   id         TEXT PRIMARY KEY,
   ad_id      TEXT,
   amount     REAL NOT NULL,
+  source     TEXT NOT NULL DEFAULT 'commission', -- commission | boost | subscription
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -165,8 +168,11 @@ ensureColumn('users', 'rating_count', 'rating_count INTEGER NOT NULL DEFAULT 0')
 ensureColumn('users', 'referral_code', 'referral_code TEXT');
 ensureColumn('users', 'referred_by', 'referred_by TEXT');
 ensureColumn('users', 'banned', 'banned INTEGER NOT NULL DEFAULT 0');
+ensureColumn('users', 'pro_until', 'pro_until TEXT');
 ensureColumn('ads', 'kind', "kind TEXT NOT NULL DEFAULT 'standard'");
+ensureColumn('ads', 'boosted_until', 'boosted_until TEXT');
 ensureColumn('ads', 'urgent', 'urgent INTEGER NOT NULL DEFAULT 0');
+ensureColumn('commissions', 'source', "source TEXT NOT NULL DEFAULT 'commission'");
 ensureColumn('ads', 'scheduled_at', 'scheduled_at TEXT');
 ensureColumn('ads', 'delivered_app', 'delivered_app TEXT');
 

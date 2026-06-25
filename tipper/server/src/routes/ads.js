@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import db from '../db.js';
-import { authRequired, publicUser, addXp, isAdminEmail } from '../auth.js';
+import { authRequired, publicUser, addXp, isAdminEmail, isBoosted, addRevenue } from '../auth.js';
 import { distanceKm } from '../geo.js';
 import { notify } from '../notify.js';
 import { settleMission, refundMission } from '../settle.js';
@@ -21,6 +21,7 @@ const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 const MAX_PARTICIPANTS = 3;
 const COMMISSION = 0.10;
 const CONSOLATION_POINTS = 10;
+const BOOST_COST = 20;
 export const CATEGORIES = ['administratif', 'automobile', 'epicerie', 'immobilier', 'petit_service', 'loisirs'];
 
 const router = Router();
@@ -33,7 +34,7 @@ function adWithMeta(ad, viewer) {
   const isSaved = viewer ? !!db.prepare('SELECT 1 FROM saved_ads WHERE user_id = ? AND ad_id = ?').get(viewer.id, ad.id) : false;
   const spotsLeft = Math.max(0, MAX_PARTICIPANTS - active.length);
   return {
-    ...ad, urgent: !!ad.urgent,
+    ...ad, urgent: !!ad.urgent, boosted: isBoosted(ad),
     author: publicUser(author),
     applicants_count: apps.length,
     accepted_count: accepted.length,
@@ -67,6 +68,7 @@ router.get('/', authRequired, (req, res) => {
   if (radius && req.user.lat != null) ads = ads.filter((a) => a.distance_km == null || a.distance_km <= Number(radius));
   const s = sort || (req.user.lat != null ? 'distance' : 'recent');
   ads.sort((a, b) => {
+    if (a.boosted !== b.boosted) return a.boosted ? -1 : 1;
     if (s === 'tip') return b.tip_amount - a.tip_amount;
     if (s === 'rating') return (b.author.rating || 0) - (a.author.rating || 0);
     if (s === 'distance') return (a.distance_km == null ? 1e9 : a.distance_km) - (b.distance_km == null ? 1e9 : b.distance_km);
@@ -124,6 +126,24 @@ router.post('/:id/save', authRequired, (req, res) => {
   if (exists) db.prepare('DELETE FROM saved_ads WHERE user_id = ? AND ad_id = ?').run(req.user.id, req.params.id);
   else db.prepare('INSERT INTO saved_ads (user_id, ad_id) VALUES (?, ?)').run(req.user.id, req.params.id);
   res.json({ saved: !exists });
+});
+
+// Boost « À la une » (24h) — micro-paiement = revenu plateforme
+router.post('/:id/boost', authRequired, (req, res) => {
+  const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
+  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (ad.user_id !== req.user.id) return res.status(403).json({ error: "Action réservée à l'auteur" });
+  if (isBoosted(ad)) return res.status(400).json({ error: 'Cette mission est déjà à la une' });
+  if (req.user.wallet_balance < BOOST_COST) return res.status(400).json({ error: `Solde insuffisant (${BOOST_COST} 🪙 requis)` });
+  const until = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+  db.transaction(() => {
+    db.prepare('UPDATE users SET wallet_balance = wallet_balance - ? WHERE id = ?').run(BOOST_COST, req.user.id);
+    db.prepare('UPDATE ads SET boosted_until = ? WHERE id = ?').run(until, ad.id);
+    db.prepare('INSERT INTO transactions (id, user_id, type, amount, description, ad_id) VALUES (?,?,?,?,?,?)')
+      .run(nanoid(), req.user.id, 'boost', -BOOST_COST, `Boost « À la une » · ${ad.title}`, ad.id);
+    addRevenue(BOOST_COST, 'boost', ad.id);
+  })();
+  res.json({ ok: true, boosted_until: until });
 });
 
 // Helper marque la mission livrée

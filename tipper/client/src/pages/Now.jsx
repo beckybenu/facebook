@@ -21,6 +21,19 @@ export function Now() {
   const [draft, setDraft] = useState(null);
   const [tip, setTip] = useState('');
   const [busy, setBusy] = useState(false);
+  const [listening, setListening] = useState(false);
+
+  function startVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return showToast('Dictée non supportée sur ce navigateur', 'error');
+    const rec = new SR();
+    rec.lang = 'fr-FR'; rec.interimResults = false;
+    rec.onstart = () => setListening(true);
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    rec.onresult = (e) => { const t = e.results[0][0].transcript; setText(t); analyse(t); };
+    rec.start();
+  }
 
   function analyse(value) {
     const v = value ?? text;
@@ -68,7 +81,7 @@ export function Now() {
 
         <div className="ai-box" style={{ marginBottom: 12 }}>
           <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex : j'ai plus de Coca, je suis posé au lac…" />
-          <span className="ai-spark">✦</span>
+          <button className={`mic-btn ${listening ? 'on' : ''}`} onClick={startVoice} title="Dicter" type="button">🎙️</button>
         </div>
 
         <div className="pill-row" style={{ marginBottom: 14 }}>
