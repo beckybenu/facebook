@@ -5,12 +5,14 @@
 // Aucune donnée ne quitte l'appareil. Utilisé pour la démo statique (Pages).
 // ───────────────────────────────────────────────────────────────────────────
 
-const DB_KEY = 'tipper_db_v3';
+const DB_KEY = 'tipper_db_v4';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
 const COMMISSION = 0.10;          // commission Tipper sur chaque pourboire
 const CONSOLATION_POINTS = 10;    // Tipper Points pour un candidat non retenu
 export const POINTS_PER_COIN = 10; // 10 Tipper Points = 1 Tipper Coin
+const ADMIN_EMAILS = ['beckybenu@gmail.com', 'admin@tipper.app'];
+const isAdminEmail = (e) => ADMIN_EMAILS.includes((e || '').toLowerCase());
 export const CATEGORIES = ['administratif', 'automobile', 'epicerie', 'immobilier', 'petit_service', 'loisirs'];
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -64,6 +66,7 @@ function seed() {
   const emma = mk('Emma Rochat', 'emma@tipper.app', 46.5197, 6.6323, 'Lausanne', 250, 140, false);
   const noah = mk('Noah Dubois', 'noah@tipper.app', 46.195, 6.138, 'Genève', 180, 1620, true);
   const lea = mk('Léa Girard', 'lea@tipper.app', 46.207, 6.146, 'Genève', 220, 540, true);
+  mk('Admin Tipper', 'admin@tipper.app', 46.2044, 6.1432, 'Genève', 1000, 0, true);
 
   const ads = [];
   const mka = (author, category, title, price, tip, description, dLat, dLng, opts = {}) =>
@@ -153,7 +156,7 @@ function publicUser(db, u) {
     available: u.available, reserved: u.reserved, points: u.points || 0, wallet_balance: u.available,
     lat: u.lat, lng: u.lng, city: u.city, created_at: u.created_at, verified: u.verified,
     xp: u.xp, level: levelInfo(u.xp), rating: ratingOf(u), rating_count: u.rating_count,
-    badges: db ? badgesOf(db, u) : [], saved: u.saved || [],
+    badges: db ? badgesOf(db, u) : [], saved: u.saved || [], is_admin: isAdminEmail(u.email),
   };
 }
 
@@ -168,13 +171,17 @@ function addXp(db, userId, amount) {
 function adMeta(db, ad, viewer) {
   const author = db.users.find((u) => u.id === ad.user_id);
   const apps = db.applications.filter((a) => a.ad_id === ad.id);
+  // Une "place" est prise par tout postulant actif (non refusé)
+  const active = apps.filter((a) => a.status !== 'rejected');
   const accepted = apps.filter((a) => a.status === 'accepted' || a.status === 'delivered' || a.status === 'completed');
+  const spotsLeft = Math.max(0, MAX_PARTICIPANTS - active.length);
   return {
     ...ad,
     author: publicUser(db, author),
     applicants_count: apps.length,
     accepted_count: accepted.length,
-    spots_left: Math.max(0, MAX_PARTICIPANTS - accepted.length),
+    spots_left: spotsLeft,
+    is_full: spotsLeft <= 0,
     max_participants: MAX_PARTICIPANTS,
     distance_km: viewer ? distanceKm(viewer.lat, viewer.lng, ad.lat, ad.lng) : null,
     my_application: viewer ? apps.find((a) => a.user_id === viewer.id) || null : null,
@@ -265,6 +272,11 @@ export const localApi = {
     if (params.urgent === '1') ads = ads.filter((a) => a.urgent);
     if (params.q) { const q = params.q.toLowerCase(); ads = ads.filter((a) => (a.title + ' ' + (a.description || '')).toLowerCase().includes(q)); }
     let metas = ads.map((a) => adMeta(db, a, viewer));
+    // Visibilité : une annonce complète n'est visible que par le posteur,
+    // ses participants et l'administrateur. Idem pour les missions terminées.
+    if (params.mine !== '1' && params.saved !== '1' && !isAdminEmail(viewer.email)) {
+      metas = metas.filter((a) => a.is_mine || a.my_application || (!a.is_full && a.status !== 'completed'));
+    }
     if (params.radius && viewer.lat != null) metas = metas.filter((a) => a.distance_km == null || a.distance_km <= Number(params.radius));
     const sort = params.sort || (viewer.lat != null ? 'distance' : 'recent');
     metas.sort((a, b) => {
@@ -280,6 +292,9 @@ export const localApi = {
     const ad = db.ads.find((a) => a.id === id);
     if (!ad) throw new Error('Mission introuvable');
     const meta = adMeta(db, ad, viewer);
+    if (meta.is_full && !meta.is_mine && !meta.my_application && !isAdminEmail(viewer.email)) {
+      throw new Error('Cette annonce est complète');
+    }
     meta.applications = db.applications.filter((a) => a.ad_id === id)
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
       .map((a) => ({ ...a, applicant: publicUser(db, db.users.find((u) => u.id === a.user_id)) }));
@@ -365,6 +380,36 @@ export const localApi = {
     }
     save(db); return { ok: true, net, commission };
   },
+  // ── back-office admin ──
+  async adminStats() {
+    const db = load(); const u = requireUser(db);
+    if (!isAdminEmail(u.email)) throw new Error('Accès réservé à l\'administrateur');
+    const r2 = (n) => Math.round(n * 100) / 100;
+    const completed = db.ads.filter((a) => a.status === 'completed');
+    const gmv = r2(completed.reduce((s, a) => s + (a.tip_amount || 0), 0));
+    const commission = r2(db.commission_total || 0);
+    const disputes = (db.disputes || []).map((d) => {
+      const ad = db.ads.find((a) => a.id === d.ad_id);
+      const opener = db.users.find((x) => x.id === d.opener_id);
+      return { ...d, ad_title: ad?.title || '—', opener_name: opener?.full_name || '—' };
+    });
+    const ads = db.ads.slice().sort((a, b) => b.created_at.localeCompare(a.created_at)).map((a) => {
+      const meta = adMeta(db, a, u);
+      return { id: a.id, title: a.title, status: a.status, tip_amount: a.tip_amount, category: a.category,
+        author: meta.author.full_name, applicants: meta.applicants_count, spots_left: meta.spots_left, is_full: meta.is_full, created_at: a.created_at };
+    });
+    const users = db.users.filter((x) => !isAdminEmail(x.email)).sort((a, b) => (b.xp || 0) - (a.xp || 0))
+      .map((x) => ({ id: x.id, full_name: x.full_name, email: x.email, city: x.city, available: x.available, points: x.points || 0, xp: x.xp || 0, verified: x.verified, rating: ratingOf(x), rating_count: x.rating_count }));
+    return {
+      kpis: {
+        users: users.length, missions: db.ads.length, completed: completed.length,
+        open: db.ads.filter((a) => a.status === 'open' || a.status === 'in_progress').length,
+        gmv, commission, disputes_open: disputes.filter((d) => d.status === 'open').length,
+        coins_in_circulation: r2(db.users.reduce((s, x) => s + (x.available || 0) + (x.reserved || 0), 0)),
+      },
+      ads, disputes, users,
+    };
+  },
   async dispute(id, reason) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
@@ -423,7 +468,7 @@ export const localApi = {
     if (ad.user_id === u.id) throw new Error('Vous ne pouvez pas postuler à votre propre mission');
     const apps = db.applications.filter((a) => a.ad_id === adId);
     if (apps.find((a) => a.user_id === u.id)) throw new Error('Vous avez déjà postulé');
-    if (apps.filter((a) => a.status === 'accepted' || a.status === 'delivered' || a.status === 'completed').length >= MAX_PARTICIPANTS) throw new Error(`Maximum ${MAX_PARTICIPANTS} participants`);
+    if (apps.filter((a) => a.status !== 'rejected').length >= MAX_PARTICIPANTS) throw new Error('Annonce complète — les 3 places sont prises');
     const app = { id: uid(), ad_id: adId, user_id: u.id, message: message || '', status: 'pending', created_at: now() };
     db.applications.push(app);
     pushNotif(db, ad.user_id, { type: 'new_application', title: '🙋 Nouvelle candidature', body: `${u.full_name} (${ratingOf(u) || '—'}★) a postulé à « ${ad.title} »`, data: { adId } });

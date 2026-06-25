@@ -22,8 +22,8 @@ router.post('/ads/:adId/apply', authRequired, async (req, res) => {
   if (apps.find((a) => a.user_id === req.user.id)) {
     return res.status(409).json({ error: 'Vous avez déjà postulé à cette annonce' });
   }
-  if (apps.length >= MAX_PARTICIPANTS) {
-    return res.status(400).json({ error: `Maximum ${MAX_PARTICIPANTS} participants atteint pour cette annonce` });
+  if (apps.filter((a) => a.status !== 'rejected').length >= MAX_PARTICIPANTS) {
+    return res.status(400).json({ error: 'Annonce complète — les 3 places sont prises' });
   }
 
   const id = nanoid();

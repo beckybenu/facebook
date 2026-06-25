@@ -3,6 +3,15 @@ import db from './db.js';
 
 export const JWT_SECRET = process.env.JWT_SECRET || 'tipper-dev-secret-change-me';
 
+export const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'beckybenu@gmail.com,admin@tipper.app')
+  .split(',').map((e) => e.trim().toLowerCase());
+export const isAdminEmail = (e) => ADMIN_EMAILS.includes((e || '').toLowerCase());
+
+export function adminRequired(req, res, next) {
+  if (!isAdminEmail(req.user?.email)) return res.status(403).json({ error: 'Accès réservé à l\'administrateur' });
+  next();
+}
+
 export function signToken(user) {
   return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
 }
@@ -61,6 +70,7 @@ export function publicUser(u, { withBadges = true } = {}) {
     lat: u.lat, lng: u.lng, city: u.city, created_at: u.created_at, verified: !!u.verified,
     xp: u.xp || 0, level: levelInfo(u.xp || 0), rating: ratingOf(u), rating_count: u.rating_count || 0,
     badges: withBadges ? badgesOf(u) : [], saved, referral_code: u.referral_code,
+    is_admin: isAdminEmail(u.email),
   };
 }
 

@@ -13,6 +13,7 @@ import { Wallet } from './pages/Wallet.jsx';
 import { Notifications } from './pages/Notifications.jsx';
 import { Threads, Conversation } from './pages/Messages.jsx';
 import { Profile, PublicProfile, Leaderboard } from './pages/Profile.jsx';
+import { Admin } from './pages/Admin.jsx';
 import { Spinner } from './components/Layout.jsx';
 
 function Protected({ children }) {
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/messages/:userId" element={<Protected><Conversation /></Protected>} />
       <Route path="/profile" element={<Protected><Profile /></Protected>} />
       <Route path="/leaderboard" element={<Protected><Leaderboard /></Protected>} />
+      <Route path="/admin" element={<Protected><Admin /></Protected>} />
       <Route path="/u/:id" element={<Protected><PublicProfile /></Protected>} />
       <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>

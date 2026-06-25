@@ -15,6 +15,7 @@ import messagesRoutes from './routes/messages.js';
 import usersRoutes from './routes/users.js';
 import reviewsRoutes from './routes/reviews.js';
 import leaderboardRoutes from './routes/leaderboard.js';
+import adminRoutes from './routes/admin.js';
 import { JWT_SECRET } from './auth.js';
 import { addClient } from './sse.js';
 import db from './db.js';
@@ -70,6 +71,7 @@ app.use('/api/messages', messagesRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Servir le frontend buildé en production
 const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');

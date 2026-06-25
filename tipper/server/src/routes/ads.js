@@ -4,7 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
 import db from '../db.js';
-import { authRequired, publicUser, addXp } from '../auth.js';
+import { authRequired, publicUser, addXp, isAdminEmail } from '../auth.js';
 import { distanceKm } from '../geo.js';
 import { notify } from '../notify.js';
 
@@ -27,14 +27,17 @@ const router = Router();
 function adWithMeta(ad, viewer) {
   const author = db.prepare('SELECT * FROM users WHERE id = ?').get(ad.user_id);
   const apps = db.prepare('SELECT * FROM applications WHERE ad_id = ?').all(ad.id);
+  const active = apps.filter((a) => a.status !== 'rejected'); // une place = un postulant actif
   const accepted = apps.filter((a) => ['accepted', 'delivered', 'completed'].includes(a.status));
   const isSaved = viewer ? !!db.prepare('SELECT 1 FROM saved_ads WHERE user_id = ? AND ad_id = ?').get(viewer.id, ad.id) : false;
+  const spotsLeft = Math.max(0, MAX_PARTICIPANTS - active.length);
   return {
     ...ad, urgent: !!ad.urgent,
     author: publicUser(author),
     applicants_count: apps.length,
     accepted_count: accepted.length,
-    spots_left: Math.max(0, MAX_PARTICIPANTS - accepted.length),
+    spots_left: spotsLeft,
+    is_full: spotsLeft <= 0,
     max_participants: MAX_PARTICIPANTS,
     distance_km: viewer ? distanceKm(viewer.lat, viewer.lng, ad.lat, ad.lng) : null,
     my_application: viewer ? apps.find((a) => a.user_id === viewer.id) || null : null,
@@ -56,6 +59,10 @@ router.get('/', authRequired, (req, res) => {
   sql += ' ORDER BY created_at DESC LIMIT 300';
 
   let ads = db.prepare(sql).all(...params).map((a) => adWithMeta(a, req.user));
+  // Visibilité : annonce complète/terminée masquée aux non-participants (sauf admin)
+  if (mine !== '1' && saved !== '1' && !isAdminEmail(req.user.email)) {
+    ads = ads.filter((a) => a.is_mine || a.my_application || (!a.is_full && a.status !== 'completed'));
+  }
   if (radius && req.user.lat != null) ads = ads.filter((a) => a.distance_km == null || a.distance_km <= Number(radius));
   const s = sort || (req.user.lat != null ? 'distance' : 'recent');
   ads.sort((a, b) => {
@@ -71,6 +78,9 @@ router.get('/:id', authRequired, (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
   if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
   const meta = adWithMeta(ad, req.user);
+  if (meta.is_full && !meta.is_mine && !meta.my_application && !isAdminEmail(req.user.email)) {
+    return res.status(403).json({ error: 'Cette annonce est complète' });
+  }
   meta.applications = db.prepare('SELECT * FROM applications WHERE ad_id = ? ORDER BY created_at').all(ad.id)
     .map((a) => ({ ...a, applicant: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(a.user_id)) }));
   meta.reviews = db.prepare('SELECT * FROM reviews WHERE ad_id = ? ORDER BY created_at DESC').all(ad.id)

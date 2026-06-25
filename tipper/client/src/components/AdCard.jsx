@@ -28,7 +28,9 @@ export function Mission({ ad, onToggleSave }) {
         <div className="m-meta">
           <span>📍 {ad.distance_km != null ? `${ad.distance_km} km` : (ad.city || '—')}</span>
           <Stars value={ad.author?.rating} />
-          <span style={{ marginLeft: 'auto' }}>{ad.spots_left}/{ad.max_participants} places</span>
+          <span style={{ marginLeft: 'auto', fontWeight: 700, color: ad.is_full ? 'var(--danger)' : ad.spots_left === 1 ? 'var(--amber)' : 'inherit' }}>
+            {ad.is_full ? '✋ Complet' : `${ad.spots_left}/${ad.max_participants} places`}
+          </span>
         </div>
         <div className="tip-badge">{coin(ad.tip_amount)}</div>
       </div>

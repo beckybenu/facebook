@@ -27,6 +27,7 @@ const lucas = user('Lucas Favre', 'lucas@tipper.app', 46.21, 6.15, 'Genève', 30
 const emma = user('Emma Rochat', 'emma@tipper.app', 46.5197, 6.6323, 'Lausanne', 250, 140, 0);
 const noah = user('Noah Dubois', 'noah@tipper.app', 46.195, 6.138, 'Genève', 180, 1620, 1);
 const lea = user('Léa Girard', 'lea@tipper.app', 46.207, 6.146, 'Genève', 220, 540, 1);
+user('Admin Tipper', 'admin@tipper.app', 46.2044, 6.1432, 'Genève', 1000, 0, 1);
 
 function ad(uid, category, title, price, tip, desc, lat, lng, city, opts = {}) {
   const id = nanoid();

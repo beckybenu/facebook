@@ -134,6 +134,7 @@ export function Profile() {
             <div className="field"><label>Nom complet</label><input value={name} onChange={(e) => setName(e.target.value)} /></div>
             <div className="field"><label>Bio</label><textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Quelques mots sur vous…" /></div>
             <button className="btn coral" onClick={saveProfile}>Enregistrer</button>
+            {user.is_admin && <><div className="divider" /><button className="btn iris" onClick={() => navigate('/admin')}>🛠️ Back-office admin</button></>}
             <div className="divider" />
             <button className="btn ghost" onClick={locate}>📍 {user.lat ? `Position : ${user.city || 'enregistrée'}` : 'Activer la géolocalisation'}</button>
             <div className="spacer" />
