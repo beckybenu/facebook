@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Screen, AppBar, Spinner, Empty } from '../components/Layout.jsx';
 import { Money } from '../components/fx.jsx';
+import { feedback } from '../sound.js';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
 import { chf, timeAgo } from '../constants.js';
@@ -30,7 +31,7 @@ export function Wallet() {
     try {
       const r = kind === 'topup' ? await api.topup(a) : await api.withdraw(a);
       if (r.user) setUser(r.user);
-      setAmount(''); showToast(kind === 'topup' ? `+${chf(a)} 💳` : `${chf(a)} retirés`); load();
+      setAmount(''); if (kind === 'topup') feedback('coin'); showToast(kind === 'topup' ? `+${chf(a)} 💳` : `${chf(a)} retirés`); load();
     } catch (e) { showToast(e.message, 'error'); } finally { setBusy(false); }
   }
 

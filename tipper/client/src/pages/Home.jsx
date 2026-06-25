@@ -9,7 +9,7 @@ import { chf } from '../constants.js';
 
 export function Home() {
   const navigate = useNavigate();
-  const { user, unreadNotif, captureLocation, showToast } = useApp();
+  const { user, unreadNotif, captureLocation, showToast, theme, toggleTheme } = useApp();
   const [ads, setAds] = useState(null);
   const [wallet, setWallet] = useState(null);
 
@@ -33,7 +33,12 @@ export function Home() {
       <AppBar
         brand
         subtitle={user.city ? `📍 ${user.city}` : 'Position non définie'}
-        right={<button className="iconbtn" onClick={() => navigate('/notifications')}>🔔{unreadNotif > 0 && <span className="dot-badge">{unreadNotif}</span>}</button>}
+        right={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="iconbtn" onClick={toggleTheme} title="Thème">{theme === 'light' ? '🌙' : '☀️'}</button>
+            <button className="iconbtn" onClick={() => navigate('/notifications')}>🔔{unreadNotif > 0 && <span className="dot-badge">{unreadNotif}</span>}</button>
+          </div>
+        }
       />
       <div className="content stagger">
         {/* Greeting */}

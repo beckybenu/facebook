@@ -1,7 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar } from '../components/Layout.jsx';
 import { Confetti } from '../components/fx.jsx';
+import { feedback } from '../sound.js';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
 import { catLabel, catIcon, catTint, chf, TIP_SUGGESTION } from '../constants.js';
@@ -136,6 +137,7 @@ export function PostAd() {
 
 export function Posted() {
   const navigate = useNavigate();
+  useEffect(() => { feedback('success'); }, []);
   return (
     <Screen nav={false}>
       <Confetti />

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { api, getToken, setToken } from '../api.js';
+import { feedback } from '../sound.js';
 
 const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
@@ -12,8 +13,24 @@ export function AppProvider({ children }) {
   const [unreadMsg, setUnreadMsg] = useState(0);
   const toastTimer = useRef(null);
 
+  // Préférences : thème, son, haptique
+  const [theme, setTheme] = useState(() => localStorage.getItem('tipper_theme') || 'dark');
+  const [soundOn, setSoundOn] = useState(() => localStorage.getItem('tipper_sound') !== '0');
+  const [hapticOn, setHapticOn] = useState(() => localStorage.getItem('tipper_haptic') !== '0');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f6f5f1' : '#08080d');
+    localStorage.setItem('tipper_theme', theme);
+  }, [theme]);
+  const toggleTheme = useCallback(() => setTheme((t) => (t === 'light' ? 'dark' : 'light')), []);
+  const toggleSound = useCallback(() => setSoundOn((s) => { const n = !s; localStorage.setItem('tipper_sound', n ? '1' : '0'); return n; }), []);
+  const toggleHaptic = useCallback(() => setHapticOn((s) => { const n = !s; localStorage.setItem('tipper_haptic', n ? '1' : '0'); return n; }), []);
+
   const showToast = useCallback((message, kind = 'ok') => {
     setToast({ message, kind });
+    feedback(kind === 'error' ? 'error' : 'tap');
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2600);
   }, []);
@@ -89,6 +106,7 @@ export function AppProvider({ children }) {
     toast, showToast,
     unreadNotif, unreadMsg, setUnreadNotif, refreshBadges,
     captureLocation,
+    theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

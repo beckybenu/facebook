@@ -27,7 +27,7 @@ function loadLeaflet() {
 
 export function MapView() {
   const navigate = useNavigate();
-  const { user } = useApp();
+  const { user, theme } = useApp();
   const [ads, setAds] = useState(null);
   const [failed, setFailed] = useState(false);
   const mapRef = useRef(null);
@@ -43,7 +43,8 @@ export function MapView() {
       const center = user.lat != null ? [user.lat, user.lng] : (ads[0] ? [ads[0].lat, ads[0].lng] : [46.2044, 6.1432]);
       const map = L.map(elRef.current, { zoomControl: false }).setView(center, 13);
       mapRef.current = map;
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      const style = theme === 'light' ? 'light_all' : 'dark_all';
+      L.tileLayer(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png`, {
         attribution: '© OpenStreetMap, © CARTO', maxZoom: 19,
       }).addTo(map);
       if (user.lat != null) {

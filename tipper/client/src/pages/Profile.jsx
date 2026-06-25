@@ -9,7 +9,7 @@ import { chf, STATUS_LABEL, timeAgo } from '../constants.js';
 import { enablePush, pushStatus } from '../push.js';
 
 export function Profile() {
-  const { user, setUser, logout, showToast, captureLocation } = useApp();
+  const { user, setUser, logout, showToast, captureLocation, theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic } = useApp();
   const [tab, setTab] = useState('missions');
   const [myAds, setMyAds] = useState(null);
   const [myApps, setMyApps] = useState(null);
@@ -116,6 +116,21 @@ export function Profile() {
 
         {tab === 'settings' && (
           <div className="card">
+            <div className="switch-row" onClick={toggleTheme}>
+              <div><div style={{ fontWeight: 700 }}>{theme === 'light' ? '☀️ Thème clair' : '🌙 Thème sombre'}</div><div className="sub" style={{ fontSize: 12.5 }}>Apparence de l'app</div></div>
+              <div className={`switch ${theme === 'dark' ? 'on' : ''}`}><i /></div>
+            </div>
+            <div className="divider" style={{ margin: '4px 0' }} />
+            <div className="switch-row" onClick={toggleSound}>
+              <div><div style={{ fontWeight: 700 }}>🔊 Sons</div><div className="sub" style={{ fontSize: 12.5 }}>Retours sonores au toucher</div></div>
+              <div className={`switch ${soundOn ? 'on' : ''}`}><i /></div>
+            </div>
+            <div className="divider" style={{ margin: '4px 0' }} />
+            <div className="switch-row" onClick={toggleHaptic}>
+              <div><div style={{ fontWeight: 700 }}>📳 Vibrations</div><div className="sub" style={{ fontSize: 12.5 }}>Retour haptique (mobile)</div></div>
+              <div className={`switch ${hapticOn ? 'on' : ''}`}><i /></div>
+            </div>
+            <div className="divider" />
             <div className="field"><label>Nom complet</label><input value={name} onChange={(e) => setName(e.target.value)} /></div>
             <div className="field"><label>Bio</label><textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Quelques mots sur vous…" /></div>
             <button className="btn coral" onClick={saveProfile}>Enregistrer</button>
