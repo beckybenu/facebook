@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -24,7 +25,34 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+// Refuse de démarrer en production avec le secret JWT par défaut
+if (process.env.NODE_ENV === 'production' && JWT_SECRET === 'tipper-dev-secret-change-me') {
+  console.error('❌ JWT_SECRET par défaut interdit en production. Définissez JWT_SECRET.');
+  process.exit(1);
+}
+
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+// En-têtes de sécurité (nosniff, frameguard, referrer-policy, HSTS…).
+// CSP désactivée ici pour ne pas casser la SPA / les tuiles de carte externes.
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: false, crossOriginEmbedderPolicy: false }));
+
+// CORS : restreint via CORS_ORIGIN si fourni, sinon ouvert (API publique).
+app.use(cors(process.env.CORS_ORIGIN ? { origin: process.env.CORS_ORIGIN.split(',') } : {}));
+
+// Limitation de débit simple (anti brute-force) sur l'authentification
+const rl = new Map();
+function rateLimit({ windowMs = 60000, max = 10 }) {
+  return (req, res, next) => {
+    const key = (req.ip || 'x') + req.path;
+    const now = Date.now();
+    const e = rl.get(key) || { count: 0, reset: now + windowMs };
+    if (now > e.reset) { e.count = 0; e.reset = now + windowMs; }
+    e.count += 1; rl.set(key, e);
+    if (e.count > max) return res.status(429).json({ error: 'Trop de tentatives, réessayez plus tard' });
+    next();
+  };
+}
 
 // Webhook Stripe : doit recevoir le corps brut (avant express.json)
 app.post('/api/wallet/stripe-webhook', express.raw({ type: 'application/json' }), (req, res) => {
@@ -57,12 +85,17 @@ app.get('/api/stream', (req, res) => {
   req.on('close', () => clearInterval(ping));
 });
 
-// Fichiers uploadés (photos d'annonces)
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Fichiers uploadés (photos) — nosniff + pas d'exécution inline (anti XSS stocké)
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
+  setHeaders: (res) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+  },
+}));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, name: 'Tipper API' }));
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', rateLimit({ windowMs: 60000, max: 12 }), authRoutes);
 app.use('/api/ads', adsRoutes);
 app.use('/api/applications', applicationsRoutes);
 app.use('/api/wallet', walletRoutes);

@@ -31,6 +31,20 @@ router.post('/me/location', authRequired, (req, res) => {
   res.json({ user: publicUser(user) });
 });
 
+// Vérification d'identité (KYC)
+router.post('/kyc', authRequired, (req, res) => {
+  const { doc_type } = req.body || {};
+  if (!doc_type) return res.status(400).json({ error: 'Type de document requis' });
+  db.prepare("UPDATE users SET kyc_status = 'pending', kyc_doc_type = ? WHERE id = ?").run(doc_type, req.user.id);
+  res.json({ ok: true, status: 'pending' });
+});
+router.post('/kyc/finalize', authRequired, (req, res) => {
+  if (req.user.kyc_status !== 'pending') return res.status(400).json({ error: 'Aucune vérification en cours' });
+  db.prepare("UPDATE users SET kyc_status = 'verified', verified = 1, xp = xp + 30 WHERE id = ?").run(req.user.id);
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  res.json({ user: publicUser(user) });
+});
+
 router.get('/:id', authRequired, (req, res) => {
   const u = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
   if (!u) return res.status(404).json({ error: 'Utilisateur introuvable' });

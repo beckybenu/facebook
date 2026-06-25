@@ -73,6 +73,7 @@ export function publicUser(u, { withBadges = true } = {}) {
     badges: withBadges ? badgesOf(u) : [], saved, referral_code: u.referral_code,
     is_admin: isAdminEmail(u.email),
     pro: isPro(u), pro_until: u.pro_until || null,
+    kyc_status: u.kyc_status || 'none', kyc_doc_type: u.kyc_doc_type || null,
   };
 }
 

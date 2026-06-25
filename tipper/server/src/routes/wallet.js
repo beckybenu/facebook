@@ -85,6 +85,7 @@ router.post('/exchange', authRequired, (req, res) => {
 router.post('/withdraw', authRequired, (req, res) => {
   const amount = parseFloat(req.body && req.body.amount);
   if (!amount || amount <= 0) return res.status(400).json({ error: 'Montant invalide' });
+  if (!req.user.verified) return res.status(403).json({ error: "Vérification d'identité requise pour retirer des fonds" });
   if (amount > req.user.wallet_balance) return res.status(400).json({ error: 'Solde insuffisant' });
   db.prepare('UPDATE users SET wallet_balance = wallet_balance - ? WHERE id = ?').run(amount, req.user.id);
   db.prepare('INSERT INTO transactions (id, user_id, type, amount, description) VALUES (?,?,?,?,?)')

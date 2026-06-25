@@ -12,11 +12,21 @@ import { settleMission, refundMission } from '../settle.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadDir = path.join(__dirname, '..', '..', 'uploads');
 
+// Extension dérivée du type MIME (jamais du nom de fichier client) — évite
+// l'upload de .html/.svg malveillant servi en statique (XSS stocké).
+const MIME_EXT = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif' };
 const storage = multer.diskStorage({
   destination: uploadDir,
-  filename: (_req, file, cb) => cb(null, `${nanoid()}${path.extname(file.originalname) || '.jpg'}`),
+  filename: (_req, file, cb) => cb(null, `${nanoid()}${MIME_EXT[file.mimetype] || '.jpg'}`),
 });
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
+const upload = multer({
+  storage,
+  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    if (MIME_EXT[file.mimetype]) cb(null, true);
+    else cb(new Error('Seules les images (jpg, png, webp, gif) sont autorisées'));
+  },
+});
 
 const MAX_PARTICIPANTS = 3;
 const COMMISSION = 0.10;

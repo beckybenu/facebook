@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS users (
   referred_by   TEXT,
   banned        INTEGER NOT NULL DEFAULT 0,
   pro_until     TEXT,
+  kyc_status    TEXT NOT NULL DEFAULT 'none',
+  kyc_doc_type  TEXT,
   lat           REAL,
   lng           REAL,
   city          TEXT,
@@ -169,6 +171,8 @@ ensureColumn('users', 'referral_code', 'referral_code TEXT');
 ensureColumn('users', 'referred_by', 'referred_by TEXT');
 ensureColumn('users', 'banned', 'banned INTEGER NOT NULL DEFAULT 0');
 ensureColumn('users', 'pro_until', 'pro_until TEXT');
+ensureColumn('users', 'kyc_status', "kyc_status TEXT NOT NULL DEFAULT 'none'");
+ensureColumn('users', 'kyc_doc_type', 'kyc_doc_type TEXT');
 ensureColumn('ads', 'kind', "kind TEXT NOT NULL DEFAULT 'standard'");
 ensureColumn('ads', 'boosted_until', 'boosted_until TEXT');
 ensureColumn('ads', 'urgent', 'urgent INTEGER NOT NULL DEFAULT 0');
