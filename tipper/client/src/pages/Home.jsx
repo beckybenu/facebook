@@ -9,7 +9,7 @@ import { coin } from '../constants.js';
 
 export function Home() {
   const navigate = useNavigate();
-  const { user, unreadNotif, captureLocation, showToast, theme, toggleTheme } = useApp();
+  const { user, unreadNotif, captureLocation, showToast, theme, toggleTheme, t } = useApp();
   const [ads, setAds] = useState(null);
   const [wallet, setWallet] = useState(null);
 
@@ -46,7 +46,7 @@ export function Home() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <Avatar user={user} size="m" />
           <div style={{ flex: 1 }}>
-            <div className="sub" style={{ fontSize: 13 }}>Bonsoir,</div>
+            <div className="sub" style={{ fontSize: 13 }}>{t('home.hello')}</div>
             <div className="display" style={{ fontWeight: 700, fontSize: 19 }}>{user.full_name.split(' ')[0]} 👋</div>
           </div>
           <button className="badge" onClick={() => navigate('/profile')}>{lvl.emoji} {lvl.name}</button>
@@ -56,9 +56,9 @@ export function Home() {
         <div className="bento">
           <Tilt className="balance span2" onClick={() => navigate('/wallet')}>
             <div className="sheen" />
-            <div className="lbl">Tipper Coins</div>
+            <div className="lbl">{t('home.coins')}</div>
             <div className="amt"><Money value={wallet ? wallet.available : user.available} format={coin} /></div>
-            {wallet && wallet.reserved > 0 && <div className="escrow">🔒 {coin(wallet.reserved)} en séquestre</div>}
+            {wallet && wallet.reserved > 0 && <div className="escrow">🔒 {coin(wallet.reserved)} {t('home.escrow')}</div>}
           </Tilt>
 
           <div className="tile" onClick={() => navigate('/profile')} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -79,32 +79,32 @@ export function Home() {
 
         {/* Tipper Now hero */}
         <div className="now-hero" onClick={() => navigate('/now')}>
-          <div className="nh-t">⚡ Tipper Now</div>
-          <div className="nh-s">Plus de Coca au lac ? Décrivez votre besoin, un helper proche arrive en minutes.</div>
-          <div className="nh-go">✦ Demander avec l'IA →</div>
+          <div className="nh-t">{t('home.now.title')}</div>
+          <div className="nh-s">{t('home.now.desc')}</div>
+          <div className="nh-go">{t('home.now.cta')}</div>
         </div>
 
         {/* Quick actions */}
         <div className="qa-grid">
           <div className="qa" onClick={() => navigate('/categories')}>
             <div className="qa-ic" style={{ background: 'rgba(255,122,69,0.16)' }}>📣</div>
-            <div className="qa-t">Publier une mission</div>
-            <div className="qa-s">Demandez un service</div>
+            <div className="qa-t">{t('home.publish')}</div>
+            <div className="qa-s">{t('home.publish.desc')}</div>
           </div>
           <div className="qa" onClick={() => navigate('/explore')}>
             <div className="qa-ic" style={{ background: 'rgba(54,224,160,0.14)' }}>🧭</div>
-            <div className="qa-t">Trouver une mission</div>
-            <div className="qa-s">Gagnez des pourboires</div>
+            <div className="qa-t">{t('home.find')}</div>
+            <div className="qa-s">{t('home.find.desc')}</div>
           </div>
           <div className="qa" onClick={() => navigate('/map')}>
             <div className="qa-ic" style={{ background: 'rgba(56,214,255,0.16)' }}>🗺️</div>
-            <div className="qa-t">Carte</div>
-            <div className="qa-s">Autour de vous</div>
+            <div className="qa-t">{t('home.map')}</div>
+            <div className="qa-s">{t('home.map.desc')}</div>
           </div>
           <div className="qa" onClick={() => navigate('/leaderboard')}>
             <div className="qa-ic" style={{ background: 'rgba(255,194,75,0.16)' }}>🏆</div>
-            <div className="qa-t">Classement</div>
-            <div className="qa-s">Top helpers</div>
+            <div className="qa-t">{t('home.rank')}</div>
+            <div className="qa-s">{t('home.rank.desc')}</div>
           </div>
         </div>
         <div className="spacer" />
@@ -113,10 +113,10 @@ export function Home() {
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ fontSize: 24 }}>📍</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: 14 }}>Activez la géolocalisation</div>
-              <div className="sub" style={{ fontSize: 12.5 }}>Pour voir les missions proches</div>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>{t('home.geo.title')}</div>
+              <div className="sub" style={{ fontSize: 12.5 }}>{t('home.geo.desc')}</div>
             </div>
-            <button className="btn coral sm" onClick={locate}>Activer</button>
+            <button className="btn coral sm" onClick={locate}>{t('home.activate')}</button>
           </div>
         )}
 
@@ -131,7 +131,7 @@ export function Home() {
 
         {quests.length > 0 && (
           <>
-            <div className="h-sec" style={{ marginTop: 6 }}>🎯 Quests · primes au résultat 🌍</div>
+            <div className="h-sec" style={{ marginTop: 6 }}>{t('home.quests')}</div>
             {quests.map((a) => <Mission key={a.id} ad={a} />)}
           </>
         )}
@@ -139,8 +139,8 @@ export function Home() {
         {nearby.length > 0 && (
           <>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '8px 0 12px' }}>
-              <div className="h-sec" style={{ marginBottom: 0 }}>Missions récentes</div>
-              <button className="muted" style={{ fontSize: 13, fontWeight: 700 }} onClick={() => navigate('/explore')}>Tout voir →</button>
+              <div className="h-sec" style={{ marginBottom: 0 }}>{t('home.recent')}</div>
+              <button className="muted" style={{ fontSize: 13, fontWeight: 700 }} onClick={() => navigate('/explore')}>{t('home.seeall')}</button>
             </div>
             {nearby.map((a) => <Mission key={a.id} ad={a} />)}
           </>

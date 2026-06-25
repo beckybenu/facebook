@@ -6,10 +6,11 @@ import { Mission } from '../components/AdCard.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
 import { coin, chf, STATUS_LABEL, timeAgo } from '../constants.js';
+import { LANGS } from '../i18n.js';
 import { enablePush, pushStatus } from '../push.js';
 
 export function Profile() {
-  const { user, setUser, logout, showToast, captureLocation, theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic } = useApp();
+  const { user, setUser, logout, showToast, captureLocation, theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic, lang, setLang, t } = useApp();
   const [tab, setTab] = useState('missions');
   const [myAds, setMyAds] = useState(null);
   const [myApps, setMyApps] = useState(null);
@@ -51,6 +52,18 @@ export function Profile() {
             <div className="sub" style={{ fontSize: 13, marginTop: 2 }}>{user.city || 'Position non définie'}</div>
           </div>
         </div>
+
+        {/* Vérification d'identité */}
+        {!user.verified && (
+          <div className="verify-banner" onClick={() => navigate('/verify')} style={{ cursor: 'pointer' }}>
+            <div className="vb-ic">{user.kyc_status === 'pending' ? '⏳' : '🪪'}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>{user.kyc_status === 'pending' ? 'Vérification en cours…' : 'Vérifiez votre identité'}</div>
+              <div className="sub" style={{ fontSize: 12.5 }}>Requis pour retirer vos fonds · pièce d'identité + selfie</div>
+            </div>
+            <span className="btn coral sm" style={{ pointerEvents: 'none' }}>{user.kyc_status === 'pending' ? 'Voir' : 'Vérifier'}</span>
+          </div>
+        )}
 
         {/* Niveau */}
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -116,30 +129,37 @@ export function Profile() {
 
         {tab === 'settings' && (
           <div className="card">
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>🌐 {t('set.language')}</div>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+              {LANGS.map((l) => (
+                <button key={l.code} className={`pill ${lang === l.code ? 'active' : ''}`} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setLang(l.code)}>{l.flag} {l.label}</button>
+              ))}
+            </div>
+            <div className="divider" />
             <div className="switch-row" onClick={toggleTheme}>
-              <div><div style={{ fontWeight: 700 }}>{theme === 'light' ? '☀️ Thème clair' : '🌙 Thème sombre'}</div><div className="sub" style={{ fontSize: 12.5 }}>Apparence de l'app</div></div>
+              <div><div style={{ fontWeight: 700 }}>{theme === 'light' ? t('set.theme.light') : t('set.theme.dark')}</div><div className="sub" style={{ fontSize: 12.5 }}>{t('set.theme.desc')}</div></div>
               <div className={`switch ${theme === 'dark' ? 'on' : ''}`}><i /></div>
             </div>
             <div className="divider" style={{ margin: '4px 0' }} />
             <div className="switch-row" onClick={toggleSound}>
-              <div><div style={{ fontWeight: 700 }}>🔊 Sons</div><div className="sub" style={{ fontSize: 12.5 }}>Retours sonores au toucher</div></div>
+              <div><div style={{ fontWeight: 700 }}>{t('set.sounds')}</div><div className="sub" style={{ fontSize: 12.5 }}>{t('set.sounds.desc')}</div></div>
               <div className={`switch ${soundOn ? 'on' : ''}`}><i /></div>
             </div>
             <div className="divider" style={{ margin: '4px 0' }} />
             <div className="switch-row" onClick={toggleHaptic}>
-              <div><div style={{ fontWeight: 700 }}>📳 Vibrations</div><div className="sub" style={{ fontSize: 12.5 }}>Retour haptique (mobile)</div></div>
+              <div><div style={{ fontWeight: 700 }}>{t('set.vibration')}</div><div className="sub" style={{ fontSize: 12.5 }}>{t('set.vibration.desc')}</div></div>
               <div className={`switch ${hapticOn ? 'on' : ''}`}><i /></div>
             </div>
             <div className="divider" />
-            <div className="field"><label>Nom complet</label><input value={name} onChange={(e) => setName(e.target.value)} /></div>
-            <div className="field"><label>Bio</label><textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Quelques mots sur vous…" /></div>
-            <button className="btn coral" onClick={saveProfile}>Enregistrer</button>
-            {user.is_admin && <><div className="divider" /><button className="btn iris" onClick={() => navigate('/admin')}>🛠️ Back-office admin</button></>}
+            <div className="field"><label>{t('auth.fullname')}</label><input value={name} onChange={(e) => setName(e.target.value)} /></div>
+            <div className="field"><label>Bio</label><textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="…" /></div>
+            <button className="btn coral" onClick={saveProfile}>{t('set.save')}</button>
+            {user.is_admin && <><div className="divider" /><button className="btn iris" onClick={() => navigate('/admin')}>{t('set.admin')}</button></>}
             <div className="divider" />
-            <button className="btn ghost" onClick={locate}>📍 {user.lat ? `Position : ${user.city || 'enregistrée'}` : 'Activer la géolocalisation'}</button>
+            <button className="btn ghost" onClick={locate}>📍 {user.lat ? (user.city || 'OK') : t('home.geo.title')}</button>
             <div className="spacer" />
-            {pushStatus() !== 'granted' && <><button className="btn ghost" onClick={activatePush}>🔔 Activer les notifications</button><div className="spacer" /></>}
-            <button className="btn danger" onClick={logout}>Se déconnecter</button>
+            {pushStatus() !== 'granted' && <><button className="btn ghost" onClick={activatePush}>🔔 {t('home.activate')}</button><div className="spacer" /></>}
+            <button className="btn danger" onClick={logout}>{t('set.signout')}</button>
           </div>
         )}
       </div>

@@ -61,6 +61,8 @@ export const api = STANDALONE ? localApi : {
   exchangePoints: (coins) => request('/wallet/exchange', { method: 'POST', body: { coins } }),
   boostAd: (id) => request(`/ads/${id}/boost`, { method: 'POST' }),
   subscribePro: () => request('/wallet/pro', { method: 'POST' }),
+  submitKyc: (b) => request('/users/kyc', { method: 'POST', body: b }),
+  finalizeKyc: () => request('/users/kyc/finalize', { method: 'POST' }),
   checkout: (amount) => request('/wallet/checkout', { method: 'POST', body: { amount } }),
   dispute: (id, reason) => request(`/ads/${id}/dispute`, { method: 'POST', body: { reason } }),
   // notifications

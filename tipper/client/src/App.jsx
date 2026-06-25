@@ -16,6 +16,7 @@ import { Profile, PublicProfile, Leaderboard } from './pages/Profile.jsx';
 import { Admin } from './pages/Admin.jsx';
 import { Now } from './pages/Now.jsx';
 import { Track } from './pages/Track.jsx';
+import { Verify } from './pages/Verify.jsx';
 import { Spinner } from './components/Layout.jsx';
 
 function Protected({ children }) {
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/" element={<Protected><Home /></Protected>} />
       <Route path="/now" element={<Protected><Now /></Protected>} />
       <Route path="/track/:id" element={<Protected><Track /></Protected>} />
+      <Route path="/verify" element={<Protected><Verify /></Protected>} />
       <Route path="/categories" element={<Protected><Categories /></Protected>} />
       <Route path="/post/:category" element={<Protected><PostAd /></Protected>} />
       <Route path="/posted" element={<Protected><Posted /></Protected>} />

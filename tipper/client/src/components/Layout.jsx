@@ -25,15 +25,15 @@ export function AppBar({ title, subtitle, back, right, brand }) {
 export function Nav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { unreadNotif, unreadMsg } = useApp();
+  const { unreadNotif, unreadMsg, t } = useApp();
   const refs = useRef({});
   const [ind, setInd] = useState({ left: 0, width: 0, opacity: 0 });
 
   const items = [
-    { key: 'home', ico: '🏠', label: 'Accueil', to: '/', re: /^\/$|^\/home/ },
-    { key: 'explore', ico: '🧭', label: 'Explorer', to: '/explore', re: /^\/explore|^\/map|^\/ads/ },
-    { key: 'boite', ico: '💬', label: 'Boîte', to: '/messages', re: /^\/messages|^\/notifications/, badge: unreadMsg + unreadNotif },
-    { key: 'profil', ico: '👤', label: 'Profil', to: '/profile', re: /^\/profile|^\/wallet|^\/leaderboard/ },
+    { key: 'home', ico: '🏠', label: t('nav.home'), to: '/', re: /^\/$|^\/home/ },
+    { key: 'explore', ico: '🧭', label: t('nav.explore'), to: '/explore', re: /^\/explore|^\/map|^\/ads/ },
+    { key: 'boite', ico: '💬', label: t('nav.inbox'), to: '/messages', re: /^\/messages|^\/notifications/, badge: unreadMsg + unreadNotif },
+    { key: 'profil', ico: '👤', label: t('nav.profile'), to: '/profile', re: /^\/profile|^\/wallet|^\/leaderboard/ },
   ];
   const activeKey = items.find((i) => i.re.test(pathname))?.key;
 
@@ -49,18 +49,18 @@ export function Nav() {
     <nav className="nav">
       <span className="nav-ind" style={{ left: ind.left, width: ind.width, opacity: ind.opacity }} />
       <button ref={(e) => (refs.current.home = e)} className={`n ${activeKey === 'home' ? 'active' : ''}`} onClick={() => go('/')}>
-        <span className="ic">🏠</span><span>Accueil</span>
+        <span className="ic">🏠</span><span>{t('nav.home')}</span>
       </button>
       <button ref={(e) => (refs.current.explore = e)} className={`n ${activeKey === 'explore' ? 'active' : ''}`} onClick={() => go('/explore')}>
-        <span className="ic">🧭</span><span>Explorer</span>
+        <span className="ic">🧭</span><span>{t('nav.explore')}</span>
       </button>
       <button className="fab" onClick={() => { feedback('tap'); navigate('/now'); }} aria-label="Tipper Now">＋</button>
       <button ref={(e) => (refs.current.boite = e)} className={`n ${activeKey === 'boite' ? 'active' : ''}`} onClick={() => go('/messages')}>
         {(unreadMsg + unreadNotif) > 0 && <span className="nb">{Math.min(9, unreadMsg + unreadNotif)}</span>}
-        <span className="ic">💬</span><span>Boîte</span>
+        <span className="ic">💬</span><span>{t('nav.inbox')}</span>
       </button>
       <button ref={(e) => (refs.current.profil = e)} className={`n ${activeKey === 'profil' ? 'active' : ''}`} onClick={() => go('/profile')}>
-        <span className="ic">👤</span><span>Profil</span>
+        <span className="ic">👤</span><span>{t('nav.profile')}</span>
       </button>
     </nav>
   );

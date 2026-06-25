@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { api, getToken, setToken, STANDALONE } from '../api.js';
 import { feedback } from '../sound.js';
+import { detectLang, makeT } from '../i18n.js';
 
 const AppContext = createContext(null);
 export const useApp = () => useContext(AppContext);
@@ -17,6 +18,9 @@ export function AppProvider({ children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('tipper_theme') || 'light');
   const [soundOn, setSoundOn] = useState(() => localStorage.getItem('tipper_sound') !== '0');
   const [hapticOn, setHapticOn] = useState(() => localStorage.getItem('tipper_haptic') !== '0');
+  const [lang, setLangState] = useState(detectLang);
+  const t = makeT(lang);
+  const setLang = useCallback((l) => { localStorage.setItem('tipper_lang', l); setLangState(l); document.documentElement.lang = l; }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -120,6 +124,7 @@ export function AppProvider({ children }) {
     unreadNotif, unreadMsg, setUnreadNotif, refreshBadges,
     captureLocation,
     theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic,
+    lang, setLang, t,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

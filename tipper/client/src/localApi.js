@@ -173,6 +173,7 @@ function publicUser(db, u) {
     xp: u.xp, level: levelInfo(u.xp), rating: ratingOf(u), rating_count: u.rating_count,
     badges: db ? badgesOf(db, u) : [], saved: u.saved || [], is_admin: isAdminEmail(u.email),
     pro: isPro(u), pro_until: u.pro_until || null,
+    kyc_status: u.kyc_status || 'none', kyc_doc_type: u.kyc_doc_type || null,
   };
 }
 
@@ -497,6 +498,26 @@ export const localApi = {
     }
     save(db); return { ok: true };
   },
+  // ── vérification d'identité (KYC) ──
+  async submitKyc({ doc_type, selfie } = {}) {
+    const db = load(); const u = requireUser(db);
+    if (!doc_type) throw new Error('Type de document requis');
+    u.kyc_status = 'pending';
+    u.kyc_doc_type = doc_type;
+    u.kyc_selfie = selfie || null;
+    u.kyc_submitted_at = now();
+    save(db); return { ok: true, status: 'pending' };
+  },
+  // Revue simulée (auto-approbation après soumission pour la démo)
+  async finalizeKyc() {
+    const db = load(); const u = requireUser(db);
+    if (u.kyc_status !== 'pending') throw new Error('Aucune vérification en cours');
+    u.kyc_status = 'verified';
+    u.verified = true;
+    addXp(db, u.id, 30);
+    pushNotif(db, u.id, { type: 'kyc', title: '✅ Identité vérifiée', body: 'Votre compte est maintenant vérifié. Vous pouvez retirer vos fonds.', data: {} });
+    save(db); return { user: publicUser(db, u) };
+  },
   async dispute(id, reason) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
@@ -616,6 +637,7 @@ export const localApi = {
     const db = load(); const u = requireUser(db);
     amount = parseFloat(amount);
     if (!amount || amount <= 0) throw new Error('Montant invalide');
+    if (!u.verified) throw new Error("Vérification d'identité requise pour retirer des fonds");
     if (amount > u.available) throw new Error('Solde disponible insuffisant');
     u.available -= amount;
     db.transactions.push({ id: uid(), user_id: u.id, type: 'debit', amount: -amount, description: 'Retrait bancaire', ad_id: null, created_at: now() });

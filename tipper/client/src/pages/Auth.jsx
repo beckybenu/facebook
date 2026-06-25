@@ -1,18 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
+import { LANGS } from '../i18n.js';
+
+function LangSwitch() {
+  const { lang, setLang } = useApp();
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 18 }}>
+      {LANGS.map((l) => (
+        <button key={l.code} className={`pill ${lang === l.code ? 'active' : ''}`} onClick={() => setLang(l.code)}>{l.flag} {l.label}</button>
+      ))}
+    </div>
+  );
+}
 
 function Logo() {
+  const { t } = useApp();
   return (
     <>
       <div className="logo">Tipper<span className="dot">.</span></div>
-      <div className="tagline">Un coup de main, un pourboire. Entraide rémunérée entre voisins.</div>
+      <div className="tagline">{t('auth.tagline')}</div>
     </>
   );
 }
 
 export function Login() {
-  const { login, showToast } = useApp();
+  const { login, showToast, t } = useApp();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,29 +41,30 @@ export function Login() {
 
   return (
     <div className="auth">
+      <LangSwitch />
       <Logo />
       <form className="auth-card" onSubmit={submit}>
-        <div className="h-page" style={{ marginBottom: 16 }}>Bon retour 👋</div>
+        <div className="h-page" style={{ marginBottom: 16 }}>{t('auth.welcome')}</div>
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@email.com" autoComplete="email" required />
+          <label>{t('auth.email')}</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" autoComplete="email" required />
         </div>
         <div className="field">
-          <label>Mot de passe</label>
+          <label>{t('auth.password')}</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" autoComplete="current-password" required />
         </div>
-        <button className="btn coral" disabled={busy}>{busy ? '…' : 'Se connecter'}</button>
-        <div className="auth-switch" onClick={() => navigate('/signup')}>Nouveau ici ? <b>Créer un compte</b></div>
+        <button className="btn coral" disabled={busy}>{busy ? '…' : t('auth.signin')}</button>
+        <div className="auth-switch" onClick={() => navigate('/signup')}>{t('auth.new')} <b>{t('auth.create')}</b></div>
       </form>
       <div className="center muted" style={{ fontSize: 12, marginTop: 18 }}>
-        Démo : <b>sophie@tipper.app</b> · mot de passe <b>password</b>
+        Démo : <b>sophie@tipper.app</b> · password <b>password</b>
       </div>
     </div>
   );
 }
 
 export function Signup() {
-  const { signup, showToast } = useApp();
+  const { signup, showToast, t } = useApp();
   const navigate = useNavigate();
   const [form, setForm] = useState({ full_name: '', email: '', password: '' });
   const [busy, setBusy] = useState(false);
@@ -59,30 +73,31 @@ export function Signup() {
   async function submit(e) {
     e.preventDefault();
     setBusy(true);
-    try { await signup(form); showToast('Bienvenue ! 🎉 CHF 50 offerts'); navigate('/'); }
+    try { await signup(form); showToast('🎉 +50 🪙'); navigate('/'); }
     catch (err) { showToast(err.message, 'error'); }
     finally { setBusy(false); }
   }
 
   return (
     <div className="auth">
+      <LangSwitch />
       <Logo />
       <form className="auth-card" onSubmit={submit}>
-        <div className="h-page" style={{ marginBottom: 16 }}>Créer un compte</div>
+        <div className="h-page" style={{ marginBottom: 16 }}>{t('auth.title.signup')}</div>
         <div className="field">
-          <label>Nom complet</label>
+          <label>{t('auth.fullname')}</label>
           <input value={form.full_name} onChange={set('full_name')} placeholder="Jean Dupont" required />
         </div>
         <div className="field">
-          <label>Email</label>
-          <input type="email" value={form.email} onChange={set('email')} placeholder="vous@email.com" required />
+          <label>{t('auth.email')}</label>
+          <input type="email" value={form.email} onChange={set('email')} placeholder="you@email.com" required />
         </div>
         <div className="field">
-          <label>Mot de passe</label>
-          <input type="password" value={form.password} onChange={set('password')} placeholder="6 caractères min." required />
+          <label>{t('auth.password')}</label>
+          <input type="password" value={form.password} onChange={set('password')} placeholder="6+" required />
         </div>
-        <button className="btn coral" disabled={busy}>{busy ? '…' : 'Créer mon compte'}</button>
-        <div className="auth-switch" onClick={() => navigate('/login')}>Déjà inscrit ? <b>Se connecter</b></div>
+        <button className="btn coral" disabled={busy}>{busy ? '…' : t('auth.createmy')}</button>
+        <div className="auth-switch" onClick={() => navigate('/login')}>{t('auth.already')} <b>{t('auth.signin')}</b></div>
       </form>
     </div>
   );
