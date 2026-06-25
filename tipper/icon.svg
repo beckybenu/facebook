@@ -1,8 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#5b4ae3"/>
-  <text x="50%" y="54%" font-family="Georgia, serif" font-size="120" font-weight="bold"
-        fill="#ffffff" text-anchor="middle" dominant-baseline="middle">T</text>
-  <circle cx="256" cy="380" r="46" fill="#e91e8c"/>
-  <text x="50%" y="384" font-family="Arial, sans-serif" font-size="58" font-weight="bold"
-        fill="#ffffff" text-anchor="middle" dominant-baseline="middle">₣</text>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9a6bff"/>
+      <stop offset="1" stop-color="#38d6ff"/>
+    </linearGradient>
+    <linearGradient id="c" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff7a45"/>
+      <stop offset="1" stop-color="#ff4d8d"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="#0b0b12"/>
+  <rect width="512" height="512" rx="120" fill="url(#g)" opacity="0.18"/>
+  <text x="50%" y="52%" font-family="'Space Grotesk', sans-serif" font-size="230" font-weight="700"
+        fill="url(#g)" text-anchor="middle" dominant-baseline="middle">T</text>
+  <circle cx="372" cy="372" r="58" fill="url(#c)"/>
+  <text x="372" y="380" font-family="Arial, sans-serif" font-size="66" font-weight="800"
+        fill="#fff" text-anchor="middle" dominant-baseline="middle">₣</text>
 </svg>
