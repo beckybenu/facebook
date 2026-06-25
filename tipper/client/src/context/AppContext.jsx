@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { api, getToken, setToken } from '../api.js';
+import { api, getToken, setToken, STANDALONE } from '../api.js';
 import { feedback } from '../sound.js';
 
 const AppContext = createContext(null);
@@ -64,6 +64,19 @@ export function AppProvider({ children }) {
     if (!user) return;
     const t = setInterval(refreshBadges, 20000);
     return () => clearInterval(t);
+  }, [user, refreshBadges]);
+
+  // Temps réel (SSE) en mode full-stack : notifications instantanées
+  useEffect(() => {
+    if (STANDALONE || !user) return;
+    const token = getToken();
+    if (!token || typeof EventSource === 'undefined') return;
+    const es = new EventSource(`/api/stream?token=${encodeURIComponent(token)}`);
+    es.addEventListener('notification', (e) => {
+      refreshBadges();
+      try { const n = JSON.parse(e.data); if (n.title) setToast({ message: n.title, kind: 'ok' }); } catch { /* ignore */ }
+    });
+    return () => es.close();
   }, [user, refreshBadges]);
 
   const login = useCallback(async (email, password) => {

@@ -5,9 +5,12 @@
 // Aucune donnée ne quitte l'appareil. Utilisé pour la démo statique (Pages).
 // ───────────────────────────────────────────────────────────────────────────
 
-const DB_KEY = 'tipper_db_v2';
+const DB_KEY = 'tipper_db_v3';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
+const COMMISSION = 0.10;          // commission Tipper sur chaque pourboire
+const CONSOLATION_POINTS = 10;    // Tipper Points pour un candidat non retenu
+export const POINTS_PER_COIN = 10; // 10 Tipper Points = 1 Tipper Coin
 export const CATEGORIES = ['administratif', 'automobile', 'epicerie', 'immobilier', 'petit_service', 'loisirs'];
 
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
@@ -51,7 +54,7 @@ function seed() {
   const mk = (full_name, email, lat, lng, city, available, xp, verified) => {
     const u = {
       id: uid(), email, password: 'password', full_name, avatar: null, bio: null,
-      available, reserved: 0, lat, lng, city, xp: xp || 0, verified: !!verified,
+      available, reserved: 0, points: 0, lat, lng, city, xp: xp || 0, verified: !!verified,
       saved: [], rating_sum: 0, rating_count: 0, created_at: minutesAgo(60 * 24 * 30),
     };
     users.push(u); return u;
@@ -147,7 +150,7 @@ function publicUser(db, u) {
   if (!u) return null;
   return {
     id: u.id, email: u.email, full_name: u.full_name, avatar: u.avatar, bio: u.bio,
-    available: u.available, reserved: u.reserved, wallet_balance: u.available,
+    available: u.available, reserved: u.reserved, points: u.points || 0, wallet_balance: u.available,
     lat: u.lat, lng: u.lng, city: u.city, created_at: u.created_at, verified: u.verified,
     xp: u.xp, level: levelInfo(u.xp), rating: ratingOf(u), rating_count: u.rating_count,
     badges: db ? badgesOf(db, u) : [], saved: u.saved || [],
@@ -180,6 +183,17 @@ function adMeta(db, ad, viewer) {
   };
 }
 
+// Chat autorisé seulement entre demandeur et helper d'une candidature acceptée
+function canChat(db, aId, bId) {
+  const ok = ['accepted', 'delivered', 'completed'];
+  return db.applications.some((app) => {
+    if (!ok.includes(app.status)) return false;
+    const ad = db.ads.find((x) => x.id === app.ad_id);
+    if (!ad) return false;
+    return (ad.user_id === aId && app.user_id === bId) || (ad.user_id === bId && app.user_id === aId);
+  });
+}
+
 function fileToDataURL(file) {
   return new Promise((resolve) => {
     if (!file) return resolve(null);
@@ -197,7 +211,7 @@ export const localApi = {
     if (!email || !password || !full_name) throw new Error('Tous les champs sont requis');
     if (password.length < 6) throw new Error('Mot de passe : 6 caractères minimum');
     if (db.users.find((u) => u.email === email.toLowerCase())) throw new Error('Un compte existe déjà avec cet email');
-    const u = { id: uid(), email: email.toLowerCase(), password, full_name, avatar: null, bio: null, available: 50, reserved: 0, lat: null, lng: null, city: null, xp: 0, verified: false, saved: [], rating_sum: 0, rating_count: 0, created_at: now() };
+    const u = { id: uid(), email: email.toLowerCase(), password, full_name, avatar: null, bio: null, available: 50, reserved: 0, points: 0, lat: null, lng: null, city: null, xp: 0, verified: false, saved: [], rating_sum: 0, rating_count: 0, created_at: now() };
     db.users.push(u);
     db.transactions.push({ id: uid(), user_id: u.id, type: 'credit', amount: 50, description: 'Bonus de bienvenue 🎉', ad_id: null, created_at: now() });
     save(db);
@@ -329,15 +343,39 @@ export const localApi = {
     if (!app || (app.status !== 'delivered' && app.status !== 'accepted')) throw new Error('Candidature non valide');
     if (u.reserved < ad.tip_amount) throw new Error('Escrow introuvable');
     const worker = db.users.find((x) => x.id === app.user_id);
+    const commission = Math.round(ad.tip_amount * COMMISSION * 100) / 100;
+    const net = Math.round((ad.tip_amount - commission) * 100) / 100;
     u.reserved -= ad.tip_amount;
-    worker.available += ad.tip_amount;
+    worker.available += net;
+    db.commission_total = (db.commission_total || 0) + commission;
     db.transactions.push({ id: uid(), user_id: u.id, type: 'tip_out', amount: -ad.tip_amount, description: `Pourboire versé · ${ad.title}`, ad_id: id, created_at: now() });
-    db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: ad.tip_amount, description: `Pourboire reçu · ${ad.title}`, ad_id: id, created_at: now() });
+    db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–10% commission) · ${ad.title}`, ad_id: id, created_at: now() });
     app.status = 'completed'; ad.status = 'completed';
     addXp(db, worker.id, 50); addXp(db, u.id, 15);
-    pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `CHF ${ad.tip_amount.toFixed(2)} crédités pour « ${ad.title} ». +50 XP !`, data: { adId: id, review: true, rateeId: u.id } });
+    pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: id, review: true, rateeId: u.id } });
+
+    // Lot de consolation : les autres candidats reçoivent des Tipper Points
+    const others = db.applications.filter((a) => a.ad_id === id && a.user_id !== worker.id);
+    for (const o of others) {
+      const ou = db.users.find((x) => x.id === o.user_id);
+      if (!ou) continue;
+      ou.points = (ou.points || 0) + CONSOLATION_POINTS;
+      if (o.status === 'pending' || o.status === 'accepted' || o.status === 'delivered') o.status = 'rejected';
+      pushNotif(db, ou.id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `La mission « ${ad.title} » a été attribuée, mais voici ${CONSOLATION_POINTS} points à échanger contre des Coins !`, data: { adId: id } });
+    }
+    save(db); return { ok: true, net, commission };
+  },
+  async dispute(id, reason) {
+    const db = load(); const u = requireUser(db);
+    const ad = db.ads.find((a) => a.id === id);
+    if (!ad) throw new Error('Mission introuvable');
+    db.disputes = db.disputes || [];
+    db.disputes.push({ id: uid(), ad_id: id, opener_id: u.id, reason: reason || 'Non précisé', status: 'open', created_at: now() });
+    const other = ad.user_id === u.id ? null : ad.user_id;
+    if (other) pushNotif(db, other, { type: 'dispute', title: '⚠️ Litige ouvert', body: `Un litige a été ouvert sur « ${ad.title} »`, data: { adId: id } });
     save(db); return { ok: true };
   },
+  async checkout() { throw new Error('Paiement Stripe indisponible en démo — rechargement simulé'); },
   async cancelAd(id) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
@@ -421,7 +459,17 @@ export const localApi = {
   async wallet() {
     const db = load(); const u = requireUser(db);
     const transactions = db.transactions.filter((t) => t.user_id === u.id).sort((a, b) => b.created_at.localeCompare(a.created_at));
-    return { available: u.available, reserved: u.reserved, balance: u.available, total: u.available + u.reserved, transactions };
+    return { available: u.available, reserved: u.reserved, points: u.points || 0, points_per_coin: POINTS_PER_COIN, balance: u.available, total: u.available + u.reserved, transactions };
+  },
+  async exchangePoints(coins) {
+    const db = load(); const u = requireUser(db);
+    coins = Math.floor(Number(coins) || 0);
+    if (coins <= 0) throw new Error('Nombre de Coins invalide');
+    const cost = coins * POINTS_PER_COIN;
+    if ((u.points || 0) < cost) throw new Error(`Pas assez de Tipper Points (${cost} requis)`);
+    u.points -= cost; u.available += coins;
+    db.transactions.push({ id: uid(), user_id: u.id, type: 'points_exchange', amount: coins, description: `Échange de ${cost} Tipper Points`, ad_id: null, created_at: now() });
+    save(db); return { available: u.available, points: u.points, user: publicUser(db, u) };
   },
   async topup(amount) {
     const db = load(); const u = requireUser(db);
@@ -478,6 +526,7 @@ export const localApi = {
   async sendMessage({ receiver_id, body, ad_id }) {
     const db = load(); const u = requireUser(db);
     if (!receiver_id || !body) throw new Error('Message vide');
+    if (!canChat(db, u.id, receiver_id)) throw new Error('Le chat s\'ouvre une fois la candidature acceptée 🔒');
     const msg = { id: uid(), ad_id: ad_id || null, sender_id: u.id, receiver_id, body, read: 0, created_at: now() };
     db.messages.push(msg);
     pushNotif(db, receiver_id, { type: 'new_message', title: `💬 ${u.full_name}`, body: body.length > 80 ? body.slice(0, 80) + '…' : body, data: { fromUserId: u.id } });

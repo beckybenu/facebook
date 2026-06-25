@@ -34,9 +34,12 @@ router.post('/me/location', authRequired, (req, res) => {
 router.get('/:id', authRequired, (req, res) => {
   const u = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
   if (!u) return res.status(404).json({ error: 'Utilisateur introuvable' });
-  const adsCount = db.prepare('SELECT COUNT(*) c FROM ads WHERE user_id = ?').get(u.id).c;
-  const tipsReceived = db.prepare("SELECT COUNT(*) c FROM transactions WHERE user_id = ? AND type = 'tip_in'").get(u.id).c;
-  res.json({ user: publicUser(u), stats: { ads: adsCount, tips_received: tipsReceived } });
+  const ads = db.prepare('SELECT COUNT(*) c FROM ads WHERE user_id = ?').get(u.id).c;
+  const completed = db.prepare("SELECT COUNT(*) c FROM applications WHERE user_id = ? AND status = 'completed'").get(u.id).c;
+  const earned = db.prepare("SELECT COALESCE(SUM(amount),0) s FROM transactions WHERE user_id = ? AND type = 'tip_in'").get(u.id).s;
+  const reviews = db.prepare('SELECT * FROM reviews WHERE ratee_id = ? ORDER BY created_at DESC LIMIT 50').all(u.id)
+    .map((r) => ({ ...r, rater: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(r.rater_id)) }));
+  res.json({ user: publicUser(u), stats: { ads, completed, earned }, reviews });
 });
 
 export default router;

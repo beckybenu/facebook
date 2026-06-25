@@ -33,6 +33,13 @@ export function chf(n) {
   return 'CHF ' + Number(n).toLocaleString('fr-CH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
+// Monnaie interne : Tipper Coins
+export function coin(n) {
+  if (n == null) return '—';
+  return Number(n).toLocaleString('fr-CH', { maximumFractionDigits: 2 }) + ' 🪙';
+}
+export const pts = (n) => `${Number(n || 0).toLocaleString('fr-CH')} pts`;
+
 export function timeAgo(iso) {
   if (!iso) return '';
   const d = new Date(iso.replace(' ', 'T') + (iso.includes('Z') || iso.includes('+') ? '' : 'Z'));

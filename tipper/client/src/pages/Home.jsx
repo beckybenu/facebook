@@ -5,7 +5,7 @@ import { Mission } from '../components/AdCard.jsx';
 import { Money, Ring, Tilt, SkeletonMission } from '../components/fx.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
-import { chf } from '../constants.js';
+import { coin } from '../constants.js';
 
 export function Home() {
   const navigate = useNavigate();
@@ -55,9 +55,9 @@ export function Home() {
         <div className="bento">
           <Tilt className="balance span2" onClick={() => navigate('/wallet')}>
             <div className="sheen" />
-            <div className="lbl">Solde disponible</div>
-            <div className="amt"><Money value={wallet ? wallet.available : user.available} format={chf} /></div>
-            {wallet && wallet.reserved > 0 && <div className="escrow">🔒 {chf(wallet.reserved)} en séquestre</div>}
+            <div className="lbl">Tipper Coins</div>
+            <div className="amt"><Money value={wallet ? wallet.available : user.available} format={coin} /></div>
+            {wallet && wallet.reserved > 0 && <div className="escrow">🔒 {coin(wallet.reserved)} en séquestre</div>}
           </Tilt>
 
           <div className="tile" onClick={() => navigate('/profile')} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

@@ -4,7 +4,7 @@ import { Screen, AppBar, Spinner } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { chf } from '../constants.js';
+import { coin } from '../constants.js';
 
 const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
 const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
@@ -51,7 +51,7 @@ export function MapView() {
         L.circleMarker([user.lat, user.lng], { radius: 8, color: '#fff', weight: 3, fillColor: '#6C8CFF', fillOpacity: 1 }).addTo(map);
       }
       ads.forEach((a) => {
-        const icon = L.divIcon({ className: '', html: `<div class="leaflet-pin">${chf(a.tip_amount)}</div>`, iconAnchor: [10, 30] });
+        const icon = L.divIcon({ className: '', html: `<div class="leaflet-pin">${coin(a.tip_amount)}</div>`, iconAnchor: [10, 30] });
         L.marker([a.lat, a.lng], { icon }).addTo(map).on('click', () => navigate(`/ads/${a.id}`));
       });
     }).catch(() => setFailed(true));

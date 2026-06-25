@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { chf, catLabel, catIcon, catTint, timeAgo } from '../constants.js';
+import { coin, catLabel, catIcon, catTint } from '../constants.js';
 import { Stars } from './Layout.jsx';
 
 export function Mission({ ad, onToggleSave }) {
@@ -30,7 +30,7 @@ export function Mission({ ad, onToggleSave }) {
           <Stars value={ad.author?.rating} />
           <span style={{ marginLeft: 'auto' }}>{ad.spots_left}/{ad.max_participants} places</span>
         </div>
-        <div className="tip-badge">{chf(ad.tip_amount)}</div>
+        <div className="tip-badge">{coin(ad.tip_amount)}</div>
       </div>
     </div>
   );

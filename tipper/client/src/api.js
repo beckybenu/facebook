@@ -56,6 +56,9 @@ export const api = STANDALONE ? localApi : {
   wallet: () => request('/wallet'),
   topup: (amount) => request('/wallet/topup', { method: 'POST', body: { amount } }),
   withdraw: (amount) => request('/wallet/withdraw', { method: 'POST', body: { amount } }),
+  exchangePoints: (coins) => request('/wallet/exchange', { method: 'POST', body: { coins } }),
+  checkout: (amount) => request('/wallet/checkout', { method: 'POST', body: { amount } }),
+  dispute: (id, reason) => request(`/ads/${id}/dispute`, { method: 'POST', body: { reason } }),
   // notifications
   vapidKey: () => request('/notifications/vapid-key'),
   subscribePush: (subscription) => request('/notifications/subscribe', { method: 'POST', body: { subscription } }),

@@ -10,7 +10,8 @@ const ICON = {
   new_application: { e: '🙋', bg: '#ffe9e3' }, application_accepted: { e: '✅', bg: '#e4f7f3' },
   application_rejected: { e: '❌', bg: '#fdecec' }, tip_received: { e: '💰', bg: '#e4f7f3' },
   mission_delivered: { e: '📦', bg: '#e7eeff' }, new_message: { e: '💬', bg: '#eee9ff' },
-  new_review: { e: '⭐', bg: '#fff1d9' },
+  new_review: { e: '⭐', bg: '#fff1d9' }, points_earned: { e: '🎯', bg: 'rgba(139,92,255,0.16)' },
+  dispute: { e: '⚠️', bg: 'rgba(255,93,108,0.16)' },
 };
 
 export function Notifications() {

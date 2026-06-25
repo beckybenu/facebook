@@ -19,7 +19,15 @@ CREATE TABLE IF NOT EXISTS users (
   full_name     TEXT NOT NULL,
   avatar        TEXT,
   bio           TEXT,
-  wallet_balance REAL NOT NULL DEFAULT 0,
+  wallet_balance REAL NOT NULL DEFAULT 0,   -- Tipper Coins disponibles
+  reserved      REAL NOT NULL DEFAULT 0,    -- bloqué en séquestre
+  points        INTEGER NOT NULL DEFAULT 0, -- Tipper Points (consolation)
+  xp            INTEGER NOT NULL DEFAULT 0,
+  verified      INTEGER NOT NULL DEFAULT 0,
+  rating_sum    REAL NOT NULL DEFAULT 0,
+  rating_count  INTEGER NOT NULL DEFAULT 0,
+  referral_code TEXT,
+  referred_by   TEXT,
   lat           REAL,
   lng           REAL,
   city          TEXT,
@@ -38,7 +46,10 @@ CREATE TABLE IF NOT EXISTS ads (
   lat         REAL,
   lng         REAL,
   city        TEXT,
-  status      TEXT NOT NULL DEFAULT 'open', -- open | in_progress | completed | cancelled
+  urgent       INTEGER NOT NULL DEFAULT 0,
+  scheduled_at TEXT,
+  delivered_app TEXT,
+  status      TEXT NOT NULL DEFAULT 'open', -- open | in_progress | delivered | completed | cancelled
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -90,10 +101,62 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
   created_at    TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS reviews (
+  id         TEXT PRIMARY KEY,
+  ad_id      TEXT,
+  rater_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ratee_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role       TEXT NOT NULL DEFAULT 'helper', -- helper | poster
+  stars      INTEGER NOT NULL,
+  comment    TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS saved_ads (
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ad_id      TEXT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (user_id, ad_id)
+);
+
+CREATE TABLE IF NOT EXISTS commissions (
+  id         TEXT PRIMARY KEY,
+  ad_id      TEXT,
+  amount     REAL NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS disputes (
+  id         TEXT PRIMARY KEY,
+  ad_id      TEXT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+  opener_id  TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reason     TEXT NOT NULL,
+  status     TEXT NOT NULL DEFAULT 'open', -- open | resolved
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_ads_status ON ads(status);
 CREATE INDEX IF NOT EXISTS idx_apps_ad ON applications(ad_id);
 CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, read);
 CREATE INDEX IF NOT EXISTS idx_msg_pair ON messages(sender_id, receiver_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_ratee ON reviews(ratee_id);
 `);
+
+// Migrations défensives (bases existantes) : ajoute les colonnes manquantes
+function ensureColumn(table, col, def) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all().map((c) => c.name);
+  if (!cols.includes(col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${def}`);
+}
+ensureColumn('users', 'reserved', 'reserved REAL NOT NULL DEFAULT 0');
+ensureColumn('users', 'points', 'points INTEGER NOT NULL DEFAULT 0');
+ensureColumn('users', 'xp', 'xp INTEGER NOT NULL DEFAULT 0');
+ensureColumn('users', 'verified', 'verified INTEGER NOT NULL DEFAULT 0');
+ensureColumn('users', 'rating_sum', 'rating_sum REAL NOT NULL DEFAULT 0');
+ensureColumn('users', 'rating_count', 'rating_count INTEGER NOT NULL DEFAULT 0');
+ensureColumn('users', 'referral_code', 'referral_code TEXT');
+ensureColumn('users', 'referred_by', 'referred_by TEXT');
+ensureColumn('ads', 'urgent', 'urgent INTEGER NOT NULL DEFAULT 0');
+ensureColumn('ads', 'scheduled_at', 'scheduled_at TEXT');
+ensureColumn('ads', 'delivered_app', 'delivered_app TEXT');
 
 export default db;

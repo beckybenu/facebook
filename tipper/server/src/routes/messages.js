@@ -43,11 +43,22 @@ router.get('/with/:userId', authRequired, (req, res) => {
   res.json({ messages: msgs, user: publicUser(other) });
 });
 
+// Chat autorisé seulement entre demandeur et helper d'une candidature acceptée
+function canChat(aId, bId) {
+  const row = db.prepare(`
+    SELECT 1 FROM applications app JOIN ads ON ads.id = app.ad_id
+    WHERE app.status IN ('accepted','delivered','completed')
+      AND ((ads.user_id = ? AND app.user_id = ?) OR (ads.user_id = ? AND app.user_id = ?))
+    LIMIT 1`).get(aId, bId, bId, aId);
+  return !!row;
+}
+
 router.post('/send', authRequired, async (req, res) => {
   const { receiver_id, body, ad_id } = req.body || {};
   if (!receiver_id || !body) return res.status(400).json({ error: 'Destinataire et message requis' });
   const receiver = db.prepare('SELECT * FROM users WHERE id = ?').get(receiver_id);
   if (!receiver) return res.status(404).json({ error: 'Destinataire introuvable' });
+  if (!canChat(req.user.id, receiver_id)) return res.status(403).json({ error: "Le chat s'ouvre une fois la candidature acceptée 🔒" });
 
   const id = nanoid();
   db.prepare('INSERT INTO messages (id, ad_id, sender_id, receiver_id, body) VALUES (?,?,?,?,?)')

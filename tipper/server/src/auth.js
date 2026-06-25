@@ -22,18 +22,48 @@ export function authRequired(req, res, next) {
   }
 }
 
-export function publicUser(u) {
+export const LEVELS = [
+  { min: 0, name: 'Nouveau', emoji: '🌱' },
+  { min: 100, name: 'Bronze', emoji: '🥉' },
+  { min: 300, name: 'Argent', emoji: '🥈' },
+  { min: 700, name: 'Or', emoji: '🥇' },
+  { min: 1500, name: 'Platine', emoji: '💎' },
+  { min: 3000, name: 'Légende', emoji: '👑' },
+];
+export function levelInfo(xp = 0) {
+  let idx = 0;
+  for (let i = 0; i < LEVELS.length; i++) if (xp >= LEVELS[i].min) idx = i;
+  const cur = LEVELS[idx]; const next = LEVELS[idx + 1];
+  const progress = next ? Math.min(1, (xp - cur.min) / (next.min - cur.min)) : 1;
+  return { index: idx, ...cur, next, progress, xp };
+}
+const ratingOf = (u) => (u.rating_count ? Math.round((u.rating_sum / u.rating_count) * 10) / 10 : null);
+
+function badgesOf(u) {
+  const b = [];
+  if (u.verified) b.push({ key: 'verified', label: 'Vérifié', emoji: '✅' });
+  const completed = db.prepare("SELECT COUNT(*) c FROM applications WHERE user_id = ? AND status = 'completed'").get(u.id).c;
+  const posted = db.prepare('SELECT COUNT(*) c FROM ads WHERE user_id = ?').get(u.id).c;
+  const r = ratingOf(u);
+  if (completed >= 3) b.push({ key: 'helper', label: 'Super Helper', emoji: '🦸' });
+  if (posted >= 3) b.push({ key: 'tipper', label: 'Top Tipper', emoji: '💸' });
+  if (r != null && r >= 4.8 && u.rating_count >= 3) b.push({ key: 'fivestar', label: '5 étoiles', emoji: '⭐' });
+  if (levelInfo(u.xp).index >= 4) b.push({ key: 'legend', label: 'Élite', emoji: '👑' });
+  return b;
+}
+
+export function publicUser(u, { withBadges = true } = {}) {
   if (!u) return null;
+  const saved = db.prepare('SELECT ad_id FROM saved_ads WHERE user_id = ?').all(u.id).map((r) => r.ad_id);
   return {
-    id: u.id,
-    email: u.email,
-    full_name: u.full_name,
-    avatar: u.avatar,
-    bio: u.bio,
-    wallet_balance: u.wallet_balance,
-    lat: u.lat,
-    lng: u.lng,
-    city: u.city,
-    created_at: u.created_at,
+    id: u.id, email: u.email, full_name: u.full_name, avatar: u.avatar, bio: u.bio,
+    available: u.wallet_balance, reserved: u.reserved || 0, points: u.points || 0, wallet_balance: u.wallet_balance,
+    lat: u.lat, lng: u.lng, city: u.city, created_at: u.created_at, verified: !!u.verified,
+    xp: u.xp || 0, level: levelInfo(u.xp || 0), rating: ratingOf(u), rating_count: u.rating_count || 0,
+    badges: withBadges ? badgesOf(u) : [], saved, referral_code: u.referral_code,
   };
+}
+
+export function addXp(userId, amount) {
+  db.prepare('UPDATE users SET xp = xp + ? WHERE id = ?').run(amount, userId);
 }

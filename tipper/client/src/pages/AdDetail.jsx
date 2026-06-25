@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { chf, catLabel, catIcon, catTint, STATUS_LABEL, timeAgo, dateShort } from '../constants.js';
+import { coin, chf, catLabel, catIcon, catTint, STATUS_LABEL, dateShort } from '../constants.js';
+
+const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
 const STEPS = [
   { key: 'open', cap: 'Ouverte', i: 0 },
@@ -90,6 +92,12 @@ export function AdDetail() {
     try { await api.cancelAd(id); await refreshMe(); showToast('Mission annulée, escrow remboursé'); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
+  async function openDispute() {
+    const reason = prompt('Décrivez le problème rencontré :');
+    if (!reason) return;
+    try { await api.dispute(id, reason); showToast('Litige envoyé, notre équipe va regarder ⚠️'); }
+    catch (e) { showToast(e.message, 'error'); }
+  }
   async function submitRating(stars, comment) {
     try {
       await api.rate({ ad_id: id, ratee_id: rating.rateeId, role: rating.role, stars, comment });
@@ -125,8 +133,8 @@ export function AdDetail() {
         <div className="card">
           <div className="tx" style={{ borderBottom: '1px solid var(--line-soft)' }}>
             <div className="ic" style={{ background: '#e4f7f3' }}>💰</div>
-            <div><div style={{ fontWeight: 800 }}>Pourboire</div><div className="sub" style={{ fontSize: 12 }}>Bloqué en séquestre</div></div>
-            <div className="amt" style={{ color: 'var(--teal)', fontSize: 18 }}>{chf(ad.tip_amount)}</div>
+            <div><div style={{ fontWeight: 800 }}>Pourboire</div><div className="sub" style={{ fontSize: 12 }}>Bloqué en séquestre · helper reçoit 90%</div></div>
+            <div className="amt" style={{ color: 'var(--teal)', fontSize: 18 }}>{coin(ad.tip_amount)}</div>
           </div>
           {ad.price != null && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🏷️</div><div style={{ fontWeight: 700 }}>Prix du bien</div><div className="amt">{chf(ad.price)}</div></div>}
           <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>📍</div><div style={{ fontWeight: 700 }}>{ad.distance_km != null ? `${ad.distance_km} km` : (ad.city || '—')}</div><div className="amt" style={{ fontWeight: 600, color: 'var(--muted)' }}>{ad.spots_left}/{ad.max_participants} places</div></div>
@@ -142,7 +150,9 @@ export function AdDetail() {
             <div style={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>{ad.author.full_name} {ad.author.verified && '✅'}</div>
             <Stars value={ad.author.rating} count={ad.author.rating_count} />
           </div>
-          {!mine && <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); navigate(`/messages/${ad.author.id}`); }}>💬</button>}
+          {!mine && (CHATTABLE.includes(myApp?.status)
+            ? <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); navigate(`/messages/${ad.author.id}`); }}>💬</button>
+            : <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); showToast("Le chat s'ouvre une fois la candidature acceptée 🔒", 'error'); }}>🔒</button>)}
         </div>
 
         {/* Candidat */}
@@ -164,6 +174,7 @@ export function AdDetail() {
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, je peux vous aider rapidement…" />
             </div>
             <button className="btn coral" disabled={busy} onClick={apply}>🙋 Postuler à cette mission</button>
+            <div className="suggest" style={{ marginTop: 10 }}>🎯 Même non retenu·e, vous gagnez des Tipper Points</div>
           </div>
         ) : <div className="card center muted">Complet — {ad.max_participants} participants atteints.</div>)}
 
@@ -189,7 +200,9 @@ export function AdDetail() {
                 </div>
                 {a.message && <p style={{ fontSize: 14, margin: '10px 0 0', color: 'var(--ink-soft)' }}>« {a.message} »</p>}
                 <div className="btn-row" style={{ marginTop: 12 }}>
-                  <button className="btn ghost sm" onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>
+                  {CHATTABLE.includes(a.status)
+                    ? <button className="btn ghost sm" onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>
+                    : <button className="btn ghost sm" onClick={() => showToast('Acceptez la candidature pour ouvrir le chat 🔒', 'error')}>🔒</button>}
                   {a.status === 'pending' && !closed && <>
                     <button className="btn danger sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'reject')}>Refuser</button>
                     <button className="btn teal sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'accept')}>Accepter</button>
@@ -220,6 +233,10 @@ export function AdDetail() {
               </div>
             ))}
           </>
+        )}
+
+        {(mine || myApp) && ['in_progress', 'delivered'].includes(ad.status) && (
+          <button className="btn outline" style={{ marginTop: 8, color: 'var(--muted)' }} onClick={openDispute}>⚠️ Signaler un problème</button>
         )}
         <div className="spacer" />
       </div>

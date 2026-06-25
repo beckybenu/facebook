@@ -5,7 +5,7 @@ import { Money, Ring } from '../components/fx.jsx';
 import { Mission } from '../components/AdCard.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { chf, STATUS_LABEL, timeAgo } from '../constants.js';
+import { coin, chf, STATUS_LABEL, timeAgo } from '../constants.js';
 import { enablePush, pushStatus } from '../push.js';
 
 export function Profile() {
@@ -70,14 +70,14 @@ export function Profile() {
         <div className="stat-grid" style={{ marginBottom: 14 }}>
           <div className="stat"><div className="v">{me ? me.stats.ads : '—'}</div><div className="k">Missions</div></div>
           <div className="stat"><div className="v">{me ? me.stats.completed : '—'}</div><div className="k">Services rendus</div></div>
-          <div className="stat"><div className="v" style={{ color: 'var(--teal)' }}>{me ? chf(me.stats.earned).replace('CHF ', '') : '—'}</div><div className="k">Gagné (CHF)</div></div>
+          <div className="stat"><div className="v" style={{ color: 'var(--teal)' }}>{me ? Math.round(me.stats.earned) : '—'}</div><div className="k">Gagné 🪙</div></div>
         </div>
 
         <div className="balance" onClick={() => navigate('/wallet')} style={{ marginBottom: 14 }}>
           <div className="sheen" />
-          <div className="lbl">Solde disponible</div>
-          <div className="amt" style={{ fontSize: 30 }}><Money value={user.available} format={chf} /></div>
-          {user.reserved > 0 && <div className="escrow">🔒 {chf(user.reserved)} en séquestre</div>}
+          <div className="lbl">Tipper Coins</div>
+          <div className="amt" style={{ fontSize: 30 }}><Money value={user.available} format={coin} /></div>
+          {user.points > 0 && <div className="escrow">🎯 {user.points} Tipper Points</div>}
         </div>
 
         <div className="pill-row" style={{ marginBottom: 6 }}>
@@ -95,7 +95,7 @@ export function Profile() {
             {myApps.map((a) => (
               <div key={a.id} className="row" onClick={() => navigate(`/ads/${a.ad_id}`)}>
                 <div className="av m" style={{ background: 'var(--line-soft)', color: 'var(--ink)' }}>{a.photo ? <img src={a.photo} alt="" /> : '📌'}</div>
-                <div className="grow"><div className="r-name">{a.ad_title}</div><div className="r-sub">Pourboire {chf(a.tip_amount)} · {timeAgo(a.created_at)}</div></div>
+                <div className="grow"><div className="r-name">{a.ad_title}</div><div className="r-sub">Pourboire {coin(a.tip_amount)} · {timeAgo(a.created_at)}</div></div>
                 <span className={`status ${a.status}`}>{STATUS_LABEL[a.status]}</span>
               </div>
             ))}
