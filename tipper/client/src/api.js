@@ -42,8 +42,12 @@ export const api = STANDALONE ? localApi : {
   },
   getAd: (id) => request(`/ads/${id}`),
   createAd: (form) => request('/ads', { method: 'POST', body: form, isForm: true }),
-  completeAd: (id, application_id) => request(`/ads/${id}/complete`, { method: 'POST', body: { application_id } }),
+  toggleSave: (id) => request(`/ads/${id}/save`, { method: 'POST' }),
+  markDelivered: (id, application_id) => request(`/ads/${id}/deliver`, { method: 'POST', body: { application_id } }),
+  confirmCompletion: (id, application_id) => request(`/ads/${id}/confirm`, { method: 'POST', body: { application_id } }),
   cancelAd: (id) => request(`/ads/${id}/cancel`, { method: 'POST' }),
+  rate: (b) => request('/reviews', { method: 'POST', body: b }),
+  leaderboard: (params = {}) => request(`/leaderboard?${new URLSearchParams(params)}`),
   // applications
   apply: (adId, message) => request(`/applications/ads/${adId}/apply`, { method: 'POST', body: { message } }),
   decide: (appId, action) => request(`/applications/${appId}/${action}`, { method: 'POST' }),

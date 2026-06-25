@@ -1,160 +1,230 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Screen, Header, Spinner } from '../components/Layout.jsx';
+import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { chf, catLabel, catIcon, STATUS_LABEL, initials, timeAgo } from '../constants.js';
+import { chf, catLabel, catIcon, catTint, STATUS_LABEL, timeAgo, dateShort } from '../constants.js';
+
+const STEPS = [
+  { key: 'open', cap: 'Ouverte', i: 0 },
+  { key: 'in_progress', cap: 'Acceptée', i: 1 },
+  { key: 'delivered', cap: 'Livrée', i: 2 },
+  { key: 'completed', cap: 'Terminée', i: 3 },
+];
+const stepIndex = { open: 0, in_progress: 1, delivered: 2, completed: 3, cancelled: 0 };
+
+function Stepper({ status }) {
+  const cur = stepIndex[status] ?? 0;
+  return (
+    <div className="stepper">
+      {STEPS.map((s) => (
+        <div key={s.key} className={`st ${s.i < cur ? 'done' : s.i === cur ? 'active' : ''}`}>
+          <div className="bar" />
+          <div className="ring">{s.i < cur ? '✓' : s.i + 1}</div>
+          <div className="cap">{s.cap}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RatingSheet({ onClose, onSubmit, title }) {
+  const [stars, setStars] = useState(5);
+  const [comment, setComment] = useState('');
+  const [busy, setBusy] = useState(false);
+  return (
+    <Sheet onClose={onClose}>
+      <div className="h-sec center">{title}</div>
+      <div className="star-pick" style={{ margin: '12px 0 18px' }}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span key={n} className={n <= stars ? 'on' : ''} onClick={() => setStars(n)}>★</span>
+        ))}
+      </div>
+      <div className="field">
+        <textarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Votre commentaire (optionnel)…" />
+      </div>
+      <button className="btn coral" disabled={busy} onClick={async () => { setBusy(true); await onSubmit(stars, comment); setBusy(false); }}>
+        Publier l'avis
+      </button>
+    </Sheet>
+  );
+}
 
 export function AdDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, setUser, showToast, refreshBadges } = useApp();
   const [ad, setAd] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  const [rating, setRating] = useState(null); // { rateeId, role, title }
 
   const load = useCallback(async () => {
     try { const { ad } = await api.getAd(id); setAd(ad); }
-    catch (e) { showToast(e.message, 'error'); navigate('/feed'); }
-    finally { setLoading(false); }
+    catch (e) { showToast(e.message, 'error'); navigate('/explore'); }
   }, [id, showToast, navigate]);
-
   useEffect(() => { load(); }, [load]);
+
+  const refreshMe = async () => { try { const { user } = await api.me(); setUser(user); } catch { /* ignore */ } };
 
   async function apply() {
     setBusy(true);
-    try {
-      await api.apply(id, message);
-      showToast('Candidature envoyée ! 🙌');
-      setMessage('');
-      load();
-    } catch (e) { showToast(e.message, 'error'); }
-    finally { setBusy(false); }
+    try { await api.apply(id, message); showToast('Candidature envoyée ! 🙌'); setMessage(''); load(); }
+    catch (e) { showToast(e.message, 'error'); } finally { setBusy(false); }
   }
-
   async function decide(appId, action) {
-    try { await api.decide(appId, action); showToast(action === 'accept' ? 'Candidat accepté ✅' : 'Candidature refusée'); load(); }
+    try { await api.decide(appId, action); showToast(action === 'accept' ? 'Helper accepté ✅' : 'Refusé'); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
-
-  async function complete(appId) {
-    if (!confirm('Confirmer la prestation et verser le pourboire ?')) return;
+  async function deliver(appId) {
+    try { await api.markDelivered(id, appId); showToast('Marqué comme livré 📦'); load(); }
+    catch (e) { showToast(e.message, 'error'); }
+  }
+  async function confirm(appId) {
+    if (!confirm('Confirmer la prestation et libérer le pourboire ?')) return;
+    try { await api.confirmCompletion(id, appId); await refreshMe(); refreshBadges(); showToast('Pourboire libéré 💰'); load(); }
+    catch (e) { showToast(e.message, 'error'); }
+  }
+  async function cancelAd() {
+    if (!confirm('Annuler cette mission ? Le pourboire vous sera remboursé.')) return;
+    try { await api.cancelAd(id); await refreshMe(); showToast('Mission annulée, escrow remboursé'); load(); }
+    catch (e) { showToast(e.message, 'error'); }
+  }
+  async function submitRating(stars, comment) {
     try {
-      await api.completeAd(id, appId);
-      const { user } = await api.me(); setUser(user);
-      showToast('Pourboire versé 💰');
-      refreshBadges();
-      load();
+      await api.rate({ ad_id: id, ratee_id: rating.rateeId, role: rating.role, stars, comment });
+      setRating(null); showToast('Merci pour votre avis ⭐'); load();
     } catch (e) { showToast(e.message, 'error'); }
   }
 
-  async function cancel() {
-    if (!confirm('Annuler cette annonce ?')) return;
-    try { await api.cancelAd(id); showToast('Annonce annulée'); load(); }
-    catch (e) { showToast(e.message, 'error'); }
-  }
-
-  if (loading) return <Screen><Header title="TIPPER" back="/feed" /><Spinner /></Screen>;
-  if (!ad) return null;
+  if (!ad) return <Screen nav={false}><AppBar title="" back="/explore" /><Spinner /></Screen>;
 
   const mine = ad.is_mine;
   const myApp = ad.my_application;
   const closed = ad.status === 'completed' || ad.status === 'cancelled';
+  const myReviewExists = (rateeId) => ad.reviews?.some((r) => r.rater_id === user.id && r.ratee_id === rateeId);
 
   return (
-    <Screen>
-      <Header title={catLabel(ad.category)} back="/feed" />
+    <Screen nav={false}>
+      <AppBar title={catLabel(ad.category)} back="/explore"
+        right={<button className="iconbtn" onClick={async () => { await api.toggleSave(id); load(); }}>{ad.is_saved ? '♥' : '♡'}</button>} />
       <div className="content">
         {ad.photo
-          ? <img src={ad.photo} alt={ad.title} style={{ width: '100%', borderRadius: 14, marginBottom: 14, aspectRatio: '16/10', objectFit: 'cover' }} />
-          : <div className="photo-upload" style={{ marginBottom: 14, cursor: 'default', color: 'var(--indigo-light)', fontSize: 48 }}>{catIcon(ad.category)}</div>}
+          ? <img src={ad.photo} alt="" style={{ width: '100%', borderRadius: 'var(--r-md)', marginBottom: 14, aspectRatio: '16/10', objectFit: 'cover' }} />
+          : <div style={{ height: 150, borderRadius: 'var(--r-md)', marginBottom: 14, display: 'grid', placeItems: 'center', fontSize: 56, background: catTint(ad.category) + '22', color: catTint(ad.category) }}>{catIcon(ad.category)}</div>}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="chip-cat">{catLabel(ad.category)}</span>
-          <span className={`status ${ad.status}`}>{STATUS_LABEL[ad.status]}</span>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
+          <span className="tag cat">{catLabel(ad.category)}</span>
+          {ad.urgent && <span className="tag urgent">⚡ Urgent</span>}
+          <span className={`status ${ad.status}`} style={{ marginLeft: 'auto' }}>{STATUS_LABEL[ad.status]}</span>
         </div>
-        <h1 className="page-title" style={{ marginTop: 10 }}>{ad.title}</h1>
+        <h1 className="h-page" style={{ marginBottom: 12 }}>{ad.title}</h1>
+
+        {ad.status !== 'cancelled' && <div className="card"><Stepper status={ad.status} /></div>}
 
         <div className="card">
-          {ad.price != null && <div className="tx-row"><span className="muted">Prix / budget</span><strong>{chf(ad.price)}</strong></div>}
-          <div className="tx-row"><span className="muted">Pourboire offert</span><strong style={{ color: 'var(--magenta)' }}>{chf(ad.tip_amount)}</strong></div>
-          <div className="tx-row"><span className="muted">Places restantes</span><strong>{ad.spots_left} / {ad.max_participants}</strong></div>
-          {ad.distance_km != null && <div className="tx-row"><span className="muted">Distance</span><strong>{ad.distance_km} km</strong></div>}
-          <div className="tx-row"><span className="muted">Publiée</span><span>{timeAgo(ad.created_at)}</span></div>
+          <div className="tx" style={{ borderBottom: '1px solid var(--line-soft)' }}>
+            <div className="ic" style={{ background: '#e4f7f3' }}>💰</div>
+            <div><div style={{ fontWeight: 800 }}>Pourboire</div><div className="sub" style={{ fontSize: 12 }}>Bloqué en séquestre</div></div>
+            <div className="amt" style={{ color: 'var(--teal)', fontSize: 18 }}>{chf(ad.tip_amount)}</div>
+          </div>
+          {ad.price != null && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🏷️</div><div style={{ fontWeight: 700 }}>Prix du bien</div><div className="amt">{chf(ad.price)}</div></div>}
+          <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>📍</div><div style={{ fontWeight: 700 }}>{ad.distance_km != null ? `${ad.distance_km} km` : (ad.city || '—')}</div><div className="amt" style={{ fontWeight: 600, color: 'var(--muted)' }}>{ad.spots_left}/{ad.max_participants} places</div></div>
+          {ad.scheduled_at && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🗓️</div><div style={{ fontWeight: 700 }}>Créneau</div><div className="amt" style={{ fontWeight: 600, color: 'var(--muted)' }}>{dateShort(ad.scheduled_at)}</div></div>}
         </div>
 
-        {ad.description && <div className="card"><div className="muted" style={{ fontSize: 13, marginBottom: 6 }}>Description</div>{ad.description}</div>}
+        {ad.description && <div className="card"><div className="eyebrow" style={{ marginBottom: 6 }}>Description</div>{ad.description}</div>}
 
         {/* Auteur */}
-        <div className="list-row" onClick={() => navigate(`/u/${ad.author.id}`)} style={{ cursor: 'pointer' }}>
-          <div className="avatar">{initials(ad.author.full_name)}</div>
-          <div className="grow">
-            <div className="name">{ad.author.full_name}</div>
-            <div className="sub">{ad.city || ad.author.city || 'Localisation non précisée'}</div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }} onClick={() => navigate(`/u/${ad.author.id}`)}>
+          <Avatar user={ad.author} size="m" />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>{ad.author.full_name} {ad.author.verified && '✅'}</div>
+            <Stars value={ad.author.rating} count={ad.author.rating_count} />
           </div>
-          {!mine && <button className="btn sm ghost" onClick={(e) => { e.stopPropagation(); navigate(`/messages/${ad.author.id}`); }}>💬 Message</button>}
+          {!mine && <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); navigate(`/messages/${ad.author.id}`); }}>💬</button>}
         </div>
 
-        <div className="spacer" />
-
-        {/* Actions pour le candidat */}
-        {!mine && !closed && (
-          myApp ? (
-            <div className="card center">
-              <div className="big" style={{ fontSize: 38 }}>{myApp.status === 'accepted' ? '✅' : myApp.status === 'rejected' ? '❌' : myApp.status === 'completed' ? '💰' : '⏳'}</div>
-              <strong>Candidature {STATUS_LABEL[myApp.status]?.toLowerCase()}</strong>
-              <p className="muted" style={{ fontSize: 13 }}>
-                {myApp.status === 'pending' && "En attente de la réponse de l'auteur."}
-                {myApp.status === 'accepted' && 'Réalisez la prestation, le pourboire sera versé à la fin.'}
-                {myApp.status === 'completed' && 'Prestation terminée, pourboire reçu !'}
-                {myApp.status === 'rejected' && "Cette candidature n'a pas été retenue."}
-              </p>
+        {/* Candidat */}
+        {!mine && !closed && (myApp ? (
+          <div className="card center">
+            {myApp.status === 'pending' && <><div style={{ fontSize: 40 }}>⏳</div><div style={{ fontWeight: 800, marginTop: 6 }}>Candidature en attente</div><p className="sub">Le demandeur va examiner votre profil.</p></>}
+            {myApp.status === 'accepted' && <>
+              <div style={{ fontSize: 40 }}>🚀</div><div style={{ fontWeight: 800, marginTop: 6 }}>Vous êtes pris !</div>
+              <p className="sub">Réalisez la mission puis marquez-la comme livrée.</p>
+              <button className="btn coral" style={{ marginTop: 8 }} onClick={() => deliver(myApp.id)}>📦 Marquer comme livré</button>
+            </>}
+            {myApp.status === 'delivered' && <><div style={{ fontSize: 40 }}>📦</div><div style={{ fontWeight: 800, marginTop: 6 }}>Livré !</div><p className="sub">En attente de confirmation du demandeur pour libérer le pourboire.</p></>}
+            {myApp.status === 'rejected' && <><div style={{ fontSize: 40 }}>😕</div><div style={{ fontWeight: 800, marginTop: 6 }}>Non retenue</div></>}
+          </div>
+        ) : ad.spots_left > 0 ? (
+          <div className="card">
+            <div className="field" style={{ marginBottom: 12 }}>
+              <label>Un mot pour convaincre ? (optionnel)</label>
+              <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, je peux vous aider rapidement…" />
             </div>
-          ) : ad.spots_left > 0 ? (
-            <>
-              <div className="field">
-                <label>Votre message (optionnel)</label>
-                <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Bonjour, je peux vous aider…" />
-              </div>
-              <button className="btn magenta" disabled={busy} onClick={apply}>{busy ? '…' : 'POSTULER'}</button>
-            </>
-          ) : (
-            <div className="card center muted">Complet — maximum {ad.max_participants} participants atteint.</div>
-          )
+            <button className="btn coral" disabled={busy} onClick={apply}>🙋 Postuler à cette mission</button>
+          </div>
+        ) : <div className="card center muted">Complet — {ad.max_participants} participants atteints.</div>)}
+
+        {/* Candidat terminé -> noter le demandeur */}
+        {!mine && myApp?.status === 'completed' && !myReviewExists(ad.author.id) && (
+          <button className="btn teal" onClick={() => setRating({ rateeId: ad.author.id, role: 'poster', title: `Noter ${ad.author.full_name}` })}>⭐ Noter le demandeur</button>
         )}
 
         {/* Gestion par l'auteur */}
         {mine && (
           <>
-            <h2 style={{ fontSize: 18, margin: '4px 0 10px' }}>Candidatures ({ad.applications?.length || 0})</h2>
-            {(!ad.applications || ad.applications.length === 0) && <div className="card muted center">Aucune candidature pour le moment.</div>}
+            <div className="h-sec" style={{ marginTop: 8 }}>Candidatures ({ad.applications?.length || 0})</div>
+            {(!ad.applications || ad.applications.length === 0) && <div className="card center muted">Aucune candidature pour l'instant.</div>}
             {ad.applications?.map((a) => (
               <div key={a.id} className="card">
-                <div className="list-row" style={{ borderBottom: 'none', paddingBottom: 6 }}>
-                  <div className="avatar">{initials(a.applicant.full_name)}</div>
-                  <div className="grow">
-                    <div className="name">{a.applicant.full_name}</div>
-                    <div className="sub">{timeAgo(a.created_at)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} onClick={() => navigate(`/u/${a.applicant.id}`)}>
+                  <Avatar user={a.applicant} size="m" />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800 }}>{a.applicant.full_name} {a.applicant.verified && '✅'}</div>
+                    <Stars value={a.applicant.rating} count={a.applicant.rating_count} />
                   </div>
                   <span className={`status ${a.status}`}>{STATUS_LABEL[a.status]}</span>
                 </div>
-                {a.message && <p style={{ fontSize: 14, margin: '4px 0 10px' }}>« {a.message} »</p>}
-                <div className="btn-row">
-                  <button className="btn sm ghost" style={{ flex: 1 }} onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>
+                {a.message && <p style={{ fontSize: 14, margin: '10px 0 0', color: 'var(--ink-soft)' }}>« {a.message} »</p>}
+                <div className="btn-row" style={{ marginTop: 12 }}>
+                  <button className="btn ghost sm" onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>
                   {a.status === 'pending' && !closed && <>
-                    <button className="btn sm danger" style={{ flex: 1 }} onClick={() => decide(a.id, 'reject')}>Refuser</button>
-                    <button className="btn sm ok" style={{ flex: 1 }} onClick={() => decide(a.id, 'accept')}>Accepter</button>
+                    <button className="btn danger sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'reject')}>Refuser</button>
+                    <button className="btn teal sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'accept')}>Accepter</button>
                   </>}
-                  {a.status === 'accepted' && <button className="btn sm magenta" style={{ flex: 2 }} onClick={() => complete(a.id)}>Verser le pourboire 💰</button>}
+                  {(a.status === 'accepted' || a.status === 'delivered') && <button className="btn coral sm" style={{ flex: 2 }} onClick={() => confirm(a.id)}>💰 Confirmer & payer</button>}
+                  {a.status === 'completed' && !myReviewExists(a.applicant.id) && <button className="btn teal sm" style={{ flex: 2 }} onClick={() => setRating({ rateeId: a.applicant.id, role: 'helper', title: `Noter ${a.applicant.full_name}` })}>⭐ Noter</button>}
                 </div>
               </div>
             ))}
-            {!closed && <button className="btn ghost danger" style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={cancel}>Annuler l'annonce</button>}
+            {!closed && <button className="btn outline" style={{ color: 'var(--danger)' }} onClick={cancelAd}>Annuler la mission</button>}
+          </>
+        )}
+
+        {/* Avis sur la mission */}
+        {ad.reviews?.length > 0 && (
+          <>
+            <div className="h-sec" style={{ marginTop: 8 }}>Avis</div>
+            {ad.reviews.map((r) => (
+              <div key={r.id} className="card" style={{ display: 'flex', gap: 12 }}>
+                <Avatar user={r.rater} size="s" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: 700, fontSize: 14 }}>{r.rater.full_name}</span>
+                    <Stars value={r.stars} />
+                  </div>
+                  {r.comment && <p className="sub" style={{ margin: '4px 0 0' }}>{r.comment}</p>}
+                </div>
+              </div>
+            ))}
           </>
         )}
         <div className="spacer" />
       </div>
+
+      {rating && <RatingSheet title={rating.title} onClose={() => setRating(null)} onSubmit={submitRating} />}
     </Screen>
   );
 }

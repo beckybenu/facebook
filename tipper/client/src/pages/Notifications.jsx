@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Screen, Header, Spinner, Empty } from '../components/Layout.jsx';
+import { Screen, AppBar, Spinner, Empty } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
 import { timeAgo } from '../constants.js';
 import { enablePush, pushStatus } from '../push.js';
 
-const ICONS = {
-  new_application: '🙋', application_accepted: '✅', application_rejected: '❌',
-  tip_received: '💰', new_message: '💬', ad_completed: '🎉',
+const ICON = {
+  new_application: { e: '🙋', bg: '#ffe9e3' }, application_accepted: { e: '✅', bg: '#e4f7f3' },
+  application_rejected: { e: '❌', bg: '#fdecec' }, tip_received: { e: '💰', bg: '#e4f7f3' },
+  mission_delivered: { e: '📦', bg: '#e7eeff' }, new_message: { e: '💬', bg: '#eee9ff' },
+  new_review: { e: '⭐', bg: '#fff1d9' },
 };
 
 export function Notifications() {
@@ -21,19 +23,15 @@ export function Notifications() {
     try {
       const { notifications } = await api.notifications();
       setItems(notifications);
-      await api.readNotifications();
-      setUnreadNotif(0);
-      refreshBadges();
+      await api.readNotifications(); setUnreadNotif(0); refreshBadges();
     } catch (e) { showToast(e.message, 'error'); }
   }, [showToast, setUnreadNotif, refreshBadges]);
-
   useEffect(() => { load(); }, [load]);
 
   async function activate() {
     try { await enablePush(); setPStatus('granted'); showToast('Notifications activées 🔔'); }
     catch (e) { showToast(e.message, 'error'); setPStatus(pushStatus()); }
   }
-
   function open(n) {
     if (n.data?.fromUserId) navigate(`/messages/${n.data.fromUserId}`);
     else if (n.data?.adId) navigate(`/ads/${n.data.adId}`);
@@ -41,32 +39,35 @@ export function Notifications() {
 
   return (
     <Screen>
-      <Header title="TIPPER" back="/" />
+      <AppBar title="Notifications" back="/" />
       <div className="content">
-        <h1 className="page-title">Notifications</h1>
-
         {pStatus !== 'granted' && pStatus !== 'unsupported' && (
-          <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 14 }}>🔔 Activez les alertes push en temps réel</span>
-            <button className="btn sm" onClick={activate}>Activer</button>
+          <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12, background: '#fffaf8', borderColor: '#ffe1d8' }}>
+            <span style={{ fontSize: 22 }}>🔔</span>
+            <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 14 }}>Alertes en temps réel</div><div className="sub" style={{ fontSize: 12.5 }}>Candidatures, pourboires, messages…</div></div>
+            <button className="btn coral sm" onClick={activate}>Activer</button>
           </div>
         )}
-
-        {!items ? <Spinner /> : items.length === 0 ? (
-          <Empty icon="🔔" title="Aucune notification" hint="Vos alertes apparaîtront ici." />
-        ) : items.map((n) => (
-          <div key={n.id} className="list-row" onClick={() => open(n)} style={{ cursor: 'pointer' }}>
-            <div className="avatar" style={{ background: n.read ? 'var(--line)' : 'var(--indigo-light)' }}>{ICONS[n.type] || '🔔'}</div>
-            <div className="grow">
-              <div className="name">{n.title}</div>
-              <div className="sub" style={{ whiteSpace: 'normal' }}>{n.body}</div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-              <span className="time">{timeAgo(n.created_at)}</span>
-              {!n.read && <span className="unread-dot" />}
-            </div>
+        {!items ? <Spinner /> : items.length === 0 ? <Empty icon="🔔" title="Aucune notification" hint="Vos alertes apparaîtront ici" /> : (
+          <div className="card">
+            {items.map((n) => {
+              const ic = ICON[n.type] || { e: '🔔', bg: 'var(--line-soft)' };
+              return (
+                <div key={n.id} className="row" onClick={() => open(n)}>
+                  <div className="av m" style={{ background: ic.bg, color: 'var(--ink)', fontSize: 18 }}>{ic.e}</div>
+                  <div className="grow">
+                    <div className="r-name" style={{ fontSize: 14 }}>{n.title}</div>
+                    <div className="r-sub" style={{ whiteSpace: 'normal' }}>{n.body}</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                    <span className="r-time">{timeAgo(n.created_at)}</span>
+                    {!n.read && <span className="unread" />}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
+        )}
       </div>
     </Screen>
   );
