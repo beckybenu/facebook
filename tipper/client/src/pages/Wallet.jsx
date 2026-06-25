@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Screen, AppBar, Spinner, Empty } from '../components/Layout.jsx';
+import { Money } from '../components/fx.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
 import { chf, timeAgo } from '../constants.js';
@@ -38,8 +39,9 @@ export function Wallet() {
       <AppBar title="Mon wallet" back="/profile" />
       <div className="content">
         <div className="balance">
+          <div className="sheen" />
           <div className="lbl">Solde disponible</div>
-          <div className="amt">{chf(data ? data.available : 0)}</div>
+          <div className="amt"><Money value={data ? data.available : 0} format={chf} /></div>
           {data && data.reserved > 0 && <div className="escrow">🔒 {chf(data.reserved)} en séquestre · total {chf(data.total)}</div>}
         </div>
         <div className="spacer" />

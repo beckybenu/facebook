@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Screen, AppBar, Avatar, Spinner } from '../components/Layout.jsx';
+import { Screen, AppBar, Avatar } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
+import { Money, Ring, Tilt, SkeletonMission } from '../components/fx.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
 import { chf } from '../constants.js';
@@ -34,7 +35,7 @@ export function Home() {
         subtitle={user.city ? `📍 ${user.city}` : 'Position non définie'}
         right={<button className="iconbtn" onClick={() => navigate('/notifications')}>🔔{unreadNotif > 0 && <span className="dot-badge">{unreadNotif}</span>}</button>}
       />
-      <div className="content">
+      <div className="content stagger">
         {/* Greeting */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <Avatar user={user} size="m" />
@@ -47,17 +48,19 @@ export function Home() {
 
         {/* Bento */}
         <div className="bento">
-          <div className="balance span2" onClick={() => navigate('/wallet')}>
+          <Tilt className="balance span2" onClick={() => navigate('/wallet')}>
+            <div className="sheen" />
             <div className="lbl">Solde disponible</div>
-            <div className="amt">{chf(wallet ? wallet.available : user.available)}</div>
+            <div className="amt"><Money value={wallet ? wallet.available : user.available} format={chf} /></div>
             {wallet && wallet.reserved > 0 && <div className="escrow">🔒 {chf(wallet.reserved)} en séquestre</div>}
-          </div>
+          </Tilt>
 
-          <div className="tile" onClick={() => navigate('/profile')}>
-            <div className="t-ic" style={{ background: 'rgba(139,92,255,0.16)' }}>{lvl.emoji}</div>
-            <div className="t-t">Niveau {lvl.name}</div>
-            <div className="levelbar" style={{ marginTop: 8 }}><i style={{ width: `${Math.round((lvl.progress || 0) * 100)}%` }} /></div>
-            <div className="t-s" style={{ marginTop: 6 }}>{user.xp} XP</div>
+          <div className="tile" onClick={() => navigate('/profile')} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Ring progress={lvl.progress} size={54}>{lvl.emoji}</Ring>
+            <div>
+              <div className="t-t">{lvl.name}</div>
+              <div className="t-s">{user.xp} XP</div>
+            </div>
           </div>
 
           <div className="tile" onClick={() => navigate('/profile')}>
@@ -107,7 +110,7 @@ export function Home() {
         {urgent.length > 0 && (
           <>
             <div className="h-sec" style={{ marginTop: 6 }}>⚡ Urgent près de vous</div>
-            {!ads ? <Spinner /> : urgent.map((a) => <Mission key={a.id} ad={a} />)}
+            {!ads ? <SkeletonMission /> : urgent.map((a) => <Mission key={a.id} ad={a} />)}
           </>
         )}
 
@@ -115,7 +118,7 @@ export function Home() {
           <div className="h-sec" style={{ marginBottom: 0 }}>Missions récentes</div>
           <button className="muted" style={{ fontSize: 13, fontWeight: 700 }} onClick={() => navigate('/explore')}>Tout voir →</button>
         </div>
-        {!ads ? <Spinner /> : nearby.map((a) => <Mission key={a.id} ad={a} />)}
+        {!ads ? <><SkeletonMission /><SkeletonMission /></> : nearby.map((a) => <Mission key={a.id} ad={a} />)}
       </div>
     </Screen>
   );

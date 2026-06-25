@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Empty, Avatar, Stars } from '../components/Layout.jsx';
+import { Money, Ring } from '../components/fx.jsx';
 import { Mission } from '../components/AdCard.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
@@ -43,7 +44,7 @@ export function Profile() {
         right={<button className="iconbtn" onClick={logout} title="Déconnexion">⏻</button>} />
       <div className="content">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-          <Avatar user={user} size="l" />
+          <Avatar user={user} size="l" glow />
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 800, fontSize: 20, display: 'flex', alignItems: 'center', gap: 6 }}>{user.full_name} {user.verified && '✅'}</div>
             <Stars value={user.rating} count={user.rating_count} />
@@ -52,17 +53,17 @@ export function Profile() {
         </div>
 
         {/* Niveau */}
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span style={{ fontWeight: 800 }}>{lvl.emoji} Niveau {lvl.name}</span>
-            <span className="sub" style={{ fontSize: 13 }}>{lvl.xp} XP{lvl.next ? ` / ${lvl.next.min}` : ''}</span>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Ring progress={lvl.progress} size={68} stroke={7}>{lvl.emoji}</Ring>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Niveau {lvl.name}</div>
+            <div className="sub" style={{ fontSize: 13, marginBottom: 8 }}>{lvl.xp} XP{lvl.next ? ` / ${lvl.next.min}` : ''}</div>
+            {user.badges?.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {user.badges.map((b) => <span key={b.key} className="badge">{b.emoji} {b.label}</span>)}
+              </div>
+            )}
           </div>
-          <div className="levelbar"><i style={{ width: `${Math.round((lvl.progress || 0) * 100)}%` }} /></div>
-          {user.badges?.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
-              {user.badges.map((b) => <span key={b.key} className="badge">{b.emoji} {b.label}</span>)}
-            </div>
-          )}
         </div>
 
         {/* Stats */}
@@ -73,8 +74,9 @@ export function Profile() {
         </div>
 
         <div className="balance" onClick={() => navigate('/wallet')} style={{ marginBottom: 14 }}>
+          <div className="sheen" />
           <div className="lbl">Solde disponible</div>
-          <div className="amt" style={{ fontSize: 30 }}>{chf(user.available)}</div>
+          <div className="amt" style={{ fontSize: 30 }}><Money value={user.available} format={chf} /></div>
           {user.reserved > 0 && <div className="escrow">🔒 {chf(user.reserved)} en séquestre</div>}
         </div>
 
@@ -143,7 +145,7 @@ export function PublicProfile() {
       <AppBar title="Profil" back={-1} />
       <div className="content">
         <div className="center">
-          <div style={{ display: 'inline-block' }}><Avatar user={u} size="l" /></div>
+          <div style={{ display: 'inline-block' }}><Avatar user={u} size="l" glow /></div>
           <div style={{ fontWeight: 800, fontSize: 21, marginTop: 8, display: 'flex', gap: 6, justifyContent: 'center' }}>{u.full_name} {u.verified && '✅'}</div>
           <div style={{ marginTop: 4 }}><Stars value={u.rating} count={u.rating_count} size={15} /></div>
           <div className="sub" style={{ marginTop: 2 }}>{lvl.emoji} {lvl.name} · {u.city || '—'}</div>

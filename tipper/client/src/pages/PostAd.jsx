@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar } from '../components/Layout.jsx';
+import { Confetti } from '../components/fx.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
 import { catLabel, catIcon, catTint, chf, TIP_SUGGESTION } from '../constants.js';
@@ -137,6 +138,7 @@ export function Posted() {
   const navigate = useNavigate();
   return (
     <Screen nav={false}>
+      <Confetti />
       <AppBar title="" back="/" />
       <div className="content center" style={{ paddingTop: 50 }}>
         <div style={{ fontSize: 72 }}>🎉</div>

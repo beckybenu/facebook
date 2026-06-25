@@ -1,4 +1,5 @@
-import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext.jsx';
 import { STANDALONE } from './api.js';
 import { Login, Signup } from './pages/Auth.jsx';
@@ -27,9 +28,23 @@ function Toast() {
   return <div className={`toast ${toast.kind}`}>{toast.message}</div>;
 }
 
+function Splash() {
+  const [gone, setGone] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setGone(true), 1750); return () => clearTimeout(t); }, []);
+  if (gone) return null;
+  return (
+    <div className="splash">
+      <div className="s-ring" />
+      <div className="s-logo">Tipper<span className="dot">.</span></div>
+    </div>
+  );
+}
+
 function Router() {
   const { user } = useApp();
+  const { pathname } = useLocation();
   return (
+    <div className="route-anim" key={pathname.split('/')[1] || 'home'}>
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
@@ -49,6 +64,7 @@ function Router() {
       <Route path="/u/:id" element={<Protected><PublicProfile /></Protected>} />
       <Route path="*" element={<Navigate to={user ? '/' : '/login'} replace />} />
     </Routes>
+    </div>
   );
 }
 
@@ -56,6 +72,7 @@ export default function App() {
   const RouterShell = STANDALONE ? HashRouter : BrowserRouter;
   return (
     <AppProvider>
+      <Splash />
       <RouterShell>
         <Router />
         <Toast />

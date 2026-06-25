@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Screen, AppBar, Spinner, Empty, Sheet } from '../components/Layout.jsx';
+import { Screen, AppBar, Empty, Sheet } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
+import { SkeletonMission } from '../components/fx.jsx';
 import { CATEGORIES } from '../constants.js';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
@@ -64,7 +65,7 @@ export function Explore() {
           ))}
         </div>
 
-        {!ads ? <Spinner /> : ads.length === 0 ? (
+        {!ads ? <><SkeletonMission /><SkeletonMission /><SkeletonMission /></> : ads.length === 0 ? (
           <Empty icon="🔍" title="Aucune mission" hint="Essayez d'élargir vos filtres" />
         ) : ads.map((a) => <Mission key={a.id} ad={a} onToggleSave={toggleSave} />)}
       </div>

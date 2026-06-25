@@ -54,13 +54,14 @@ export function Screen({ children, nav = true }) {
   );
 }
 
-export function Avatar({ user, size = 'm' }) {
+export function Avatar({ user, size = 'm', glow = false }) {
   if (!user) return null;
-  return (
+  const inner = (
     <div className={`av ${size}`} style={{ background: avatarColor(user.full_name || '') }}>
       {user.avatar ? <img src={user.avatar} alt="" /> : initials(user.full_name)}
     </div>
   );
+  return glow ? <div className="av-glow">{inner}</div> : inner;
 }
 
 export function Stars({ value, count, size = 13 }) {
