@@ -1,4 +1,12 @@
+import { localApi } from './localApi.js';
+
 const TOKEN_KEY = 'fgirl_token';
+
+// Standalone mode: no API server (e.g. the static GitHub Pages demo).
+// Everything runs in the browser via localStorage.
+export const STANDALONE =
+  import.meta.env.VITE_STANDALONE === '1' ||
+  (typeof location !== 'undefined' && location.hostname.endsWith('github.io'));
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -32,7 +40,7 @@ async function request(path, { method = 'GET', body } = {}) {
   return data;
 }
 
-export const api = {
+export const api = STANDALONE ? localApi : {
   get: (p) => request(p),
   post: (p, body) => request(p, { method: 'POST', body: body ?? {} }),
   put: (p, body) => request(p, { method: 'PUT', body: body ?? {} }),
