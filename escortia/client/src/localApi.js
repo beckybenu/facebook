@@ -3,8 +3,8 @@
 // so the full marketplace works with no server. Exposes the same
 // get/post/put/patch/del interface as the real api client.
 
-const DB_KEY = 'fgirl_db';
-const TOKEN_KEY = 'fgirl_token';
+const DB_KEY = 'escortia_db';
+const TOKEN_KEY = 'escortia_token';
 
 const SEED_COMPANIONS = [
   { name: 'Elena', city: 'Genève', age: 27, headline: 'Élégante & cultivée', rate: 350, img: 5,

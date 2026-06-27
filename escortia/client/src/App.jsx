@@ -12,7 +12,7 @@ import Bookings from './pages/Bookings.jsx';
 import Messages from './pages/Messages.jsx';
 import ProviderDashboard from './pages/ProviderDashboard.jsx';
 
-const AGE_KEY = 'fgirl_age_ok';
+const AGE_KEY = 'escortia_age_ok';
 
 function Protected({ children, role }) {
   const { user, loading } = useAuth();
@@ -50,7 +50,7 @@ export default function App() {
       </main>
       <footer className="footer">
         <div className="container">
-          <p>Fgirl — annuaire de compagnie réservé aux adultes (18+). Clone éducatif de Fgirl.ch.</p>
+          <p>Escortia — annuaire escort &amp; compagnie en Suisse, réservé aux adultes (18+). Démonstration éducative.</p>
         </div>
       </footer>
     </>

@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(withUser);
 
-app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'fgirl' }));
+app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'escortia' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
@@ -33,4 +33,4 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => console.log(`fgirl API listening on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`escortia API listening on http://localhost:${PORT}`));

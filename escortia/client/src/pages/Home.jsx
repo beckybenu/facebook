@@ -77,8 +77,8 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="container">
-          <h1>Trouvez la compagnie idéale</h1>
-          <p>Profils vérifiés de compagnie à travers la Suisse — discrétion et élégance.</p>
+          <h1>Escort &amp; compagnie en Suisse</h1>
+          <p>Profils d’escort et de compagnie vérifiés à Genève, Lausanne, Zürich et dans toute la Suisse — discrétion et élégance.</p>
           <div className="hero-search">
             <input
               type="search"

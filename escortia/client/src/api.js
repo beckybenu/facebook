@@ -1,6 +1,6 @@
 import { localApi } from './localApi.js';
 
-const TOKEN_KEY = 'fgirl_token';
+const TOKEN_KEY = 'escortia_token';
 
 // Standalone mode: no API server (e.g. the static GitHub Pages demo).
 // Everything runs in the browser via localStorage.

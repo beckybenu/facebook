@@ -1,8 +1,8 @@
 {
-  "name": "fgirl",
+  "name": "escortia",
   "version": "1.0.0",
   "private": true,
-  "description": "Fgirl — a companion/escort directory marketplace (Fgirl.ch-style clone)",
+  "description": "Escortia — a companion/escort directory marketplace",
   "scripts": {
     "postinstall": "npm --prefix server install && npm --prefix client install",
     "seed": "npm --prefix server run seed",

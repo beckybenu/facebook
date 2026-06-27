@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_FILE = process.env.DB_FILE || 'fgirl.db';
+const DB_FILE = process.env.DB_FILE || 'escortia.db';
 const dbPath = path.isAbsolute(DB_FILE) ? DB_FILE : path.join(__dirname, '..', DB_FILE);
 
 const db = new Database(dbPath);

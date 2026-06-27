@@ -1,8 +1,10 @@
-# Fgirl — Companion Directory Marketplace
+# Escortia — Companion Directory Marketplace
 
-A full-stack clone of a [Fgirl.ch](https://fgirl.ch)-style **companion / escort directory**, built
-as an educational marketplace. Browse verified companion profiles, filter by city, service and
-price, book appointments, exchange messages, and leave reviews.
+A full-stack **companion / escort directory** for Switzerland, built as an educational
+marketplace. Browse verified companion profiles, filter by city, service and price,
+book appointments, exchange messages, and leave reviews.
+
+**Live demo:** https://beckybenu.github.io/facebook/escortia/
 
 > ⚠️ **Adults only (18+).** This is a non-explicit educational demo: no real transactions,
 > no payment processing, and no sexually explicit content. Profile photos are placeholder
@@ -38,7 +40,7 @@ price, book appointments, exchange messages, and leave reviews.
 ## Getting started
 
 ```bash
-cd fgirl
+cd escortia
 
 # Install root tooling + server + client deps
 npm install
@@ -66,7 +68,7 @@ Password for all seeded accounts: `password123`
 ## Project structure
 
 ```
-fgirl/
+escortia/
 ├── server/                 # Express + SQLite API
 │   └── src/
 │       ├── index.js        # app entry + route mounting

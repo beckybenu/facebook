@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  // base configurable pour GitHub Pages (ex. /facebook/fgirl/)
+  // base configurable pour GitHub Pages (ex. /facebook/escortia/)
   base: process.env.VITE_BASE || '/',
   plugins: [react()],
   server: {

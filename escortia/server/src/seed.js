@@ -106,7 +106,7 @@ const tx = db.transaction(() => {
 
 tx();
 
-console.log('Seeded fgirl with', companions.length, 'companions + 1 demo client.');
+console.log('Seeded escortia with', companions.length, 'companions + 1 demo client.');
 console.log('Demo logins (password: password123):');
 console.log('  client@demo.ch   (client)');
 console.log('  elena@demo.ch    (provider)');

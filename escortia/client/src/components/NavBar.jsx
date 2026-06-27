@@ -27,7 +27,7 @@ export default function NavBar() {
   return (
     <header className="nav">
       <div className="container nav-inner">
-        <Link to="/" className="logo">Fgirl<span>.ch</span></Link>
+        <Link to="/" className="logo">Escortia<span>.ch</span></Link>
         <nav className="nav-links">
           <NavLink to="/" end>Annuaire</NavLink>
           {user && <NavLink to="/bookings">Réservations</NavLink>}
