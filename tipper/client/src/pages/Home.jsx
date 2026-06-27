@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Screen, AppBar, Avatar } from '../components/Layout.jsx';
+import { Screen, AppBar, Avatar, HeaderMenu } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
 import { Money, Ring, Tilt, SkeletonMission } from '../components/fx.jsx';
 import { useApp } from '../context/AppContext.jsx';
@@ -38,6 +38,7 @@ export function Home() {
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="iconbtn" onClick={toggleTheme} title="Thème">{theme === 'light' ? '🌙' : '☀️'}</button>
             <button className="iconbtn" onClick={() => navigate('/notifications')}>🔔{unreadNotif > 0 && <span className="dot-badge">{unreadNotif}</span>}</button>
+            <HeaderMenu />
           </div>
         }
       />

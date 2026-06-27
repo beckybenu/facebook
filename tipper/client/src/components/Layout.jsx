@@ -66,6 +66,42 @@ export function Nav() {
   );
 }
 
+export function HeaderMenu() {
+  const navigate = useNavigate();
+  const { user, t } = useApp();
+  const [open, setOpen] = useState(false);
+  const items = [
+    { ic: '⚡', label: t('menu.now'), to: '/now' },
+    { ic: '📣', label: t('home.publish'), to: '/categories' },
+    { ic: '🧭', label: t('nav.explore'), to: '/explore' },
+    { ic: '🗺️', label: t('home.map'), to: '/map' },
+    { ic: '👛', label: t('menu.wallet'), to: '/wallet' },
+    { ic: '🏆', label: t('home.rank'), to: '/leaderboard' },
+    { ic: '💬', label: t('nav.inbox'), to: '/messages' },
+    { ic: user.verified ? '✅' : '🪪', label: t('menu.verify'), to: '/verify' },
+    { ic: '👤', label: t('nav.profile'), to: '/profile' },
+  ];
+  if (user.is_admin) items.push({ ic: '🛠️', label: t('menu.admin'), to: '/admin' });
+  return (
+    <>
+      <button className="iconbtn" onClick={() => setOpen(true)} aria-label={t('menu.title')}>☰</button>
+      {open && (
+        <>
+          <div className="menu-backdrop" onClick={() => setOpen(false)} />
+          <div className="header-menu fade-in">
+            <div className="hm-title">{t('menu.title')}</div>
+            {items.map((it) => (
+              <button key={it.to} className="hm-item" onClick={() => { setOpen(false); navigate(it.to); }}>
+                <span className="hm-ic">{it.ic}</span><span>{it.label}</span><span className="hm-arrow">›</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
 export function Screen({ children, nav = true }) {
   return (
     <div className="app-shell">
