@@ -150,6 +150,10 @@ const EXTRA = {
     'adm.done': 'Action effectuée', 'adm.cashedOk': 'Commissions encaissées 💸', 'adm.payForced': 'Pourboire forcé et payé 💰', 'adm.refunded': 'Mission remboursée ↩️',
     'adm.verifiedOk': 'Utilisateur vérifié ✅', 'adm.unverifiedOk': 'Vérification retirée', 'adm.reactivatedOk': 'Compte réactivé', 'adm.suspendedOk': 'Compte suspendu ⛔',
     'adm.dispRefunded': 'Litige résolu : remboursement ↩️', 'adm.dispClosed': 'Litige clôturé',
+    'prof.requests': 'Mes demandes', 'prof.applications': 'Candidatures', 'prof.reviews': 'Avis', 'prof.settings': 'Réglages',
+    'prof.noRequests': 'Aucune demande', 'prof.noRequestsHint': 'Publiez votre première demande', 'prof.publishBtn': 'Publier',
+    'prof.noApps': 'Aucune candidature', 'prof.noReviews': 'Aucun avis', 'prof.noReviewsHint': 'Rendez des services pour en recevoir',
+    'prof.tip': 'Pourboire', 'prof.statRequests': 'Demandes', 'prof.statDone': 'Services rendus', 'prof.statEarned': 'Gagné 🪙',
   },
   en: {
     'menu.title': 'Menu', 'menu.now': 'Tipper Now', 'menu.wallet': 'Wallet', 'menu.verify': 'Verification', 'menu.admin': 'Admin back-office',
@@ -177,6 +181,10 @@ const EXTRA = {
     'adm.done': 'Action done', 'adm.cashedOk': 'Commissions cashed out 💸', 'adm.payForced': 'Tip forced and paid 💰', 'adm.refunded': 'Mission refunded ↩️',
     'adm.verifiedOk': 'User verified ✅', 'adm.unverifiedOk': 'Verification removed', 'adm.reactivatedOk': 'Account reactivated', 'adm.suspendedOk': 'Account suspended ⛔',
     'adm.dispRefunded': 'Dispute resolved: refunded ↩️', 'adm.dispClosed': 'Dispute closed',
+    'prof.requests': 'My requests', 'prof.applications': 'Applications', 'prof.reviews': 'Reviews', 'prof.settings': 'Settings',
+    'prof.noRequests': 'No requests', 'prof.noRequestsHint': 'Post your first request', 'prof.publishBtn': 'Post',
+    'prof.noApps': 'No applications', 'prof.noReviews': 'No reviews', 'prof.noReviewsHint': 'Help others to receive reviews',
+    'prof.tip': 'Tip', 'prof.statRequests': 'Requests', 'prof.statDone': 'Services done', 'prof.statEarned': 'Earned 🪙',
   },
   es: {
     'menu.title': 'Menú', 'menu.now': 'Tipper Now', 'menu.wallet': 'Billetera', 'menu.verify': 'Verificación', 'menu.admin': 'Back-office admin',
@@ -204,6 +212,10 @@ const EXTRA = {
     'adm.done': 'Acción realizada', 'adm.cashedOk': 'Comisiones cobradas 💸', 'adm.payForced': 'Propina forzada y pagada 💰', 'adm.refunded': 'Misión reembolsada ↩️',
     'adm.verifiedOk': 'Usuario verificado ✅', 'adm.unverifiedOk': 'Verificación retirada', 'adm.reactivatedOk': 'Cuenta reactivada', 'adm.suspendedOk': 'Cuenta suspendida ⛔',
     'adm.dispRefunded': 'Disputa resuelta: reembolso ↩️', 'adm.dispClosed': 'Disputa cerrada',
+    'prof.requests': 'Mis solicitudes', 'prof.applications': 'Candidaturas', 'prof.reviews': 'Reseñas', 'prof.settings': 'Ajustes',
+    'prof.noRequests': 'Sin solicitudes', 'prof.noRequestsHint': 'Publica tu primera solicitud', 'prof.publishBtn': 'Publicar',
+    'prof.noApps': 'Sin candidaturas', 'prof.noReviews': 'Sin reseñas', 'prof.noReviewsHint': 'Ayuda a otros para recibir reseñas',
+    'prof.tip': 'Propina', 'prof.statRequests': 'Solicitudes', 'prof.statDone': 'Servicios hechos', 'prof.statEarned': 'Ganado 🪙',
   },
   de: {
     'menu.title': 'Menü', 'menu.now': 'Tipper Now', 'menu.wallet': 'Wallet', 'menu.verify': 'Verifizierung', 'menu.admin': 'Admin-Backoffice',
@@ -231,6 +243,10 @@ const EXTRA = {
     'adm.done': 'Aktion ausgeführt', 'adm.cashedOk': 'Provisionen ausgezahlt 💸', 'adm.payForced': 'Trinkgeld erzwungen und gezahlt 💰', 'adm.refunded': 'Auftrag erstattet ↩️',
     'adm.verifiedOk': 'Nutzer verifiziert ✅', 'adm.unverifiedOk': 'Verifizierung entfernt', 'adm.reactivatedOk': 'Konto reaktiviert', 'adm.suspendedOk': 'Konto gesperrt ⛔',
     'adm.dispRefunded': 'Streitfall gelöst: Erstattung ↩️', 'adm.dispClosed': 'Streitfall geschlossen',
+    'prof.requests': 'Meine Anfragen', 'prof.applications': 'Bewerbungen', 'prof.reviews': 'Bewertungen', 'prof.settings': 'Einstellungen',
+    'prof.noRequests': 'Keine Anfragen', 'prof.noRequestsHint': 'Erstelle deine erste Anfrage', 'prof.publishBtn': 'Posten',
+    'prof.noApps': 'Keine Bewerbungen', 'prof.noReviews': 'Keine Bewertungen', 'prof.noReviewsHint': 'Hilf anderen, um Bewertungen zu erhalten',
+    'prof.tip': 'Trinkgeld', 'prof.statRequests': 'Anfragen', 'prof.statDone': 'Erledigte Dienste', 'prof.statEarned': 'Verdient 🪙',
   },
   it: {
     'menu.title': 'Menu', 'menu.now': 'Tipper Now', 'menu.wallet': 'Wallet', 'menu.verify': 'Verifica', 'menu.admin': 'Back-office admin',
@@ -258,6 +274,10 @@ const EXTRA = {
     'adm.done': 'Azione eseguita', 'adm.cashedOk': 'Commissioni incassate 💸', 'adm.payForced': 'Mancia forzata e pagata 💰', 'adm.refunded': 'Missione rimborsata ↩️',
     'adm.verifiedOk': 'Utente verificato ✅', 'adm.unverifiedOk': 'Verifica rimossa', 'adm.reactivatedOk': 'Account riattivato', 'adm.suspendedOk': 'Account sospeso ⛔',
     'adm.dispRefunded': 'Disputa risolta: rimborso ↩️', 'adm.dispClosed': 'Disputa chiusa',
+    'prof.requests': 'Le mie richieste', 'prof.applications': 'Candidature', 'prof.reviews': 'Recensioni', 'prof.settings': 'Impostazioni',
+    'prof.noRequests': 'Nessuna richiesta', 'prof.noRequestsHint': 'Pubblica la tua prima richiesta', 'prof.publishBtn': 'Pubblica',
+    'prof.noApps': 'Nessuna candidatura', 'prof.noReviews': 'Nessuna recensione', 'prof.noReviewsHint': 'Aiuta gli altri per ricevere recensioni',
+    'prof.tip': 'Mancia', 'prof.statRequests': 'Richieste', 'prof.statDone': 'Servizi resi', 'prof.statEarned': 'Guadagnato 🪙',
   },
 };
 

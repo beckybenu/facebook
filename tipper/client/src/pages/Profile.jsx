@@ -5,7 +5,7 @@ import { Money, Ring } from '../components/fx.jsx';
 import { Mission } from '../components/AdCard.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { coin, chf, STATUS_LABEL, timeAgo } from '../constants.js';
+import { coin, chf, timeAgo } from '../constants.js';
 import { LANGS } from '../i18n.js';
 import { enablePush, pushStatus } from '../push.js';
 
@@ -41,8 +41,8 @@ export function Profile() {
 
   return (
     <Screen>
-      <AppBar title="Profil" back="/"
-        right={<button className="iconbtn" onClick={logout} title="Déconnexion">⏻</button>} />
+      <AppBar title={t('nav.profile')} back="/"
+        right={<button className="iconbtn" onClick={logout} title={t('set.signout')}>⏻</button>} />
       <div className="content">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
           <Avatar user={user} size="l" glow />
@@ -81,9 +81,9 @@ export function Profile() {
 
         {/* Stats */}
         <div className="stat-grid" style={{ marginBottom: 14 }}>
-          <div className="stat"><div className="v">{me ? me.stats.ads : '—'}</div><div className="k">Missions</div></div>
-          <div className="stat"><div className="v">{me ? me.stats.completed : '—'}</div><div className="k">Services rendus</div></div>
-          <div className="stat"><div className="v" style={{ color: 'var(--teal)' }}>{me ? Math.round(me.stats.earned) : '—'}</div><div className="k">Gagné 🪙</div></div>
+          <div className="stat"><div className="v">{me ? me.stats.ads : '—'}</div><div className="k">{t('prof.statRequests')}</div></div>
+          <div className="stat"><div className="v">{me ? me.stats.completed : '—'}</div><div className="k">{t('prof.statDone')}</div></div>
+          <div className="stat"><div className="v" style={{ color: 'var(--teal)' }}>{me ? Math.round(me.stats.earned) : '—'}</div><div className="k">{t('prof.statEarned')}</div></div>
         </div>
 
         <div className="balance" onClick={() => navigate('/wallet')} style={{ marginBottom: 14 }}>
@@ -94,28 +94,28 @@ export function Profile() {
         </div>
 
         <div className="pill-row" style={{ marginBottom: 6 }}>
-          <button className={`pill ${tab === 'missions' ? 'active' : ''}`} onClick={() => setTab('missions')}>Mes missions</button>
-          <button className={`pill ${tab === 'apps' ? 'active' : ''}`} onClick={() => setTab('apps')}>Candidatures</button>
-          <button className={`pill ${tab === 'reviews' ? 'active' : ''}`} onClick={() => setTab('reviews')}>Avis</button>
-          <button className={`pill ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>Réglages</button>
+          <button className={`pill ${tab === 'missions' ? 'active' : ''}`} onClick={() => setTab('missions')}>{t('prof.requests')}</button>
+          <button className={`pill ${tab === 'apps' ? 'active' : ''}`} onClick={() => setTab('apps')}>{t('prof.applications')}</button>
+          <button className={`pill ${tab === 'reviews' ? 'active' : ''}`} onClick={() => setTab('reviews')}>{t('prof.reviews')}</button>
+          <button className={`pill ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>{t('prof.settings')}</button>
         </div>
 
-        {tab === 'missions' && (!myAds ? <Spinner /> : myAds.length === 0 ? <Empty icon="📭" title="Aucune mission" hint="Publiez votre première demande"
-          action={<button className="btn coral sm" onClick={() => navigate('/categories')}>Publier</button>} /> : myAds.map((a) => <Mission key={a.id} ad={a} />))}
+        {tab === 'missions' && (!myAds ? <Spinner /> : myAds.length === 0 ? <Empty icon="📭" title={t('prof.noRequests')} hint={t('prof.noRequestsHint')}
+          action={<button className="btn coral sm" onClick={() => navigate('/categories')}>{t('prof.publishBtn')}</button>} /> : myAds.map((a) => <Mission key={a.id} ad={a} />))}
 
-        {tab === 'apps' && (!myApps ? <Spinner /> : myApps.length === 0 ? <Empty icon="🗂️" title="Aucune candidature" /> : (
+        {tab === 'apps' && (!myApps ? <Spinner /> : myApps.length === 0 ? <Empty icon="🗂️" title={t('prof.noApps')} /> : (
           <div className="card">
             {myApps.map((a) => (
               <div key={a.id} className="row" onClick={() => navigate(`/ads/${a.ad_id}`)}>
                 <div className="av m" style={{ background: 'var(--line-soft)', color: 'var(--ink)' }}>{a.photo ? <img src={a.photo} alt="" /> : '📌'}</div>
-                <div className="grow"><div className="r-name">{a.ad_title}</div><div className="r-sub">Pourboire {coin(a.tip_amount)} · {timeAgo(a.created_at)}</div></div>
-                <span className={`status ${a.status}`}>{STATUS_LABEL[a.status]}</span>
+                <div className="grow"><div className="r-name">{a.ad_title}</div><div className="r-sub">{t('prof.tip')} {coin(a.tip_amount)} · {timeAgo(a.created_at)}</div></div>
+                <span className={`status ${a.status}`}>{t(`status.${a.status}`)}</span>
               </div>
             ))}
           </div>
         ))}
 
-        {tab === 'reviews' && (!me ? <Spinner /> : me.reviews.length === 0 ? <Empty icon="⭐" title="Aucun avis" hint="Rendez des services pour en recevoir" /> : (
+        {tab === 'reviews' && (!me ? <Spinner /> : me.reviews.length === 0 ? <Empty icon="⭐" title={t('prof.noReviews')} hint={t('prof.noReviewsHint')} /> : (
           <div className="card">
             {me.reviews.map((r) => (
               <div key={r.id} className="row">
