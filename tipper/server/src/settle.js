@@ -33,7 +33,7 @@ export async function settleMission(ad, app) {
   })();
 
   await notify(app.user_id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après 10% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: poster.id } });
-  for (const o of others) await notify(o.user_id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `Mission « ${ad.title} » attribuée, mais voici ${CONSOLATION_POINTS} points à échanger !`, data: { adId: ad.id } });
+  for (const o of others) await notify(o.user_id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `Demande « ${ad.title} » attribuée, mais voici ${CONSOLATION_POINTS} points à échanger !`, data: { adId: ad.id } });
   return { net, commission };
 }
 

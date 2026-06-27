@@ -170,7 +170,7 @@ export function Profile() {
 export function PublicProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user: me, showToast } = useApp();
+  const { user: me, showToast, t } = useApp();
   const [data, setData] = useState(null);
   useEffect(() => { api.getUser(id).then(setData).catch((e) => showToast(e.message, 'error')); }, [id, showToast]);
   if (!data) return <Screen nav={false}><AppBar title="" back={-1} /><Spinner /></Screen>;
@@ -178,7 +178,7 @@ export function PublicProfile() {
   const lvl = u.level || {};
   return (
     <Screen nav={false}>
-      <AppBar title="Profil" back={-1} />
+      <AppBar title={t('nav.profile')} back={-1} />
       <div className="content">
         <div className="center">
           <div style={{ display: 'inline-block' }}><Avatar user={u} size="l" glow /></div>
@@ -193,9 +193,9 @@ export function PublicProfile() {
           </div>
         )}
         <div className="stat-grid">
-          <div className="stat"><div className="v">{data.stats.ads}</div><div className="k">Missions</div></div>
-          <div className="stat"><div className="v">{data.stats.completed}</div><div className="k">Rendus</div></div>
-          <div className="stat"><div className="v">{u.rating_count}</div><div className="k">Avis</div></div>
+          <div className="stat"><div className="v">{data.stats.ads}</div><div className="k">{t('prof.statRequests')}</div></div>
+          <div className="stat"><div className="v">{data.stats.completed}</div><div className="k">{t('prof.statDone')}</div></div>
+          <div className="stat"><div className="v">{u.rating_count}</div><div className="k">{t('prof.reviews')}</div></div>
         </div>
         {me.id !== u.id && <><div className="spacer" /><button className="btn coral" onClick={() => navigate(`/messages/${u.id}`)}>💬 Envoyer un message</button></>}
 

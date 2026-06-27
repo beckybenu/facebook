@@ -60,7 +60,7 @@ export function MapView() {
 
   return (
     <Screen>
-      <AppBar title="Carte des missions" back="/explore" subtitle={ads ? `${ads.length} autour de vous` : '…'} />
+      <AppBar title="Carte des demandes" back="/explore" subtitle={ads ? `${ads.length} autour de vous` : '…'} />
       <div className="content">
         {!ads ? <Spinner /> : failed ? (
           <>
@@ -70,7 +70,7 @@ export function MapView() {
         ) : (
           <>
             <div className="map-wrap"><div id="leafmap" ref={elRef} /></div>
-            <div className="sub center" style={{ margin: '14px 0' }}>Touchez un repère 💰 pour ouvrir la mission</div>
+            <div className="sub center" style={{ margin: '14px 0' }}>Touchez un repère 💰 pour ouvrir la demande</div>
             {ads.slice(0, 3).map((a) => <Mission key={a.id} ad={a} />)}
           </>
         )}

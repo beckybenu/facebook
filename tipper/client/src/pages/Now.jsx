@@ -77,7 +77,7 @@ export function Now() {
       <div className="content">
         <div className="eyebrow">✦ Propulsé par Tipper AI</div>
         <h1 className="h-hero" style={{ margin: '8px 0 4px' }}>De quoi avez-vous<br />besoin&nbsp;?</h1>
-        <p className="sub" style={{ marginBottom: 16 }}>Écrivez-le simplement. L'IA crée la mission, fixe le pourboire juste et trouve un helper.</p>
+        <p className="sub" style={{ marginBottom: 16 }}>Écrivez-le simplement. L'IA crée la demande, fixe le pourboire juste et trouve un helper.</p>
 
         <div className="ai-box" style={{ marginBottom: 12 }}>
           <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex : j'ai plus de Coca, je suis posé au lac…" />
@@ -90,7 +90,7 @@ export function Now() {
           ))}
         </div>
 
-        <button className="btn iris" onClick={() => analyse()}>✦ Générer ma mission</button>
+        <button className="btn iris" onClick={() => analyse()}>✦ Générer ma demande</button>
 
         {draft && (
           <div className="ai-draft fade-in" style={{ marginTop: 18 }}>

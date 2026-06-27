@@ -77,5 +77,5 @@ export function draftMission(input) {
 export const KIND_META = {
   instant: { label: 'Tipper Now', emoji: '⚡', tint: '#ff7a45', tagline: 'Tout de suite, près de vous' },
   quest: { label: 'Tipper Quest', emoji: '🎯', tint: '#8b5cff', tagline: 'Prime au résultat · mondial' },
-  standard: { label: 'Mission', emoji: '🤝', tint: '#38d6ff', tagline: 'Service entre particuliers' },
+  standard: { label: 'Demande', emoji: '🤝', tint: '#38d6ff', tagline: 'Service entre particuliers' },
 };

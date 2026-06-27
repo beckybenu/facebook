@@ -6,7 +6,7 @@ export function Categories() {
   const navigate = useNavigate();
   return (
     <Screen>
-      <AppBar title="Publier une mission" back="/" />
+      <AppBar title="Publier une demande" back="/" />
       <div className="content">
         <div className="eyebrow">Étape 1 / 2</div>
         <h1 className="h-page" style={{ margin: '6px 0 6px' }}>Quelle catégorie ?</h1>

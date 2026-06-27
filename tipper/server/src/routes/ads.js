@@ -89,7 +89,7 @@ router.get('/', authRequired, (req, res) => {
 
 router.get('/:id', authRequired, (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   const meta = adWithMeta(ad, req.user);
   if (meta.is_full && !meta.is_mine && !meta.my_application && !isAdminEmail(req.user.email)) {
     return res.status(403).json({ error: 'Cette annonce est complète' });
@@ -141,9 +141,9 @@ router.post('/:id/save', authRequired, (req, res) => {
 // Boost « À la une » (24h) — micro-paiement = revenu plateforme
 router.post('/:id/boost', authRequired, (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   if (ad.user_id !== req.user.id) return res.status(403).json({ error: "Action réservée à l'auteur" });
-  if (isBoosted(ad)) return res.status(400).json({ error: 'Cette mission est déjà à la une' });
+  if (isBoosted(ad)) return res.status(400).json({ error: 'Cette demande est déjà à la une' });
   if (req.user.wallet_balance < BOOST_COST) return res.status(400).json({ error: `Solde insuffisant (${BOOST_COST} 🪙 requis)` });
   const until = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
   db.transaction(() => {
@@ -159,20 +159,20 @@ router.post('/:id/boost', authRequired, (req, res) => {
 // Helper marque la mission livrée
 router.post('/:id/deliver', authRequired, async (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   const app = db.prepare('SELECT * FROM applications WHERE id = ? AND ad_id = ?').get(req.body.application_id, ad.id);
   if (!app || app.user_id !== req.user.id) return res.status(403).json({ error: 'Action non autorisée' });
-  if (app.status !== 'accepted') return res.status(400).json({ error: 'La mission doit être acceptée' });
+  if (app.status !== 'accepted') return res.status(400).json({ error: 'La demande doit être acceptée' });
   db.prepare("UPDATE applications SET status = 'delivered' WHERE id = ?").run(app.id);
   db.prepare("UPDATE ads SET status = 'delivered', delivered_app = ? WHERE id = ?").run(app.id, ad.id);
-  await notify(ad.user_id, { type: 'mission_delivered', title: '📦 Mission livrée', body: `${req.user.full_name} a terminé « ${ad.title} ». Confirmez pour libérer le pourboire.`, data: { adId: ad.id } });
+  await notify(ad.user_id, { type: 'mission_delivered', title: '📦 Demande livrée', body: `${req.user.full_name} a terminé « ${ad.title} ». Confirmez pour libérer le pourboire.`, data: { adId: ad.id } });
   res.json({ ok: true });
 });
 
 // Demandeur confirme -> libère l'escrow et paie le helper
 router.post('/:id/confirm', authRequired, async (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   if (ad.user_id !== req.user.id) return res.status(403).json({ error: 'Action réservée au demandeur' });
   const app = db.prepare('SELECT * FROM applications WHERE id = ? AND ad_id = ?').get(req.body.application_id, ad.id);
   if (!app || !['accepted', 'delivered'].includes(app.status)) return res.status(400).json({ error: 'Candidature non valide' });
@@ -185,9 +185,9 @@ router.post('/:id/confirm', authRequired, async (req, res) => {
 // Annulation -> remboursement de l'escrow
 router.post('/:id/cancel', authRequired, async (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   if (ad.user_id !== req.user.id) return res.status(403).json({ error: 'Action réservée au demandeur' });
-  if (ad.status === 'completed') return res.status(400).json({ error: 'Mission déjà terminée' });
+  if (ad.status === 'completed') return res.status(400).json({ error: 'Demande déjà terminée' });
   await refundMission(ad);
   res.json({ ok: true });
 });
@@ -195,7 +195,7 @@ router.post('/:id/cancel', authRequired, async (req, res) => {
 // Litige / signalement
 router.post('/:id/dispute', authRequired, async (req, res) => {
   const ad = db.prepare('SELECT * FROM ads WHERE id = ?').get(req.params.id);
-  if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+  if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
   const reason = (req.body && req.body.reason) || 'Non précisé';
   db.prepare('INSERT INTO disputes (id, ad_id, opener_id, reason) VALUES (?,?,?,?)').run(nanoid(), ad.id, req.user.id, reason);
   const other = ad.user_id === req.user.id ? null : ad.user_id;

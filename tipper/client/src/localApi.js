@@ -113,7 +113,7 @@ function seed() {
   const rev = (rater, ratee, stars, comment, role) =>
     reviews.push({ id: uid(), ad_id: null, rater_id: rater.id, ratee_id: ratee.id, role, stars, comment, created_at: minutesAgo(60 * 24 * Math.floor(Math.random() * 20 + 1)) });
   rev(sophie, noah, 5, 'Hyper efficace et sympa, je recommande !', 'helper');
-  rev(lucas, noah, 5, 'Mission parfaite, ponctuel.', 'helper');
+  rev(lucas, noah, 5, 'Travail parfait, ponctuel.', 'helper');
   rev(emma, noah, 4, 'Bon travail, communication au top.', 'helper');
   rev(noah, sophie, 5, 'Demandeuse claire et paiement immédiat.', 'poster');
   rev(sophie, lea, 5, 'Adorable avec mon chien 🐶', 'helper');
@@ -206,7 +206,7 @@ function settleMission(db, ad, app) {
     if (!ou) continue;
     ou.points = (ou.points || 0) + CONSOLATION_POINTS;
     if (['pending', 'accepted', 'delivered'].includes(o.status)) o.status = 'rejected';
-    pushNotif(db, ou.id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `La mission « ${ad.title} » a été attribuée, mais voici ${CONSOLATION_POINTS} points à échanger contre des Coins !`, data: { adId: ad.id } });
+    pushNotif(db, ou.id, { type: 'points_earned', title: `🎯 +${CONSOLATION_POINTS} Tipper Points`, body: `La demande « ${ad.title} » a été attribuée, mais voici ${CONSOLATION_POINTS} points à échanger contre des Coins !`, data: { adId: ad.id } });
   }
   return { net, commission };
 }
@@ -348,7 +348,7 @@ export const localApi = {
   async getAd(id) {
     const db = load(); const viewer = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
-    if (!ad) throw new Error('Mission introuvable');
+    if (!ad) throw new Error('Demande introuvable');
     const meta = adMeta(db, ad, viewer);
     if (meta.is_full && !meta.is_mine && !meta.my_application && !isAdminEmail(viewer.email)) {
       throw new Error('Cette annonce est complète');
@@ -400,11 +400,11 @@ export const localApi = {
     const db = load(); const u = requireUser(db);
     const app = db.applications.find((a) => a.id === application_id && a.ad_id === id);
     if (!app || app.user_id !== u.id) throw new Error('Action non autorisée');
-    if (app.status !== 'accepted') throw new Error('La mission doit être acceptée');
+    if (app.status !== 'accepted') throw new Error('La demande doit être acceptée');
     app.status = 'delivered';
     const ad = db.ads.find((a) => a.id === id);
     ad.delivered_app = application_id;
-    pushNotif(db, ad.user_id, { type: 'mission_delivered', title: '📦 Mission livrée', body: `${u.full_name} a marqué « ${ad.title} » comme terminée. Confirmez pour libérer le pourboire.`, data: { adId: id } });
+    pushNotif(db, ad.user_id, { type: 'mission_delivered', title: '📦 Demande livrée', body: `${u.full_name} a marqué « ${ad.title} » comme terminée. Confirmez pour libérer le pourboire.`, data: { adId: id } });
     save(db); return { ok: true };
   },
   // Demandeur confirme -> libère l'escrow et paie le helper
@@ -470,9 +470,9 @@ export const localApi = {
       case 'verify_user': if (!target) throw new Error('Utilisateur introuvable'); target.verified = !!payload.value; break;
       case 'ban_user': if (!target) throw new Error('Utilisateur introuvable'); target.banned = !!payload.value;
         pushNotif(db, target.id, { type: 'dispute', title: payload.value ? '⛔ Compte suspendu' : '✅ Compte réactivé', body: payload.value ? 'Votre compte a été suspendu par un administrateur.' : 'Votre compte est de nouveau actif.', data: {} }); break;
-      case 'refund_ad': if (!ad) throw new Error('Mission introuvable'); refundMission(db, ad, 'remboursé par un administrateur'); break;
+      case 'refund_ad': if (!ad) throw new Error('Demande introuvable'); refundMission(db, ad, 'remboursé par un administrateur'); break;
       case 'pay_ad': {
-        if (!ad) throw new Error('Mission introuvable');
+        if (!ad) throw new Error('Demande introuvable');
         const app = db.applications.find((a) => a.id === payload.application_id && a.ad_id === ad.id)
           || db.applications.find((a) => a.ad_id === ad.id && ['accepted', 'delivered'].includes(a.status));
         if (!app) throw new Error('Aucun participant à payer');
@@ -521,7 +521,7 @@ export const localApi = {
   async dispute(id, reason) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
-    if (!ad) throw new Error('Mission introuvable');
+    if (!ad) throw new Error('Demande introuvable');
     db.disputes = db.disputes || [];
     db.disputes.push({ id: uid(), ad_id: id, opener_id: u.id, reason: reason || 'Non précisé', status: 'open', created_at: now() });
     const other = ad.user_id === u.id ? null : ad.user_id;
@@ -533,7 +533,7 @@ export const localApi = {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === id);
     if (!ad || ad.user_id !== u.id) throw new Error("Action réservée au demandeur");
-    if (ad.status === 'completed') throw new Error('Mission déjà terminée');
+    if (ad.status === 'completed') throw new Error('Demande déjà terminée');
     // Rembourse l'escrow
     if (u.reserved >= ad.tip_amount) {
       u.reserved -= ad.tip_amount; u.available += ad.tip_amount;
@@ -571,9 +571,9 @@ export const localApi = {
   async apply(adId, message) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === adId);
-    if (!ad) throw new Error('Mission introuvable');
-    if (ad.status === 'cancelled' || ad.status === 'completed') throw new Error("Cette mission n'accepte plus de candidatures");
-    if (ad.user_id === u.id) throw new Error('Vous ne pouvez pas postuler à votre propre mission');
+    if (!ad) throw new Error('Demande introuvable');
+    if (ad.status === 'cancelled' || ad.status === 'completed') throw new Error("Cette demande n'accepte plus de candidatures");
+    if (ad.user_id === u.id) throw new Error('Vous ne pouvez pas postuler à votre propre demande');
     const apps = db.applications.filter((a) => a.ad_id === adId);
     if (apps.find((a) => a.user_id === u.id)) throw new Error('Vous avez déjà postulé');
     if (apps.filter((a) => a.status !== 'rejected').length >= MAX_PARTICIPANTS) throw new Error('Annonce complète — les 3 places sont prises');
@@ -648,9 +648,9 @@ export const localApi = {
   async boostAd(adId) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === adId);
-    if (!ad) throw new Error('Mission introuvable');
+    if (!ad) throw new Error('Demande introuvable');
     if (ad.user_id !== u.id) throw new Error('Action réservée à l\'auteur');
-    if (isBoosted(ad)) throw new Error('Cette mission est déjà à la une');
+    if (isBoosted(ad)) throw new Error('Cette demande est déjà à la une');
     if (u.available < BOOST_COST) throw new Error(`Solde insuffisant (${BOOST_COST} 🪙 requis)`);
     u.available -= BOOST_COST;
     ad.boosted_until = new Date(Date.now() + 24 * 3600 * 1000).toISOString();

@@ -88,13 +88,13 @@ export function AdDetail() {
     catch (e) { showToast(e.message, 'error'); }
   }
   async function cancelAd() {
-    if (!confirm('Annuler cette mission ? Le pourboire vous sera remboursé.')) return;
-    try { await api.cancelAd(id); await refreshMe(); showToast('Mission annulée, escrow remboursé'); load(); }
+    if (!confirm('Annuler cette demande ? Le pourboire vous sera remboursé.')) return;
+    try { await api.cancelAd(id); await refreshMe(); showToast('Demande annulée, escrow remboursé'); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function boost() {
-    if (!confirm('Booster cette mission « À la une » pour 24h (20 🪙) ?')) return;
-    try { await api.boostAd(id); await refreshMe(); showToast('Mission boostée 🚀 elle passe en tête !'); load(); }
+    if (!confirm('Booster cette demande « À la une » pour 24h (20 🪙) ?')) return;
+    try { await api.boostAd(id); await refreshMe(); showToast('Demande boostée 🚀 elle passe en tête !'); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function openDispute() {

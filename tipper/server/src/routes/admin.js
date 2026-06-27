@@ -63,10 +63,10 @@ router.post('/action', authRequired, adminRequired, async (req, res) => {
     } else if (action === 'ban_user') {
       db.prepare('UPDATE users SET banned = ? WHERE id = ?').run(value ? 1 : 0, user_id);
     } else if (action === 'refund_ad') {
-      if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+      if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
       await refundMission(ad, 'remboursé par un administrateur');
     } else if (action === 'pay_ad') {
-      if (!ad) return res.status(404).json({ error: 'Mission introuvable' });
+      if (!ad) return res.status(404).json({ error: 'Demande introuvable' });
       const app = (application_id && db.prepare('SELECT * FROM applications WHERE id = ? AND ad_id = ?').get(application_id, ad.id))
         || db.prepare("SELECT * FROM applications WHERE ad_id = ? AND status IN ('accepted','delivered') LIMIT 1").get(ad.id);
       if (!app) return res.status(400).json({ error: 'Aucun participant à payer' });

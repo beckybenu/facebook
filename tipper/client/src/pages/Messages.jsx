@@ -20,7 +20,7 @@ export function Threads() {
         right={<button className="iconbtn" onClick={() => navigate('/notifications')}>🔔{unreadNotif > 0 && <span className="dot-badge">{unreadNotif}</span>}</button>} />
       <div className="content">
         {!threads ? <Spinner /> : threads.length === 0 ? (
-          <Empty icon="💬" title="Aucune conversation" hint="Contactez un membre depuis une mission"
+          <Empty icon="💬" title="Aucune conversation" hint="Contactez un membre depuis une demande"
             action={<button className="btn coral sm" onClick={() => navigate('/explore')}>Explorer</button>} />
         ) : (
           <div className="card">

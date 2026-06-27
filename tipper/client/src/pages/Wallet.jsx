@@ -109,7 +109,7 @@ export function Wallet() {
               <input type="number" value={exchangeQty} onChange={(e) => setExchangeQty(e.target.value)} placeholder={`max ${convertible}`} style={{ flex: 1, border: '1px solid var(--glass-border-2)', borderRadius: 12, padding: 12, background: 'var(--surface-2)', color: 'var(--text)' }} />
               <button className="btn iris sm" style={{ whiteSpace: 'nowrap' }} disabled={busy} onClick={exchange}>Échanger en Coins</button>
             </div>
-          ) : <div className="sub" style={{ fontSize: 12.5, marginTop: 10 }}>Participez à des missions pour gagner des points même sans remporter le pourboire 💪</div>}
+          ) : <div className="sub" style={{ fontSize: 12.5, marginTop: 10 }}>Participez à des demandes pour gagner des points même sans remporter le pourboire 💪</div>}
         </div>
 
         <div className="card">

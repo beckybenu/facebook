@@ -60,7 +60,7 @@ function review(rater, ratee, stars, comment, role) {
   db.prepare('UPDATE users SET rating_sum = rating_sum + ?, rating_count = rating_count + 1 WHERE id = ?').run(stars, ratee);
 }
 review(sophie, noah, 5, 'Hyper efficace et sympa !', 'helper');
-review(lucas, noah, 5, 'Mission parfaite, ponctuel.', 'helper');
+review(lucas, noah, 5, 'Travail parfait, ponctuel.', 'helper');
 review(emma, noah, 4, 'Bon travail.', 'helper');
 review(noah, sophie, 5, 'Paiement immédiat.', 'poster');
 review(sophie, lea, 5, 'Adorable avec mon chien 🐶', 'helper');

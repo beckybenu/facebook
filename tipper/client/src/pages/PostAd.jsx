@@ -73,7 +73,7 @@ export function PostAd() {
           <div className="qa-ic" style={{ background: catTint(category) + '22', color: catTint(category), fontSize: 24, width: 50, height: 50 }}>{catIcon(category)}</div>
           <div>
             <div className="eyebrow">Étape 2 / 2</div>
-            <div style={{ fontWeight: 800, fontSize: 17 }}>Détaillez votre mission</div>
+            <div style={{ fontWeight: 800, fontSize: 17 }}>Détaillez votre demande</div>
           </div>
         </div>
 
@@ -113,7 +113,7 @@ export function PostAd() {
 
         <div className="card" style={{ padding: '4px 16px' }}>
           <div className="switch-row" onClick={() => setUrgent(!urgent)}>
-            <div><div style={{ fontWeight: 700 }}>⚡ Mission urgente</div><div className="sub" style={{ fontSize: 12.5 }}>Mise en avant dans le fil</div></div>
+            <div><div style={{ fontWeight: 700 }}>⚡ Demande urgente</div><div className="sub" style={{ fontSize: 12.5 }}>Mise en avant dans le fil</div></div>
             <div className={`switch ${urgent ? 'on' : ''}`}><i /></div>
           </div>
           <div className="divider" style={{ margin: '4px 0' }} />
@@ -128,7 +128,7 @@ export function PostAd() {
           <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)} />
         </div>
 
-        <button className="btn coral" disabled={busy}>{busy ? 'Publication…' : 'Publier ma mission'}</button>
+        <button className="btn coral" disabled={busy}>{busy ? 'Publication…' : 'Publier ma demande'}</button>
         <div className="spacer" />
       </form>
     </Screen>
@@ -144,12 +144,12 @@ export function Posted() {
       <AppBar title="" back="/" />
       <div className="content center" style={{ paddingTop: 50 }}>
         <div style={{ fontSize: 72 }}>🎉</div>
-        <h1 className="h-hero" style={{ margin: '12px 0' }}>Mission publiée !</h1>
+        <h1 className="h-hero" style={{ margin: '12px 0' }}>Demande publiée !</h1>
         <p className="sub">Votre pourboire est bloqué en séquestre. Vous serez notifié dès qu'un helper postule.</p>
         <div className="spacer" />
-        <button className="btn coral" onClick={() => navigate('/explore')}>Explorer les missions</button>
+        <button className="btn coral" onClick={() => navigate('/explore')}>Explorer les demandes</button>
         <div className="spacer" />
-        <button className="btn ghost" onClick={() => navigate('/profile')}>Voir mes missions</button>
+        <button className="btn ghost" onClick={() => navigate('/profile')}>Voir mes demandes</button>
       </div>
     </Screen>
   );

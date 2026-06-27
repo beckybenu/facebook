@@ -48,7 +48,7 @@ export function Explore() {
     <Screen>
       <AppBar
         title="Explorer"
-        subtitle={ads ? `${ads.length} mission${ads.length > 1 ? 's' : ''}` : '…'}
+        subtitle={ads ? `${ads.length} demande${ads.length > 1 ? 's' : ''}` : '…'}
         right={<button className="iconbtn" onClick={() => navigate('/map')}>🗺️</button>}
       />
       <div className="content">
@@ -68,7 +68,7 @@ export function Explore() {
         </div>
 
         {!ads ? <><SkeletonMission /><SkeletonMission /><SkeletonMission /></> : ads.length === 0 ? (
-          <Empty icon="🔍" title="Aucune mission" hint="Essayez d'élargir vos filtres" />
+          <Empty icon="🔍" title="Aucune demande" hint="Essayez d'élargir vos filtres" />
         ) : ads.map((a) => <Mission key={a.id} ad={a} onToggleSave={toggleSave} />)}
       </div>
 
