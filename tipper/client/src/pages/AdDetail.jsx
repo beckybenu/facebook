@@ -115,6 +115,7 @@ export function AdDetail() {
   const mine = ad.is_mine;
   const myApp = ad.my_application;
   const closed = ad.status === 'completed' || ad.status === 'cancelled';
+  const hasWinner = ad.applications?.some((a) => ['accepted', 'delivered', 'completed'].includes(a.status));
   const myReviewExists = (rateeId) => ad.reviews?.some((r) => r.rater_id === user.id && r.ratee_id === rateeId);
 
   return (
@@ -208,10 +209,12 @@ export function AdDetail() {
                   {CHATTABLE.includes(a.status)
                     ? <button className="btn ghost sm" onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>
                     : <button className="btn ghost sm" onClick={() => showToast(t('ad.chatLocked'), 'error')}>🔒</button>}
-                  {a.status === 'pending' && !closed && <>
-                    <button className="btn danger sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'reject')}>{t('ad.refuse')}</button>
-                    <button className="btn teal sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'accept')}>{t('ad.accept')}</button>
-                  </>}
+                  {a.status === 'pending' && !closed && (hasWinner
+                    ? <span className="muted" style={{ fontSize: 12.5, fontWeight: 600, alignSelf: 'center' }}>{t('ad.spotTaken')}</span>
+                    : <>
+                      <button className="btn danger sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'reject')}>{t('ad.refuse')}</button>
+                      <button className="btn teal sm" style={{ flex: 1 }} onClick={() => decide(a.id, 'accept')}>{t('ad.accept')}</button>
+                    </>)}
                   {(a.status === 'accepted' || a.status === 'delivered') && <button className="btn coral sm" style={{ flex: 2 }} onClick={() => confirm(a.id)}>{t('ad.confirmPay')}</button>}
                   {a.status === 'completed' && !myReviewExists(a.applicant.id) && <button className="btn teal sm" style={{ flex: 2 }} onClick={() => setRating({ rateeId: a.applicant.id, role: 'helper', title: `${t('ad.rate')} ${a.applicant.full_name}` })}>{t('ad.rate')}</button>}
                 </div>

@@ -52,9 +52,9 @@ router.post('/:appId/:action', authRequired, async (req, res) => {
   if (ad.user_id !== req.user.id) return res.status(403).json({ error: 'Action réservée à l\'auteur de l\'annonce' });
 
   if (action === 'accept') {
-    const accepted = db.prepare("SELECT COUNT(*) c FROM applications WHERE ad_id = ? AND status IN ('accepted','completed')").get(ad.id);
-    if (accepted.c >= MAX_PARTICIPANTS) {
-      return res.status(400).json({ error: `Maximum ${MAX_PARTICIPANTS} participants déjà acceptés` });
+    const accepted = db.prepare("SELECT COUNT(*) c FROM applications WHERE ad_id = ? AND status IN ('accepted','delivered','completed')").get(ad.id);
+    if (accepted.c >= 1) {
+      return res.status(400).json({ error: 'Un helper a déjà été retenu pour cette demande' });
     }
     db.prepare("UPDATE applications SET status = 'accepted' WHERE id = ?").run(appId);
     db.prepare("UPDATE ads SET status = 'in_progress' WHERE id = ? AND status = 'open'").run(ad.id);

@@ -590,7 +590,7 @@ export const localApi = {
     if (ad.user_id !== u.id) throw new Error("Action réservée au demandeur");
     if (action === 'accept') {
       const accepted = db.applications.filter((a) => a.ad_id === ad.id && ['accepted', 'delivered', 'completed'].includes(a.status)).length;
-      if (accepted >= MAX_PARTICIPANTS) throw new Error(`Maximum ${MAX_PARTICIPANTS} participants déjà acceptés`);
+      if (accepted >= 1) throw new Error('Un helper a déjà été retenu pour cette demande');
       app.status = 'accepted';
       if (ad.status === 'open') ad.status = 'in_progress';
       pushNotif(db, app.user_id, { type: 'application_accepted', title: '✅ Vous êtes pris !', body: `Candidature acceptée pour « ${ad.title} ». À vous de jouer !`, data: { adId: ad.id } });
