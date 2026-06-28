@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { coin, chf, catLabel, catIcon, catTint, dateShort } from '../constants.js';
+import { coin, chf, catLabel, catIcon, catGradient, catCover, dateShort } from '../constants.js';
 
 const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
@@ -60,6 +60,7 @@ export function AdDetail() {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [rating, setRating] = useState(null); // { rateeId, role, title }
+  const [coverOk, setCoverOk] = useState(true);
 
   const load = useCallback(async () => {
     try { const { ad } = await api.getAd(id); setAd(ad); }
@@ -123,9 +124,11 @@ export function AdDetail() {
       <AppBar title={catLabel(ad.category)} back="/explore"
         right={<button className="iconbtn" onClick={async () => { await api.toggleSave(id); load(); }}>{ad.is_saved ? '♥' : '♡'}</button>} />
       <div className="content">
-        {ad.photo
-          ? <img src={ad.photo} alt="" style={{ width: '100%', borderRadius: 'var(--r-md)', marginBottom: 14, aspectRatio: '16/10', objectFit: 'cover' }} />
-          : <div style={{ height: 150, borderRadius: 'var(--r-md)', marginBottom: 14, display: 'grid', placeItems: 'center', fontSize: 56, background: catTint(ad.category) + '22', color: catTint(ad.category) }}>{catIcon(ad.category)}</div>}
+        <div className="ad-cover" style={{ background: catGradient(ad.category) }}>
+          {(ad.photo || catCover(ad.category)) && coverOk
+            ? <img src={ad.photo || catCover(ad.category)} alt="" onError={() => setCoverOk(false)} />
+            : <span className="ad-cover-ic">{catIcon(ad.category)}</span>}
+        </div>
 
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
           <span className="tag cat">{catLabel(ad.category)}</span>

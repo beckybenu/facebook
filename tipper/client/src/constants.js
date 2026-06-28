@@ -9,8 +9,30 @@ export const CATEGORIES = [
 
 export const catLabel = (k) => CATEGORIES.find((c) => c.key === k)?.label || k;
 export const catIcon = (k) => CATEGORIES.find((c) => c.key === k)?.icon || '📌';
-// Thème neutre : vignettes de catégories en gris (style Uber)
-export const catTint = () => '#6b7280';
+export const catTint = (k) => CATEGORIES.find((c) => c.key === k)?.tint || '#6C5CE7';
+
+// Dégradés de couverture (générés localement → toujours nets, fonctionnent hors-ligne)
+const CAT_GRAD = {
+  administratif: 'linear-gradient(135deg,#6C8CFF 0%,#4B5BE8 100%)',
+  automobile: 'linear-gradient(135deg,#FF7A50 0%,#FF4D6D 100%)',
+  epicerie: 'linear-gradient(135deg,#2BD4B5 0%,#16B88A 100%)',
+  immobilier: 'linear-gradient(135deg,#B98BFF 0%,#6C5CE7 100%)',
+  petit_service: 'linear-gradient(135deg,#FFC24B 0%,#FF8A3D 100%)',
+  loisirs: 'linear-gradient(135deg,#FF7AA8 0%,#B36BFF 100%)',
+};
+export const catGradient = (k) => CAT_GRAD[k] || 'linear-gradient(135deg,#7C6CF0 0%,#5A4FE0 100%)';
+
+// Photo de couverture (Unsplash) — surcouche optionnelle quand il y a internet,
+// le dégradé reste visible en repli si l'image ne charge pas.
+const CAT_PHOTO = {
+  administratif: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f',
+  automobile: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70',
+  epicerie: 'https://images.unsplash.com/photo-1542838132-92c53300491e',
+  immobilier: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994',
+  petit_service: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952',
+  loisirs: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d',
+};
+export const catCover = (k) => (CAT_PHOTO[k] ? `${CAT_PHOTO[k]}?auto=format&fit=crop&w=900&q=70` : null);
 
 export const STATUS_LABEL = {
   open: 'Ouverte',
