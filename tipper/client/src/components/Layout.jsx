@@ -68,7 +68,7 @@ export function Nav() {
 
 export function HeaderMenu() {
   const navigate = useNavigate();
-  const { user, t } = useApp();
+  const { user, t, openOnboarding } = useApp();
   const [open, setOpen] = useState(false);
   const items = [
     { ic: '⚡', label: t('menu.now'), to: '/now' },
@@ -95,6 +95,9 @@ export function HeaderMenu() {
                 <span className="hm-ic">{it.ic}</span><span>{it.label}</span><span className="hm-arrow">›</span>
               </button>
             ))}
+            <button className="hm-item" onClick={() => { setOpen(false); openOnboarding(); }}>
+              <span className="hm-ic">💡</span><span>{t('ob.how')}</span><span className="hm-arrow">›</span>
+            </button>
           </div>
         </>
       )}

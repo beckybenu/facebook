@@ -611,3 +611,31 @@ body::after {
 .hm-item:active { background: var(--surface-2); }
 .hm-item .hm-ic { font-size: 18px; width: 24px; text-align: center; }
 .hm-item .hm-arrow { margin-left: auto; color: var(--muted); font-size: 18px; }
+
+/* Onboarding — parcours de bienvenue */
+.ob-overlay {
+  position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; padding: 24px;
+  background: rgba(8, 8, 13, 0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  animation: fade 0.25s ease;
+}
+.ob-card {
+  width: min(420px, 100%); background: var(--surface); border: 1px solid var(--glass-border);
+  border-radius: 28px; padding: 30px 26px 24px; text-align: center; position: relative;
+  box-shadow: var(--shadow); backdrop-filter: blur(20px);
+}
+.ob-skip {
+  position: absolute; top: 16px; right: 18px; font-size: 13px; font-weight: 700;
+  color: var(--muted); padding: 4px 6px;
+}
+.ob-art {
+  width: 104px; height: 104px; border-radius: 30px; display: grid; place-items: center;
+  font-size: 52px; margin: 6px auto 22px;
+}
+.ob-title { font-size: 23px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px; }
+.ob-desc { font-size: 14.5px; line-height: 1.5; color: var(--muted); margin: 0 auto 22px; max-width: 320px; }
+.ob-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.ob-dots span {
+  width: 8px; height: 8px; border-radius: 999px; background: rgba(130, 130, 145, 0.4); cursor: pointer;
+  transition: width 0.3s, background 0.3s;
+}
+.ob-dots span.on { width: 26px; background: var(--coral); }

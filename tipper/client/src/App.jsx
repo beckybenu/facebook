@@ -18,6 +18,7 @@ import { Now } from './pages/Now.jsx';
 import { Track } from './pages/Track.jsx';
 import { Verify } from './pages/Verify.jsx';
 import { Spinner } from './components/Layout.jsx';
+import { Onboarding } from './components/Onboarding.jsx';
 
 function Protected({ children }) {
   const { user, loading } = useApp();
@@ -85,6 +86,7 @@ export default function App() {
         <Router />
         <Toast />
       </RouterShell>
+      <Onboarding />
     </AppProvider>
   );
 }

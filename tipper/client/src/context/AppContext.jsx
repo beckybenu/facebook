@@ -22,6 +22,11 @@ export function AppProvider({ children }) {
   const t = makeT(lang);
   const setLang = useCallback((l) => { localStorage.setItem('tipper_lang', l); setLangState(l); document.documentElement.lang = l; }, []);
 
+  // Onboarding : parcours de bienvenue affiché au 1er lancement, rejouable depuis le menu
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const completeOnboarding = useCallback(() => { localStorage.setItem('tipper_onboarded', '1'); setShowOnboarding(false); }, []);
+  const openOnboarding = useCallback(() => setShowOnboarding(true), []);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     const meta = document.querySelector('meta[name="theme-color"]');
@@ -62,6 +67,11 @@ export function AppProvider({ children }) {
   }, [refreshBadges]);
 
   useEffect(() => { loadUser(); }, [loadUser]);
+
+  // Affiche le parcours de bienvenue la première fois qu'un utilisateur est connecté
+  useEffect(() => {
+    if (user && !localStorage.getItem('tipper_onboarded')) setShowOnboarding(true);
+  }, [user]);
 
   // Rafraîchit les badges périodiquement (fallback si push indisponible)
   useEffect(() => {
@@ -125,6 +135,7 @@ export function AppProvider({ children }) {
     captureLocation,
     theme, toggleTheme, soundOn, toggleSound, hapticOn, toggleHaptic,
     lang, setLang, t,
+    showOnboarding, completeOnboarding, openOnboarding,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
