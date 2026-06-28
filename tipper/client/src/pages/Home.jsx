@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Avatar, HeaderMenu } from '../components/Layout.jsx';
 import { Mission } from '../components/AdCard.jsx';
+import { GettingStarted } from '../components/GettingStarted.jsx';
 import { Money, Ring, Tilt, SkeletonMission } from '../components/fx.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
@@ -12,10 +13,11 @@ export function Home() {
   const { user, unreadNotif, captureLocation, showToast, theme, toggleTheme, t } = useApp();
   const [ads, setAds] = useState(null);
   const [wallet, setWallet] = useState(null);
+  const [posted, setPosted] = useState(true);
 
   const load = useCallback(async () => {
-    const [a, w] = await Promise.all([api.listAds({ sort: 'distance' }), api.wallet()]);
-    setAds(a.ads); setWallet(w);
+    const [a, w, mine] = await Promise.all([api.listAds({ sort: 'distance' }), api.wallet(), api.listAds({ mine: '1' })]);
+    setAds(a.ads); setWallet(w); setPosted((mine.ads || []).length > 0);
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -52,6 +54,14 @@ export function Home() {
           </div>
           <button className="badge" onClick={() => navigate('/profile')}>{lvl.emoji} {lvl.name}</button>
         </div>
+
+        {/* Checklist de démarrage (nouveaux utilisateurs) */}
+        <GettingStarted
+          posted={posted}
+          onLocate={locate}
+          onVerify={() => navigate('/verify')}
+          onPost={() => navigate('/categories')}
+        />
 
         {/* Bento */}
         <div className="bento">
