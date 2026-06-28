@@ -130,9 +130,9 @@ export function Profile() {
         {tab === 'settings' && (
           <div className="card">
             <div style={{ fontWeight: 700, marginBottom: 8 }}>🌐 {t('set.language')}</div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 6 }}>
               {LANGS.map((l) => (
-                <button key={l.code} className={`pill ${lang === l.code ? 'active' : ''}`} style={{ flex: 1, justifyContent: 'center' }} onClick={() => setLang(l.code)}>{l.flag} {l.label}</button>
+                <button key={l.code} className={`pill ${lang === l.code ? 'active' : ''}`} onClick={() => setLang(l.code)}>{l.flag} {l.label}</button>
               ))}
             </div>
             <div className="divider" />
