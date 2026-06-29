@@ -60,6 +60,14 @@ export default function AdminHome() {
         </div>
         <span className="row-chevron">›</span>
       </button>
+      <button className="list-row" onClick={() => navigate('/devis')}>
+        <span className="row-bar" />
+        <div className="row-main">
+          <div className="row-title">🧾 Devis</div>
+          <div className="row-sub">Créer et gérer les devis estimatifs</div>
+        </div>
+        <span className="row-chevron">›</span>
+      </button>
     </Layout>
   )
 }

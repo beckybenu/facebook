@@ -14,6 +14,9 @@ import Pointage from './pages/Pointage'
 import Chantiers from './pages/Chantiers'
 import TaskDetail from './pages/TaskDetail'
 import Documents from './pages/Documents'
+import DevisList from './pages/DevisList'
+import DevisEdit from './pages/DevisEdit'
+import DevisView from './pages/DevisView'
 
 // Admin
 import AdminHome from './pages/admin/AdminHome'
@@ -81,6 +84,40 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Documents />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Devis — accessibles aux employés (ouvrier/admin) */}
+      <Route
+        path="/devis"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <DevisList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/devis/new"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <DevisEdit />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/devis/:id"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <DevisView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/devis/:id/edit"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <DevisEdit />
           </ProtectedRoute>
         }
       />

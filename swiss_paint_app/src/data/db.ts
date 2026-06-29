@@ -1,14 +1,15 @@
 // Mini "backend" local basé sur localStorage.
 // Reproduit le rôle de la base de données intégrée d'Adalo, mais 100% côté client.
-import type { User, Task, Document, TimeEntry } from '../types'
+import type { User, Task, Document, TimeEntry, Devis } from '../types'
 
 const KEYS = {
   users: 'sp_users',
   tasks: 'sp_tasks',
   documents: 'sp_documents',
   timeEntries: 'sp_time_entries',
+  devis: 'sp_devis',
   session: 'sp_session',
-  seeded: 'sp_seeded_v2',
+  seeded: 'sp_seeded_v3',
 } as const
 
 function read<T>(key: string): T[] {
@@ -102,6 +103,31 @@ export const timeDb = {
   update: (e: TimeEntry) => {
     write(KEYS.timeEntries, read<TimeEntry>(KEYS.timeEntries).map((x) => (x.id === e.id ? e : x)))
     return e
+  },
+}
+
+// ---------- Devis ----------
+export const devisDb = {
+  all: () =>
+    read<Devis>(KEYS.devis).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  byId: (id: string) => read<Devis>(KEYS.devis).find((d) => d.id === id),
+  create: (d: Devis) => {
+    const list = read<Devis>(KEYS.devis)
+    list.push(d)
+    write(KEYS.devis, list)
+    return d
+  },
+  update: (d: Devis) => {
+    write(KEYS.devis, read<Devis>(KEYS.devis).map((x) => (x.id === d.id ? d : x)))
+    return d
+  },
+  remove: (id: string) => write(KEYS.devis, read<Devis>(KEYS.devis).filter((d) => d.id !== id)),
+  // Génère le prochain numéro au format DE-AAAA-MM-NN
+  nextNumero: (year: number, month: number): string => {
+    const mm = String(month).padStart(2, '0')
+    const prefix = `DE-${year}-${mm}-`
+    const n = read<Devis>(KEYS.devis).filter((d) => d.numero.startsWith(prefix)).length + 1
+    return `${prefix}${String(n).padStart(2, '0')}`
   },
 }
 

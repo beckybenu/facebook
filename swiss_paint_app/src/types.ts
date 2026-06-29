@@ -57,6 +57,40 @@ export interface Document {
   createdAt: string
 }
 
+// ---------- Devis (estimations) ----------
+export type DevisStatus = 'brouillon' | 'envoye' | 'accepte' | 'refuse'
+// Unité de facturation d'une ligne
+export type DevisUnit = 'heures' | 'm2' | 'unite' | 'forfait'
+
+export interface DevisItem {
+  id: string
+  titre: string // ex: "CHAMBRE DE DROITE – TRAVAUX DE MISE EN PEINTURE"
+  description?: string
+  note?: string // remarque en italique sous la description
+  unit: DevisUnit
+  quantite?: number // vide pour un forfait
+  prixUnitaire?: number // CHF HT ; vide pour un forfait
+  montant: number // CHF HT (calculé, ou saisi pour un forfait)
+}
+
+export interface Devis {
+  id: string
+  numero: string // ex: DE-2024-06-01
+  titre: string // ex: "TRAVAUX DE REMISE EN ÉTAT"
+  sousTitre?: string // ex: "ÉTAT DES LIEUX DE SORTIE"
+  date: string // ISO
+  validiteJours: number // ex: 30
+  lieuTravaux: string
+  contact: string
+  clientId?: string
+  intro: string
+  items: DevisItem[]
+  tvaRate: number // ex: 8.1
+  remarques: string[]
+  status: DevisStatus
+  createdAt: string
+}
+
 // Pointage / badgeuse
 export interface TimeEntry {
   id: string

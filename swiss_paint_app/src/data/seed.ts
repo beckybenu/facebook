@@ -1,6 +1,7 @@
 // Données de démonstration initiales (comme la base Adalo pré-remplie).
-import { KEYS, usersDb, tasksDb, docsDb, timeDb, uid } from './db'
-import type { User, Task, Document, TimeEntry } from '../types'
+import { KEYS, usersDb, tasksDb, docsDb, timeDb, devisDb, uid } from './db'
+import type { User, Task, Document, TimeEntry, Devis } from '../types'
+import { DEFAULT_REMARQUES, DEFAULT_INTRO } from '../lib/company'
 
 export function seedIfNeeded(): void {
   if (localStorage.getItem(KEYS.seeded)) return
@@ -151,6 +152,64 @@ export function seedIfNeeded(): void {
     note: 'Journée chantier Lausanne',
   }
   timeDb.create(entry)
+
+  // Devis de démonstration (identique au modèle officiel SwissPaints)
+  const devis: Devis = {
+    id: uid('dev'),
+    numero: 'DE-2024-06-01',
+    titre: 'TRAVAUX DE REMISE EN ÉTAT',
+    sousTitre: 'ÉTAT DES LIEUX DE SORTIE',
+    date: '2024-05-28',
+    validiteJours: 30,
+    lieuTravaux: 'À définir',
+    contact: 'À définir',
+    intro: DEFAULT_INTRO,
+    tvaRate: 8.1,
+    remarques: [...DEFAULT_REMARQUES],
+    status: 'envoye',
+    createdAt: now,
+    items: [
+      {
+        id: uid('it'),
+        titre: 'CHAMBRE DE DROITE – RÉPARATION DU MUR EN PAPIER PEINT (INGRAIN)',
+        description:
+          "Préparations diverses comprenant le masticage des dégradations constatées sur le revêtement ingrain, la reprise des défauts afin d'obtenir une uniformisation au plus proche de l'existant, ainsi que toutes les préparations nécessaires à la bonne exécution des travaux.",
+        note: 'Temps estimé : 2 heures',
+        unit: 'heures',
+        quantite: 2,
+        prixUnitaire: 85,
+        montant: 170,
+      },
+      {
+        id: uid('it'),
+        titre: 'CHAMBRE DE DROITE – TRAVAUX DE MISE EN PEINTURE',
+        description:
+          "Préparations diverses comprenant les retouches nécessaires, suivies de l'application de deux couches de peinture dispersion mate teinte RAL 9010, sur une surface d'environ 12.92 m², afin d'obtenir une finition homogène.",
+        note: "Nous attirons toutefois votre attention sur le fait qu'une légère différence de teinte ou d'aspect par rapport aux surfaces existantes peut subsister en raison du vieillissement naturel des peintures et de l'absence de reprise complète des parois.",
+        unit: 'm2',
+        quantite: 12.92,
+        prixUnitaire: 18,
+        montant: 232.56,
+      },
+      {
+        id: uid('it'),
+        titre: 'ARMOIRE ENCASTRÉE À TROIS PORTES – REMISE EN ÉTAT DES FACES EXTÉRIEURES',
+        description:
+          "En raison de la configuration de l'armoire, accolée à la porte de la pièce, une reprise partielle ne permettrait pas d'obtenir un résultat esthétique satisfaisant. Les travaux comprennent donc la remise en état complète des trois faces extérieures.\n\nPréparations diverses comprenant le lessivage, le masticage des imperfections, le ponçage mécanique et manuel avec aspiration des poussières, puis l'application de deux couches d'émail teinté RAL 9010, avec une teinte adaptée au plus proche de l'existant afin d'assurer une uniformisation visuelle.",
+        unit: 'forfait',
+        montant: 300,
+      },
+      {
+        id: uid('it'),
+        titre: 'MISE EN ŒUVRE',
+        description:
+          "Comprenant le déplacement, la protection des ouvrages et des sols, la protection périphérique, l'installation et le repli du matériel, le chargement et le déchargement des matériaux, ainsi que le nettoyage sommaire de fin d'intervention.",
+        unit: 'forfait',
+        montant: 180,
+      },
+    ],
+  }
+  devisDb.create(devis)
 
   localStorage.setItem(KEYS.seeded, '1')
 }

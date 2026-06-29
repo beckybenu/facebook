@@ -23,7 +23,7 @@ export default function Home() {
       label: 'Itinéraire',
       action: () =>
         window.open(
-          'https://www.google.com/maps/search/?api=1&query=Chemin+du+Grand-Puits+66,+1217+Meyrin',
+          'https://www.google.com/maps/search/?api=1&query=Rue+de+la+Prulay+19B,+1217+Meyrin',
           '_blank',
         ),
     },
@@ -56,6 +56,10 @@ export default function Home() {
             <button className="home-tile" onClick={() => navigate('/chantiers')}>
               <span className="tile-icon">🏗️</span>
               Mes chantiers
+            </button>
+            <button className="home-tile" onClick={() => navigate('/devis')}>
+              <span className="tile-icon">🧾</span>
+              Devis
             </button>
           </div>
         </>

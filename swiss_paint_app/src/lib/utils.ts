@@ -1,5 +1,5 @@
 // Utilitaires partagés : géolocalisation, fichiers, formats.
-import type { TaskStatus, TaskPriority, UserRole } from '../types'
+import type { TaskStatus, TaskPriority, UserRole, Devis, DevisItem, DevisUnit } from '../types'
 
 export interface GeoPosition {
   lat: number
@@ -90,6 +90,56 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 export function mapsLink(lat: number, lng: number): string {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+}
+
+// ---------- Devis ----------
+export const UNIT_LABELS: Record<DevisUnit, string> = {
+  heures: 'heures',
+  m2: 'm²',
+  unite: 'unité',
+  forfait: 'Forfait',
+}
+
+// Suffixe du prix unitaire ("/ h", "/ m²"…)
+export const UNIT_PRICE_SUFFIX: Record<DevisUnit, string> = {
+  heures: ' / h',
+  m2: ' / m²',
+  unite: ' / u',
+  forfait: '',
+}
+
+// Format monétaire suisse : "1 234.50 CHF"
+export function formatCHF(n: number): string {
+  return `${n.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/ /g, ' ')} CHF`
+}
+
+// Date longue : "28 mai 2024"
+export function formatDateLong(iso: string): string {
+  return new Date(iso).toLocaleDateString('fr-CH', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+// Montant HT d'une ligne (forfait = montant saisi, sinon quantité × prix unitaire)
+export function lineAmount(item: Pick<DevisItem, 'unit' | 'quantite' | 'prixUnitaire' | 'montant'>): number {
+  if (item.unit === 'forfait') return item.montant || 0
+  return Math.round((item.quantite || 0) * (item.prixUnitaire || 0) * 100) / 100
+}
+
+export function devisTotals(devis: Pick<Devis, 'items' | 'tvaRate'>) {
+  const totalHT = devis.items.reduce((s, it) => s + (it.montant || 0), 0)
+  const tva = Math.round(totalHT * (devis.tvaRate / 100) * 100) / 100
+  const totalTTC = Math.round((totalHT + tva) * 100) / 100
+  return { totalHT: Math.round(totalHT * 100) / 100, tva, totalTTC }
+}
+
+export const DEVIS_STATUS_LABELS: Record<string, string> = {
+  brouillon: 'Brouillon',
+  envoye: 'Envoyé',
+  accepte: 'Accepté',
+  refuse: 'Refusé',
 }
 
 // Chemins logo/icône qui respectent le base path (GitHub Pages sous-dossier)
