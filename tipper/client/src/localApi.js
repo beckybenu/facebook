@@ -379,7 +379,7 @@ export const localApi = {
       id: uid(), user_id: u.id, category, title, kind: get('kind') || 'standard',
       price: priceRaw ? parseFloat(priceRaw) : null, tip_amount: tip, photo,
       description: get('description') || '', urgent: get('urgent') === '1' || get('urgent') === 'true',
-      scheduled_at: get('scheduled_at') || null,
+      cover: get('cover') || null, scheduled_at: get('scheduled_at') || null,
       lat: get('lat') ? parseFloat(get('lat')) : u.lat, lng: get('lng') ? parseFloat(get('lng')) : u.lng,
       city: get('city') || u.city, status: 'open', delivered_app: null, created_at: now(),
     };

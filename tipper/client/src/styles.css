@@ -702,3 +702,17 @@ body::after {
 .ad-cover { position: relative; height: 190px; border-radius: var(--r-md); overflow: hidden; margin-bottom: 14px; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
 .ad-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ad-cover-ic { font-size: 62px; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.28)); z-index: 1; }
+
+/* Visuel de couverture curaté (emoji + libellé) */
+.cover-emoji { font-size: 60px; z-index: 1; line-height: 1; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.30)); animation: coverpop 0.4s cubic-bezier(0.2,0.9,0.3,1.3) both; }
+.cover-emoji.lg { font-size: 78px; }
+@keyframes coverpop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.cover-chip { position: absolute; bottom: 12px; left: 12px; z-index: 3; background: rgba(255,255,255,0.94); color: #1a1530; font-weight: 800; font-size: 11.5px; padding: 5px 11px; border-radius: 999px; box-shadow: 0 4px 12px rgba(0,0,0,0.18); backdrop-filter: blur(6px); }
+
+/* Sélecteur de visuel à la publication */
+.cover-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.cover-opt { position: relative; aspect-ratio: 1/1; border-radius: 14px; display: grid; place-items: center; font-size: 26px; cursor: pointer; border: 2px solid transparent; transition: transform 0.12s; }
+.cover-opt:active { transform: scale(0.94); }
+.cover-opt.sel { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(108,92,231,0.22); }
+.cover-opt .co-check { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--coral); color: #fff; font-size: 12px; display: grid; place-items: center; box-shadow: var(--shadow-sm); }
+.cover-opt .co-lbl { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 8.5px; font-weight: 700; color: rgba(255,255,255,0.95); text-shadow: 0 1px 3px rgba(0,0,0,0.4); }

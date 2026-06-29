@@ -1,14 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen, AppBar } from '../components/Layout.jsx';
-import { CATEGORIES, catGradient, catCover } from '../constants.js';
+import { CATEGORIES, catGradient } from '../constants.js';
 
 function CatCard({ c, onClick }) {
-  const [ok, setOk] = useState(true);
-  const cover = catCover(c.key);
   return (
     <div className="cat-card" style={{ background: catGradient(c.key) }} onClick={onClick}>
-      {cover && ok && <img src={cover} alt="" loading="lazy" onError={() => setOk(false)} />}
       <div className="cc-grad" />
       <span className="cc-ic">{c.icon}</span>
       <span className="cc-t">{c.label}</span>

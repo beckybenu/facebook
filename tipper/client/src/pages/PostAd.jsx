@@ -5,7 +5,7 @@ import { Confetti } from '../components/fx.jsx';
 import { feedback } from '../sound.js';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
-import { catLabel, catIcon, catTint, chf, TIP_SUGGESTION } from '../constants.js';
+import { catLabel, catIcon, catTint, chf, TIP_SUGGESTION, CATEGORY_SUBJECTS, coverFor, adKeyword } from '../constants.js';
 
 const COPY = {
   automobile: { seek: 'Je vends / je cherche', seekPh: 'Voiture, Moto, Scooter…', price: 'Prix du bien', tip: 'Pourboire pour le helper' },
@@ -32,6 +32,12 @@ export function PostAd() {
   const [scheduled, setScheduled] = useState('');
   const [useGeo, setUseGeo] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [cover, setCover] = useState(null); // null = automatique selon le titre
+
+  const autoSubject = adKeyword({ title, description, category });
+  const chosenSubject = cover || autoSubject;
+  const chosenCov = coverFor(chosenSubject);
+  const coverOptions = CATEGORY_SUBJECTS[category] || [];
 
   function pickPhoto(e) {
     const f = e.target.files[0];
@@ -57,6 +63,7 @@ export function PostAd() {
       if (urgent) form.append('urgent', '1');
       if (scheduled) form.append('scheduled_at', new Date(scheduled).toISOString());
       if (lat != null) { form.append('lat', lat); form.append('lng', lng); }
+      form.append('cover', chosenSubject);
       if (photo) form.append('photo', photo);
       await api.createAd(form);
       const { user: u } = await api.me(); setUser(u);
@@ -109,6 +116,27 @@ export function PostAd() {
         <div className="field">
           <label>Description</label>
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Donnez un maximum de détails pour attirer les meilleurs helpers…" />
+        </div>
+
+        <div className="field">
+          <label>Image de l'annonce</label>
+          <div className="ad-cover" style={{ height: 130, background: chosenCov.g, marginBottom: 10 }}>
+            {preview ? <img src={preview} alt="" /> : <><span className="cover-emoji">{chosenCov.e}</span><span className="cover-chip">{chosenCov.label}</span></>}
+          </div>
+          <div className="cover-pick">
+            <div className={`cover-opt ${!cover ? 'sel' : ''}`} style={{ background: 'var(--surface-2)', color: 'var(--text)' }} onClick={() => setCover(null)}>
+              ✨{!cover && <span className="co-check">✓</span>}<span className="co-lbl" style={{ color: 'var(--muted)', textShadow: 'none' }}>Auto</span>
+            </div>
+            {coverOptions.map((k) => {
+              const c = coverFor(k);
+              return (
+                <div key={k} className={`cover-opt ${cover === k ? 'sel' : ''}`} style={{ background: c.g }} onClick={() => setCover(k)}>
+                  {c.e}{cover === k && <span className="co-check">✓</span>}<span className="co-lbl">{c.label}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div className="suggest" style={{ marginTop: 8 }}>✨ Auto = image choisie selon votre titre. Vous pouvez aussi en sélectionner une.</div>
         </div>
 
         <div className="card" style={{ padding: '4px 16px' }}>

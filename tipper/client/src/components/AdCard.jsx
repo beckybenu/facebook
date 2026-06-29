@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { coin, catLabel, catIcon, catGradient, adCover } from '../constants.js';
+import { coin, catLabel, adSubject, coverFor } from '../constants.js';
 import { Stars } from './Layout.jsx';
 
 export function Mission({ ad, onToggleSave }) {
   const navigate = useNavigate();
   const [imgOk, setImgOk] = useState(true);
-  const cover = adCover(ad);
+  const cov = coverFor(adSubject(ad));
+  const usePhoto = ad.photo && imgOk;
   return (
     <div className="mission fade-in" onClick={() => navigate(`/ads/${ad.id}`)}>
-      <div className="m-cover" style={{ background: catGradient(ad.category) }}>
-        {cover && imgOk && <img src={cover} alt="" loading="lazy" onError={() => setImgOk(false)} />}
-        {!(cover && imgOk) && <span className="m-cover-ic">{catIcon(ad.category)}</span>}
+      <div className="m-cover" style={{ background: cov.g }}>
+        {usePhoto
+          ? <img src={ad.photo} alt="" loading="lazy" onError={() => setImgOk(false)} />
+          : <><span className="cover-emoji">{cov.e}</span><span className="cover-chip">{cov.label}</span></>}
         <div className="m-cover-grad" />
         <div className="m-badges">
           {ad.boosted && <span className="kind-badge boost">🚀 À la une</span>}

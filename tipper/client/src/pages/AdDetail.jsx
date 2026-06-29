@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { coin, chf, catLabel, catIcon, catGradient, adCover, dateShort } from '../constants.js';
+import { coin, chf, catLabel, adSubject, coverFor, dateShort } from '../constants.js';
 
 const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
@@ -124,10 +124,10 @@ export function AdDetail() {
       <AppBar title={catLabel(ad.category)} back="/explore"
         right={<button className="iconbtn" onClick={async () => { await api.toggleSave(id); load(); }}>{ad.is_saved ? '♥' : '♡'}</button>} />
       <div className="content">
-        <div className="ad-cover" style={{ background: catGradient(ad.category) }}>
-          {coverOk
-            ? <img src={adCover(ad)} alt="" onError={() => setCoverOk(false)} />
-            : <span className="ad-cover-ic">{catIcon(ad.category)}</span>}
+        <div className="ad-cover" style={{ background: coverFor(adSubject(ad)).g }}>
+          {ad.photo && coverOk
+            ? <img src={ad.photo} alt="" onError={() => setCoverOk(false)} />
+            : <><span className="cover-emoji lg">{coverFor(adSubject(ad)).e}</span><span className="cover-chip">{coverFor(adSubject(ad)).label}</span></>}
         </div>
 
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
