@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { coin, chf, catLabel, catIcon, catGradient, catCover, dateShort } from '../constants.js';
+import { coin, chf, catLabel, catIcon, catGradient, adCover, dateShort } from '../constants.js';
 
 const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
@@ -125,8 +125,8 @@ export function AdDetail() {
         right={<button className="iconbtn" onClick={async () => { await api.toggleSave(id); load(); }}>{ad.is_saved ? '♥' : '♡'}</button>} />
       <div className="content">
         <div className="ad-cover" style={{ background: catGradient(ad.category) }}>
-          {(ad.photo || catCover(ad.category)) && coverOk
-            ? <img src={ad.photo || catCover(ad.category)} alt="" onError={() => setCoverOk(false)} />
+          {coverOk
+            ? <img src={adCover(ad)} alt="" onError={() => setCoverOk(false)} />
             : <span className="ad-cover-ic">{catIcon(ad.category)}</span>}
         </div>
 

@@ -22,17 +22,73 @@ const CAT_GRAD = {
 };
 export const catGradient = (k) => CAT_GRAD[k] || 'linear-gradient(135deg,#7C6CF0 0%,#5A4FE0 100%)';
 
-// Photo de couverture (Unsplash) — surcouche optionnelle quand il y a internet,
-// le dégradé reste visible en repli si l'image ne charge pas.
-const CAT_PHOTO = {
-  administratif: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f',
-  automobile: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70',
-  epicerie: 'https://images.unsplash.com/photo-1542838132-92c53300491e',
-  immobilier: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994',
-  petit_service: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952',
-  loisirs: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d',
+// ── Photo qui reflète la demande précise ──
+// On déduit un mot-clé du titre/description de l'annonce, puis on charge
+// une photo correspondante (LoremFlickr, par mot-clé). Le dégradé de
+// catégorie reste visible en repli si la photo ne charge pas.
+
+// Mot-clé par catégorie (repli quand rien de plus précis n'est trouvé)
+const CAT_KW = {
+  administratif: 'documents', automobile: 'car', epicerie: 'groceries',
+  immobilier: 'apartment', petit_service: 'tools', loisirs: 'party',
 };
-export const catCover = (k) => (CAT_PHOTO[k] ? `${CAT_PHOTO[k]}?auto=format&fit=crop&w=900&q=70` : null);
+
+// Termes (FR) repérés dans le texte → mot-clé photo (EN, compris par Flickr).
+// Du plus spécifique au plus général ; le premier trouvé gagne.
+const KW_MAP = [
+  [['coca', 'cola', 'soda', 'canette', 'boisson', 'limonade'], 'cola'],
+  [['biere', 'bière', 'apéro', 'apero'], 'beer'],
+  [['pizza'], 'pizza'],
+  [['sushi'], 'sushi'],
+  [['café', 'cafe', 'coffee'], 'coffee'],
+  [['marlboro', 'cigarette', 'clope', 'tabac', 'paquet'], 'cigarettes'],
+  [['armoire', 'meuble', 'ikea', 'étagère', 'etagere', 'bibliothèque', 'bibliotheque', 'commode'], 'furniture'],
+  [['déménage', 'demenage', 'déménagement', 'demenagement', 'carton', 'cartons'], 'moving-boxes'],
+  [['perceuse', 'bricol', 'monter', 'réparer', 'reparer', 'plomberie', 'fuite', 'robinet', 'visser'], 'tools'],
+  [['ménage', 'menage', 'nettoyage', 'nettoyer', 'repassage'], 'cleaning'],
+  [['jardin', 'tonte', 'pelouse', 'jardinage', 'tondre', 'haie'], 'gardening'],
+  [['peinture', 'peindre', 'repeindre'], 'painting'],
+  [['courses', 'migros', 'coop', 'épicerie', 'epicerie', 'supermarché', 'supermarche', 'aldi', 'lidl'], 'groceries'],
+  [['chien', 'promener', 'toutou', 'chiot'], 'dog'],
+  [['chat', 'chaton'], 'cat'],
+  [['mercedes', 'bmw', 'audi', 'voiture', 'auto', 'véhicule', 'vehicule', 'lavage', 'pneu'], 'car'],
+  [['vélo', 'velo', 'bike', 'cycliste'], 'bicycle'],
+  [['scooter', 'moto'], 'motorcycle'],
+  [['impôt', 'impot', 'déclaration', 'declaration', 'papier', 'paperasse', 'dossier', 'cv', 'lettre'], 'documents'],
+  [['studio', 'appartement', 'appart', 'logement', 'louer', 'location', 'maison', 'colocation'], 'apartment'],
+  [['tennis'], 'tennis'],
+  [['foot', 'football'], 'football'],
+  [['guitare', 'piano', 'musique', 'batterie'], 'guitar'],
+  [['photo', 'photographe', 'shooting'], 'camera'],
+  [['ordinateur', 'informatique', 'wifi', 'internet', 'imprimante'], 'laptop'],
+  [['garde', 'enfant', 'babysitting', 'baby'], 'babysitting'],
+  [['cours', 'math', 'devoir', 'révision', 'revision', 'soutien'], 'study'],
+  [['fête', 'fete', 'anniversaire', 'soirée', 'soiree', 'dj', 'mariage'], 'party'],
+  [['gâteau', 'gateau', 'pâtisserie', 'patisserie', 'cuisine'], 'cake'],
+];
+
+function stableLock(s) {
+  let h = 0; const str = String(s || '');
+  for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) % 100000; }
+  return h;
+}
+
+export function adKeyword(ad) {
+  const text = `${ad.title || ''} ${ad.description || ''}`.toLowerCase();
+  for (const [terms, kw] of KW_MAP) {
+    if (terms.some((t) => text.includes(t))) return kw;
+  }
+  return CAT_KW[ad.category] || 'help';
+}
+
+// Photo de l'annonce : la vraie photo postée sinon une photo qui colle au sujet.
+export function adCover(ad) {
+  if (ad.photo) return ad.photo;
+  return `https://loremflickr.com/800/520/${adKeyword(ad)}?lock=${stableLock(ad.id || ad.title)}`;
+}
+
+// Photo générique d'une catégorie (sélecteur de catégories)
+export const catCover = (k) => `https://loremflickr.com/600/600/${CAT_KW[k] || 'help'}?lock=${stableLock(k)}`;
 
 export const STATUS_LABEL = {
   open: 'Ouverte',

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { coin, catLabel, catIcon, catGradient, catCover } from '../constants.js';
+import { coin, catLabel, catIcon, catGradient, adCover } from '../constants.js';
 import { Stars } from './Layout.jsx';
 
 export function Mission({ ad, onToggleSave }) {
   const navigate = useNavigate();
   const [imgOk, setImgOk] = useState(true);
-  const cover = ad.photo || catCover(ad.category);
+  const cover = adCover(ad);
   return (
     <div className="mission fade-in" onClick={() => navigate(`/ads/${ad.id}`)}>
       <div className="m-cover" style={{ background: catGradient(ad.category) }}>
