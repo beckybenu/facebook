@@ -327,8 +327,10 @@ body {
   margin: 32px 0 24px;
 }
 .auth-logo img {
-  width: 110px;
-  height: 110px;
+  width: auto;
+  max-width: 230px;
+  height: auto;
+  object-fit: contain;
 }
 .auth-logo .brand {
   font-size: 26px;

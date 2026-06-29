@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <Layout title="Accueil">
       <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src={LOGO} alt="" style={{ width: 48, height: 48 }} />
+        <img src={LOGO} alt="" style={{ height: 40, width: 'auto' }} />
         <div>
           <div className="card-title">Bonjour {user?.prenom} 👋</div>
           <div className="card-sub">{user?.titre || 'Bienvenue sur SwissPaints'}</div>

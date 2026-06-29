@@ -6,11 +6,8 @@ export default function Welcome() {
     <div className="app-shell">
       <div className="auth-screen">
         <div className="auth-logo">
-          <img src={LOGO} alt="SwissPaints" />
-          <div className="brand">
-            Swiss<span className="red">Paints</span>
-          </div>
-          <div className="muted" style={{ marginTop: 6 }}>
+          <img src={LOGO} alt="SwissPaints Group Sàrl" />
+          <div className="muted" style={{ marginTop: 10 }}>
             L'application de vos chantiers
           </div>
         </div>

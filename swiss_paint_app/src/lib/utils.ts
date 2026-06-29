@@ -92,5 +92,6 @@ export function mapsLink(lat: number, lng: number): string {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
 }
 
-// Chemin du logo qui respecte le base path (GitHub Pages sous-dossier)
-export const LOGO = `${import.meta.env.BASE_URL}favicon.svg`
+// Chemins logo/icône qui respectent le base path (GitHub Pages sous-dossier)
+export const LOGO = `${import.meta.env.BASE_URL}logo.jpg` // logo complet (paysage)
+export const ICON = `${import.meta.env.BASE_URL}icon.svg` // icône carrée (PWA / favicon)
