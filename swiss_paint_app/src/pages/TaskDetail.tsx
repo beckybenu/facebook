@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
 import { tasksDb, usersDb } from '../data/db'
@@ -138,9 +138,9 @@ export default function TaskDetail() {
       </div>
 
       {isAdmin && (
-        <a className="btn btn-dark" style={{ marginTop: 16 }} href={`/admin/taches/${task.id}`}>
+        <Link className="btn btn-dark" style={{ marginTop: 16 }} to={`/admin/taches/${task.id}`}>
           ✏️ Modifier (admin)
-        </a>
+        </Link>
       )}
     </Layout>
   )

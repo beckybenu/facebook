@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
+import { LOGO } from '../lib/utils'
 
 export default function Welcome() {
   return (
     <div className="app-shell">
       <div className="auth-screen">
         <div className="auth-logo">
-          <img src="/favicon.svg" alt="Swiss Paint" />
+          <img src={LOGO} alt="Swiss Paint" />
           <div className="brand">
             SWISS <span className="red">PAINT</span>
           </div>

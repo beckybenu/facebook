@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { LOGO } from '../lib/utils'
 
 export default function Login() {
   const { login } = useAuth()
@@ -21,7 +22,7 @@ export default function Login() {
     <div className="app-shell">
       <div className="auth-screen">
         <div className="auth-logo" style={{ margin: '12px 0 8px' }}>
-          <img src="/favicon.svg" alt="Swiss Paint" style={{ width: 80, height: 80 }} />
+          <img src={LOGO} alt="Swiss Paint" style={{ width: 80, height: 80 }} />
         </div>
         <h2 className="auth-title">Connexion</h2>
 

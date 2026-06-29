@@ -4,6 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // Déployé sur GitHub Pages sous https://beckybenu.github.io/facebook/swiss-paint/
+  base: '/facebook/swiss-paint/',
   plugins: [
     react(),
     VitePWA({
@@ -17,7 +19,8 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '.',
+        scope: '.',
         icons: [
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },

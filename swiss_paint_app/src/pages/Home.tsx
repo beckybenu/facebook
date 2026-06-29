@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
+import { LOGO } from '../lib/utils'
 
 export default function Home() {
   const { user, isOuvrier, isAdmin } = useAuth()
@@ -19,7 +20,7 @@ export default function Home() {
   return (
     <Layout title="Accueil">
       <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src="/favicon.svg" alt="" style={{ width: 48, height: 48 }} />
+        <img src={LOGO} alt="" style={{ width: 48, height: 48 }} />
         <div>
           <div className="card-title">Bonjour {user?.prenom} 👋</div>
           <div className="card-sub">{user?.titre || 'Bienvenue sur Swiss Paint'}</div>

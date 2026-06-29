@@ -91,3 +91,6 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 export function mapsLink(lat: number, lng: number): string {
   return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
 }
+
+// Chemin du logo qui respecte le base path (GitHub Pages sous-dossier)
+export const LOGO = `${import.meta.env.BASE_URL}favicon.svg`
