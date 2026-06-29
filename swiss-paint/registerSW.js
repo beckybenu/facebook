@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/facebook/swiss-paint/sw.js', { scope: '/facebook/swiss-paint/' })})}

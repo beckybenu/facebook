@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#ffffff"/>
+  <!-- Maison -->
+  <path d="M256 96 L432 232 L392 232 L392 408 L120 408 L120 232 L80 232 Z" fill="#1a1a1a"/>
+  <rect x="160" y="280" width="80" height="128" fill="#ffffff"/>
+  <rect x="280" y="280" width="72" height="64" fill="#ffffff"/>
+  <!-- Rouleau de peinture rouge -->
+  <g transform="rotate(35 300 300)">
+    <rect x="250" y="150" width="150" height="48" rx="10" fill="#E2001A"/>
+    <rect x="392" y="158" width="20" height="32" rx="4" fill="#1a1a1a"/>
+    <rect x="318" y="198" width="14" height="120" fill="#1a1a1a"/>
+    <rect x="300" y="310" width="50" height="20" rx="6" fill="#1a1a1a"/>
+  </g>
+</svg>
