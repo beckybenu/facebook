@@ -9,12 +9,12 @@ export default function Home() {
 
   // Tuiles "services" reprises de l'écran Accueil Adalo
   const tiles = [
-    { icon: '🌐', label: 'Site Web', action: () => window.open('https://www.swisspaint.ch', '_blank') },
+    { icon: '🌐', label: 'Site Web', action: () => window.open('https://www.swisspaints.ch', '_blank') },
     { icon: '📞', label: 'Téléphone', action: () => (window.location.href = 'tel:+41210000000') },
-    { icon: '📝', label: 'Devis en ligne', action: () => window.open('https://www.swisspaint.ch', '_blank') },
+    { icon: '📝', label: 'Devis en ligne', action: () => window.open('https://www.swisspaints.ch', '_blank') },
     { icon: '📅', label: 'Agenda', action: () => alert('Agenda — à venir') },
     { icon: '🗓️', label: 'Réservations', action: () => alert('Réservations — à venir') },
-    { icon: '✉️', label: 'Email', action: () => (window.location.href = 'mailto:contact@swisspaint.ch') },
+    { icon: '✉️', label: 'Email', action: () => (window.location.href = 'mailto:contact@swisspaints.ch') },
   ]
 
   return (
@@ -23,7 +23,7 @@ export default function Home() {
         <img src={LOGO} alt="" style={{ width: 48, height: 48 }} />
         <div>
           <div className="card-title">Bonjour {user?.prenom} 👋</div>
-          <div className="card-sub">{user?.titre || 'Bienvenue sur Swiss Paint'}</div>
+          <div className="card-sub">{user?.titre || 'Bienvenue sur SwissPaints'}</div>
         </div>
       </div>
 

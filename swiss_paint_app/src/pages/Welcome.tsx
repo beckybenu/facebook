@@ -6,9 +6,9 @@ export default function Welcome() {
     <div className="app-shell">
       <div className="auth-screen">
         <div className="auth-logo">
-          <img src={LOGO} alt="Swiss Paint" />
+          <img src={LOGO} alt="SwissPaints" />
           <div className="brand">
-            SWISS <span className="red">PAINT</span>
+            Swiss<span className="red">Paints</span>
           </div>
           <div className="muted" style={{ marginTop: 6 }}>
             L'application de vos chantiers
@@ -28,9 +28,9 @@ export default function Welcome() {
 
         <div className="demo-box">
           <b>Comptes de démonstration</b>
-          Admin&nbsp;: <code>admin@swisspaint.ch</code> / <code>admin</code>
+          Admin&nbsp;: <code>admin@swisspaints.ch</code> / <code>admin</code>
           <br />
-          Ouvrier&nbsp;: <code>ouvrier@swisspaint.ch</code> / <code>ouvrier</code>
+          Ouvrier&nbsp;: <code>ouvrier@swisspaints.ch</code> / <code>ouvrier</code>
           <br />
           Client&nbsp;: <code>client@example.com</code> / <code>client</code>
         </div>

@@ -8,7 +8,7 @@ const KEYS = {
   documents: 'sp_documents',
   timeEntries: 'sp_time_entries',
   session: 'sp_session',
-  seeded: 'sp_seeded_v1',
+  seeded: 'sp_seeded_v2',
 } as const
 
 function read<T>(key: string): T[] {

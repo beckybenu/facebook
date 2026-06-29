@@ -1,6 +1,6 @@
-# Swiss Paint — Application ouvriers (PWA)
+# SwissPaints — Application ouvriers (PWA)
 
-Reproduction de l'application Adalo **Swiss Paint** (entreprise de peinture) sous forme
+Reproduction de l'application Adalo **SwissPaints** (entreprise de peinture à Genève) sous forme
 de **Progressive Web App** React, installable sur téléphone. Toutes les données sont
 stockées **localement** (localStorage) — pas de serveur nécessaire pour la démo.
 
@@ -18,14 +18,14 @@ stockées **localement** (localStorage) — pas de serveur nécessaire pour la d
 - **Documents** publics et privés, filtrés selon le type d'utilisateur.
 - **Espace administrateur** : CRUD utilisateurs, tâches (avec affectation +
   géolocalisation) et documents.
-- **PWA** : installable, thème Swiss Paint (rouge / noir), pensée mobile.
+- **PWA** : installable, thème SwissPaints (rouge / noir), pensée mobile.
 
 ## Comptes de démonstration
 
 | Rôle    | Email                    | Mot de passe |
 | ------- | ------------------------ | ------------ |
-| Admin   | `admin@swisspaint.ch`    | `admin`      |
-| Ouvrier | `ouvrier@swisspaint.ch`  | `ouvrier`    |
+| Admin   | `admin@swisspaints.ch`   | `admin`      |
+| Ouvrier | `ouvrier@swisspaints.ch` | `ouvrier`    |
 | Client  | `client@example.com`     | `client`     |
 
 ## Démarrer

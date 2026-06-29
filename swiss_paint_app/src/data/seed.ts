@@ -9,7 +9,7 @@ export function seedIfNeeded(): void {
 
   const admin: User = {
     id: uid('usr'),
-    email: 'admin@swisspaint.ch',
+    email: 'admin@swisspaints.ch',
     password: 'admin',
     username: 'admin',
     nom: 'Müller',
@@ -21,7 +21,7 @@ export function seedIfNeeded(): void {
   }
   const ouvrier: User = {
     id: uid('usr'),
-    email: 'ouvrier@swisspaint.ch',
+    email: 'ouvrier@swisspaints.ch',
     password: 'ouvrier',
     username: 'jdupont',
     nom: 'Dupont',
@@ -33,7 +33,7 @@ export function seedIfNeeded(): void {
   }
   const ouvrier2: User = {
     id: uid('usr'),
-    email: 'marc@swisspaint.ch',
+    email: 'marc@swisspaints.ch',
     password: 'ouvrier',
     username: 'mrossi',
     nom: 'Rossi',

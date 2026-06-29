@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Swiss Paint',
-        short_name: 'Swiss Paint',
-        description: 'Pointage, chantiers et documents pour les ouvriers Swiss Paint',
+        name: 'SwissPaints',
+        short_name: 'SwissPaints',
+        description: 'Pointage, chantiers et documents pour les ouvriers SwissPaints',
         theme_color: '#E2001A',
         background_color: '#ffffff',
         display: 'standalone',

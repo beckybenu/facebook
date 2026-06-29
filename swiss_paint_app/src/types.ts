@@ -1,4 +1,4 @@
-// Types métier de l'application Swiss Paint
+// Types métier de l'application SwissPaints
 
 // 3 niveaux d'accès reproduits depuis l'app Adalo :
 //  - client  : utilisateur "normal" (hors société) -> accès site web, devis, réservations...
