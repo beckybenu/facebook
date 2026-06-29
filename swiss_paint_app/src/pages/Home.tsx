@@ -8,13 +8,30 @@ export default function Home() {
   const navigate = useNavigate()
 
   // Tuiles "services" reprises de l'écran Accueil Adalo
+  // Coordonnées réelles : SwissPaints Group Sàrl, Ch. du Grand-Puits 66, 1217 Meyrin
   const tiles = [
     { icon: '🌐', label: 'Site Web', action: () => window.open('https://www.swisspaints.ch', '_blank') },
-    { icon: '📞', label: 'Téléphone', action: () => (window.location.href = 'tel:+41210000000') },
-    { icon: '📝', label: 'Devis en ligne', action: () => window.open('https://www.swisspaints.ch', '_blank') },
+    { icon: '📞', label: 'Téléphone', action: () => (window.location.href = 'tel:+41225581219') },
+    {
+      icon: '📝',
+      label: 'Devis en ligne',
+      action: () => window.open('https://www.swisspaints.ch', '_blank'),
+    },
     { icon: '📅', label: 'Agenda', action: () => alert('Agenda — à venir') },
-    { icon: '🗓️', label: 'Réservations', action: () => alert('Réservations — à venir') },
-    { icon: '✉️', label: 'Email', action: () => (window.location.href = 'mailto:contact@swisspaints.ch') },
+    {
+      icon: '📍',
+      label: 'Itinéraire',
+      action: () =>
+        window.open(
+          'https://www.google.com/maps/search/?api=1&query=Chemin+du+Grand-Puits+66,+1217+Meyrin',
+          '_blank',
+        ),
+    },
+    {
+      icon: '✉️',
+      label: 'Email',
+      action: () => (window.location.href = 'mailto:contact@swisspaints.ch'),
+    },
   ]
 
   return (

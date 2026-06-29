@@ -1,0 +1,51 @@
+name: Deploy SwissPaints app
+
+# Redéploie automatiquement l'app SwissPaints sur GitHub Pages
+# (sous-dossier /swiss-paint) à chaque modification poussée.
+on:
+  push:
+    branches:
+      - claude/swiss-paint-worker-app-s7gdim
+    paths:
+      - 'swiss_paint_app/**'
+      - '.github/workflows/deploy-swiss-paint.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-swiss-paint
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: swiss_paint_app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: swiss_paint_app
+        run: npm ci
+
+      - name: Build
+        working-directory: swiss_paint_app
+        run: npm run build
+
+      - name: Deploy to gh-pages (sous-dossier swiss-paint)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: swiss_paint_app/dist
+          destination_dir: swiss-paint
+          # keep_files conserve les autres apps déjà publiées (tipper, escortia…)
+          keep_files: true
+          commit_message: 'Deploy SwissPaints (auto)'

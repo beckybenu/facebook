@@ -15,7 +15,7 @@ export default defineConfig({
         name: 'SwissPaints',
         short_name: 'SwissPaints',
         description: 'Pointage, chantiers et documents pour les ouvriers SwissPaints',
-        theme_color: '#E2001A',
+        theme_color: '#ED1212',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
