@@ -1,16 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Screen, AppBar } from '../components/Layout.jsx';
-import { CATEGORIES, catGradient } from '../constants.js';
-
-function CatCard({ c, onClick }) {
-  return (
-    <div className="cat-card" style={{ background: catGradient(c.key) }} onClick={onClick}>
-      <div className="cc-grad" />
-      <span className="cc-ic">{c.icon}</span>
-      <span className="cc-t">{c.label}</span>
-    </div>
-  );
-}
+import { CATEGORIES } from '../constants.js';
 
 export function Categories() {
   const navigate = useNavigate();
@@ -23,7 +13,10 @@ export function Categories() {
         <p className="sub" style={{ marginBottom: 18 }}>Choisissez le type de service que vous recherchez.</p>
         <div className="qa-grid">
           {CATEGORIES.map((c) => (
-            <CatCard key={c.key} c={c} onClick={() => navigate(`/post/${c.key}`)} />
+            <div key={c.key} className="qa" onClick={() => navigate(`/post/${c.key}`)}>
+              <div className="qa-ic" style={{ background: c.tint + '22', color: c.tint }}>{c.icon}</div>
+              <div className="qa-t">{c.label}</div>
+            </div>
           ))}
         </div>
       </div>
