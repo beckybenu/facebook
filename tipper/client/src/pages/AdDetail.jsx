@@ -58,6 +58,7 @@ export function AdDetail() {
   const { user, setUser, showToast, refreshBadges, t } = useApp();
   const [ad, setAd] = useState(null);
   const [message, setMessage] = useState('');
+  const [offerPrice, setOfferPrice] = useState('');
   const [busy, setBusy] = useState(false);
   const [rating, setRating] = useState(null); // { rateeId, role, title }
 
@@ -71,7 +72,7 @@ export function AdDetail() {
 
   async function apply() {
     setBusy(true);
-    try { await api.apply(id, message); showToast('Candidature envoyée ! 🙌'); setMessage(''); load(); }
+    try { await api.apply(id, message, offerPrice); showToast('Offre envoyée ! 🙌'); setMessage(''); setOfferPrice(''); load(); }
     catch (e) { showToast(e.message, 'error'); } finally { setBusy(false); }
   }
   async function decide(appId, action) {
@@ -164,10 +165,11 @@ export function AdDetail() {
         {/* Candidat */}
         {!mine && !closed && (myApp ? (
           <div className="card center">
-            {myApp.status === 'pending' && <><div style={{ fontSize: 40 }}>⏳</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.pendingTitle')}</div><p className="sub">{t('ad.pendingDesc')}</p></>}
+            {myApp.status === 'pending' && <><div style={{ fontSize: 40 }}>⏳</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.pendingTitle')}</div><p className="sub">{t('ad.pendingDesc')}</p><div className="sub" style={{ marginTop: 4, fontWeight: 700 }}>{t('ad.yourOffer')} : {myApp.price > 0 ? coin(myApp.price) : t('ad.offered')} + {coin(ad.tip_amount)}</div></>}
             {myApp.status === 'accepted' && <>
               <div style={{ fontSize: 40 }}>🚀</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.youIn')}</div>
               <p className="sub">{t('ad.doMission')}</p>
+              <div className="sub" style={{ fontWeight: 700 }}>{t('ad.yourOffer')} : {myApp.price > 0 ? coin(myApp.price) : t('ad.offered')} + {coin(ad.tip_amount)}</div>
               <button className="btn coral" style={{ marginTop: 8 }} onClick={() => deliver(myApp.id)}>{t('ad.deliver')}</button>
             </>}
             {myApp.status === 'delivered' && <><div style={{ fontSize: 40 }}>📦</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.deliveredTitle')}</div><p className="sub">{t('ad.deliveredDesc')}</p></>}
@@ -176,9 +178,15 @@ export function AdDetail() {
         ) : ad.spots_left > 0 ? (
           <div className="card">
             <div className="field" style={{ marginBottom: 12 }}>
+              <label>{t('ad.offerPrice')}</label>
+              <input type="number" min="0" step="0.5" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="0" />
+              <div className="suggest" style={{ marginTop: 6 }}>{t('ad.offerHint')}</div>
+            </div>
+            <div className="field" style={{ marginBottom: 12 }}>
               <label>{t('ad.message')}</label>
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="…" />
             </div>
+            <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>
             <button className="btn coral" disabled={busy} onClick={apply}>{t('ad.apply')}</button>
             <div className="suggest" style={{ marginTop: 10 }}>{t('ad.applyHint')}</div>
           </div>
@@ -204,7 +212,11 @@ export function AdDetail() {
                   </div>
                   <span className={`status ${a.status}`}>{t(`status.${a.status}`)}</span>
                 </div>
-                {a.message && <p style={{ fontSize: 14, margin: '10px 0 0', color: 'var(--ink-soft)' }}>« {a.message} »</p>}
+                <div className="offer-row">
+                  <span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span>
+                  <span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span>
+                </div>
+                {a.message && <p style={{ fontSize: 14, margin: '8px 0 0', color: 'var(--ink-soft)' }}>« {a.message} »</p>}
                 <div className="btn-row" style={{ marginTop: 12 }}>
                   {CHATTABLE.includes(a.status)
                     ? <button className="btn ghost sm" onClick={() => navigate(`/messages/${a.applicant.id}`)}>💬</button>

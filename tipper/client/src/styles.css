@@ -664,3 +664,7 @@ body::after {
 .gs-d { font-size: 12px; color: var(--muted); }
 .gs-action { font-weight: 800; font-size: 13px; color: var(--coral); white-space: nowrap; }
 .gs-row.done .gs-action { color: var(--muted); }
+
+/* Offre d'un candidat (prix article + total) */
+.offer-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding: 9px 12px; border-radius: 12px; background: var(--surface-2); font-size: 13px; font-weight: 600; }
+.offer-row .offer-total { color: var(--coral); font-weight: 800; white-space: nowrap; }

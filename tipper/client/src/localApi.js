@@ -193,11 +193,16 @@ function settleMission(db, ad, app) {
   const rate = isPro(poster) ? PRO_COMMISSION : COMMISSION;
   const commission = Math.round(ad.tip_amount * rate * 100) / 100;
   const net = Math.round((ad.tip_amount - commission) * 100) / 100;
-  poster.reserved -= ad.tip_amount;
-  worker.available += net;
+  const price = app.price || 0; // prix de l'article proposé par le helper (remboursé sans commission)
+  poster.reserved -= (ad.tip_amount + price);
+  worker.available += net + price;
   addRevenue(db, commission, 'commission', ad.id);
   db.transactions.push({ id: uid(), user_id: poster.id, type: 'tip_out', amount: -ad.tip_amount, description: `Pourboire versé · ${ad.title}`, ad_id: ad.id, created_at: now() });
-  db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–10% commission) · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: net, description: `Pourboire reçu (–${Math.round(rate * 100)}% commission) · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  if (price > 0) {
+    db.transactions.push({ id: uid(), user_id: poster.id, type: 'tip_out', amount: -price, description: `Article payé au helper · ${ad.title}`, ad_id: ad.id, created_at: now() });
+    db.transactions.push({ id: uid(), user_id: worker.id, type: 'tip_in', amount: price, description: `Remboursement article · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  }
   app.status = 'completed'; ad.status = 'completed';
   addXp(db, worker.id, 50); addXp(db, poster.id, 15);
   pushNotif(db, worker.id, { type: 'tip_received', title: '💰 Pourboire reçu !', body: `${net} 🪙 crédités (après ${Math.round(rate * 100)}% de commission) pour « ${ad.title} ». +50 XP !`, data: { adId: ad.id, review: true, rateeId: poster.id } });
@@ -214,9 +219,13 @@ function settleMission(db, ad, app) {
 // Rembourse l'escrow au posteur et annule la mission
 function refundMission(db, ad, reason) {
   const poster = db.users.find((x) => x.id === ad.user_id);
-  if (poster && poster.reserved >= ad.tip_amount && ad.status !== 'completed') {
-    poster.reserved -= ad.tip_amount; poster.available += ad.tip_amount;
-    db.transactions.push({ id: uid(), user_id: poster.id, type: 'escrow_refund', amount: ad.tip_amount, description: `Pourboire remboursé · ${ad.title}`, ad_id: ad.id, created_at: now() });
+  // Libère le pourboire ET le prix de l'article éventuellement bloqué pour le helper retenu
+  const acc = db.applications.find((a) => a.ad_id === ad.id && ['accepted', 'delivered'].includes(a.status));
+  const price = acc ? (acc.price || 0) : 0;
+  const total = ad.tip_amount + price;
+  if (poster && poster.reserved >= total && ad.status !== 'completed') {
+    poster.reserved -= total; poster.available += total;
+    db.transactions.push({ id: uid(), user_id: poster.id, type: 'escrow_refund', amount: total, description: `Remboursement (pourboire${price > 0 ? ' + article' : ''}) · ${ad.title}`, ad_id: ad.id, created_at: now() });
     if (reason) pushNotif(db, poster.id, { type: 'dispute', title: '↩️ Remboursement', body: `« ${ad.title} » : ${reason}`, data: { adId: ad.id } });
   }
   ad.status = 'cancelled';
@@ -568,7 +577,7 @@ export const localApi = {
   },
 
   // ── applications ──
-  async apply(adId, message) {
+  async apply(adId, message, price) {
     const db = load(); const u = requireUser(db);
     const ad = db.ads.find((a) => a.id === adId);
     if (!ad) throw new Error('Demande introuvable');
@@ -577,9 +586,11 @@ export const localApi = {
     const apps = db.applications.filter((a) => a.ad_id === adId);
     if (apps.find((a) => a.user_id === u.id)) throw new Error('Vous avez déjà postulé');
     if (apps.filter((a) => a.status !== 'rejected').length >= MAX_PARTICIPANTS) throw new Error('Annonce complète — les 3 places sont prises');
-    const app = { id: uid(), ad_id: adId, user_id: u.id, message: message || '', status: 'pending', created_at: now() };
+    const offer = Math.max(0, Math.round((parseFloat(price) || 0) * 100) / 100);
+    const app = { id: uid(), ad_id: adId, user_id: u.id, message: message || '', price: offer, status: 'pending', created_at: now() };
     db.applications.push(app);
-    pushNotif(db, ad.user_id, { type: 'new_application', title: '🙋 Nouvelle candidature', body: `${u.full_name} (${ratingOf(u) || '—'}★) a postulé à « ${ad.title} »`, data: { adId } });
+    const priceTxt = offer > 0 ? `CHF ${offer} + pourboire` : 'offert + pourboire';
+    pushNotif(db, ad.user_id, { type: 'new_application', title: '🙋 Nouvelle offre', body: `${u.full_name} (${ratingOf(u) || '—'}★) propose « ${ad.title} » pour ${priceTxt}`, data: { adId } });
     save(db); return { application: app };
   },
   async decide(appId, action) {
@@ -591,6 +602,13 @@ export const localApi = {
     if (action === 'accept') {
       const accepted = db.applications.filter((a) => a.ad_id === ad.id && ['accepted', 'delivered', 'completed'].includes(a.status)).length;
       if (accepted >= 1) throw new Error('Un helper a déjà été retenu pour cette demande');
+      // Bloque en séquestre le prix de l'article proposé par le helper retenu
+      const price = app.price || 0;
+      if (price > 0) {
+        if (u.available < price) throw new Error("Solde insuffisant pour couvrir le prix de l'article proposé. Rechargez votre wallet.");
+        u.available -= price; u.reserved += price;
+        db.transactions.push({ id: uid(), user_id: u.id, type: 'escrow_hold', amount: -price, description: `Article bloqué · ${ad.title}`, ad_id: ad.id, created_at: now() });
+      }
       app.status = 'accepted';
       if (ad.status === 'open') ad.status = 'in_progress';
       pushNotif(db, app.user_id, { type: 'application_accepted', title: '✅ Vous êtes pris !', body: `Candidature acceptée pour « ${ad.title} ». À vous de jouer !`, data: { adId: ad.id } });

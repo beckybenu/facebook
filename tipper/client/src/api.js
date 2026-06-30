@@ -51,7 +51,7 @@ export const api = STANDALONE ? localApi : {
   adminStats: () => request('/admin/stats'),
   adminAction: (action, payload) => request('/admin/action', { method: 'POST', body: { action, ...payload } }),
   // applications
-  apply: (adId, message) => request(`/applications/ads/${adId}/apply`, { method: 'POST', body: { message } }),
+  apply: (adId, message, price) => request(`/applications/ads/${adId}/apply`, { method: 'POST', body: { message, price } }),
   decide: (appId, action) => request(`/applications/${appId}/${action}`, { method: 'POST' }),
   myApplications: () => request('/applications/mine'),
   // wallet
