@@ -4,48 +4,43 @@ import { Screen, AppBar } from '../components/Layout.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
 import { coin, catLabel, catIcon } from '../constants.js';
-import { draftMission, KIND_META } from '../ai.js';
-
-const EXAMPLES = [
-  'Un Coca bien frais au lac 🏖️',
-  'Vendre ma voiture rapidement 🚗',
-  'Monter mon armoire IKEA 🔧',
-  'Un studio à louer à Genève 🏠',
-  'Des cigarettes ce soir 🚬',
-];
+import { draftMission, KIND_META, voiceLocale } from '../ai.js';
 
 export function Now() {
   const navigate = useNavigate();
-  const { user, setUser, showToast, captureLocation } = useApp();
+  const { user, setUser, showToast, captureLocation, t, lang } = useApp();
   const [text, setText] = useState('');
   const [draft, setDraft] = useState(null);
   const [tip, setTip] = useState('');
+  const [price, setPrice] = useState('');
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
 
+  const EXAMPLES = [t('now.ex1'), t('now.ex2'), t('now.ex3'), t('now.ex4'), t('now.ex5')];
+
   function startVoice() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return showToast('Dictée non supportée sur ce navigateur', 'error');
+    if (!SR) return showToast(t('now.dictNo'), 'error');
     const rec = new SR();
-    rec.lang = 'fr-FR'; rec.interimResults = false;
+    rec.lang = voiceLocale(lang); rec.interimResults = false;
     rec.onstart = () => setListening(true);
     rec.onerror = () => setListening(false);
     rec.onend = () => setListening(false);
-    rec.onresult = (e) => { const t = e.results[0][0].transcript; setText(t); analyse(t); };
+    rec.onresult = (e) => { const tr = e.results[0][0].transcript; setText(tr); analyse(tr); };
     rec.start();
   }
 
   function analyse(value) {
     const v = value ?? text;
-    if (!v.trim()) return showToast('Décrivez votre besoin', 'error');
+    if (!v.trim()) return showToast(t('now.needDesc'), 'error');
     const d = draftMission(v);
-    setDraft(d); setTip(String(d.tip));
+    setDraft(d); setTip(String(d.tip)); setPrice(d.value ? String(d.value) : '');
   }
 
   async function launch() {
     if (!draft) return;
-    const t = Number(tip) || draft.tip;
-    if (t > user.available) return showToast('Solde insuffisant. Rechargez vos Tipper Coins.', 'error');
+    const tipNum = Number(tip) || draft.tip;
+    if (tipNum > user.available) return showToast(t('now.insufficient'), 'error');
     setBusy(true);
     try {
       let lat, lng;
@@ -59,10 +54,10 @@ export function Now() {
       form.append('category', draft.category);
       form.append('title', draft.title);
       form.append('kind', draft.kind);
-      form.append('tip_amount', t);
+      form.append('tip_amount', tipNum);
       form.append('description', draft.description);
       if (draft.urgent) form.append('urgent', '1');
-      if (draft.value) form.append('price', draft.value);
+      if (draft.kind === 'quest' && price) form.append('price', price); // prix de vente fixé par le demandeur
       if (lat != null) { form.append('lat', lat); form.append('lng', lng); }
       const { ad } = await api.createAd(form);
       const { user: u } = await api.me(); setUser(u);
@@ -75,13 +70,13 @@ export function Now() {
     <Screen nav={false}>
       <AppBar title="" back="/" right={<span className="wordmark" style={{ fontSize: 18 }}>Tipper<span className="dot">.</span></span>} />
       <div className="content">
-        <div className="eyebrow">✦ Propulsé par Tipper AI</div>
-        <h1 className="h-hero" style={{ margin: '8px 0 4px' }}>De quoi avez-vous<br />besoin&nbsp;?</h1>
-        <p className="sub" style={{ marginBottom: 16 }}>Écrivez-le simplement. L'IA crée la demande, fixe le pourboire juste et trouve un helper.</p>
+        <div className="eyebrow">{t('now.eyebrow')}</div>
+        <h1 className="h-hero" style={{ margin: '8px 0 4px' }}>{t('now.title')}</h1>
+        <p className="sub" style={{ marginBottom: 16 }}>{t('now.desc')}</p>
 
         <div className="ai-box" style={{ marginBottom: 12 }}>
-          <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ex : j'ai plus de Coca, je suis posé au lac…" />
-          <button className={`mic-btn ${listening ? 'on' : ''}`} onClick={startVoice} title="Dicter" type="button">🎙️</button>
+          <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t('now.placeholder')} />
+          <button className={`mic-btn ${listening ? 'on' : ''}`} onClick={startVoice} title={t('now.dictate')} type="button">🎙️</button>
         </div>
 
         <div className="pill-row" style={{ marginBottom: 14 }}>
@@ -90,26 +85,35 @@ export function Now() {
           ))}
         </div>
 
-        <button className="btn iris" onClick={() => analyse()}>✦ Générer ma demande</button>
+        <button className="btn iris" onClick={() => analyse()}>{t('now.generate')}</button>
 
         {draft && (
           <div className="ai-draft fade-in" style={{ marginTop: 18 }}>
             <div className="badge-row">
               <span className={`kind-badge ${draft.kind}`}>{KIND_META[draft.kind].emoji} {KIND_META[draft.kind].label}</span>
               <span className="tag cat">{catIcon(draft.category)} {catLabel(draft.category)}</span>
-              {draft.urgent && <span className="tag urgent">⚡ Urgent</span>}
+              {draft.urgent && <span className="tag urgent">{t('ad.urgent')}</span>}
             </div>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>{draft.title}</div>
             <p className="sub" style={{ marginBottom: 14 }}>{draft.description}</p>
+            {draft.kind === 'quest' && (
+              <div className="field" style={{ marginBottom: 12 }}>
+                <label>{t('now.priceLabel')}</label>
+                <div className="input-prefix"><span>🪙</span>
+                  <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" />
+                </div>
+                <div className="hint">{t('now.priceHint')}</div>
+              </div>
+            )}
             <div className="field" style={{ marginBottom: 12 }}>
-              <label>{draft.kind === 'quest' ? 'Prime offerte 🎯' : 'Pourboire offert 🪙'}</label>
+              <label>{draft.kind === 'quest' ? t('now.primeLabel') : t('now.tipLabel')}</label>
               <div className="input-prefix"><span>🪙</span>
                 <input type="number" value={tip} onChange={(e) => setTip(e.target.value)} />
               </div>
-              <div className="hint">Bloqué en séquestre, libéré à la réussite · solde {coin(user.available)}</div>
+              <div className="hint">{t('now.escrowHint')} {coin(user.available)}</div>
             </div>
             <button className="btn coral" disabled={busy} onClick={launch}>
-              {busy ? '…' : draft.kind === 'instant' ? '⚡ Lancer maintenant' : '🎯 Publier la quête'}
+              {busy ? '…' : draft.kind === 'instant' ? t('now.launchInstant') : t('now.publishQuest')}
             </button>
           </div>
         )}

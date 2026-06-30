@@ -8,6 +8,10 @@
 const DB_KEY = 'tipper_db_v5';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
+// Catégories "quête" : le demandeur fixe le prix de vente, le helper ne fait que
+// SUGGÉRER un prix (non bloqué). Ailleurs ("offer"), le prix du helper est en séquestre.
+const QUEST_CATS = ['automobile', 'immobilier'];
+const offerEscrowed = (ad, app) => (QUEST_CATS.includes(ad.category) ? 0 : (app.price || 0));
 const COMMISSION = 0.10;          // commission Tipper standard sur chaque pourboire
 const PRO_COMMISSION = 0.05;      // commission réduite pour les membres Pro
 const CONSOLATION_POINTS = 10;    // Tipper Points pour un candidat non retenu
@@ -193,7 +197,7 @@ function settleMission(db, ad, app) {
   const rate = isPro(poster) ? PRO_COMMISSION : COMMISSION;
   const commission = Math.round(ad.tip_amount * rate * 100) / 100;
   const net = Math.round((ad.tip_amount - commission) * 100) / 100;
-  const price = app.price || 0; // prix de l'article proposé par le helper (remboursé sans commission)
+  const price = offerEscrowed(ad, app); // prix de l'article (remboursé sans commission, hors quêtes)
   poster.reserved -= (ad.tip_amount + price);
   worker.available += net + price;
   addRevenue(db, commission, 'commission', ad.id);
@@ -221,7 +225,7 @@ function refundMission(db, ad, reason) {
   const poster = db.users.find((x) => x.id === ad.user_id);
   // Libère le pourboire ET le prix de l'article éventuellement bloqué pour le helper retenu
   const acc = db.applications.find((a) => a.ad_id === ad.id && ['accepted', 'delivered'].includes(a.status));
-  const price = acc ? (acc.price || 0) : 0;
+  const price = acc ? offerEscrowed(ad, acc) : 0;
   const total = ad.tip_amount + price;
   if (poster && poster.reserved >= total && ad.status !== 'completed') {
     poster.reserved -= total; poster.available += total;
@@ -603,7 +607,8 @@ export const localApi = {
       const accepted = db.applications.filter((a) => a.ad_id === ad.id && ['accepted', 'delivered', 'completed'].includes(a.status)).length;
       if (accepted >= 1) throw new Error('Un helper a déjà été retenu pour cette demande');
       // Bloque en séquestre le prix de l'article proposé par le helper retenu
-      const price = app.price || 0;
+      // (uniquement en mode "offer" ; pour les quêtes, le prix n'est qu'indicatif)
+      const price = offerEscrowed(ad, app);
       if (price > 0) {
         if (u.available < price) throw new Error("Solde insuffisant pour couvrir le prix de l'article proposé. Rechargez votre wallet.");
         u.available -= price; u.reserved += price;

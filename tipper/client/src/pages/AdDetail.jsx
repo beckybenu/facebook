@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { coin, chf, catLabel, catIcon, catTint, dateShort } from '../constants.js';
+import { coin, chf, catLabel, catIcon, catTint, dateShort, priceMode } from '../constants.js';
 
 const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
@@ -81,42 +81,42 @@ export function AdDetail() {
 
   async function apply() {
     setBusy(true);
-    try { await api.apply(id, message, offerPrice); showToast('Offre envoyée ! 🙌'); setMessage(''); setOfferPrice(''); load(); }
+    try { await api.apply(id, message, offerPrice); showToast(t('ad.tApplied')); setMessage(''); setOfferPrice(''); load(); }
     catch (e) { showToast(e.message, 'error'); } finally { setBusy(false); }
   }
   async function decide(appId, action) {
-    try { await api.decide(appId, action); showToast(action === 'accept' ? 'Helper accepté ✅' : 'Refusé'); load(); }
+    try { await api.decide(appId, action); showToast(action === 'accept' ? t('ad.tAccepted') : t('ad.tRefused')); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function deliver(appId) {
-    try { await api.markDelivered(id, appId); showToast('Marqué comme livré 📦'); load(); }
+    try { await api.markDelivered(id, appId); showToast(t('ad.tDelivered')); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function confirm(appId) {
-    if (!confirm('Confirmer la prestation et libérer le pourboire ?')) return;
-    try { await api.confirmCompletion(id, appId); await refreshMe(); refreshBadges(); showToast('Pourboire libéré 💰'); load(); }
+    if (!window.confirm(t('ad.cfConfirm'))) return;
+    try { await api.confirmCompletion(id, appId); await refreshMe(); refreshBadges(); showToast(t('ad.tReleased')); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function cancelAd() {
-    if (!confirm('Annuler cette demande ? Le pourboire vous sera remboursé.')) return;
-    try { await api.cancelAd(id); await refreshMe(); showToast('Demande annulée, escrow remboursé'); load(); }
+    if (!window.confirm(t('ad.cfCancel'))) return;
+    try { await api.cancelAd(id); await refreshMe(); showToast(t('ad.tCancelled')); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function boost() {
-    if (!confirm('Booster cette demande « À la une » pour 24h (20 🪙) ?')) return;
-    try { await api.boostAd(id); await refreshMe(); showToast('Demande boostée 🚀 elle passe en tête !'); load(); }
+    if (!window.confirm(t('ad.cfBoost'))) return;
+    try { await api.boostAd(id); await refreshMe(); showToast(t('ad.tBoosted')); load(); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function openDispute() {
-    const reason = prompt('Décrivez le problème rencontré :');
+    const reason = window.prompt(t('ad.pDispute'));
     if (!reason) return;
-    try { await api.dispute(id, reason); showToast('Litige envoyé, notre équipe va regarder ⚠️'); }
+    try { await api.dispute(id, reason); showToast(t('ad.tDispute')); }
     catch (e) { showToast(e.message, 'error'); }
   }
   async function submitRating(stars, comment) {
     try {
       await api.rate({ ad_id: id, ratee_id: rating.rateeId, role: rating.role, stars, comment });
-      setRating(null); showToast('Merci pour votre avis ⭐'); load();
+      setRating(null); showToast(t('ad.tRated')); load();
     } catch (e) { showToast(e.message, 'error'); }
   }
 
@@ -125,6 +125,7 @@ export function AdDetail() {
   const mine = ad.is_mine;
   const myApp = ad.my_application;
   const closed = ad.status === 'completed' || ad.status === 'cancelled';
+  const isQuest = priceMode(ad.category) === 'quest'; // auto/immo : prix = vente (demandeur), helper suggère
   const hasWinner = ad.applications?.some((a) => ['accepted', 'delivered', 'completed'].includes(a.status));
   const myReviewExists = (rateeId) => ad.reviews?.some((r) => r.rater_id === user.id && r.ratee_id === rateeId);
 
@@ -135,6 +136,11 @@ export function AdDetail() {
   const minPrice = apps.length ? Math.min(...apps.map((a) => a.price || 0)) : 0;
   const maxRating = apps.length ? Math.max(...apps.map((a) => a.applicant?.rating ?? -1)) : -1;
   const minDist = apps.length ? Math.min(...apps.map(appDist)) : Infinity;
+
+  // Ligne récap d'une offre, selon le mode de prix
+  const offerLine = (a) => isQuest
+    ? `${t('ad.suggested2')} : ${a.price > 0 ? coin(a.price) : '—'} · ${t('ad.reward')} ${coin(ad.tip_amount)}`
+    : `${t('ad.yourOffer')} : ${a.price > 0 ? coin(a.price) : t('ad.offered')} + ${coin(ad.tip_amount)}`;
 
   return (
     <Screen nav={false}>
@@ -160,7 +166,7 @@ export function AdDetail() {
             <div><div style={{ fontWeight: 800 }}>{t('ad.tip')}</div><div className="sub" style={{ fontSize: 12 }}>{t('ad.escrowDesc')}</div></div>
             <div className="amt" style={{ color: 'var(--teal)', fontSize: 18 }}>{coin(ad.tip_amount)}</div>
           </div>
-          {ad.price != null && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🏷️</div><div style={{ fontWeight: 700 }}>{t('ad.price')}</div><div className="amt">{chf(ad.price)}</div></div>}
+          {ad.price != null && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🏷️</div><div style={{ fontWeight: 700 }}>{t('ad.price')}</div><div className="amt">{coin(ad.price)}</div></div>}
           <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>📍</div><div style={{ fontWeight: 700 }}>{ad.distance_km != null ? `${ad.distance_km} km` : (ad.city || '—')}</div><div className="amt" style={{ fontWeight: 600, color: 'var(--muted)' }}>{ad.spots_left}/{ad.max_participants} {t('ad.places')}</div></div>
           {ad.scheduled_at && <div className="tx"><div className="ic" style={{ background: 'var(--line-soft)' }}>🗓️</div><div style={{ fontWeight: 700 }}>{t('ad.schedule')}</div><div className="amt" style={{ fontWeight: 600, color: 'var(--muted)' }}>{dateShort(ad.scheduled_at)}</div></div>}
         </div>
@@ -176,17 +182,17 @@ export function AdDetail() {
           </div>
           {!mine && (CHATTABLE.includes(myApp?.status)
             ? <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); navigate(`/messages/${ad.author.id}`); }}>💬</button>
-            : <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); showToast("Le chat s'ouvre une fois la candidature acceptée 🔒", 'error'); }}>🔒</button>)}
+            : <button className="btn ghost sm" onClick={(e) => { e.stopPropagation(); showToast(t('ad.chatLocked'), 'error'); }}>🔒</button>)}
         </div>
 
         {/* Candidat */}
         {!mine && !closed && (myApp ? (
           <div className="card center">
-            {myApp.status === 'pending' && <><div style={{ fontSize: 40 }}>⏳</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.pendingTitle')}</div><p className="sub">{t('ad.pendingDesc')}</p><div className="sub" style={{ marginTop: 4, fontWeight: 700 }}>{t('ad.yourOffer')} : {myApp.price > 0 ? coin(myApp.price) : t('ad.offered')} + {coin(ad.tip_amount)}</div></>}
+            {myApp.status === 'pending' && <><div style={{ fontSize: 40 }}>⏳</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.pendingTitle')}</div><p className="sub">{t('ad.pendingDesc')}</p><div className="sub" style={{ marginTop: 4, fontWeight: 700 }}>{offerLine(myApp)}</div></>}
             {myApp.status === 'accepted' && <>
               <div style={{ fontSize: 40 }}>🚀</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.youIn')}</div>
               <p className="sub">{t('ad.doMission')}</p>
-              <div className="sub" style={{ fontWeight: 700 }}>{t('ad.yourOffer')} : {myApp.price > 0 ? coin(myApp.price) : t('ad.offered')} + {coin(ad.tip_amount)}</div>
+              <div className="sub" style={{ fontWeight: 700 }}>{offerLine(myApp)}</div>
               <button className="btn coral" style={{ marginTop: 8 }} onClick={() => deliver(myApp.id)}>{t('ad.deliver')}</button>
             </>}
             {myApp.status === 'delivered' && <><div style={{ fontSize: 40 }}>📦</div><div style={{ fontWeight: 800, marginTop: 6 }}>{t('ad.deliveredTitle')}</div><p className="sub">{t('ad.deliveredDesc')}</p></>}
@@ -195,15 +201,17 @@ export function AdDetail() {
         ) : ad.spots_left > 0 ? (
           <div className="card">
             <div className="field" style={{ marginBottom: 12 }}>
-              <label>{t('ad.offerPrice')}</label>
+              <label>{isQuest ? t('ad.suggestPrice') : t('ad.offerPrice')}</label>
               <input type="number" min="0" step="0.5" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="0" />
-              <div className="suggest" style={{ marginTop: 6 }}>{t('ad.offerHint')}</div>
+              <div className="suggest" style={{ marginTop: 6 }}>{isQuest ? t('ad.suggestHint') : t('ad.offerHint')}</div>
             </div>
             <div className="field" style={{ marginBottom: 12 }}>
               <label>{t('ad.message')}</label>
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="…" />
             </div>
-            <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>
+            {isQuest
+              ? <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.reward')} : {coin(ad.tip_amount)}</div>
+              : <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>}
             <button className="btn coral" disabled={busy} onClick={apply}>{t('ad.apply')}</button>
             <div className="suggest" style={{ marginTop: 10 }}>{t('ad.applyHint')}</div>
           </div>
@@ -230,12 +238,13 @@ export function AdDetail() {
                   <span className={`status ${a.status}`}>{t(`status.${a.status}`)}</span>
                 </div>
                 <div className="offer-row">
-                  <span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span>
-                  <span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span>
+                  {isQuest
+                    ? <><span>{t('ad.suggested2')} : <b>{a.price > 0 ? coin(a.price) : '—'}</b></span><span className="offer-total">{t('ad.reward')} {coin(ad.tip_amount)}</span></>
+                    : <><span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span><span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span></>}
                 </div>
                 {showBadges && (a.status === 'pending' || a.status === 'accepted') && (
                   <div className="bid-badges">
-                    {(a.price || 0) === minPrice && <span className="bid-badge cheap">💸 {t('ad.badgeCheap')}</span>}
+                    {!isQuest && (a.price || 0) === minPrice && <span className="bid-badge cheap">💸 {t('ad.badgeCheap')}</span>}
                     {maxRating > 0 && (a.applicant?.rating ?? -1) === maxRating && <span className="bid-badge rated">⭐ {t('ad.badgeRated')}</span>}
                     {isFinite(minDist) && appDist(a) === minDist && <span className="bid-badge close">📍 {t('ad.badgeClose')}</span>}
                   </div>

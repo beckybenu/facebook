@@ -12,6 +12,14 @@ export const catIcon = (k) => CATEGORIES.find((c) => c.key === k)?.icon || '📌
 // Thème neutre : vignettes de catégories en gris (style Uber)
 export const catTint = () => '#6b7280';
 
+// Mode de prix selon la catégorie :
+// - 'quest'  : le DEMANDEUR fixe le prix de vente (auto, immo). Le helper peut
+//              SUGGÉRER un prix (indicatif, non bloqué). Récompense = prime.
+// - 'offer'  : le HELPER propose le prix de l'article (épicerie, services).
+//              Ce prix est bloqué en séquestre puis remboursé au helper.
+export const QUEST_CATS = ['automobile', 'immobilier'];
+export const priceMode = (cat) => (QUEST_CATS.includes(cat) ? 'quest' : 'offer');
+
 export const STATUS_LABEL = {
   open: 'Ouverte',
   in_progress: 'En cours',
