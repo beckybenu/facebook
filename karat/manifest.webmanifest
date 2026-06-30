@@ -1,0 +1,13 @@
+{
+  "name": "Karat — Salon de coiffure",
+  "short_name": "Karat",
+  "description": "Découvrez nos services et prenez rendez-vous au salon Karat.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#b8893a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

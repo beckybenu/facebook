@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karat — Salon de coiffure</title>
+  <meta name="description" content="Karat, votre salon de coiffure. Découvrez nos services et prenez rendez-vous en ligne." />
+  <meta name="theme-color" content="#b8893a" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#top" class="brand">
+        <span class="brand-mark">K</span>
+        <span class="brand-name">Karat<small>salon de coiffure</small></span>
+      </a>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#services">Services</a>
+        <a href="#rendezvous">Rendez-vous</a>
+        <a href="#mes-rdv">Mes RDV</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a href="#rendezvous" class="btn btn-primary btn-sm nav-cta">Prendre RDV</a>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <p class="eyebrow">Élégance · Précision · Éclat</p>
+      <h1>Révélez votre éclat<br />au salon <span>Karat</span></h1>
+      <p class="hero-sub">Coupe, couleur, soin et coiffure sur-mesure. Prenez rendez-vous en quelques secondes et offrez à vos cheveux l'attention qu'ils méritent.</p>
+      <div class="hero-actions">
+        <a href="#rendezvous" class="btn btn-primary">Prendre rendez-vous</a>
+        <a href="#services" class="btn btn-ghost">Voir les services</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>+10 ans</strong><span>d'expérience</span></div>
+        <div><strong>4,9/5</strong><span>avis clientes</span></div>
+        <div><strong>6 j/7</strong><span>sur rendez-vous</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Services ===== -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Nos prestations</p>
+        <h2>Services & tarifs</h2>
+        <p class="section-sub">Des prestations pensées pour sublimer chaque type de cheveu.</p>
+      </div>
+      <div class="services-grid" id="services-grid"><!-- généré en JS --></div>
+    </div>
+  </section>
+
+  <!-- ===== Rendez-vous ===== -->
+  <section class="section section-alt" id="rendezvous">
+    <div class="container booking-layout">
+      <div class="booking-intro">
+        <p class="eyebrow">Réservation</p>
+        <h2>Prenez rendez-vous</h2>
+        <p class="section-sub">Choisissez votre prestation, la date et l'heure qui vous conviennent. Vous recevrez une confirmation immédiate.</p>
+        <ul class="booking-points">
+          <li>Confirmation instantanée</li>
+          <li>Modifiable ou annulable à tout moment</li>
+          <li>Rappel le jour J</li>
+        </ul>
+      </div>
+
+      <form class="booking-card" id="booking-form" novalidate>
+        <h3>Votre rendez-vous</h3>
+
+        <div class="field">
+          <label for="f-name">Nom complet *</label>
+          <input type="text" id="f-name" name="name" autocomplete="name" required placeholder="Ex. Sophie Martin" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-phone">Téléphone *</label>
+            <input type="tel" id="f-phone" name="phone" autocomplete="tel" required placeholder="06 12 34 56 78" />
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input type="email" id="f-email" name="email" autocomplete="email" placeholder="vous@email.com" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-service">Prestation *</label>
+          <select id="f-service" name="service" required>
+            <option value="" disabled selected>Choisissez une prestation…</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-date">Date *</label>
+            <input type="date" id="f-date" name="date" required />
+          </div>
+          <div class="field">
+            <label for="f-time">Heure *</label>
+            <select id="f-time" name="time" required>
+              <option value="" disabled selected>Choisissez…</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-notes">Demande particulière</label>
+          <textarea id="f-notes" name="notes" rows="2" placeholder="Allergies, inspiration, longueur souhaitée…"></textarea>
+        </div>
+
+        <div class="form-error" id="form-error" role="alert"></div>
+        <button type="submit" class="btn btn-primary btn-block">Confirmer le rendez-vous</button>
+        <p class="form-fineprint">* Champs obligatoires — Vos données restent sur votre appareil.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== Mes rendez-vous ===== -->
+  <section class="section" id="mes-rdv">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Suivi</p>
+        <h2>Mes rendez-vous</h2>
+        <p class="section-sub">Retrouvez ici vos réservations enregistrées sur cet appareil.</p>
+      </div>
+      <div id="appointments-list" class="appointments-list"><!-- généré en JS --></div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section class="section section-alt" id="contact">
+    <div class="container contact-grid">
+      <div>
+        <p class="eyebrow">Nous trouver</p>
+        <h2>Contact & horaires</h2>
+        <ul class="contact-list">
+          <li><span>Adresse</span>12 rue des Lilas, 75011 Paris</li>
+          <li><span>Téléphone</span>01 23 45 67 89</li>
+          <li><span>Email</span>contact@salon-karat.fr</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="hours-title">Horaires d'ouverture</h3>
+        <ul class="hours-list" id="hours-list"><!-- généré en JS --></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="brand small">
+        <span class="brand-mark">K</span>
+        <span class="brand-name">Karat</span>
+      </span>
+      <p>© <span id="year"></span> Salon Karat — Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
