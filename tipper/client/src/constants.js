@@ -13,12 +13,14 @@ export const catIcon = (k) => CATEGORIES.find((c) => c.key === k)?.icon || '📌
 export const catTint = () => '#6b7280';
 
 // Mode de prix selon la catégorie :
-// - 'quest'  : le DEMANDEUR fixe le prix de vente (auto, immo). Le helper peut
-//              SUGGÉRER un prix (indicatif, non bloqué). Récompense = prime.
-// - 'offer'  : le HELPER propose le prix de l'article (épicerie, services).
-//              Ce prix est bloqué en séquestre puis remboursé au helper.
+// - 'tip'   : POURBOIRE SEUL, aucun prix (loisirs, administratif, petit service).
+// - 'offer' : le HELPER propose le prix de l'article (épicerie). Bloqué + remboursé.
+// - 'quest' : le DEMANDEUR fixe le prix de vente (auto, immo). Le helper SUGGÈRE
+//             un prix (indicatif, non bloqué). Récompense = prime.
 export const QUEST_CATS = ['automobile', 'immobilier'];
-export const priceMode = (cat) => (QUEST_CATS.includes(cat) ? 'quest' : 'offer');
+export const OFFER_CATS = ['epicerie'];
+export const priceMode = (cat) =>
+  QUEST_CATS.includes(cat) ? 'quest' : OFFER_CATS.includes(cat) ? 'offer' : 'tip';
 
 export const STATUS_LABEL = {
   open: 'Ouverte',

@@ -8,10 +8,15 @@
 const DB_KEY = 'tipper_db_v5';
 const TOKEN_KEY = 'tipper_token';
 const MAX_PARTICIPANTS = 3;
-// Catégories "quête" : le demandeur fixe le prix de vente, le helper ne fait que
-// SUGGÉRER un prix (non bloqué). Ailleurs ("offer"), le prix du helper est en séquestre.
-const QUEST_CATS = ['automobile', 'immobilier'];
-const offerEscrowed = (ad, app) => (QUEST_CATS.includes(ad.category) ? 0 : (app.price || 0));
+// Mode de prix selon la catégorie :
+// - 'offer' (épicerie) : le HELPER avance le prix de l'article → bloqué en séquestre
+//   puis remboursé à la livraison.
+// - 'quest' (auto, immo) : le DEMANDEUR fixe le prix de vente, le helper ne fait que
+//   SUGGÉRER un prix indicatif (non bloqué). Récompense = prime seule.
+// - 'tip' (petit service, loisirs, administratif) : pourboire seul, aucun prix.
+// Seul le mode "offer" met un prix d'article en séquestre.
+const OFFER_CATS = ['epicerie'];
+const offerEscrowed = (ad, app) => (OFFER_CATS.includes(ad.category) ? (app.price || 0) : 0);
 const COMMISSION = 0.10;          // commission Tipper standard sur chaque pourboire
 const PRO_COMMISSION = 0.05;      // commission réduite pour les membres Pro
 const CONSOLATION_POINTS = 10;    // Tipper Points pour un candidat non retenu
@@ -593,7 +598,12 @@ export const localApi = {
     const offer = Math.max(0, Math.round((parseFloat(price) || 0) * 100) / 100);
     const app = { id: uid(), ad_id: adId, user_id: u.id, message: message || '', price: offer, status: 'pending', created_at: now() };
     db.applications.push(app);
-    const priceTxt = offer > 0 ? `CHF ${offer} + pourboire` : 'offert + pourboire';
+    const mode = OFFER_CATS.includes(ad.category) ? 'offer' : (['automobile', 'immobilier'].includes(ad.category) ? 'quest' : 'tip');
+    const priceTxt = mode === 'offer'
+      ? (offer > 0 ? `${offer} 🪙 + pourboire` : 'offert + pourboire')
+      : mode === 'quest'
+        ? (offer > 0 ? `prix suggéré ${offer} 🪙 · prime ${ad.tip_amount} 🪙` : `prime ${ad.tip_amount} 🪙`)
+        : `pourboire ${ad.tip_amount} 🪙`;
     pushNotif(db, ad.user_id, { type: 'new_application', title: '🙋 Nouvelle offre', body: `${u.full_name} (${ratingOf(u) || '—'}★) propose « ${ad.title} » pour ${priceTxt}`, data: { adId } });
     save(db); return { application: app };
   },

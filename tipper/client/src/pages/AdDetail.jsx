@@ -125,7 +125,10 @@ export function AdDetail() {
   const mine = ad.is_mine;
   const myApp = ad.my_application;
   const closed = ad.status === 'completed' || ad.status === 'cancelled';
-  const isQuest = priceMode(ad.category) === 'quest'; // auto/immo : prix = vente (demandeur), helper suggère
+  const mode = priceMode(ad.category); // 'tip' (pourboire seul) | 'offer' (épicerie) | 'quest' (auto/immo)
+  const isQuest = mode === 'quest'; // auto/immo : prix = vente (demandeur), helper suggère
+  const isOffer = mode === 'offer'; // épicerie : le helper avance le prix de l'article
+  const isTip = mode === 'tip';     // petit service, loisirs, administratif : pourboire seul
   const hasWinner = ad.applications?.some((a) => ['accepted', 'delivered', 'completed'].includes(a.status));
   const myReviewExists = (rateeId) => ad.reviews?.some((r) => r.rater_id === user.id && r.ratee_id === rateeId);
 
@@ -138,9 +141,11 @@ export function AdDetail() {
   const minDist = apps.length ? Math.min(...apps.map(appDist)) : Infinity;
 
   // Ligne récap d'une offre, selon le mode de prix
-  const offerLine = (a) => isQuest
-    ? `${t('ad.suggested2')} : ${a.price > 0 ? coin(a.price) : '—'} · ${t('ad.reward')} ${coin(ad.tip_amount)}`
-    : `${t('ad.yourOffer')} : ${a.price > 0 ? coin(a.price) : t('ad.offered')} + ${coin(ad.tip_amount)}`;
+  const offerLine = (a) => isTip
+    ? `${t('ad.tip')} : ${coin(ad.tip_amount)}`
+    : isQuest
+      ? `${t('ad.suggested2')} : ${a.price > 0 ? coin(a.price) : '—'} · ${t('ad.reward')} ${coin(ad.tip_amount)}`
+      : `${t('ad.yourOffer')} : ${a.price > 0 ? coin(a.price) : t('ad.offered')} + ${coin(ad.tip_amount)}`;
 
   return (
     <Screen nav={false}>
@@ -200,18 +205,22 @@ export function AdDetail() {
           </div>
         ) : ad.spots_left > 0 ? (
           <div className="card">
-            <div className="field" style={{ marginBottom: 12 }}>
-              <label>{isQuest ? t('ad.suggestPrice') : t('ad.offerPrice')}</label>
-              <input type="number" min="0" step="0.5" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="0" />
-              <div className="suggest" style={{ marginTop: 6 }}>{isQuest ? t('ad.suggestHint') : t('ad.offerHint')}</div>
-            </div>
+            {!isTip && (
+              <div className="field" style={{ marginBottom: 12 }}>
+                <label>{isQuest ? t('ad.suggestPrice') : t('ad.offerPrice')}</label>
+                <input type="number" min="0" step="0.5" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="0" />
+                <div className="suggest" style={{ marginTop: 6 }}>{isQuest ? t('ad.suggestHint') : t('ad.offerHint')}</div>
+              </div>
+            )}
             <div className="field" style={{ marginBottom: 12 }}>
               <label>{t('ad.message')}</label>
               <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="…" />
             </div>
-            {isQuest
-              ? <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.reward')} : {coin(ad.tip_amount)}</div>
-              : <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>}
+            {isTip
+              ? <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.tip')} : {coin(ad.tip_amount)}</div>
+              : isQuest
+                ? <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.reward')} : {coin(ad.tip_amount)}</div>
+                : <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>}
             <button className="btn coral" disabled={busy} onClick={apply}>{t('ad.apply')}</button>
             <div className="suggest" style={{ marginTop: 10 }}>{t('ad.applyHint')}</div>
           </div>
@@ -238,13 +247,15 @@ export function AdDetail() {
                   <span className={`status ${a.status}`}>{t(`status.${a.status}`)}</span>
                 </div>
                 <div className="offer-row">
-                  {isQuest
-                    ? <><span>{t('ad.suggested2')} : <b>{a.price > 0 ? coin(a.price) : '—'}</b></span><span className="offer-total">{t('ad.reward')} {coin(ad.tip_amount)}</span></>
-                    : <><span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span><span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span></>}
+                  {isTip
+                    ? <span className="offer-total">{t('ad.tip')} {coin(ad.tip_amount)}</span>
+                    : isQuest
+                      ? <><span>{t('ad.suggested2')} : <b>{a.price > 0 ? coin(a.price) : '—'}</b></span><span className="offer-total">{t('ad.reward')} {coin(ad.tip_amount)}</span></>
+                      : <><span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span><span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span></>}
                 </div>
                 {showBadges && (a.status === 'pending' || a.status === 'accepted') && (
                   <div className="bid-badges">
-                    {!isQuest && (a.price || 0) === minPrice && <span className="bid-badge cheap">💸 {t('ad.badgeCheap')}</span>}
+                    {isOffer && (a.price || 0) === minPrice && <span className="bid-badge cheap">💸 {t('ad.badgeCheap')}</span>}
                     {maxRating > 0 && (a.applicant?.rating ?? -1) === maxRating && <span className="bid-badge rated">⭐ {t('ad.badgeRated')}</span>}
                     {isFinite(minDist) && appDist(a) === minDist && <span className="bid-badge close">📍 {t('ad.badgeClose')}</span>}
                   </div>
