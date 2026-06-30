@@ -15,6 +15,15 @@ const STEPS = [
 ];
 const stepIndex = { open: 0, in_progress: 1, delivered: 2, completed: 3, cancelled: 0 };
 
+// Distance approx (km) entre deux points — pour le badge « le plus proche »
+function distKm(lat1, lng1, lat2, lng2) {
+  if (lat1 == null || lat2 == null) return Infinity;
+  const R = 6371, toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 function Stepper({ status, t }) {
   const cur = stepIndex[status] ?? 0;
   return (
@@ -119,6 +128,14 @@ export function AdDetail() {
   const hasWinner = ad.applications?.some((a) => ['accepted', 'delivered', 'completed'].includes(a.status));
   const myReviewExists = (rateeId) => ad.reviews?.some((r) => r.rater_id === user.id && r.ratee_id === rateeId);
 
+  // Repères pour aider le demandeur à comparer les offres
+  const apps = ad.applications || [];
+  const appDist = (a) => distKm(user.lat, user.lng, a.applicant?.lat, a.applicant?.lng);
+  const showBadges = apps.length >= 2;
+  const minPrice = apps.length ? Math.min(...apps.map((a) => a.price || 0)) : 0;
+  const maxRating = apps.length ? Math.max(...apps.map((a) => a.applicant?.rating ?? -1)) : -1;
+  const minDist = apps.length ? Math.min(...apps.map(appDist)) : Infinity;
+
   return (
     <Screen nav={false}>
       <AppBar title={catLabel(ad.category)} back="/explore"
@@ -216,6 +233,13 @@ export function AdDetail() {
                   <span>{t('ad.item')} : <b>{a.price > 0 ? coin(a.price) : t('ad.offered')}</b></span>
                   <span className="offer-total">{t('ad.totalLabel')} {coin((a.price || 0) + ad.tip_amount)}</span>
                 </div>
+                {showBadges && (a.status === 'pending' || a.status === 'accepted') && (
+                  <div className="bid-badges">
+                    {(a.price || 0) === minPrice && <span className="bid-badge cheap">💸 {t('ad.badgeCheap')}</span>}
+                    {maxRating > 0 && (a.applicant?.rating ?? -1) === maxRating && <span className="bid-badge rated">⭐ {t('ad.badgeRated')}</span>}
+                    {isFinite(minDist) && appDist(a) === minDist && <span className="bid-badge close">📍 {t('ad.badgeClose')}</span>}
+                  </div>
+                )}
                 {a.message && <p style={{ fontSize: 14, margin: '8px 0 0', color: 'var(--ink-soft)' }}>« {a.message} »</p>}
                 <div className="btn-row" style={{ marginTop: 12 }}>
                   {CHATTABLE.includes(a.status)

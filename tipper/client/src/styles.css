@@ -668,3 +668,10 @@ body::after {
 /* Offre d'un candidat (prix article + total) */
 .offer-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding: 9px 12px; border-radius: 12px; background: var(--surface-2); font-size: 13px; font-weight: 600; }
 .offer-row .offer-total { color: var(--coral); font-weight: 800; white-space: nowrap; }
+
+/* Badges repères sur les offres */
+.bid-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.bid-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 999px; }
+.bid-badge.cheap { background: rgba(22,184,160,0.16); color: #0E9E78; }
+.bid-badge.rated { background: rgba(245,166,35,0.18); color: #B8770F; }
+.bid-badge.close { background: rgba(108,92,231,0.16); color: #5A4FE0; }
