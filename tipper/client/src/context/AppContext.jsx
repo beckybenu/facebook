@@ -33,6 +33,8 @@ export function AppProvider({ children }) {
     if (meta) meta.setAttribute('content', theme === 'light' ? '#f6f5f1' : '#08080d');
     localStorage.setItem('tipper_theme', theme);
   }, [theme]);
+  // Reflète la langue (auto-détectée ou choisie) sur <html lang> pour l'accessibilité
+  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const toggleTheme = useCallback(() => setTheme((t) => (t === 'light' ? 'dark' : 'light')), []);
   const toggleSound = useCallback(() => setSoundOn((s) => { const n = !s; localStorage.setItem('tipper_sound', n ? '1' : '0'); return n; }), []);
   const toggleHaptic = useCallback(() => setHapticOn((s) => { const n = !s; localStorage.setItem('tipper_haptic', n ? '1' : '0'); return n; }), []);

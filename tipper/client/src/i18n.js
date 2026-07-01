@@ -365,11 +365,22 @@ const STR = {
   },
 };
 
+// Détection automatique de la langue selon l'appareil (téléphone / ordinateur).
+// 1) On respecte le choix manuel de l'utilisateur s'il existe (localStorage).
+// 2) Sinon on parcourt la liste ORDONNÉE des langues préférées du système
+//    (navigator.languages) et on prend la première que Tipper supporte.
+// 3) À défaut (langue non couverte), on retombe sur l'anglais international.
 export function detectLang() {
   const saved = localStorage.getItem('tipper_lang');
   if (saved && STR[saved]) return saved;
-  const nav = (navigator.language || 'fr').slice(0, 2);
-  return STR[nav] ? nav : 'fr';
+  const prefs = (typeof navigator !== 'undefined' && navigator.languages && navigator.languages.length)
+    ? navigator.languages
+    : [(typeof navigator !== 'undefined' && (navigator.language || navigator.userLanguage)) || 'en'];
+  for (const l of prefs) {
+    const code = String(l).slice(0, 2).toLowerCase();
+    if (STR[code]) return code;
+  }
+  return 'en';
 }
 
 // Clés supplémentaires : menu header, détail mission, back-office, statuts
