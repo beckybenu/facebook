@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cabinet Zhong — Médecine Traditionnelle Chinoise à Carouge</title>
+<meta name="description" content="Cabinet Zhong à Carouge (Genève) — Acupuncture, phytothérapie chinoise, Tuina et moxibustion. Fabrice Alvarez, thérapeute agréé RME et ASCA. L'art millénaire de l'équilibre." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Cormorant+Garamond:wght@400;500;600&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============ RESET & TOKENS ============ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Palette — tons chauds neutres du vrai cabinet */
+    --greige:        #BEB2AB;
+    --greige-light:  #CFC5BC;
+    --cream:         #F1ECE5;
+    --cream-soft:    #F7F3EC;
+    --taupe:         #9A8979;
+    --taupe-deep:    #8C7B6B;
+    --brun:          #3A322C;
+    --brun-warm:     #4A3B30;
+    --oak:           #C89A63;
+    --oak-deep:      #B98A50;
+    --gold:          #C7A24B;
+    --gold-deep:     #B8933F;
+    --ink:           #4A423B;
+
+    --shadow-soft:  0 18px 50px -20px rgba(58, 50, 44, .30);
+    --shadow-card:  0 12px 34px -18px rgba(88, 74, 62, .45);
+    --shadow-gold:  0 10px 30px -12px rgba(184, 147, 63, .40);
+
+    --radius:  22px;
+    --radius-lg: 30px;
+    --maxw: 1180px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+
+    --serif: "Fraunces", "Cormorant Garamond", Georgia, serif;
+    --sans: "Mulish", system-ui, -apple-system, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--cream-soft);
+    line-height: 1.7;
+    font-weight: 400;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,h2,h3,h4 { font-family: var(--serif); color: var(--brun); font-weight: 500; line-height: 1.12; letter-spacing: -.01em; }
+
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  .container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
+
+  /* Focus visibility */
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid var(--gold-deep);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* ============ SEIGAIHA WAVE PATTERN ============ */
+  .seigaiha-band {
+    height: 46px;
+    background-color: var(--cream);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cg fill='none' stroke='%239A8979' stroke-width='2' stroke-opacity='0.55'%3E%3Cpath d='M0 60 A30 30 0 0 1 60 60 A30 30 0 0 1 120 60'/%3E%3Cpath d='M0 60 A22 22 0 0 1 60 60 A22 22 0 0 1 120 60' stroke-opacity='0.35'/%3E%3Cpath d='M0 60 A14 14 0 0 1 60 60 A14 14 0 0 1 120 60' stroke-opacity='0.25'/%3E%3Cpath d='M0 60 A6 6 0 0 1 60 60 A6 6 0 0 1 120 60' stroke-opacity='0.18'/%3E%3Cpath d='M-60 60 A30 30 0 0 1 0 60 M60 60 A30 30 0 0 1 120 60' /%3E%3C/g%3E%3C/svg%3E");
+    background-size: 120px 60px;
+    background-position: center bottom;
+    opacity: .9;
+  }
+  .seigaiha-band.on-greige { background-color: var(--greige); }
+
+  /* ============ HEADER ============ */
+  header.site {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(207, 197, 188, .72);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid rgba(154, 137, 121, .32);
+    transition: box-shadow .4s var(--ease), background .4s var(--ease);
+  }
+  header.site.scrolled { box-shadow: 0 8px 26px -16px rgba(58,50,44,.5); background: rgba(207,197,188,.88); }
+
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .monogram {
+    width: 44px; height: 44px; flex: none;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(150deg, var(--brun), var(--brun-warm));
+    box-shadow: inset 0 0 0 1px rgba(199,162,75,.45), var(--shadow-gold);
+  }
+  .monogram svg { width: 26px; height: 26px; }
+  .brand-name { display: flex; flex-direction: column; line-height: 1; }
+  .brand-name .n { font-family: var(--serif); font-size: 1.32rem; color: var(--brun); font-weight: 600; letter-spacing: .5px; }
+  .brand-name .t { font-size: .62rem; letter-spacing: .32em; text-transform: uppercase; color: var(--taupe-deep); margin-top: 5px; }
+
+  .nav-links { display: flex; align-items: center; gap: 30px; }
+  .nav-links a.link {
+    font-size: .93rem; font-weight: 600; color: var(--brun-warm);
+    position: relative; padding: 4px 0;
+  }
+  .nav-links a.link::after {
+    content: ""; position: absolute; left: 0; bottom: -2px; height: 2px; width: 0;
+    background: var(--gold-deep); transition: width .35s var(--ease);
+  }
+  .nav-links a.link:hover::after, .nav-links a.link:focus-visible::after { width: 100%; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    font-family: var(--sans); font-weight: 700; font-size: .93rem;
+    padding: 13px 26px; border-radius: 100px; border: none; cursor: pointer;
+    transition: transform .3s var(--ease), box-shadow .3s var(--ease), background .3s var(--ease);
+    text-align: center; letter-spacing: .01em;
+  }
+  .btn-primary { background: var(--brun); color: var(--cream-soft); box-shadow: var(--shadow-soft); }
+  .btn-primary:hover { background: var(--brun-warm); transform: translateY(-2px); box-shadow: 0 20px 44px -18px rgba(58,50,44,.55); }
+  .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-deep)); color: #fff; box-shadow: var(--shadow-gold); }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -14px rgba(184,147,63,.6); }
+  .btn-outline { background: transparent; color: var(--brun); border: 1.5px solid var(--taupe); }
+  .btn-outline:hover { background: rgba(154,137,121,.16); transform: translateY(-2px); border-color: var(--brun); }
+  .btn-oak { background: linear-gradient(135deg, var(--oak), var(--oak-deep)); color: #fff; box-shadow: var(--shadow-card); }
+  .btn-oak:hover { transform: translateY(-2px); }
+
+  .burger {
+    display: none; flex-direction: column; gap: 5px; width: 44px; height: 44px;
+    background: transparent; border: none; cursor: pointer; align-items: center; justify-content: center;
+  }
+  .burger span { width: 24px; height: 2px; background: var(--brun); border-radius: 2px; transition: transform .3s var(--ease), opacity .3s var(--ease); }
+  .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Mobile menu */
+  .mobile-menu {
+    position: fixed; inset: 76px 0 auto 0; z-index: 99;
+    background: rgba(241, 236, 229, .97);
+    backdrop-filter: blur(16px);
+    padding: 22px 26px 34px;
+    display: flex; flex-direction: column; gap: 6px;
+    transform: translateY(-120%);
+    transition: transform .45s var(--ease);
+    border-bottom: 1px solid rgba(154,137,121,.35);
+    box-shadow: var(--shadow-soft);
+  }
+  .mobile-menu.open { transform: translateY(0); }
+  .mobile-menu a.link { padding: 13px 6px; font-weight: 600; border-bottom: 1px solid rgba(154,137,121,.22); color: var(--brun-warm); }
+  .mobile-menu .btn { margin-top: 16px; }
+
+  /* ============ HERO ============ */
+  .hero {
+    position: relative;
+    background:
+      radial-gradient(120% 90% at 78% 8%, rgba(200,154,99,.14), transparent 55%),
+      linear-gradient(160deg, var(--greige-light) 0%, var(--greige) 60%, #B3A69D 100%);
+    padding: 78px 0 96px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: .5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cg fill='none' stroke='%238C7B6B' stroke-width='1.4' stroke-opacity='0.35'%3E%3Cpath d='M0 60 A30 30 0 0 1 60 60 A30 30 0 0 1 120 60'/%3E%3Cpath d='M0 60 A20 20 0 0 1 60 60 A20 20 0 0 1 120 60'/%3E%3Cpath d='M0 60 A10 10 0 0 1 60 60 A10 10 0 0 1 120 60'/%3E%3Cpath d='M-60 60 A30 30 0 0 1 0 60 M60 60 A30 30 0 0 1 120 60'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 130px 65px;
+    mask-image: linear-gradient(to bottom, transparent, #000 40%, #000 85%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%, #000 85%, transparent);
+  }
+  .hero-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.05fr .95fr; gap: 58px; align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: .72rem; letter-spacing: .3em; text-transform: uppercase; font-weight: 700;
+    color: var(--brun-warm); background: rgba(247,243,236,.6);
+    padding: 9px 18px; border-radius: 100px; border: 1px solid rgba(154,137,121,.4);
+    margin-bottom: 26px;
+  }
+  .hero h1 { font-size: clamp(2.6rem, 6vw, 4.4rem); font-weight: 500; color: var(--brun); }
+  .hero h1 em { font-style: italic; color: var(--brun-warm); }
+  .hero .baseline {
+    font-family: var(--serif); font-style: italic; font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    color: var(--taupe-deep); margin: 18px 0 10px; font-weight: 400;
+  }
+  .hero p.lead { font-size: 1.1rem; color: var(--brun-warm); max-width: 30rem; margin-top: 14px; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 34px; }
+
+  .hero-visual { position: relative; }
+  .hero-img-wrap {
+    position: relative; border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    background: linear-gradient(150deg, var(--greige), var(--taupe));
+    aspect-ratio: 4/5;
+  }
+  .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.92) sepia(.06) brightness(1.02); }
+  .hero-img-wrap::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(58,50,44,.16));
+    mix-blend-mode: multiply;
+  }
+  .hero-badge-float {
+    position: absolute; bottom: -22px; left: -22px;
+    background: var(--cream-soft); border-radius: 18px; padding: 16px 22px;
+    box-shadow: var(--shadow-card); border: 1px solid rgba(154,137,121,.3);
+    display: flex; align-items: center; gap: 14px; max-width: 260px;
+  }
+  .hero-badge-float .zh { font-family: var(--serif); font-size: 1.9rem; color: var(--gold-deep); line-height: 1; }
+  .hero-badge-float small { display: block; font-size: .78rem; color: var(--taupe-deep); line-height: 1.4; }
+  .hero-badge-float strong { color: var(--brun); font-size: .92rem; }
+
+  /* ============ TRUST BAND ============ */
+  .trust { background: var(--brun); color: var(--cream); padding: 26px 0; }
+  .trust .container { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 42px; }
+  .trust .item { display: flex; align-items: center; gap: 11px; font-size: .95rem; font-weight: 500; color: var(--cream); }
+  .trust .item svg { width: 20px; height: 20px; color: var(--gold); flex: none; }
+  .trust .sep { width: 5px; height: 5px; border-radius: 50%; background: var(--taupe); }
+
+  /* ============ SECTION SHARED ============ */
+  section { position: relative; }
+  .section-pad { padding: 96px 0; }
+  .section-head { max-width: 640px; margin: 0 auto 58px; text-align: center; }
+  .kicker {
+    display: inline-block; font-size: .72rem; letter-spacing: .3em; text-transform: uppercase;
+    font-weight: 700; color: var(--gold-deep); margin-bottom: 16px;
+  }
+  .kicker::before, .kicker::after { content: "◦"; margin: 0 10px; color: var(--taupe); }
+  .section-head h2 { font-size: clamp(2rem, 4.5vw, 3rem); }
+  .section-head p { color: var(--taupe-deep); font-size: 1.08rem; margin-top: 16px; }
+
+  .bg-cream { background: var(--cream-soft); }
+  .bg-greige { background: var(--greige); }
+  .bg-cream-alt { background: var(--cream); }
+
+  /* ============ SOINS (4 cards) ============ */
+  .soins-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .soin-card {
+    background: var(--cream-soft); border-radius: var(--radius); padding: 34px 26px;
+    box-shadow: var(--shadow-card); border: 1px solid rgba(154,137,121,.22);
+    transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+    position: relative; overflow: hidden;
+  }
+  .soin-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--oak));
+    opacity: 0; transition: opacity .4s var(--ease);
+  }
+  .soin-card:hover { transform: translateY(-8px); box-shadow: 0 26px 50px -22px rgba(88,74,62,.55); }
+  .soin-card:hover::before { opacity: 1; }
+  .soin-num { font-family: var(--serif); font-size: .95rem; color: var(--gold-deep); font-weight: 600; letter-spacing: .1em; }
+  .soin-icon {
+    width: 60px; height: 60px; border-radius: 16px; margin: 16px 0 20px;
+    display: grid; place-items: center;
+    background: linear-gradient(150deg, var(--cream), var(--greige-light));
+    border: 1px solid rgba(154,137,121,.3);
+  }
+  .soin-icon svg { width: 30px; height: 30px; color: var(--brun-warm); }
+  .soin-card h3 { font-size: 1.32rem; margin-bottom: 12px; }
+  .soin-card p { font-size: .96rem; color: var(--ink); }
+
+  /* ============ À PROPOS ============ */
+  .about { position: relative; overflow: hidden; }
+  .about::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; opacity: .55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cg fill='none' stroke='%239A8979' stroke-width='1.3' stroke-opacity='0.3'%3E%3Cpath d='M0 60 A30 30 0 0 1 60 60 A30 30 0 0 1 120 60'/%3E%3Cpath d='M0 60 A20 20 0 0 1 60 60 A20 20 0 0 1 120 60'/%3E%3Cpath d='M0 60 A10 10 0 0 1 60 60 A10 10 0 0 1 120 60'/%3E%3Cpath d='M-60 60 A30 30 0 0 1 0 60 M60 60 A30 30 0 0 1 120 60'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 130px 65px;
+  }
+  .about-grid { position: relative; z-index: 1; display: grid; grid-template-columns: .85fr 1.15fr; gap: 58px; align-items: center; }
+  .about-photo { position: relative; }
+  .about-photo .frame {
+    border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-soft);
+    background: linear-gradient(150deg, var(--greige), var(--taupe)); aspect-ratio: 3/4;
+  }
+  .about-photo .frame img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.9) sepia(.05) brightness(1.02); }
+  .cred-badge {
+    position: absolute; bottom: 20px; right: -18px;
+    background: var(--brun); color: var(--cream-soft);
+    padding: 14px 20px; border-radius: 16px; box-shadow: var(--shadow-card);
+    border: 1px solid rgba(199,162,75,.4); text-align: center;
+  }
+  .cred-badge .rme { font-family: var(--serif); font-size: 1.3rem; color: var(--gold); font-weight: 600; letter-spacing: .06em; }
+  .cred-badge small { font-size: .72rem; color: var(--greige-light); letter-spacing: .08em; }
+
+  .about-text h2 { font-size: clamp(1.9rem, 4vw, 2.8rem); margin-bottom: 6px; }
+  .about-role { font-family: var(--serif); font-style: italic; color: var(--taupe-deep); font-size: 1.15rem; margin-bottom: 22px; }
+  .about-text p { color: var(--ink); margin-bottom: 16px; }
+  .about-text p strong { color: var(--brun-warm); }
+  .about-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .chip {
+    font-size: .82rem; font-weight: 600; color: var(--brun-warm);
+    background: rgba(247,243,236,.75); border: 1px solid rgba(154,137,121,.4);
+    padding: 8px 16px; border-radius: 100px;
+  }
+
+  /* ============ APPROCHE (3 steps) ============ */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .step {
+    background: var(--cream-soft); border-radius: var(--radius); padding: 40px 30px; text-align: center;
+    box-shadow: var(--shadow-card); border: 1px solid rgba(154,137,121,.22); position: relative;
+  }
+  .step-num {
+    width: 58px; height: 58px; margin: 0 auto 22px; border-radius: 50%;
+    display: grid; place-items: center; font-family: var(--serif); font-size: 1.5rem; font-weight: 600;
+    color: #fff; background: linear-gradient(150deg, var(--oak), var(--oak-deep));
+    box-shadow: var(--shadow-card);
+  }
+  .step h3 { font-size: 1.3rem; margin-bottom: 10px; }
+  .step p { font-size: .96rem; color: var(--ink); }
+
+  /* ============ INDICATIONS ============ */
+  .indic-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .indic {
+    background: var(--cream-soft); border-radius: 16px; padding: 22px 16px; text-align: center;
+    border: 1px solid rgba(154,137,121,.25); transition: transform .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease);
+  }
+  .indic:hover { transform: translateY(-5px); background: var(--cream); box-shadow: var(--shadow-card); }
+  .indic .ic {
+    width: 46px; height: 46px; margin: 0 auto 12px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(150deg, var(--cream), var(--greige-light)); border: 1px solid rgba(154,137,121,.3);
+  }
+  .indic .ic svg { width: 24px; height: 24px; color: var(--brun-warm); }
+  .indic span { font-size: .92rem; font-weight: 600; color: var(--brun-warm); line-height: 1.35; display: block; }
+
+  /* ============ TÉMOIGNAGES ============ */
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .testi {
+    background: var(--cream-soft); border-radius: var(--radius); padding: 34px 30px;
+    box-shadow: var(--shadow-card); border: 1px solid rgba(154,137,121,.22); position: relative;
+  }
+  .testi .quote-mark { font-family: var(--serif); font-size: 4rem; color: rgba(199,162,75,.4); line-height: .6; margin-bottom: 6px; }
+  .stars { display: flex; gap: 3px; margin-bottom: 14px; }
+  .stars svg { width: 18px; height: 18px; color: var(--gold-deep); }
+  .testi p { font-size: 1.02rem; color: var(--ink); font-style: italic; font-family: var(--serif); line-height: 1.55; }
+  .testi .who { margin-top: 20px; font-weight: 700; color: var(--brun-warm); font-size: .93rem; font-family: var(--sans); font-style: normal; }
+  .testi .who span { color: var(--taupe-deep); font-weight: 400; }
+
+  /* ============ INFOS PRATIQUES ============ */
+  .infos-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 44px; align-items: stretch; }
+  .info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-content: start; }
+  .info-card {
+    background: var(--cream-soft); border-radius: var(--radius); padding: 26px 24px;
+    box-shadow: var(--shadow-card); border: 1px solid rgba(154,137,121,.22);
+  }
+  .info-card.full { grid-column: 1 / -1; }
+  .info-card h3 { font-size: 1.15rem; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .info-card h3 svg { width: 22px; height: 22px; color: var(--gold-deep); }
+  .info-card p, .info-card li { font-size: .96rem; color: var(--ink); }
+  .info-card ul { list-style: none; }
+  .info-card .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed rgba(154,137,121,.35); }
+  .info-card .row:last-child { border-bottom: none; }
+  .info-card .row strong { color: var(--brun-warm); }
+  .info-card a { color: var(--oak-deep); font-weight: 600; }
+  .info-note { font-size: .8rem; color: var(--taupe-deep); font-style: italic; margin-top: 8px; }
+
+  .map-wrap {
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(154,137,121,.3); min-height: 420px;
+    background: linear-gradient(150deg, var(--greige-light), var(--taupe));
+    position: relative;
+  }
+  .map-wrap iframe { width: 100%; height: 100%; min-height: 420px; border: 0; display: block; filter: sepia(.12) saturate(.9); }
+
+  /* ============ CTA FINAL ============ */
+  .cta-final {
+    background:
+      linear-gradient(150deg, rgba(58,50,44,.94), rgba(74,59,48,.9)),
+      linear-gradient(150deg, var(--brun), var(--brun-warm));
+    color: var(--cream-soft); text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-final::before {
+    content: ""; position: absolute; inset: 0; opacity: .18;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cg fill='none' stroke='%23C7A24B' stroke-width='1.4' stroke-opacity='0.7'%3E%3Cpath d='M0 60 A30 30 0 0 1 60 60 A30 30 0 0 1 120 60'/%3E%3Cpath d='M0 60 A20 20 0 0 1 60 60 A20 20 0 0 1 120 60'/%3E%3Cpath d='M0 60 A10 10 0 0 1 60 60 A10 10 0 0 1 120 60'/%3E%3Cpath d='M-60 60 A30 30 0 0 1 0 60 M60 60 A30 30 0 0 1 120 60'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 130px 65px;
+  }
+  .cta-final .container { position: relative; z-index: 1; }
+  .cta-final h2 { color: var(--cream-soft); font-size: clamp(2rem, 5vw, 3.2rem); }
+  .cta-final p { color: var(--greige-light); font-size: 1.12rem; margin: 18px auto 34px; max-width: 40rem; }
+  .cta-final .hero-cta { justify-content: center; }
+  .cta-final .btn-outline { color: var(--cream-soft); border-color: rgba(207,197,188,.6); }
+  .cta-final .btn-outline:hover { background: rgba(207,197,188,.14); border-color: var(--cream-soft); }
+
+  /* ============ FOOTER ============ */
+  footer.site { background: var(--brun-warm); color: var(--greige-light); padding: 64px 0 28px; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 40px; margin-bottom: 44px; }
+  footer .brand-name .n { color: var(--cream-soft); }
+  footer .brand-name .t { color: var(--taupe); }
+  footer p { font-size: .93rem; color: var(--greige-light); margin-top: 16px; max-width: 22rem; }
+  footer h4 { color: var(--cream-soft); font-size: 1rem; margin-bottom: 18px; letter-spacing: .02em; }
+  footer ul { list-style: none; }
+  footer ul li { margin-bottom: 11px; }
+  footer ul li a, footer .fcontact { font-size: .93rem; color: var(--greige-light); transition: color .3s var(--ease); }
+  footer ul li a:hover { color: var(--gold); }
+  footer .fcontact { display: block; margin-bottom: 10px; }
+  footer .fcontact strong { color: var(--cream-soft); }
+  .footer-bottom {
+    border-top: 1px solid rgba(154,137,121,.3); padding-top: 24px;
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;
+    font-size: .84rem; color: var(--taupe);
+  }
+  .footer-bottom a { color: var(--taupe); }
+  .footer-bottom a:hover { color: var(--gold); }
+
+  /* ============ FIXED PROPOSAL BADGE ============ */
+  .prop-badge {
+    position: fixed; bottom: 18px; left: 18px; z-index: 200;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(58,50,44,.9); color: var(--cream-soft);
+    padding: 9px 15px; border-radius: 100px; font-size: .74rem; font-weight: 600;
+    letter-spacing: .02em; box-shadow: var(--shadow-card);
+    border: 1px solid rgba(199,162,75,.5); backdrop-filter: blur(6px);
+  }
+  .prop-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex: none; }
+
+  /* ============ REVEAL ANIMATIONS ============ */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal.d1 { transition-delay: .08s; }
+  .reveal.d2 { transition-delay: .16s; }
+  .reveal.d3 { transition-delay: .24s; }
+  .reveal.d4 { transition-delay: .32s; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1000px) {
+    .soins-grid { grid-template-columns: repeat(2, 1fr); }
+    .indic-grid { grid-template-columns: repeat(3, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    .burger { display: flex; }
+    .hero-grid { grid-template-columns: 1fr; gap: 50px; }
+    .hero-visual { max-width: 420px; margin: 0 auto; }
+    .about-grid { grid-template-columns: 1fr; gap: 44px; }
+    .about-photo { max-width: 400px; margin: 0 auto; }
+    .cred-badge { right: 12px; }
+    .steps { grid-template-columns: 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .infos-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .section-pad { padding: 68px 0; }
+    .soins-grid { grid-template-columns: 1fr; }
+    .indic-grid { grid-template-columns: repeat(2, 1fr); }
+    .info-cards { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .hero-badge-float { left: 8px; bottom: -16px; }
+    .hero { padding: 54px 0 80px; }
+    .trust .container { gap: 12px 24px; }
+    .prop-badge { font-size: .68rem; padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site" id="top">
+  <div class="container nav">
+    <a href="#top" class="brand" aria-label="Cabinet Zhong — accueil">
+      <span class="monogram" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M6 8h12M9 8v8M15 8v8" stroke="#C7A24B" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </span>
+      <span class="brand-name">
+        <span class="n">Zhong</span>
+        <span class="t">Médecine Chinoise</span>
+      </span>
+    </a>
+    <nav class="nav-links" aria-label="Navigation principale">
+      <a class="link" href="#soins">Nos soins</a>
+      <a class="link" href="#apropos">Le thérapeute</a>
+      <a class="link" href="#approche">Approche</a>
+      <a class="link" href="#indications">Indications</a>
+      <a class="link" href="#infos">Infos pratiques</a>
+      <a class="btn btn-primary" href="#contact">Prendre rendez-vous</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a class="link" href="#soins">Nos soins</a>
+    <a class="link" href="#apropos">Le thérapeute</a>
+    <a class="link" href="#approche">Approche</a>
+    <a class="link" href="#indications">Indications</a>
+    <a class="link" href="#infos">Infos pratiques</a>
+    <a class="btn btn-primary" href="#contact">Prendre rendez-vous</a>
+  </div>
+</header>
+
+<main>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy reveal">
+        <span class="hero-eyebrow"><span aria-hidden="true">中</span> Cabinet Zhong · Carouge</span>
+        <h1>L'art millénaire<br>de <em>l'équilibre</em></h1>
+        <p class="baseline">Médecine traditionnelle chinoise</p>
+        <p class="lead">Retrouvez l'harmonie de votre corps et de votre esprit, naturellement, à Carouge.</p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-gold">Prendre rendez-vous</a>
+          <a href="#soins" class="btn btn-outline">Découvrir nos soins</a>
+        </div>
+      </div>
+      <div class="hero-visual reveal d2">
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1200&q=80" alt="Salle de soin zen aux tons chauds, bois et lumière tamisée" loading="eager" />
+        </div>
+        <div class="hero-badge-float">
+          <span class="zh" aria-hidden="true">氣</span>
+          <span><strong>Circulation du Qi</strong><small>Rétablir l'équilibre de l'énergie vitale</small></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TRUST BAND ============ -->
+  <div class="trust">
+    <div class="container">
+      <div class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Agréé RME</div>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Agréé ASCA</div>
+      <span class="sep" aria-hidden="true"></span>
+      <div class="item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> Remboursé par la plupart des complémentaires</div>
+    </div>
+  </div>
+
+  <div class="seigaiha-band" aria-hidden="true"></div>
+
+  <!-- ============ SOINS ============ -->
+  <section class="section-pad bg-cream" id="soins">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="kicker">Nos soins</span>
+        <h2>Quatre disciplines, une même harmonie</h2>
+        <p>La médecine traditionnelle chinoise combine plusieurs approches complémentaires pour rétablir la libre circulation de l'énergie et traiter la cause profonde.</p>
+      </div>
+      <div class="soins-grid">
+        <article class="soin-card reveal">
+          <span class="soin-num">01</span>
+          <div class="soin-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 20L20 4M14 4h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <h3>Acupuncture</h3>
+          <p>Insertion de fines aiguilles sur des points précis pour relancer la libre circulation du Qi, l'énergie vitale, et rétablir l'équilibre du corps.</p>
+        </article>
+        <article class="soin-card reveal d1">
+          <span class="soin-num">02</span>
+          <div class="soin-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 21c5-3 7-7 7-11a7 7 0 00-14 0c0 4 2 8 7 11z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 8v7M9 11h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Phytothérapie chinoise</h3>
+          <p>Des formules de plantes médicinales personnalisées pour soutenir et prolonger les effets du traitement en profondeur.</p>
+        </article>
+        <article class="soin-card reveal d2">
+          <span class="soin-num">03</span>
+          <div class="soin-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 12c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M6 16c2-3 4-3 6 0s4 3 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="6" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+          </div>
+          <h3>Tuina</h3>
+          <p>Un massage thérapeutique chinois qui agit sur les muscles, tendons et articulations pour libérer les tensions et fluidifier l'énergie.</p>
+        </article>
+        <article class="soin-card reveal d3">
+          <span class="soin-num">04</span>
+          <div class="soin-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3c1.5 2 3 3.5 3 6a3 3 0 01-6 0c0-2.5 1.5-4 3-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 21c1-2 2.5-3 4-3s3 1 4 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 13v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Moxibustion (Moxa)</h3>
+          <p>La chaleur douce de l'armoise stimule les points d'acupuncture, réchauffe et tonifie l'énergie du corps.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="seigaiha-band on-greige" aria-hidden="true"></div>
+
+  <!-- ============ À PROPOS ============ -->
+  <section class="section-pad bg-greige about" id="apropos">
+    <div class="container about-grid">
+      <div class="about-photo reveal">
+        <div class="frame">
+          <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=1200&q=80" alt="Fabrice Alvarez, thérapeute en médecine traditionnelle chinoise" loading="lazy" />
+        </div>
+        <div class="cred-badge">
+          <div class="rme">RME · ASCA</div>
+          <small>Thérapeute agréé</small>
+        </div>
+      </div>
+      <div class="about-text reveal d2">
+        <span class="kicker">Le thérapeute</span>
+        <h2>Fabrice Alvarez</h2>
+        <p class="about-role">Thérapeute en médecine traditionnelle chinoise</p>
+        <p>Diplômé de l'<strong>Institut Liang Shen (Genève)</strong>, Fabrice accompagne chaque patient avec une écoute attentive et une profonde bienveillance. Son approche est <strong>holistique</strong> : il s'attache à traiter la cause profonde du déséquilibre, et non seulement à soulager les symptômes.</p>
+        <p>Agréé <strong>RME</strong> et <strong>ASCA</strong>, ses consultations sont remboursées par la plupart des assurances complémentaires. Chaque soin est personnalisé, dans le respect du rythme et du terrain énergétique de chacun.</p>
+        <div class="about-chips">
+          <span class="chip">Institut Liang Shen</span>
+          <span class="chip">Approche holistique</span>
+          <span class="chip">Écoute personnalisée</span>
+          <span class="chip">Remboursé RME / ASCA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="seigaiha-band" aria-hidden="true"></div>
+
+  <!-- ============ APPROCHE ============ -->
+  <section class="section-pad bg-cream" id="approche">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="kicker">Notre approche</span>
+        <h2>Un accompagnement en trois temps</h2>
+        <p>Chaque parcours est unique. Nous prenons le temps de comprendre votre terrain avant de construire un soin qui vous ressemble.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num" aria-hidden="true">1</div>
+          <h3>Écoute &amp; bilan énergétique</h3>
+          <p>Un temps d'échange approfondi pour comprendre votre histoire, vos symptômes et évaluer l'équilibre de votre énergie vitale.</p>
+        </div>
+        <div class="step reveal d2">
+          <div class="step-num" aria-hidden="true">2</div>
+          <h3>Soin personnalisé</h3>
+          <p>Un traitement adapté combinant acupuncture, plantes, Tuina ou moxa selon votre terrain et vos besoins du moment.</p>
+        </div>
+        <div class="step reveal d3">
+          <div class="step-num" aria-hidden="true">3</div>
+          <h3>Suivi &amp; prévention</h3>
+          <p>Un accompagnement dans la durée pour ancrer les bienfaits, prévenir les déséquilibres et cultiver votre vitalité.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="seigaiha-band on-greige" aria-hidden="true"></div>
+
+  <!-- ============ INDICATIONS ============ -->
+  <section class="section-pad bg-greige" id="indications">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="kicker">Indications</span>
+        <h2>Ce que la MTC peut accompagner</h2>
+        <p>La médecine traditionnelle chinoise agit sur un large éventail de troubles, en douceur et en profondeur.</p>
+      </div>
+      <div class="indic-grid">
+        <div class="indic reveal"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.6-7 10-7 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><span>Douleurs chroniques</span></div>
+        <div class="indic reveal d1"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M9 10a3 3 0 016 0M9 15c1 1 5 1 6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span>Stress &amp; anxiété</span></div>
+        <div class="indic reveal d2"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M21 13a8 8 0 11-9.5-9 6.5 6.5 0 009.5 9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><span>Troubles du sommeil</span></div>
+        <div class="indic reveal d3"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3c3 3 4 5 4 8a4 4 0 01-8 0c0-3 1-5 4-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 20h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span>Troubles digestifs</span></div>
+        <div class="indic reveal d4"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h4l2-5 4 10 2-5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>Migraines</span></div>
+        <div class="indic reveal"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span>Troubles hormonaux</span></div>
+        <div class="indic reveal d1"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><span>Fatigue &amp; épuisement</span></div>
+        <div class="indic reveal d2"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div><span>Renforcement immunitaire</span></div>
+        <div class="indic reveal d3"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="3" width="6" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M12 3v18" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></svg></div><span>Sevrage tabagique</span></div>
+        <div class="indic reveal d4"><div class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M12 16v5M9 19h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div><span>Fertilité &amp; grossesse</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="seigaiha-band" aria-hidden="true"></div>
+
+  <!-- ============ TÉMOIGNAGES ============ -->
+  <section class="section-pad bg-cream" id="temoignages">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="kicker">Témoignages</span>
+        <h2>La parole à nos patients</h2>
+      </div>
+      <div class="testi-grid">
+        <figure class="testi reveal">
+          <div class="quote-mark" aria-hidden="true">“</div>
+          <div class="stars" aria-label="5 étoiles sur 5">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+          </div>
+          <blockquote><p>Après des années de migraines, j'ai enfin retrouvé une vie normale. Une écoute et une douceur remarquables.</p></blockquote>
+          <figcaption class="who">Sophie M. <span>— Genève</span></figcaption>
+        </figure>
+        <figure class="testi reveal d2">
+          <div class="quote-mark" aria-hidden="true">“</div>
+          <div class="stars" aria-label="5 étoiles sur 5">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+          </div>
+          <blockquote><p>Fabrice a su comprendre mon terrain et adapter chaque séance. Mon sommeil s'est transformé.</p></blockquote>
+          <figcaption class="who">Marc D. <span>— Carouge</span></figcaption>
+        </figure>
+        <figure class="testi reveal d3">
+          <div class="quote-mark" aria-hidden="true">“</div>
+          <div class="stars" aria-label="5 étoiles sur 5">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.4 7.2 17.9l.9-5.4L4.2 8.7l5.4-.8L12 2z"/></svg>
+          </div>
+          <blockquote><p>Une approche à la fois professionnelle et profondément humaine. Je recommande vivement.</p></blockquote>
+          <figcaption class="who">Léa R. <span>— Lancy</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <div class="seigaiha-band on-greige" aria-hidden="true"></div>
+
+  <!-- ============ INFOS PRATIQUES ============ -->
+  <section class="section-pad bg-greige" id="infos">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="kicker">Infos pratiques</span>
+        <h2>Nous rendre visite</h2>
+        <p>Le cabinet vous accueille au cœur de Carouge, sur rendez-vous.</p>
+      </div>
+      <div class="infos-grid">
+        <div class="info-cards">
+          <div class="info-card full reveal">
+            <h3><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0114 0c0 5.8-7 11-7 11z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg> Adresse</h3>
+            <p>Rue Jacques-Dalphin 7<br>1227 Carouge (Genève)</p>
+            <p style="margin-top:10px"><a href="tel:+41223424195">Tél. 022 342 41 95</a> · Sur rendez-vous</p>
+          </div>
+          <div class="info-card reveal d1">
+            <h3><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Horaires</h3>
+            <ul>
+              <li class="row"><span>Lun – Ven</span><strong>9h – 19h</strong></li>
+              <li class="row"><span>Samedi</span><strong>9h – 13h</strong></li>
+              <li class="row"><span>Dimanche</span><strong>Fermé</strong></li>
+            </ul>
+            <p class="info-note">Horaires à confirmer</p>
+          </div>
+          <div class="info-card reveal d2">
+            <h3><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M7 8c0-2 2-3 5-3s5 1 5 3-2 3-5 3-5 1-5 3 2 3 5 3 5-1 5-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Tarifs</h3>
+            <ul>
+              <li class="row"><span>1<sup>re</sup> consultation<br><small>~75 min</small></span><strong>120 CHF</strong></li>
+              <li class="row"><span>Suivi<br><small>~60 min</small></span><strong>100 CHF</strong></li>
+            </ul>
+            <p class="info-note">Remboursé RME / ASCA · Tarifs à confirmer</p>
+          </div>
+        </div>
+        <div class="map-wrap reveal d2">
+          <iframe
+            title="Localisation du Cabinet Zhong à Carouge"
+            src="https://www.google.com/maps?q=Rue+Jacques-Dalphin+7,+1227+Carouge&output=embed"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA FINAL ============ -->
+  <section class="section-pad cta-final" id="contact">
+    <div class="container">
+      <div class="reveal">
+        <span class="kicker" style="color:var(--gold)">Prenons soin de vous</span>
+        <h2>Offrez à votre corps le chemin de l'harmonie</h2>
+        <p>Réservez votre première consultation au Cabinet Zhong. Fabrice Alvarez vous accueille dans un espace serein, à Carouge, pour un accompagnement naturel et personnalisé.</p>
+        <div class="hero-cta">
+          <a href="tel:+41223424195" class="btn btn-gold">Appeler le 022 342 41 95</a>
+          <a href="#infos" class="btn btn-outline">Voir les infos pratiques</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="brand">
+          <span class="monogram" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M6 8h12M9 8v8M15 8v8" stroke="#C7A24B" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="brand-name">
+            <span class="n">Zhong</span>
+            <span class="t">Médecine Chinoise</span>
+          </span>
+        </div>
+        <p>L'art millénaire de l'équilibre. Un accompagnement holistique en médecine traditionnelle chinoise, au cœur de Carouge.</p>
+      </div>
+      <div>
+        <h4>Nos soins</h4>
+        <ul>
+          <li><a href="#soins">Acupuncture</a></li>
+          <li><a href="#soins">Phytothérapie chinoise</a></li>
+          <li><a href="#soins">Tuina</a></li>
+          <li><a href="#soins">Moxibustion</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Le cabinet</h4>
+        <ul>
+          <li><a href="#apropos">Le thérapeute</a></li>
+          <li><a href="#approche">Notre approche</a></li>
+          <li><a href="#indications">Indications</a></li>
+          <li><a href="#temoignages">Témoignages</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <span class="fcontact"><strong>Cabinet Zhong</strong><br>Rue Jacques-Dalphin 7<br>1227 Carouge (Genève)</span>
+        <a class="fcontact" href="tel:+41223424195">022 342 41 95</a>
+        <span class="fcontact">Sur rendez-vous · Agréé RME / ASCA</span>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Cabinet Zhong — Médecine Traditionnelle Chinoise. Tous droits réservés.</span>
+      <span>Fabrice Alvarez · Diplômé de l'Institut Liang Shen, Genève</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ PROPOSAL BADGE ============ -->
+<div class="prop-badge"><span class="dot" aria-hidden="true"></span> Proposition 5 — Ambiance Cabinet</div>
+
+<script>
+  // ===== Année dynamique =====
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ===== Menu mobile burger =====
+  var burger = document.getElementById('burger');
+  var menu = document.getElementById('mobileMenu');
+  function closeMenu() {
+    burger.classList.remove('open');
+    menu.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Ouvrir le menu');
+  }
+  burger.addEventListener('click', function () {
+    var open = menu.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  });
+  menu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeMenu); });
+
+  // ===== Header ombre au scroll =====
+  var header = document.querySelector('header.site');
+  window.addEventListener('scroll', function () {
+    header.classList.toggle('scrolled', window.scrollY > 12);
+  }, { passive: true });
+
+  // ===== Reveal au scroll (IntersectionObserver) =====
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    reveals.forEach(function (el) { el.classList.add('visible'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(function (el) { io.observe(el); });
+  }
+
+  // ===== Fallback images en erreur =====
+  document.querySelectorAll('img').forEach(function (img) {
+    img.addEventListener('error', function () {
+      var wrap = img.closest('.hero-img-wrap, .frame');
+      img.style.display = 'none';
+      if (wrap) { wrap.style.background = 'linear-gradient(150deg, var(--greige-light), var(--taupe))'; }
+    });
+  });
+</script>
+</body>
+</html>
