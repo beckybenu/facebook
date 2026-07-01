@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cabinet Zhong — 3 propositions de refonte du site</title>
+<title>Cabinet Zhong — 4 propositions de refonte du site</title>
 <meta name="description" content="Présentation de trois directions de design pour la refonte du site du Cabinet Zhong, médecine traditionnelle chinoise à Carouge.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +54,7 @@
   .intro p{max-width:70ch;color:var(--muted);font-size:1.05rem}
 
   /* CARDS */
-  .grid{padding:48px 0 90px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .grid{padding:48px 0 90px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:28px}
   .card{
     background:#fff;border-radius:22px;overflow:hidden;border:1px solid rgba(29,26,22,.07);
     box-shadow:0 20px 50px rgba(29,26,22,.08);display:flex;flex-direction:column;
@@ -67,6 +67,8 @@
   .t1{background:linear-gradient(135deg,#8b9a7a,#6b7a5e 55%,#c08457)}
   .t2{background:linear-gradient(135deg,#14a8a0,#0e7c7b 60%,#122023)}
   .t3{background:linear-gradient(135deg,#8c2f27,#211c18 55%,#c9a24b)}
+  .t4{background:linear-gradient(135deg,#f5d4c0,#d98b6a 55%,#b56b5c);color:#4a3b34}
+  .t4 .num{background:rgba(74,59,52,.18)}
   .card .body{padding:24px 24px 26px;display:flex;flex-direction:column;flex:1}
   .card h3{font-size:1.5rem;margin-bottom:6px}
   .card .sub{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
@@ -84,6 +86,7 @@
   .c1 .btn{background:linear-gradient(135deg,#6b7a5e,#c08457)}
   .c2 .btn{background:linear-gradient(135deg,#0e7c7b,#14a8a0)}
   .c3 .btn{background:linear-gradient(135deg,#8c2f27,#c9a24b)}
+  .c4 .btn{background:linear-gradient(135deg,#d98b6a,#b56b5c)}
 
   /* NOTE */
   .note{background:var(--paper2);border-top:1px solid rgba(29,26,22,.08)}
@@ -106,7 +109,7 @@
       <div><b>Cabinet Zhong</b><br><span>Médecine Traditionnelle Chinoise · Carouge</span></div>
     </div>
     <span class="eyebrow">Refonte du site — présentation</span>
-    <h1>Trois directions de design pour votre nouveau site.</h1>
+    <h1>Quatre directions de design pour votre nouveau site.</h1>
     <p class="lead">Chaque proposition reprend exactement le même contenu (soins, praticien, infos pratiques) mais propose une ambiance visuelle différente. Ouvrez-les, comparez, et dites-moi celle qui vous ressemble le plus.</p>
     <div class="facts">
       <div class="fact">4 soins présentés</div>
@@ -120,7 +123,7 @@
 <section class="intro">
   <div class="wrap">
     <h2>Comment lire ces propositions</h2>
-    <p>Cliquez sur « Ouvrir la proposition » pour voir chaque site en entier, en plein écran, comme le verront vos patients. Testez-les aussi sur votre téléphone : les trois s'adaptent automatiquement. Les textes, tarifs et horaires sont des exemples — nous les ajusterons ensemble.</p>
+    <p>Cliquez sur « Ouvrir la proposition » pour voir chaque site en entier, en plein écran, comme le verront vos patients. Testez-les aussi sur votre téléphone : les quatre s'adaptent automatiquement. Les textes, tarifs et horaires sont des exemples — nous les ajusterons ensemble.</p>
   </div>
 </section>
 
@@ -174,6 +177,23 @@
       </div>
       <div class="tags"><span class="tag">Serif contrastée</span><span class="tag">Fond sombre</span><span class="tag">Filets dorés</span></div>
       <a class="btn" href="proposition-3-tradition/index.html">Ouvrir la proposition →</a>
+    </div>
+  </article>
+
+  <article class="card c4">
+    <div class="thumb t4"><span class="num">4</span><span class="zh" style="color:#4a3b34">柔</span><span style="font-family:'Fraunces',serif;font-size:1.6rem;letter-spacing:.05em">Blush & Douceur</span></div>
+    <div class="body">
+      <div class="sub">Doux · chaleureux · cocon</div>
+      <h3>Blush & Douceur</h3>
+      <p>Construite autour de votre couleur rose pêche. Une ambiance douce, féminine et enveloppante — un vrai cocon de bien-être, lumineux et raffiné.</p>
+      <div class="swatches">
+        <span class="sw" style="background:#f5d4c0"></span>
+        <span class="sw" style="background:#d98b6a"></span>
+        <span class="sw" style="background:#b56b5c"></span>
+        <span class="sw" style="background:#4a3b34"></span>
+      </div>
+      <div class="tags"><span class="tag">Rose pêche</span><span class="tag">Serif féminine</span><span class="tag">Cocon</span></div>
+      <a class="btn" href="proposition-4-blush/index.html">Ouvrir la proposition →</a>
     </div>
   </article>
 
