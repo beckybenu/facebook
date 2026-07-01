@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabinet Zhong — 3 propositions de refonte du site</title>
+<meta name="description" content="Présentation de trois directions de design pour la refonte du site du Cabinet Zhong, médecine traditionnelle chinoise à Carouge.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1d1a16; --paper:#f6f2ea; --paper2:#efe9dd;
+    --sage:#6b7a5e; --terra:#c08457; --teal:#0e7c7b; --gold:#c9a24b; --red:#8c2f27;
+    --muted:#6f685c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Manrope',system-ui,sans-serif;color:var(--ink);
+    background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.1;letter-spacing:-.01em}
+
+  /* HERO */
+  header.hero{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(1000px 500px at 15% -10%, rgba(107,122,94,.28), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(192,132,87,.22), transparent 55%),
+      linear-gradient(180deg,#faf7f0,#f1ebdf);
+    padding:64px 0 80px;
+  }
+  .brandline{display:flex;align-items:center;gap:12px;margin-bottom:48px}
+  .mono{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    background:var(--ink);color:var(--paper);font-family:'Fraunces',serif;font-size:22px;
+  }
+  .brandline b{font-weight:700;font-size:1.05rem;letter-spacing:.02em}
+  .brandline span{color:var(--muted);font-size:.9rem}
+  .eyebrow{
+    display:inline-block;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    font-size:.72rem;color:var(--terra);margin-bottom:18px;
+  }
+  header.hero h1{font-size:clamp(2.4rem,6vw,4.3rem);max-width:16ch;margin-bottom:22px}
+  header.hero p.lead{font-size:clamp(1.05rem,2vw,1.28rem);color:var(--muted);max-width:60ch}
+  .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .fact{background:#fff;border:1px solid rgba(29,26,22,.08);border-radius:999px;padding:9px 16px;font-size:.86rem;font-weight:600;box-shadow:0 6px 18px rgba(29,26,22,.05)}
+
+  /* INTRO */
+  .intro{padding:70px 0 20px}
+  .intro h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:16px}
+  .intro p{max-width:70ch;color:var(--muted);font-size:1.05rem}
+
+  /* CARDS */
+  .grid{padding:48px 0 90px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .card{
+    background:#fff;border-radius:22px;overflow:hidden;border:1px solid rgba(29,26,22,.07);
+    box-shadow:0 20px 50px rgba(29,26,22,.08);display:flex;flex-direction:column;
+    transition:transform .3s ease,box-shadow .3s ease;
+  }
+  .card:hover{transform:translateY(-8px);box-shadow:0 32px 70px rgba(29,26,22,.15)}
+  .thumb{height:190px;position:relative;display:grid;place-items:center;color:#fff;overflow:hidden}
+  .thumb .num{position:absolute;top:14px;left:16px;font-family:'Fraunces',serif;font-size:1rem;opacity:.9;background:rgba(0,0,0,.18);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;backdrop-filter:blur(4px)}
+  .thumb .zh{font-family:'Fraunces',serif;font-size:5rem;opacity:.22;position:absolute;right:12px;bottom:-14px}
+  .t1{background:linear-gradient(135deg,#8b9a7a,#6b7a5e 55%,#c08457)}
+  .t2{background:linear-gradient(135deg,#14a8a0,#0e7c7b 60%,#122023)}
+  .t3{background:linear-gradient(135deg,#8c2f27,#211c18 55%,#c9a24b)}
+  .card .body{padding:24px 24px 26px;display:flex;flex-direction:column;flex:1}
+  .card h3{font-size:1.5rem;margin-bottom:6px}
+  .card .sub{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .card p{color:var(--muted);font-size:.96rem;margin-bottom:16px}
+  .swatches{display:flex;gap:8px;margin-bottom:22px}
+  .sw{width:26px;height:26px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+  .tag{font-size:.74rem;font-weight:600;color:var(--ink);background:var(--paper2);border-radius:7px;padding:5px 10px}
+  .btn{
+    margin-top:auto;text-align:center;text-decoration:none;font-weight:700;font-size:.95rem;
+    padding:14px 20px;border-radius:12px;color:#fff;background:var(--ink);
+    transition:opacity .2s;
+  }
+  .btn:hover{opacity:.86}
+  .c1 .btn{background:linear-gradient(135deg,#6b7a5e,#c08457)}
+  .c2 .btn{background:linear-gradient(135deg,#0e7c7b,#14a8a0)}
+  .c3 .btn{background:linear-gradient(135deg,#8c2f27,#c9a24b)}
+
+  /* NOTE */
+  .note{background:var(--paper2);border-top:1px solid rgba(29,26,22,.08)}
+  .note .wrap{padding:56px 24px}
+  .note h2{font-size:1.5rem;margin-bottom:18px}
+  .note ul{list-style:none;display:grid;gap:12px;max-width:80ch}
+  .note li{padding-left:26px;position:relative;color:var(--muted)}
+  .note li::before{content:"→";position:absolute;left:0;color:var(--terra);font-weight:700}
+  footer{padding:40px 0;text-align:center;color:var(--muted);font-size:.86rem}
+
+  @media(max-width:900px){.grid{grid-template-columns:1fr;gap:22px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brandline">
+      <div class="mono">中</div>
+      <div><b>Cabinet Zhong</b><br><span>Médecine Traditionnelle Chinoise · Carouge</span></div>
+    </div>
+    <span class="eyebrow">Refonte du site — présentation</span>
+    <h1>Trois directions de design pour votre nouveau site.</h1>
+    <p class="lead">Chaque proposition reprend exactement le même contenu (soins, praticien, infos pratiques) mais propose une ambiance visuelle différente. Ouvrez-les, comparez, et dites-moi celle qui vous ressemble le plus.</p>
+    <div class="facts">
+      <div class="fact">4 soins présentés</div>
+      <div class="fact">100 % responsive (mobile & bureau)</div>
+      <div class="fact">Prêt à personnaliser</div>
+      <div class="fact">Agréé RME / ASCA mis en avant</div>
+    </div>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="wrap">
+    <h2>Comment lire ces propositions</h2>
+    <p>Cliquez sur « Ouvrir la proposition » pour voir chaque site en entier, en plein écran, comme le verront vos patients. Testez-les aussi sur votre téléphone : les trois s'adaptent automatiquement. Les textes, tarifs et horaires sont des exemples — nous les ajusterons ensemble.</p>
+  </div>
+</section>
+
+<section class="grid wrap">
+
+  <article class="card c1">
+    <div class="thumb t1"><span class="num">1</span><span class="zh">和</span><span style="font-family:'Fraunces',serif;font-size:1.6rem;letter-spacing:.05em">Zen & Nature</span></div>
+    <div class="body">
+      <div class="sub">Apaisant · organique · spa</div>
+      <h3>Zen & Nature</h3>
+      <p>Une atmosphère douce et lumineuse, tons terreux et naturels. Idéal pour transmettre calme, bien-être et confiance. On respire.</p>
+      <div class="swatches">
+        <span class="sw" style="background:#6b7a5e"></span>
+        <span class="sw" style="background:#c08457"></span>
+        <span class="sw" style="background:#f5f1e8"></span>
+        <span class="sw" style="background:#3e3a34"></span>
+      </div>
+      <div class="tags"><span class="tag">Serif chaleureuse</span><span class="tag">Formes organiques</span><span class="tag">Clair</span></div>
+      <a class="btn" href="proposition-1-zen/index.html">Ouvrir la proposition →</a>
+    </div>
+  </article>
+
+  <article class="card c2">
+    <div class="thumb t2"><span class="num">2</span><span class="zh">衡</span><span style="font-family:'Fraunces',serif;font-size:1.6rem;letter-spacing:.05em">Moderne & Clinique</span></div>
+    <div class="body">
+      <div class="sub">Épuré · pro · rassurant</div>
+      <h3>Moderne & Clinique</h3>
+      <p>Un style clair et professionnel de cabinet de santé contemporain. Crédibilité maximale, lisibilité parfaite, tons bleu-vert apaisants.</p>
+      <div class="swatches">
+        <span class="sw" style="background:#0e7c7b"></span>
+        <span class="sw" style="background:#14a8a0"></span>
+        <span class="sw" style="background:#eef2f5"></span>
+        <span class="sw" style="background:#122023"></span>
+      </div>
+      <div class="tags"><span class="tag">Sans-serif moderne</span><span class="tag">Grille nette</span><span class="tag">Formulaire</span></div>
+      <a class="btn" href="proposition-2-moderne/index.html">Ouvrir la proposition →</a>
+    </div>
+  </article>
+
+  <article class="card c3">
+    <div class="thumb t3"><span class="num">3</span><span class="zh">气</span><span style="font-family:'Fraunces',serif;font-size:1.6rem;letter-spacing:.05em">Tradition & Prestige</span></div>
+    <div class="body">
+      <div class="sub">Élégant · sombre · luxe</div>
+      <h3>Tradition & Prestige</h3>
+      <p>Une ambiance sophistiquée et cinématographique — encre, or et rouge laque. Pour affirmer l'expertise et l'authenticité de la tradition chinoise.</p>
+      <div class="swatches">
+        <span class="sw" style="background:#1a1614"></span>
+        <span class="sw" style="background:#c9a24b"></span>
+        <span class="sw" style="background:#8c2f27"></span>
+        <span class="sw" style="background:#ede6d8"></span>
+      </div>
+      <div class="tags"><span class="tag">Serif contrastée</span><span class="tag">Fond sombre</span><span class="tag">Filets dorés</span></div>
+      <a class="btn" href="proposition-3-tradition/index.html">Ouvrir la proposition →</a>
+    </div>
+  </article>
+
+</section>
+
+<section class="note">
+  <div class="wrap">
+    <h2>À valider ensemble</h2>
+    <ul>
+      <li>Les <b>horaires</b> et <b>tarifs</b> affichés sont des exemples — merci de me communiquer les vrais chiffres.</li>
+      <li>Les <b>photos</b> sont des images d'illustration ; nous pourrons les remplacer par de vraies photos du cabinet et du praticien.</li>
+      <li>Les <b>témoignages</b> sont fictifs pour la démonstration — à remplacer par de vrais avis (avec accord des patients).</li>
+      <li>Une fois la direction choisie, on finalise le site retenu (prise de rendez-vous en ligne, référencement Google, textes définitifs).</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Cabinet Zhong — Médecine Traditionnelle Chinoise · Rue Jacques-Dalphin 7, 1227 Carouge · 022 342 41 95 · Présentation de refonte</div>
+</footer>
+
+</body>
+</html>
