@@ -1,6 +1,6 @@
-# Cabinet Zhong — 4 propositions de refonte du site
+# Cabinet Zhong — 5 propositions de refonte du site
 
-Quatre directions de design pour le nouveau site du **Cabinet Zhong** (médecine
+Cinq directions de design pour le nouveau site du **Cabinet Zhong** (médecine
 traditionnelle chinoise, Fabrice Alvarez — Rue Jacques-Dalphin 7, 1227 Carouge).
 
 Chaque proposition reprend **le même contenu** (soins, praticien, indications,
@@ -17,6 +17,7 @@ Ouvrez simplement les fichiers `.html` dans un navigateur (double-clic) :
 | 2 | **Moderne & Clinique** | Épuré, professionnel, bleu-vert médical | `proposition-2-moderne/index.html` |
 | 3 | **Tradition & Prestige** | Élégant, sombre, or & rouge laque | `proposition-3-tradition/index.html` |
 | 4 | **Blush & Douceur** | Doux, féminin, rose pêche (#F5D4C0) | `proposition-4-blush/index.html` |
+| 5 | **Ambiance Cabinet** | Couleurs réelles du cabinet : greige/taupe, bois, or, motif seigaiha | `proposition-5-cabinet/index.html` |
 
 👉 Le plus simple : ouvrez **`index.html`** (la page de présentation) et cliquez
 sur chaque proposition. Les trois sont **responsive** — testez-les aussi sur

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cabinet Zhong — Médecine Traditionnelle Chinoise à Carouge</title>
+<meta name="description" content="Cabinet Zhong — Médecine traditionnelle chinoise à Carouge (Genève). Acupuncture, phytothérapie, Tuina et moxibustion avec Fabrice Alvarez, agréé RME & ASCA." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Mulish:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --terra:#B96A4A;
+    --terra-light:#C77E5C;
+    --terra-deep:#9E4E2E;
+    --clay:#E7C7B3;
+    --clay-light:#EFD8C8;
+    --cream:#F7EFE6;
+    --cream-light:#FBF5EC;
+    --brown:#3A2A22;
+    --brown-soft:#4A3428;
+    --gold:#C9A24B;
+    --ocre:#BE8A3C;
+    --sage:#7C7A5E;
+    --shadow-warm:24px 30px 60px -30px rgba(58,42,34,.45);
+    --shadow-soft:0 18px 44px -24px rgba(158,78,46,.5);
+    --radius:26px;
+    --radius-lg:42px;
+    --serif:'Fraunces',Georgia,serif;
+    --sans:'Mulish',system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--sans);
+    color:var(--brown-soft);
+    background:var(--cream-light);
+    line-height:1.7;
+    font-size:17px;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--serif);font-weight:500;line-height:1.12;color:var(--brown);letter-spacing:-.01em}
+  h1{font-size:clamp(2.6rem,6vw,4.6rem)}
+  h2{font-size:clamp(2rem,4.4vw,3.2rem)}
+  h3{font-size:clamp(1.3rem,2.4vw,1.7rem)}
+  em{font-style:italic;color:var(--terra-deep)}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  section{position:relative}
+  .wrap{width:min(1180px,92%);margin-inline:auto}
+  .eyebrow{
+    font-family:var(--sans);
+    text-transform:uppercase;
+    letter-spacing:.28em;
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--terra-deep);
+    display:inline-flex;align-items:center;gap:.7em;
+    margin-bottom:1.1rem;
+  }
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--gold);display:inline-block}
+  .lead{font-size:1.14rem;color:var(--brown-soft);opacity:.92;max-width:60ch}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:.6em;
+    font-family:var(--sans);font-weight:700;font-size:.95rem;
+    padding:.95em 1.9em;border-radius:100px;
+    cursor:pointer;border:none;transition:transform .3s ease,box-shadow .3s ease,background .3s ease;
+    letter-spacing:.01em;
+  }
+  .btn-primary{background:var(--terra);color:var(--cream);box-shadow:var(--shadow-soft)}
+  .btn-primary:hover{background:var(--terra-deep);transform:translateY(-3px)}
+  .btn-ghost{background:transparent;color:var(--brown);border:1.5px solid rgba(158,78,46,.35)}
+  .btn-ghost:hover{background:rgba(185,106,74,.1);transform:translateY(-3px);border-color:var(--terra)}
+  .btn-cream{background:var(--cream);color:var(--terra-deep);box-shadow:var(--shadow-soft)}
+  .btn-cream:hover{background:#fff;transform:translateY(-3px)}
+  a:focus-visible,button:focus-visible,.btn:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+
+  /* Header */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(247,239,230,.72);
+    backdrop-filter:blur(16px) saturate(1.3);
+    -webkit-backdrop-filter:blur(16px) saturate(1.3);
+    border-bottom:1px solid rgba(185,106,74,.16);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
+  .logo{display:flex;align-items:center;gap:.7rem;font-family:var(--serif);font-size:1.35rem;color:var(--brown);font-weight:600}
+  .logo .mono{
+    width:44px;height:44px;border-radius:14px;
+    background:linear-gradient(145deg,var(--terra-light),var(--terra-deep));
+    display:grid;place-items:center;box-shadow:0 8px 20px -8px rgba(158,78,46,.6);
+    flex-shrink:0;
+  }
+  .logo .mono svg{width:24px;height:24px}
+  .logo small{display:block;font-family:var(--sans);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--terra-deep);font-weight:700;margin-top:2px}
+  .nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+  .nav-links a{font-size:.94rem;font-weight:600;color:var(--brown-soft);position:relative;transition:color .25s}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--terra);transition:width .3s ease;border-radius:2px}
+  .nav-links a:hover{color:var(--terra-deep)}
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{display:flex;align-items:center;gap:1rem}
+  .burger{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:5px}
+  .burger span{width:26px;height:2.5px;background:var(--brown);border-radius:3px;transition:.3s}
+  .burger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+  /* Hero */
+  .hero{
+    background:
+      radial-gradient(120% 120% at 85% -10%, rgba(199,126,92,.28), transparent 55%),
+      linear-gradient(160deg,var(--cream) 0%,var(--clay-light) 100%);
+    padding:clamp(3rem,7vw,6rem) 0 0;
+    overflow:hidden;
+  }
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+  .hero-copy{padding-bottom:clamp(3rem,7vw,6rem)}
+  .hero h1{margin:.4rem 0 1.3rem}
+  .hero h1 .accent{color:var(--terra-deep);font-style:italic}
+  .hero .baseline{font-family:var(--serif);font-style:italic;font-size:clamp(1.2rem,2.4vw,1.55rem);color:var(--terra-deep);margin-bottom:.6rem;font-weight:400}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:1rem;margin-top:2rem}
+  .hero-visual{position:relative;align-self:stretch}
+  .hero-img-frame{
+    position:relative;height:100%;min-height:440px;
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    overflow:hidden;
+    background:linear-gradient(160deg,var(--terra-light),var(--terra-deep));
+    box-shadow:var(--shadow-warm);
+  }
+  .hero-img-frame::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(158,78,46,.05),rgba(158,78,46,.32));mix-blend-mode:multiply}
+  .hero-img-frame img{width:100%;height:100%;object-fit:cover}
+  .hero-chip{
+    position:absolute;left:-18px;bottom:40px;z-index:3;
+    background:var(--cream);border-radius:20px;padding:1rem 1.3rem;
+    box-shadow:var(--shadow-warm);display:flex;align-items:center;gap:.85rem;
+    max-width:230px;
+  }
+  .hero-chip .dot{width:42px;height:42px;border-radius:12px;background:rgba(201,162,75,.18);display:grid;place-items:center;flex-shrink:0}
+  .hero-chip strong{font-family:var(--serif);font-size:1.05rem;color:var(--brown);display:block}
+  .hero-chip span{font-size:.78rem;color:var(--brown-soft);opacity:.8}
+
+  /* Wave / arch dividers */
+  .wave-top{display:block;width:100%;height:auto;margin-bottom:-6px}
+  .arch-divider svg{display:block;width:100%;height:auto}
+
+  /* Trust band */
+  .trust{background:var(--terra);color:var(--cream);padding:1.5rem 0}
+  .trust-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1rem 2.6rem;text-align:center}
+  .trust-item{display:inline-flex;align-items:center;gap:.6rem;font-weight:600;font-size:.98rem;letter-spacing:.02em}
+  .trust-item svg{opacity:.9}
+  .trust-sep{width:1px;height:22px;background:rgba(247,239,230,.35)}
+
+  /* Section base */
+  .section{padding:clamp(4rem,8vw,7rem) 0}
+  .section-head{max-width:64ch;margin-bottom:3rem}
+  .section-head.center{margin-inline:auto;text-align:center}
+  .section-head.center .eyebrow{justify-content:center}
+
+  .bg-cream{background:var(--cream-light)}
+  .bg-clay{background:linear-gradient(180deg,var(--cream) 0%,var(--clay-light) 100%)}
+
+  /* Soins cards */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+  .card{
+    background:var(--cream);border-radius:var(--radius);padding:2rem 1.6rem;
+    border:1px solid rgba(185,106,74,.14);
+    box-shadow:0 14px 40px -30px rgba(58,42,34,.5);
+    transition:transform .35s ease,box-shadow .35s ease,border-color .35s;
+    position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--terra),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+  .card:hover{transform:translateY(-8px);box-shadow:var(--shadow-warm);border-color:rgba(185,106,74,.3)}
+  .card:hover::before{transform:scaleX(1)}
+  .card .icon{
+    width:60px;height:60px;border-radius:18px;margin-bottom:1.3rem;
+    background:linear-gradient(150deg,var(--clay-light),var(--clay));
+    display:grid;place-items:center;color:var(--terra-deep);
+  }
+  .card h3{margin-bottom:.6rem}
+  .card .num{position:absolute;top:1.2rem;right:1.4rem;font-family:var(--serif);font-style:italic;font-size:1.6rem;color:rgba(185,106,74,.25)}
+  .card p{font-size:.96rem;color:var(--brown-soft);opacity:.9}
+
+  /* About */
+  .about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(2rem,5vw,4rem);align-items:center}
+  .about-photo{position:relative}
+  .about-photo .frame{
+    border-radius:var(--radius-lg);overflow:hidden;
+    background:linear-gradient(160deg,var(--terra-light),var(--terra-deep));
+    box-shadow:var(--shadow-warm);aspect-ratio:4/5;
+  }
+  .about-photo .frame img{width:100%;height:100%;object-fit:cover}
+  .about-photo .arch{
+    position:absolute;inset:14px;border:1.5px solid rgba(247,239,230,.5);
+    border-radius:200px 200px var(--radius) var(--radius);pointer-events:none;z-index:2;
+  }
+  .badge-cred{
+    position:absolute;right:-16px;bottom:24px;z-index:3;
+    background:var(--cream);border-radius:18px;padding:1rem 1.2rem;
+    box-shadow:var(--shadow-warm);text-align:center;
+  }
+  .badge-cred .stars{color:var(--gold);letter-spacing:2px;font-size:.9rem}
+  .badge-cred strong{display:block;font-family:var(--serif);color:var(--brown);font-size:1.1rem;margin-top:.2rem}
+  .badge-cred span{font-size:.74rem;color:var(--brown-soft);opacity:.85}
+  .cred-list{list-style:none;display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.8rem}
+  .cred-list li{
+    background:rgba(199,126,92,.14);color:var(--terra-deep);font-weight:700;
+    font-size:.82rem;padding:.5em 1.1em;border-radius:100px;display:inline-flex;align-items:center;gap:.4em;
+    border:1px solid rgba(185,106,74,.2);
+  }
+  .signature{font-family:var(--serif);font-style:italic;font-size:1.5rem;color:var(--terra-deep);margin-top:1.6rem}
+
+  /* Approche steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;counter-reset:step}
+  .step{
+    background:var(--cream);border-radius:var(--radius);padding:2.4rem 1.8rem 2rem;
+    position:relative;border:1px solid rgba(185,106,74,.14);
+    box-shadow:0 14px 40px -32px rgba(58,42,34,.5);
+    transition:transform .35s ease;
+  }
+  .step:hover{transform:translateY(-6px)}
+  .step .step-num{
+    width:56px;height:56px;border-radius:50%;
+    background:linear-gradient(150deg,var(--terra),var(--terra-deep));
+    color:var(--cream);display:grid;place-items:center;
+    font-family:var(--serif);font-size:1.5rem;margin-bottom:1.2rem;
+    box-shadow:0 10px 22px -10px rgba(158,78,46,.7);
+  }
+  .step h3{margin-bottom:.5rem}
+  .step p{font-size:.96rem;opacity:.9}
+
+  /* Indications grid */
+  .indic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+  .indic{
+    display:flex;align-items:center;gap:.9rem;
+    background:var(--cream);border:1px solid rgba(185,106,74,.16);
+    border-radius:16px;padding:1rem 1.3rem;font-weight:600;color:var(--brown-soft);
+    transition:transform .3s ease,background .3s ease,color .3s;font-size:.98rem;
+  }
+  .indic:hover{transform:translateY(-4px);background:var(--terra);color:var(--cream)}
+  .indic:hover .indic-dot{background:var(--cream)}
+  .indic-dot{width:10px;height:10px;border-radius:50%;background:var(--terra);flex-shrink:0;transition:background .3s}
+
+  /* Témoignages */
+  .testi-section{background:linear-gradient(165deg,var(--terra) 0%,var(--terra-deep) 100%);color:var(--cream);overflow:hidden}
+  .testi-section h2,.testi-section .eyebrow{color:var(--cream)}
+  .testi-section .eyebrow{color:var(--clay-light)}
+  .testi-section .eyebrow::before{background:var(--gold)}
+  .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+  .testi{
+    background:rgba(247,239,230,.1);border:1px solid rgba(247,239,230,.18);
+    border-radius:var(--radius);padding:2rem 1.7rem;backdrop-filter:blur(6px);
+  }
+  .testi .quote{font-family:var(--serif);font-size:3rem;line-height:.6;color:var(--gold);display:block;margin-bottom:.5rem}
+  .testi p{font-size:1.02rem;font-style:italic;font-family:var(--serif);color:var(--cream)}
+  .testi .who{margin-top:1.3rem;font-family:var(--sans);font-style:normal;font-weight:700;font-size:.9rem;color:var(--clay-light);display:flex;align-items:center;gap:.6rem}
+  .testi .who::before{content:"";width:26px;height:1px;background:var(--gold)}
+  .testi .stars{color:var(--gold);letter-spacing:2px;margin-bottom:1rem}
+
+  /* Infos pratiques */
+  .infos-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+  .info-cards{display:grid;gap:1.2rem}
+  .info-card{
+    background:var(--cream);border-radius:var(--radius);padding:1.7rem 1.8rem;
+    border:1px solid rgba(185,106,74,.14);box-shadow:0 14px 40px -34px rgba(58,42,34,.5);
+    display:flex;gap:1.2rem;
+  }
+  .info-card .ic{
+    width:48px;height:48px;border-radius:14px;flex-shrink:0;
+    background:linear-gradient(150deg,var(--clay-light),var(--clay));
+    display:grid;place-items:center;color:var(--terra-deep);
+  }
+  .info-card h3{font-size:1.15rem;margin-bottom:.35rem}
+  .info-card p,.info-card li{font-size:.96rem;color:var(--brown-soft);opacity:.92}
+  .info-card ul{list-style:none;display:grid;gap:.2rem}
+  .info-card .row{display:flex;justify-content:space-between;gap:1rem;padding:.15rem 0;border-bottom:1px dashed rgba(185,106,74,.2)}
+  .info-card .row:last-child{border-bottom:none}
+  .info-card .row span:last-child{font-weight:700;color:var(--terra-deep);white-space:nowrap}
+  .map-frame{
+    border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-warm);
+    border:6px solid var(--cream);min-height:420px;height:100%;
+    background:linear-gradient(160deg,var(--clay),var(--terra-light));position:relative;
+  }
+  .map-frame iframe{width:100%;height:100%;min-height:420px;border:0;display:block}
+
+  /* Contact CTA */
+  .cta-final{
+    background:linear-gradient(160deg,var(--brown) 0%,var(--brown-soft) 100%);
+    color:var(--cream);border-radius:var(--radius-lg);
+    padding:clamp(2.6rem,6vw,4.5rem);text-align:center;position:relative;overflow:hidden;
+    box-shadow:var(--shadow-warm);
+  }
+  .cta-final::before{content:"中";position:absolute;font-family:var(--serif);font-size:26rem;color:rgba(199,126,92,.08);top:-4rem;right:-3rem;line-height:1;pointer-events:none}
+  .cta-final h2{color:var(--cream);position:relative}
+  .cta-final .baseline{font-family:var(--serif);font-style:italic;color:var(--clay-light);font-size:1.3rem;margin-bottom:1rem}
+  .cta-final p{max-width:52ch;margin:1rem auto 2rem;color:rgba(247,239,230,.88);position:relative}
+  .cta-final .hero-cta{justify-content:center;position:relative}
+  .cta-final a.tel{color:var(--gold);font-weight:700}
+
+  /* Footer */
+  footer{background:var(--brown);color:rgba(247,239,230,.8);padding:4rem 0 2rem}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:2.5rem;margin-bottom:3rem}
+  footer .logo{color:var(--cream)}
+  footer .logo small{color:var(--clay-light)}
+  footer h4{color:var(--cream);font-family:var(--sans);font-size:.82rem;text-transform:uppercase;letter-spacing:.2em;margin-bottom:1.2rem;font-weight:700}
+  footer ul{list-style:none;display:grid;gap:.6rem}
+  footer a,footer p{font-size:.94rem;color:rgba(247,239,230,.72);transition:color .25s}
+  footer a:hover{color:var(--gold)}
+  .foot-bottom{border-top:1px solid rgba(247,239,230,.14);padding-top:1.6rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;font-size:.85rem;color:rgba(247,239,230,.55)}
+  footer .foot-desc{margin:1rem 0 1.4rem;max-width:34ch}
+
+  /* Proposition badge */
+  .prop-badge{
+    position:fixed;left:16px;bottom:16px;z-index:200;
+    background:rgba(158,78,46,.92);color:var(--cream);
+    font-size:.72rem;font-weight:700;letter-spacing:.05em;
+    padding:.55em 1em;border-radius:100px;
+    box-shadow:0 10px 26px -12px rgba(58,42,34,.8);
+    backdrop-filter:blur(6px);display:inline-flex;align-items:center;gap:.5em;
+    border:1px solid rgba(247,239,230,.25);
+  }
+  .prop-badge .pd{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+
+  /* Reveal animation */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal[data-delay="1"]{transition-delay:.1s}
+  .reveal[data-delay="2"]{transition-delay:.2s}
+  .reveal[data-delay="3"]{transition-delay:.3s}
+
+  /* Responsive */
+  @media (max-width:980px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:1fr}
+    .testi-grid{grid-template-columns:1fr}
+    .about-grid{grid-template-columns:1fr;gap:3rem}
+    .about-photo{max-width:420px;margin-inline:auto;width:100%}
+    .infos-grid{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .hero-grid{grid-template-columns:1fr}
+    .hero-copy{padding-bottom:2rem}
+    .hero-img-frame{min-height:360px;border-radius:var(--radius-lg)}
+  }
+  @media (max-width:640px){
+    body{font-size:16px}
+    .nav-links,.nav-cta .btn{display:none}
+    .burger{display:flex}
+    .nav-cta{gap:0}
+    .cards{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr}
+    .trust-sep{display:none}
+    .hero-chip{position:static;margin:1rem auto 0;max-width:none}
+    .badge-cred{right:0}
+    .mobile-menu.open{display:flex}
+  }
+  /* Mobile menu */
+  .mobile-menu{
+    display:none;flex-direction:column;gap:.4rem;
+    padding:1rem 4% 1.6rem;background:rgba(247,239,230,.98);
+    border-bottom:1px solid rgba(185,106,74,.16);
+  }
+  .mobile-menu a{padding:.8rem 1rem;border-radius:12px;font-weight:600;color:var(--brown-soft)}
+  .mobile-menu a:hover{background:rgba(185,106,74,.12);color:var(--terra-deep)}
+  .mobile-menu .btn{margin-top:.6rem;justify-content:center}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap nav">
+    <a href="#accueil" class="logo" aria-label="Cabinet Zhong, accueil">
+      <span class="mono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="1.6" stroke-linecap="round">
+          <line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/>
+          <rect x="8" y="8" width="8" height="8" rx="1" fill="none"/>
+        </svg>
+      </span>
+      <span>Cabinet Zhong<small>Médecine Chinoise</small></span>
+    </a>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-links">
+        <li><a href="#soins">Les soins</a></li>
+        <li><a href="#apropos">À propos</a></li>
+        <li><a href="#approche">Approche</a></li>
+        <li><a href="#indications">Indications</a></li>
+        <li><a href="#infos">Infos pratiques</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a href="#contact" class="btn btn-primary">Prendre rendez-vous</a>
+      <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#soins">Les soins</a>
+    <a href="#apropos">À propos</a>
+    <a href="#approche">Approche</a>
+    <a href="#indications">Indications</a>
+    <a href="#infos">Infos pratiques</a>
+    <a href="#contact" class="btn btn-primary">Prendre rendez-vous</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="accueil">
+  <div class="wrap hero-grid">
+    <div class="hero-copy reveal">
+      <span class="eyebrow">Cabinet Zhong · Carouge (Genève)</span>
+      <p class="baseline">L'art millénaire de l'équilibre</p>
+      <h1>Retrouvez l'harmonie de votre corps et de votre <span class="accent">esprit</span>.</h1>
+      <p class="lead">Retrouvez l'harmonie de votre corps et de votre esprit, naturellement, à Carouge. Une médecine traditionnelle chinoise douce, holistique et attentive à votre terrain.</p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">Prendre rendez-vous</a>
+        <a href="#soins" class="btn btn-ghost">Découvrir les soins</a>
+      </div>
+    </div>
+    <div class="hero-visual reveal" data-delay="2">
+      <div class="hero-img-frame">
+        <img src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?auto=format&fit=crop&w=1200&q=80" alt="Ambiance chaleureuse de soin en terre cuite, poterie et lumière dorée" loading="eager" />
+      </div>
+      <div class="hero-chip">
+        <span class="dot" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9E4E2E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.35-9-8a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 3.65-9 8-9 8z"/></svg>
+        </span>
+        <div><strong>+ 15 ans</strong><span>d'accompagnement en MTC</span></div>
+      </div>
+    </div>
+  </div>
+  <svg class="wave-top" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#B96A4A" d="M0,40 C240,90 480,90 720,55 C960,20 1200,20 1440,55 L1440,90 L0,90 Z"></path>
+  </svg>
+</section>
+
+<!-- TRUST BAND -->
+<section class="trust" aria-label="Agréments et remboursement">
+  <div class="wrap trust-inner">
+    <span class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Agréé RME</span>
+    <span class="trust-sep" aria-hidden="true"></span>
+    <span class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Agréé ASCA</span>
+    <span class="trust-sep" aria-hidden="true"></span>
+    <span class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 7h20M2 17h20"/></svg> Remboursé par la plupart des assurances complémentaires</span>
+  </div>
+</section>
+
+<!-- LES 4 SOINS -->
+<section class="section bg-cream" id="soins">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Nos soins</span>
+      <h2>Quatre disciplines, <em>une seule harmonie</em></h2>
+      <p class="lead" style="margin:1rem auto 0">Chaque approche de la médecine traditionnelle chinoise agit en profondeur pour rétablir la libre circulation de votre énergie vitale.</p>
+    </div>
+    <div class="cards">
+      <article class="card reveal" data-delay="1">
+        <span class="num">01</span>
+        <div class="icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4"/><circle cx="6" cy="18" r="2"/><path d="M14 4h6v6"/></svg></div>
+        <h3>Acupuncture</h3>
+        <p>Insertion de fines aiguilles sur des points précis pour relancer la libre circulation du Qi, l'énergie vitale, et rétablir l'équilibre du corps.</p>
+      </article>
+      <article class="card reveal" data-delay="2">
+        <span class="num">02</span>
+        <div class="icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg></div>
+        <h3>Phytothérapie chinoise</h3>
+        <p>Des formules de plantes médicinales personnalisées pour soutenir et prolonger les effets du traitement en profondeur.</p>
+      </article>
+      <article class="card reveal" data-delay="3">
+        <span class="num">03</span>
+        <div class="icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11a4 4 0 1 1 8 0c0 2-1 3-2 4l-2 5-2-5c-1-1-2-2-2-4Z"/><path d="M12 3v2"/></svg></div>
+        <h3>Tuina</h3>
+        <p>Un massage thérapeutique chinois qui agit sur les muscles, tendons et articulations pour libérer les tensions et fluidifier l'énergie.</p>
+      </article>
+      <article class="card reveal" data-delay="3">
+        <span class="num">04</span>
+        <div class="icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-4 4-8 4-8Z"/><path d="M9 22h6"/></svg></div>
+        <h3>Moxibustion (Moxa)</h3>
+        <p>La chaleur douce de l'armoise stimule les points d'acupuncture, réchauffe et tonifie l'énergie du corps.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section class="section bg-clay" id="apropos">
+  <div class="wrap about-grid">
+    <div class="about-photo reveal">
+      <div class="frame">
+        <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=1000&q=80" alt="Portrait de Fabrice Alvarez, thérapeute en médecine traditionnelle chinoise" loading="lazy" />
+      </div>
+      <span class="arch" aria-hidden="true"></span>
+      <div class="badge-cred">
+        <div class="stars" aria-hidden="true">★★★★★</div>
+        <strong>RME · ASCA</strong>
+        <span>Agréé & remboursé</span>
+      </div>
+    </div>
+    <div class="reveal" data-delay="1">
+      <span class="eyebrow">Votre thérapeute</span>
+      <h2>Fabrice Alvarez</h2>
+      <p class="lead" style="margin-top:1rem">Thérapeute en médecine traditionnelle chinoise, diplômé de l'<em>Institut Liang Shen</em> (Genève). Une approche holistique dont la vocation est de traiter la cause profonde, et pas seulement les symptômes.</p>
+      <p class="lead" style="margin-top:1rem">Agréé RME et ASCA, mes consultations sont remboursées par la plupart des assurances complémentaires. Chaque séance débute par une écoute attentive de votre terrain, pour construire ensemble un soin réellement personnalisé.</p>
+      <ul class="cred-list">
+        <li>✦ Institut Liang Shen — Genève</li>
+        <li>✦ Agrément RME</li>
+        <li>✦ Agrément ASCA</li>
+        <li>✦ Approche holistique</li>
+      </ul>
+      <p class="signature">Fabrice Alvarez</p>
+    </div>
+  </div>
+</section>
+
+<!-- APPROCHE -->
+<section class="section bg-cream" id="approche">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Notre approche</span>
+      <h2>Un accompagnement en <em>trois temps</em></h2>
+      <p class="lead" style="margin:1rem auto 0">Un chemin clair et rassurant, pensé pour révéler et soutenir l'équilibre naturel de votre corps.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal" data-delay="1">
+        <div class="step-num" aria-hidden="true">1</div>
+        <h3>Écoute & bilan énergétique</h3>
+        <p>Un temps d'échange approfondi pour comprendre votre histoire, votre mode de vie et cartographier vos déséquilibres énergétiques.</p>
+      </div>
+      <div class="step reveal" data-delay="2">
+        <div class="step-num" aria-hidden="true">2</div>
+        <h3>Soin personnalisé</h3>
+        <p>Acupuncture, phytothérapie, Tuina ou moxibustion : une combinaison sur mesure, adaptée à votre terrain et à vos besoins du moment.</p>
+      </div>
+      <div class="step reveal" data-delay="3">
+        <div class="step-num" aria-hidden="true">3</div>
+        <h3>Suivi & prévention</h3>
+        <p>Un accompagnement dans la durée pour ancrer les bienfaits, prévenir les rechutes et cultiver votre équilibre au quotidien.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDICATIONS -->
+<section class="section bg-clay" id="indications">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Indications</span>
+      <h2>La MTC peut vous <em>accompagner</em></h2>
+      <p class="lead" style="margin-top:1rem">La médecine traditionnelle chinoise agit sur un large éventail de troubles, en douceur et en profondeur.</p>
+    </div>
+    <div class="indic-grid reveal" data-delay="1">
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Douleurs chroniques</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Stress & anxiété</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Troubles du sommeil</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Troubles digestifs</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Migraines</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Troubles hormonaux</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Fatigue & épuisement</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Renforcement immunitaire</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Sevrage tabagique</div>
+      <div class="indic"><span class="indic-dot" aria-hidden="true"></span>Fertilité & grossesse</div>
+    </div>
+  </div>
+</section>
+
+<!-- TÉMOIGNAGES -->
+<section class="section testi-section">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Témoignages</span>
+      <h2>Ce qu'en disent nos patients</h2>
+    </div>
+    <div class="testi-grid">
+      <figure class="testi reveal" data-delay="1">
+        <div class="stars" aria-hidden="true">★★★★★</div>
+        <span class="quote" aria-hidden="true">“</span>
+        <blockquote><p>Après des années de migraines, j'ai enfin retrouvé une vie normale. Une écoute et une douceur remarquables.</p></blockquote>
+        <figcaption class="who">Sophie M., Genève</figcaption>
+      </figure>
+      <figure class="testi reveal" data-delay="2">
+        <div class="stars" aria-hidden="true">★★★★★</div>
+        <span class="quote" aria-hidden="true">“</span>
+        <blockquote><p>Fabrice a su comprendre mon terrain et adapter chaque séance. Mon sommeil s'est transformé.</p></blockquote>
+        <figcaption class="who">Marc D., Carouge</figcaption>
+      </figure>
+      <figure class="testi reveal" data-delay="3">
+        <div class="stars" aria-hidden="true">★★★★★</div>
+        <span class="quote" aria-hidden="true">“</span>
+        <blockquote><p>Une approche à la fois professionnelle et profondément humaine. Je recommande vivement.</p></blockquote>
+        <figcaption class="who">Léa R., Lancy</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- INFOS PRATIQUES -->
+<section class="section bg-cream" id="infos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Infos pratiques</span>
+      <h2>Nous rendre <em>visite</em></h2>
+    </div>
+    <div class="infos-grid">
+      <div class="info-cards reveal">
+        <div class="info-card">
+          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <div>
+            <h3>Adresse</h3>
+            <p>Rue Jacques-Dalphin 7<br>1227 Carouge (Genève)<br>Sur rendez-vous · Tél. <a href="tel:+41223424195" style="color:var(--terra-deep);font-weight:700">022 342 41 95</a></p>
+          </div>
+        </div>
+        <div class="info-card">
+          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+          <div>
+            <h3>Horaires <span style="font-weight:400;font-size:.8rem;opacity:.7">(à confirmer)</span></h3>
+            <ul>
+              <li class="row"><span>Lundi – Vendredi</span><span>9h – 19h</span></li>
+              <li class="row"><span>Samedi</span><span>9h – 13h</span></li>
+              <li class="row"><span>Dimanche</span><span>Fermé</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="info-card">
+          <span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <div>
+            <h3>Tarifs <span style="font-weight:400;font-size:.8rem;opacity:.7">(à confirmer)</span></h3>
+            <ul>
+              <li class="row"><span>Première consultation (~75 min)</span><span>120 CHF</span></li>
+              <li class="row"><span>Suivi (~60 min)</span><span>100 CHF</span></li>
+              <li class="row"><span>Remboursement</span><span>RME / ASCA</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="map-frame reveal" data-delay="1">
+        <iframe
+          title="Carte — Rue Jacques-Dalphin 7, 1227 Carouge"
+          src="https://www.google.com/maps?q=Rue+Jacques-Dalphin+7,+1227+Carouge,+Genève&output=embed"
+          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / CTA FINAL -->
+<section class="section bg-clay" id="contact">
+  <div class="wrap">
+    <div class="cta-final reveal">
+      <p class="baseline">L'art millénaire de l'équilibre</p>
+      <h2>Prenons soin de votre <span style="color:var(--gold);font-style:italic">équilibre</span></h2>
+      <p>Offrez à votre corps et à votre esprit l'attention qu'ils méritent. Contactez le Cabinet Zhong pour convenir d'un premier rendez-vous, à Carouge.</p>
+      <div class="hero-cta">
+        <a href="tel:+41223424195" class="btn btn-cream">Appeler le 022 342 41 95</a>
+        <a href="mailto:contact@cabinet-zhong.ch" class="btn btn-ghost" style="color:var(--cream);border-color:rgba(247,239,230,.4)">Écrire un message</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a href="#accueil" class="logo">
+          <span class="mono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/><rect x="8" y="8" width="8" height="8" rx="1" fill="none"/></svg>
+          </span>
+          <span>Cabinet Zhong<small>Médecine Chinoise</small></span>
+        </a>
+        <p class="foot-desc">L'art millénaire de l'équilibre, au cœur de Carouge. Une médecine traditionnelle chinoise douce et holistique.</p>
+      </div>
+      <div>
+        <h4>Les soins</h4>
+        <ul>
+          <li><a href="#soins">Acupuncture</a></li>
+          <li><a href="#soins">Phytothérapie chinoise</a></li>
+          <li><a href="#soins">Tuina</a></li>
+          <li><a href="#soins">Moxibustion</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Le cabinet</h4>
+        <ul>
+          <li><a href="#apropos">Fabrice Alvarez</a></li>
+          <li><a href="#approche">Notre approche</a></li>
+          <li><a href="#indications">Indications</a></li>
+          <li><a href="#infos">Infos pratiques</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><p>Rue Jacques-Dalphin 7<br>1227 Carouge (Genève)</p></li>
+          <li><a href="tel:+41223424195">022 342 41 95</a></li>
+          <li><a href="mailto:contact@cabinet-zhong.ch">contact@cabinet-zhong.ch</a></li>
+          <li><p>Agréé RME · ASCA</p></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Cabinet Zhong — Médecine Traditionnelle Chinoise. Tous droits réservés.</span>
+      <span>Carouge · Genève · Suisse</span>
+    </div>
+  </div>
+</footer>
+
+<a href="#accueil" class="prop-badge" aria-label="Proposition 6 — Terre Cuite"><span class="pd" aria-hidden="true"></span>Proposition 6 — Terre Cuite</a>
+
+<script>
+(function(){
+  "use strict";
+  // Année dynamique
+  var y = document.getElementById('year');
+  if(y) y.textContent = new Date().getFullYear();
+
+  // Menu burger
+  var burger = document.querySelector('.burger');
+  var menu = document.getElementById('mobileMenu');
+  if(burger && menu){
+    burger.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      burger.classList.toggle('open', open);
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    });
+    menu.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        menu.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded','false');
+      });
+    });
+  }
+
+  // Animations au scroll
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if(reduced || !('IntersectionObserver' in window)){
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold:.14, rootMargin:'0px 0px -8% 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  // Fallback images : dégradé de secours en cas d'erreur
+  document.querySelectorAll('img').forEach(function(img){
+    img.addEventListener('error', function(){
+      img.style.display = 'none';
+    });
+  });
+})();
+</script>
+</body>
+</html>
