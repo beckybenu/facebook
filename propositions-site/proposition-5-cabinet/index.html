@@ -447,7 +447,11 @@
     .testi-grid { grid-template-columns: 1fr; }
     .infos-grid { grid-template-columns: 1fr; }
   }
+  .brand-logo{height:38px;width:auto;display:block}
+  .brand-logo--footer{height:52px}
   @media (max-width: 560px) {
+    .brand-logo { height: 32px; }
+    .brand-logo--footer { height: 44px; }
     .section-pad { padding: 68px 0; }
     .soins-grid { grid-template-columns: 1fr; }
     .indic-grid { grid-template-columns: repeat(2, 1fr); }
@@ -466,13 +470,7 @@
 <header class="site" id="top">
   <div class="container nav">
     <a href="#top" class="brand" aria-label="Cabinet Zhong — accueil">
-      <span class="monogram" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M6 8h12M9 8v8M15 8v8" stroke="#C7A24B" stroke-width="1.6" stroke-linecap="round"/></svg>
-      </span>
-      <span class="brand-name">
-        <span class="n">Zhong</span>
-        <span class="t">Médecine Chinoise</span>
-      </span>
+      <img src="logo-zhong.png" class="brand-logo" alt="ZHONG — Médecine chinoise" />
     </a>
     <nav class="nav-links" aria-label="Navigation principale">
       <a class="link" href="#soins">Nos soins</a>
@@ -782,13 +780,7 @@
     <div class="footer-grid">
       <div>
         <div class="brand">
-          <span class="monogram" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M6 8h12M9 8v8M15 8v8" stroke="#C7A24B" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </span>
-          <span class="brand-name">
-            <span class="n">Zhong</span>
-            <span class="t">Médecine Chinoise</span>
-          </span>
+          <img src="logo-zhong.png" class="brand-logo brand-logo--footer" alt="ZHONG — Médecine chinoise" />
         </div>
         <p>L'art millénaire de l'équilibre. Un accompagnement holistique en médecine traditionnelle chinoise, au cœur de Carouge.</p>
       </div>
