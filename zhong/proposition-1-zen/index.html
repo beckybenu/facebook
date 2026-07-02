@@ -130,6 +130,8 @@
   .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
   .logo-text strong { font-family: var(--serif); font-size: 1.28rem; font-weight: 600; letter-spacing: .01em; }
   .logo-text small { font-size: .64rem; letter-spacing: .22em; text-transform: uppercase; color: var(--sage); font-weight: 600; }
+  .brand-logo { height: 38px; width: auto; display: block; }
+  .brand-logo--footer { height: 52px; }
 
   .nav-links { display: flex; align-items: center; gap: 34px; }
   .nav-links a {
@@ -519,6 +521,7 @@
     .nav-links a:not(.btn) { padding: 15px 4px; border-bottom: 1px solid rgba(107,122,94,.1); }
     .nav-links .btn { margin-top: 16px; justify-content: center; }
     .burger { display: flex; }
+    .brand-logo { height: 32px; }
     section.block { padding: 74px 0; }
     .cta-box { padding: 52px 26px; }
     .infos-card { padding: 28px; }
@@ -536,11 +539,7 @@
 <header id="top">
   <div class="container nav">
     <a href="#top" class="logo" aria-label="Cabinet Zhong, accueil">
-      <span class="logo-mark"><span aria-hidden="true">中</span></span>
-      <span class="logo-text">
-        <strong>Cabinet Zhong</strong>
-        <small>Médecine Chinoise</small>
-      </span>
+      <img src="logo-zhong.png" class="brand-logo" alt="ZHONG — Médecine chinoise" />
     </a>
 
     <nav class="nav-links" id="menu" aria-label="Navigation principale">
@@ -841,11 +840,7 @@
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="logo">
-          <span class="logo-mark"><span aria-hidden="true">中</span></span>
-          <span class="logo-text">
-            <strong>Cabinet Zhong</strong>
-            <small>Médecine Chinoise</small>
-          </span>
+          <img src="logo-zhong.png" class="brand-logo brand-logo--footer" alt="ZHONG — Médecine chinoise" />
         </div>
         <p>L'art millénaire de l'équilibre, au cœur de Carouge. Une approche holistique pour retrouver l'harmonie du corps et de l'esprit.</p>
       </div>

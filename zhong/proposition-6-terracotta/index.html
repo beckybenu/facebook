@@ -96,6 +96,8 @@
   }
   .logo .mono svg{width:24px;height:24px}
   .logo small{display:block;font-family:var(--sans);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--terra-deep);font-weight:700;margin-top:2px}
+  .brand-logo{height:38px;width:auto;display:block}
+  .brand-logo--footer{height:52px}
   .nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
   .nav-links a{font-size:.94rem;font-weight:600;color:var(--brown-soft);position:relative;transition:color .25s}
   .nav-links a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--terra);transition:width .3s ease;border-radius:2px}
@@ -353,6 +355,7 @@
     .trust-sep{display:none}
     .hero-chip{position:static;margin:1rem auto 0;max-width:none}
     .badge-cred{right:0}
+    .brand-logo{height:32px}
     .mobile-menu.open{display:flex}
   }
   /* Mobile menu */
@@ -377,13 +380,7 @@
 <header>
   <div class="wrap nav">
     <a href="#accueil" class="logo" aria-label="Cabinet Zhong, accueil">
-      <span class="mono" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="1.6" stroke-linecap="round">
-          <line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/>
-          <rect x="8" y="8" width="8" height="8" rx="1" fill="none"/>
-        </svg>
-      </span>
-      <span>Cabinet Zhong<small>Médecine Chinoise</small></span>
+      <img src="logo-zhong.png" class="brand-logo" alt="ZHONG — Médecine chinoise" />
     </a>
     <nav aria-label="Navigation principale">
       <ul class="nav-links">
@@ -670,10 +667,7 @@
     <div class="foot-grid">
       <div>
         <a href="#accueil" class="logo">
-          <span class="mono" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#F7EFE6" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><line x1="12" y1="4" x2="12" y2="20"/><rect x="8" y="8" width="8" height="8" rx="1" fill="none"/></svg>
-          </span>
-          <span>Cabinet Zhong<small>Médecine Chinoise</small></span>
+          <img src="logo-zhong.png" class="brand-logo brand-logo--footer" alt="ZHONG — Médecine chinoise" />
         </a>
         <p class="foot-desc">L'art millénaire de l'équilibre, au cœur de Carouge. Une médecine traditionnelle chinoise douce et holistique.</p>
       </div>

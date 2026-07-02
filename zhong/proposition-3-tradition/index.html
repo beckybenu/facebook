@@ -130,6 +130,8 @@
   .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
   .brand-name { font-family: var(--serif); font-size: 1.35rem; color: var(--cream-2); letter-spacing: 0.02em; }
   .brand-sub { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--gold); font-weight: 400; }
+  .brand-logo { height: 40px; width: auto; display: block; filter: brightness(0) invert(1); opacity: .95; }
+  .brand-logo--footer { height: 54px; }
 
   .nav-links { display: flex; align-items: center; gap: 2rem; }
   .nav-links a.link {
@@ -396,6 +398,8 @@
     .trust-sep { display: none; }
     .foot-grid { grid-template-columns: 1fr; gap: 2rem; }
     .hero .sub { font-size: 1rem; }
+    .brand-logo { height: 34px; }
+    .brand-logo--footer { height: 46px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -411,17 +415,7 @@
   <header id="top">
     <div class="wrap nav">
       <a href="#top" class="brand" aria-label="Cabinet Zhong — accueil">
-        <span class="monogram" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-            <path d="M12 2v20" />
-            <path d="M5 8h14" />
-            <path d="M5 8v8h14V8" />
-          </svg>
-        </span>
-        <span class="brand-text">
-          <span class="brand-name">Zhong</span>
-          <span class="brand-sub">中医 · Carouge</span>
-        </span>
+        <img src="logo-zhong.png" class="brand-logo" alt="ZHONG — Médecine chinoise" />
       </a>
 
       <nav class="nav-links" id="navLinks" aria-label="Navigation principale">
@@ -693,15 +687,7 @@
       <div class="foot-grid">
         <div class="foot-brand">
           <div class="brand" style="margin-bottom:.4rem;">
-            <span class="monogram" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
-                <path d="M12 2v20" /><path d="M5 8h14" /><path d="M5 8v8h14V8" />
-              </svg>
-            </span>
-            <span class="brand-text">
-              <span class="brand-name">Cabinet Zhong</span>
-              <span class="brand-sub">中医 · Carouge</span>
-            </span>
+            <img src="logo-zhong.png" class="brand-logo brand-logo--footer" alt="ZHONG — Médecine chinoise" />
           </div>
           <p>L'art millénaire de l'équilibre. Médecine traditionnelle chinoise à Carouge, Genève.</p>
         </div>

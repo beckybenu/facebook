@@ -91,6 +91,8 @@
     box-shadow:0 8px 18px -8px rgba(181,107,92,.7),inset 0 1px 0 rgba(255,255,255,.35);
   }
   .brand small{display:block;font-family:var(--sans);font-size:.62rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--terra-dark)}
+  .brand-logo{height:38px;width:auto;display:block}
+  .brand-logo--footer{height:52px}
   .nav-links{display:flex;align-items:center;gap:.3rem;list-style:none}
   .nav-links a{
     font-weight:600;font-size:.92rem;color:var(--ink-soft);padding:.5rem .85rem;border-radius:100px;
@@ -286,6 +288,7 @@
     .wrap{padding:0 20px}
     .card,.step,.quote,.info-card{padding:1.7rem}
     .trust-sep{display:none}
+    .brand-logo{height:32px}
   }
 
   /* mobile menu */
@@ -310,12 +313,7 @@
 <header class="site" id="top">
   <div class="wrap nav">
     <a href="#top" class="brand" aria-label="Cabinet Zhong, accueil">
-      <span class="mono" aria-hidden="true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 12h16M12 4v16M9 8h6M9 16h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-      </span>
-      <span>Cabinet Zhong<small>Médecine chinoise</small></span>
+      <img src="logo-zhong.png" class="brand-logo" alt="ZHONG — Médecine chinoise" />
     </a>
     <nav aria-label="Navigation principale">
       <ul class="nav-links">
@@ -614,10 +612,7 @@
     <div class="foot-grid">
       <div>
         <div class="foot-brand">
-          <span class="mono" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16M9 8h6M9 16h6" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </span>
-          <span>Cabinet Zhong<small>Médecine chinoise</small></span>
+          <img src="logo-zhong.png" class="brand-logo brand-logo--footer" alt="ZHONG — Médecine chinoise" />
         </div>
         <p>L'art millénaire de l'équilibre, au service de votre bien-être. Un accompagnement doux et holistique en médecine traditionnelle chinoise, à Carouge.</p>
       </div>
