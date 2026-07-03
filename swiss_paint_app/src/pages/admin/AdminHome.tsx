@@ -36,6 +36,14 @@ export default function AdminHome() {
       </div>
 
       <div className="section-title">Gestion</div>
+      <button className="list-row" onClick={() => navigate('/admin/pointages')}>
+        <span className="row-bar" />
+        <div className="row-main">
+          <div className="row-title">⏱️ Suivi des heures</div>
+          <div className="row-sub">Qui pointe en direct, totaux, validation, export</div>
+        </div>
+        <span className="row-chevron">›</span>
+      </button>
       <button className="list-row" onClick={() => navigate('/admin/users')}>
         <span className="row-bar" />
         <div className="row-main">

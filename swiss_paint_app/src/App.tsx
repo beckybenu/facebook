@@ -26,6 +26,8 @@ import AdminTasks from './pages/admin/AdminTasks'
 import AdminTaskEdit from './pages/admin/AdminTaskEdit'
 import AdminDocs from './pages/admin/AdminDocs'
 import AdminDocEdit from './pages/admin/AdminDocEdit'
+import AdminPointages from './pages/admin/AdminPointages'
+import AdminWorkerHours from './pages/admin/AdminWorkerHours'
 
 export default function App() {
   const { user, loading } = useAuth()
@@ -168,6 +170,22 @@ export default function App() {
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminDocs />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/pointages"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminPointages />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/pointages/:userId"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminWorkerHours />
           </ProtectedRoute>
         }
       />

@@ -19,6 +19,13 @@ export const COMPANY = {
   signataireRole: 'Associé-Gérant',
 } as const
 
+// Paramètres RH / pointage
+export const HR = {
+  dailyTargetHours: 8.4, // objectif journalier (≈ 42h / 5 jours)
+  weeklyTargetHours: 42, // objectif hebdomadaire (temps plein suisse)
+  onSiteRadiusM: 200, // rayon (m) pour considérer l'ouvrier « sur le chantier »
+} as const
+
 // Remarques par défaut d'un devis (reprises du modèle officiel)
 export const DEFAULT_REMARQUES = [
   'Ce devis est estimatif et pourra être ajusté en fonction des constatations définitives sur place.',

@@ -92,6 +92,11 @@ export interface Devis {
 }
 
 // Pointage / badgeuse
+export interface Break {
+  start: string // ISO
+  end?: string // ISO (vide = pause en cours)
+}
+
 export interface TimeEntry {
   id: string
   userId: string
@@ -102,4 +107,11 @@ export interface TimeEntry {
   lat?: number
   lng?: number
   note?: string
+  // Pauses (déjeuner, etc.) déduites du temps travaillé
+  breaks?: Break[]
+  // Contrôle de présence sur chantier au badge
+  distanceM?: number // distance au chantier en mètres
+  onSite?: boolean // dans le rayon autorisé du chantier
+  // Validation des heures par l'admin
+  validated?: boolean
 }

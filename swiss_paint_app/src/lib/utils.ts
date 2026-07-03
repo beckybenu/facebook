@@ -1,5 +1,13 @@
 // Utilitaires partagés : géolocalisation, fichiers, formats.
-import type { TaskStatus, TaskPriority, UserRole, Devis, DevisItem, DevisUnit } from '../types'
+import type {
+  TaskStatus,
+  TaskPriority,
+  UserRole,
+  Devis,
+  DevisItem,
+  DevisUnit,
+  TimeEntry,
+} from '../types'
 
 export interface GeoPosition {
   lat: number
@@ -67,6 +75,107 @@ export function durationHours(startIso: string, endIso?: string): number {
   const end = endIso ? new Date(endIso).getTime() : Date.now()
   const ms = Math.max(0, end - new Date(startIso).getTime())
   return ms / 3600000
+}
+
+// ---------- Pointage avancé ----------
+
+// Distance en mètres entre deux points GPS (formule de Haversine)
+export function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371000
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLng = toRad(lng2 - lng1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
+  return Math.round(2 * R * Math.asin(Math.sqrt(a)))
+}
+
+// Durée totale des pauses d'un pointage (ms)
+export function entryBreakMs(e: TimeEntry, nowMs = Date.now()): number {
+  return (e.breaks || []).reduce((sum, b) => {
+    const end = b.end ? new Date(b.end).getTime() : nowMs
+    return sum + Math.max(0, end - new Date(b.start).getTime())
+  }, 0)
+}
+
+// Temps réellement travaillé (pauses déduites), en ms
+export function entryWorkedMs(e: TimeEntry, nowMs = Date.now()): number {
+  const end = e.clockOut ? new Date(e.clockOut).getTime() : nowMs
+  const gross = Math.max(0, end - new Date(e.clockIn).getTime())
+  return Math.max(0, gross - entryBreakMs(e, nowMs))
+}
+
+export function entryWorkedHours(e: TimeEntry, nowMs = Date.now()): number {
+  return entryWorkedMs(e, nowMs) / 3600000
+}
+
+// Pause en cours ?
+export function isOnBreak(e: TimeEntry): boolean {
+  return (e.breaks || []).some((b) => !b.end)
+}
+
+// "8h 05" à partir de millisecondes
+export function msToHM(ms: number): string {
+  const totalMin = Math.floor(Math.max(0, ms) / 60000)
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  return `${h}h ${m.toString().padStart(2, '0')}`
+}
+
+// "8h 05" à partir d'heures décimales (accepte le négatif : "-1h 30")
+export function hoursToHM(h: number): string {
+  const sign = h < 0 ? '-' : ''
+  return sign + msToHM(Math.abs(h) * 3600000)
+}
+
+// Début de journée / semaine (lundi) / mois — en ms
+export function startOfDay(d: Date): number {
+  const x = new Date(d)
+  x.setHours(0, 0, 0, 0)
+  return x.getTime()
+}
+export function startOfWeek(d: Date): number {
+  const x = new Date(d)
+  const day = (x.getDay() + 6) % 7 // lundi = 0
+  x.setDate(x.getDate() - day)
+  x.setHours(0, 0, 0, 0)
+  return x.getTime()
+}
+export function startOfMonth(d: Date): number {
+  const x = new Date(d)
+  x.setDate(1)
+  x.setHours(0, 0, 0, 0)
+  return x.getTime()
+}
+
+// Génère + télécharge une fiche d'heures CSV
+export function downloadTimesheetCsv(
+  entries: TimeEntry[],
+  taskName: (id?: string) => string,
+  filename: string,
+): void {
+  const header = ['Date', 'Chantier', 'Entrée', 'Sortie', 'Pause (h)', 'Travaillé (h)', 'Sur site', 'Distance (m)', 'Validé']
+  const rows = entries.map((e) => [
+    formatDate(e.clockIn),
+    taskName(e.taskId),
+    formatTime(e.clockIn),
+    e.clockOut ? formatTime(e.clockOut) : 'en cours',
+    (entryBreakMs(e) / 3600000).toFixed(2),
+    entryWorkedHours(e).toFixed(2),
+    e.onSite == null ? '' : e.onSite ? 'oui' : 'non',
+    e.distanceM != null ? String(e.distanceM) : '',
+    e.validated ? 'oui' : 'non',
+  ])
+  const csv = [header, ...rows]
+    .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';'))
+    .join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(a.href)
 }
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {

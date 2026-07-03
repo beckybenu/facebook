@@ -139,19 +139,53 @@ export function seedIfNeeded(): void {
   ]
   docs.forEach((d) => docsDb.create(d))
 
-  // Un pointage déjà terminé pour la démo de la fiche d'heures
-  const yesterday = new Date(Date.now() - 86400000)
-  const entry: TimeEntry = {
-    id: uid('te'),
-    userId: ouvrier.id,
-    taskId: tasks[0].id,
-    clockIn: new Date(yesterday.setHours(8, 0, 0, 0)).toISOString(),
-    clockOut: new Date(yesterday.setHours(17, 0, 0, 0)).toISOString(),
-    lat: 46.5197,
-    lng: 6.6323,
-    note: 'Journée chantier Lausanne',
+  // Pointages déjà terminés pour la démo de la fiche d'heures (avec pause + présence chantier)
+  const dayAt = (daysAgo: number, h: number, m = 0) => {
+    const d = new Date(Date.now() - daysAgo * 86400000)
+    d.setHours(h, m, 0, 0)
+    return d.toISOString()
   }
-  timeDb.create(entry)
+  const entries: TimeEntry[] = [
+    {
+      id: uid('te'),
+      userId: ouvrier.id,
+      taskId: tasks[0].id,
+      clockIn: dayAt(1, 8, 0),
+      clockOut: dayAt(1, 17, 0),
+      lat: 46.5197,
+      lng: 6.6323,
+      distanceM: 45,
+      onSite: true,
+      breaks: [{ start: dayAt(1, 12, 0), end: dayAt(1, 13, 0) }], // pause déjeuner 1h
+      validated: true,
+      note: 'Journée chantier Lausanne',
+    },
+    {
+      id: uid('te'),
+      userId: ouvrier.id,
+      taskId: tasks[0].id,
+      clockIn: dayAt(2, 8, 15),
+      clockOut: dayAt(2, 16, 45),
+      lat: 46.5205,
+      lng: 6.633,
+      distanceM: 120,
+      onSite: true,
+      breaks: [{ start: dayAt(2, 12, 0), end: dayAt(2, 12, 45) }],
+    },
+    {
+      id: uid('te'),
+      userId: ouvrier2.id,
+      taskId: tasks[1].id,
+      clockIn: dayAt(1, 7, 30),
+      clockOut: dayAt(1, 16, 0),
+      lat: 46.21,
+      lng: 6.15,
+      distanceM: 780,
+      onSite: false, // hors zone : trop loin du chantier
+      breaks: [{ start: dayAt(1, 12, 0), end: dayAt(1, 13, 0) }],
+    },
+  ]
+  entries.forEach((e) => timeDb.create(e))
 
   // Devis de démonstration (identique au modèle officiel SwissPaints)
   const devis: Devis = {
