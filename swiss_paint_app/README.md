@@ -45,9 +45,16 @@ npm run preview  # prévisualiser le build
 - `vite-plugin-pwa` pour le mode application installable
 - API Géolocalisation du navigateur
 
-## Note
+## Deux modes de fonctionnement
 
-Cette version utilise un « backend » local (localStorage) pour valider l'UX
-rapidement. Pour une mise en production multi-utilisateurs, brancher une vraie
-API + base de données (les accès se font via `src/data/db.ts`, faciles à
-remplacer par des appels réseau).
+- **Local** (par défaut) : données stockées sur l'appareil (localStorage) — idéal
+  pour la démo, aucune installation.
+- **Cloud** : données **partagées entre tous les appareils** via le serveur
+  `swiss_paint_backend` (pointages en temps réel pour l'admin, etc.). Depuis l'app :
+  **Profil → Connexion serveur**, coller l'URL du serveur, se reconnecter.
+
+Le choix se fait à l'exécution : `src/data/db.ts` lit/écrit le cache distant
+(`src/data/remote.ts`) en mode cloud, sinon localStorage. Aucune reconstruction
+nécessaire pour connecter un serveur.
+
+Voir `swiss_paint_backend/README.md` pour déployer le backend gratuitement (Render).

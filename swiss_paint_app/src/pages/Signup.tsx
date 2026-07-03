@@ -21,12 +21,16 @@ export default function Signup() {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const [busy, setBusy] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const res = signup(form)
+    setBusy(true)
+    const res = await signup(form)
+    setBusy(false)
     if (res.ok) navigate('/home')
-    else setError(res.error || "Inscription impossible.")
+    else setError(res.error || 'Inscription impossible.')
   }
 
   return (
@@ -105,8 +109,8 @@ export default function Signup() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary">
-            Créer mon compte
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? 'Création…' : 'Créer mon compte'}
           </button>
         </form>
 

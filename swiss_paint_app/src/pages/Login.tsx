@@ -10,10 +10,14 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  function handleSubmit(e: React.FormEvent) {
+  const [busy, setBusy] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    const res = login(email, password)
+    setBusy(true)
+    const res = await login(email, password)
+    setBusy(false)
     if (res.ok) navigate('/home')
     else setError(res.error || 'Connexion impossible.')
   }
@@ -51,8 +55,8 @@ export default function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Se connecter
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {busy ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>
 

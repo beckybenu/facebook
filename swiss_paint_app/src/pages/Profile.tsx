@@ -6,7 +6,7 @@ import { usersDb } from '../data/db'
 import { fileToDataURL, ROLE_LABELS } from '../lib/utils'
 
 export default function Profile() {
-  const { user, logout, refresh, isAdmin } = useAuth()
+  const { user, logout, refresh, isAdmin, cloud } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     username: user?.username || '',
@@ -110,6 +110,14 @@ export default function Profile() {
           ⚙️ Espace administrateur
         </button>
       )}
+
+      <button
+        className="btn btn-outline"
+        style={{ marginTop: 12 }}
+        onClick={() => navigate('/parametres')}
+      >
+        {cloud ? '☁️ Serveur connecté' : '📱 Connexion serveur'}
+      </button>
 
       <button className="btn btn-outline" style={{ marginTop: 12 }} onClick={handleLogout}>
         🚪 Se déconnecter

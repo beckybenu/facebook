@@ -14,6 +14,7 @@ import Pointage from './pages/Pointage'
 import Chantiers from './pages/Chantiers'
 import TaskDetail from './pages/TaskDetail'
 import Documents from './pages/Documents'
+import ServerSettings from './pages/ServerSettings'
 import DevisList from './pages/DevisList'
 import DevisEdit from './pages/DevisEdit'
 import DevisView from './pages/DevisView'
@@ -86,6 +87,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Documents />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/parametres"
+        element={
+          <ProtectedRoute>
+            <ServerSettings />
           </ProtectedRoute>
         }
       />

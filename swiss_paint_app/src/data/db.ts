@@ -1,6 +1,7 @@
 // Mini "backend" local basé sur localStorage.
 // Reproduit le rôle de la base de données intégrée d'Adalo, mais 100% côté client.
 import type { User, Task, Document, TimeEntry, Devis } from '../types'
+import { isCloud, getCache, upsertLocal, removeLocal, type CollectionName } from './remote'
 
 const KEYS = {
   users: 'sp_users',
@@ -29,104 +30,87 @@ export function uid(prefix = 'id'): string {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 }
 
+// Accès unifié : en mode "cloud" on lit/écrit le cache distant, sinon localStorage.
+function src<T>(name: CollectionName, key: string): T[] {
+  return isCloud() ? getCache<T>(name) : read<T>(key)
+}
+function put<T extends { id: string }>(name: CollectionName, key: string, obj: T): T {
+  if (isCloud()) return upsertLocal(name, obj)
+  const list = read<T>(key)
+  const idx = list.findIndex((x) => x.id === obj.id)
+  if (idx >= 0) list[idx] = obj
+  else list.push(obj)
+  write(key, list)
+  return obj
+}
+function del<T extends { id: string }>(name: CollectionName, key: string, id: string): void {
+  if (isCloud()) {
+    removeLocal(name, id)
+    return
+  }
+  write(
+    key,
+    read<T>(key).filter((x) => x.id !== id),
+  )
+}
+
 // ---------- Users ----------
 export const usersDb = {
-  all: () => read<User>(KEYS.users),
-  byId: (id: string) => read<User>(KEYS.users).find((u) => u.id === id),
+  all: () => src<User>('users', KEYS.users),
+  byId: (id: string) => usersDb.all().find((u) => u.id === id),
   byEmail: (email: string) =>
-    read<User>(KEYS.users).find((u) => u.email.toLowerCase() === email.toLowerCase()),
-  create: (u: User) => {
-    const list = read<User>(KEYS.users)
-    list.push(u)
-    write(KEYS.users, list)
-    return u
-  },
-  update: (u: User) => {
-    const list = read<User>(KEYS.users).map((x) => (x.id === u.id ? u : x))
-    write(KEYS.users, list)
-    return u
-  },
-  remove: (id: string) => write(KEYS.users, read<User>(KEYS.users).filter((u) => u.id !== id)),
+    usersDb.all().find((u) => u.email.toLowerCase() === email.toLowerCase()),
+  create: (u: User) => put('users', KEYS.users, u),
+  update: (u: User) => put('users', KEYS.users, u),
+  remove: (id: string) => del<User>('users', KEYS.users, id),
 }
 
 // ---------- Tasks (chantiers) ----------
 export const tasksDb = {
-  all: () => read<Task>(KEYS.tasks),
-  byId: (id: string) => read<Task>(KEYS.tasks).find((t) => t.id === id),
-  forUser: (userId: string) => read<Task>(KEYS.tasks).filter((t) => t.assignedUserId === userId),
-  create: (t: Task) => {
-    const list = read<Task>(KEYS.tasks)
-    list.push(t)
-    write(KEYS.tasks, list)
-    return t
-  },
-  update: (t: Task) => {
-    write(KEYS.tasks, read<Task>(KEYS.tasks).map((x) => (x.id === t.id ? t : x)))
-    return t
-  },
-  remove: (id: string) => write(KEYS.tasks, read<Task>(KEYS.tasks).filter((t) => t.id !== id)),
+  all: () => src<Task>('tasks', KEYS.tasks),
+  byId: (id: string) => tasksDb.all().find((t) => t.id === id),
+  forUser: (userId: string) => tasksDb.all().filter((t) => t.assignedUserId === userId),
+  create: (t: Task) => put('tasks', KEYS.tasks, t),
+  update: (t: Task) => put('tasks', KEYS.tasks, t),
+  remove: (id: string) => del<Task>('tasks', KEYS.tasks, id),
 }
 
 // ---------- Documents ----------
 export const docsDb = {
-  all: () => read<Document>(KEYS.documents),
-  byId: (id: string) => read<Document>(KEYS.documents).find((d) => d.id === id),
-  create: (d: Document) => {
-    const list = read<Document>(KEYS.documents)
-    list.push(d)
-    write(KEYS.documents, list)
-    return d
-  },
-  update: (d: Document) => {
-    write(KEYS.documents, read<Document>(KEYS.documents).map((x) => (x.id === d.id ? d : x)))
-    return d
-  },
-  remove: (id: string) =>
-    write(KEYS.documents, read<Document>(KEYS.documents).filter((d) => d.id !== id)),
+  all: () => src<Document>('documents', KEYS.documents),
+  byId: (id: string) => docsDb.all().find((d) => d.id === id),
+  create: (d: Document) => put('documents', KEYS.documents, d),
+  update: (d: Document) => put('documents', KEYS.documents, d),
+  remove: (id: string) => del<Document>('documents', KEYS.documents, id),
 }
 
 // ---------- Pointage ----------
 export const timeDb = {
-  all: () => read<TimeEntry>(KEYS.timeEntries),
+  all: () => src<TimeEntry>('timeEntries', KEYS.timeEntries),
   forUser: (userId: string) =>
-    read<TimeEntry>(KEYS.timeEntries)
+    timeDb
+      .all()
       .filter((e) => e.userId === userId)
       .sort((a, b) => b.clockIn.localeCompare(a.clockIn)),
   openForUser: (userId: string) =>
-    read<TimeEntry>(KEYS.timeEntries).find((e) => e.userId === userId && !e.clockOut),
-  create: (e: TimeEntry) => {
-    const list = read<TimeEntry>(KEYS.timeEntries)
-    list.push(e)
-    write(KEYS.timeEntries, list)
-    return e
-  },
-  update: (e: TimeEntry) => {
-    write(KEYS.timeEntries, read<TimeEntry>(KEYS.timeEntries).map((x) => (x.id === e.id ? e : x)))
-    return e
-  },
+    timeDb.all().find((e) => e.userId === userId && !e.clockOut),
+  create: (e: TimeEntry) => put('timeEntries', KEYS.timeEntries, e),
+  update: (e: TimeEntry) => put('timeEntries', KEYS.timeEntries, e),
 }
 
 // ---------- Devis ----------
 export const devisDb = {
   all: () =>
-    read<Devis>(KEYS.devis).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-  byId: (id: string) => read<Devis>(KEYS.devis).find((d) => d.id === id),
-  create: (d: Devis) => {
-    const list = read<Devis>(KEYS.devis)
-    list.push(d)
-    write(KEYS.devis, list)
-    return d
-  },
-  update: (d: Devis) => {
-    write(KEYS.devis, read<Devis>(KEYS.devis).map((x) => (x.id === d.id ? d : x)))
-    return d
-  },
-  remove: (id: string) => write(KEYS.devis, read<Devis>(KEYS.devis).filter((d) => d.id !== id)),
+    [...src<Devis>('devis', KEYS.devis)].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  byId: (id: string) => devisDb.all().find((d) => d.id === id),
+  create: (d: Devis) => put('devis', KEYS.devis, d),
+  update: (d: Devis) => put('devis', KEYS.devis, d),
+  remove: (id: string) => del<Devis>('devis', KEYS.devis, id),
   // Génère le prochain numéro au format DE-AAAA-MM-NN
   nextNumero: (year: number, month: number): string => {
     const mm = String(month).padStart(2, '0')
     const prefix = `DE-${year}-${mm}-`
-    const n = read<Devis>(KEYS.devis).filter((d) => d.numero.startsWith(prefix)).length + 1
+    const n = devisDb.all().filter((d) => d.numero.startsWith(prefix)).length + 1
     return `${prefix}${String(n).padStart(2, '0')}`
   },
 }

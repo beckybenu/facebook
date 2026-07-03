@@ -1,0 +1,19 @@
+# Déploiement gratuit en 1 clic sur Render (https://render.com)
+# Depuis Render : New > Blueprint > pointer sur ce dépôt, dossier swiss_paint_backend.
+services:
+  - type: web
+    name: swisspaints-api
+    runtime: node
+    rootDir: swiss_paint_backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true # secret généré automatiquement
+      - key: DATA_FILE
+        value: /var/data/data.json # chemin sur le disque persistant
+    disk:
+      name: swisspaints-data
+      mountPath: /var/data
+      sizeGB: 1
