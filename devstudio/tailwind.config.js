@@ -4,14 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: 'rgb(var(--bg) / <alpha-value>)',
-        paper: 'rgb(var(--fg) / <alpha-value>)',
-        ember: 'rgb(var(--accent) / <alpha-value>)',
-        gold: 'rgb(var(--accent2) / <alpha-value>)',
+        ink: '#0a0a0b',
+        paper: '#f4f1ea',
+        ember: '#ff5c33',
+        gold: '#ffb347',
       },
       fontFamily: {
         display: ['"Syne"', 'sans-serif'],
-        logo: ['"Orbitron"', 'sans-serif'],
         body: ['"Inter"', 'system-ui', 'sans-serif'],
       },
     },

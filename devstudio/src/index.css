@@ -2,42 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Thèmes futuristes NeuralStarK — triplets RGB pour permettre les opacités
-  Tailwind (rgb(var(--accent) / <alpha-value>)).
-*/
-:root,
-:root[data-theme='arc'] {
+:root {
   color-scheme: dark;
-  /* 01 · Arc — cyan réacteur + bleu électrique */
-  --bg: 4 9 14;
-  --fg: 232 241 248;
-  --accent: 0 229 255;
-  --accent2: 61 123 255;
-}
-
-:root[data-theme='neon'] {
-  /* 02 · Néon — magenta cyberpunk + cyan glacé */
-  --bg: 10 4 16;
-  --fg: 246 238 248;
-  --accent: 255 46 204;
-  --accent2: 0 240 255;
-}
-
-:root[data-theme='plasma'] {
-  /* 03 · Plasma — violet profond + turquoise */
-  --bg: 7 4 18;
-  --fg: 238 236 250;
-  --accent: 148 92 255;
-  --accent2: 34 211 238;
-}
-
-:root[data-theme='stark'] {
-  /* 04 · Stark — rouge réacteur + or (hommage à Iron Man) */
-  --bg: 12 5 5;
-  --fg: 248 240 234;
-  --accent: 255 64 64;
-  --accent2: 255 197 61;
 }
 
 html {
@@ -49,8 +15,8 @@ body {
 }
 
 ::selection {
-  background: rgb(var(--accent));
-  color: rgb(var(--bg));
+  background: #ff5c33;
+  color: #0a0a0b;
 }
 
 /* Fine scrollbar */
@@ -58,14 +24,14 @@ body {
   width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: rgb(var(--bg));
+  background: #0a0a0b;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--fg) / 0.15);
+  background: #2a2a2e;
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--accent));
+  background: #ff5c33;
 }
 
 /* Grain overlay for a filmic texture */
@@ -97,12 +63,7 @@ body {
 
 /* Animated gradient text used in the hero */
 .text-gradient-animated {
-  background: linear-gradient(
-    90deg,
-    rgb(var(--accent)),
-    rgb(var(--accent2)),
-    rgb(var(--accent))
-  );
+  background: linear-gradient(90deg, #ff5c33, #ffb347, #ff7a59, #ff5c33);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -117,7 +78,7 @@ body {
 
 /* Outlined display text */
 .text-stroke {
-  -webkit-text-stroke: 1.5px rgb(var(--fg) / 0.35);
+  -webkit-text-stroke: 1.5px rgba(244, 241, 234, 0.35);
   color: transparent;
 }
 

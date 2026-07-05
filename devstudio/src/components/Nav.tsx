@@ -16,8 +16,8 @@ export default function Nav({ ready }: { ready: boolean }) {
       className="fixed top-0 inset-x-0 z-40 backdrop-blur-md bg-ink/60 border-b border-white/5"
     >
       <nav className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-        <a href="#" className="font-logo font-extrabold text-lg tracking-wider">
-          <span className="text-ember">◆</span> Neural<span className="text-ember">StarK</span>
+        <a href="#" className="font-display font-bold text-lg tracking-tight">
+          <span className="text-ember">✦</span> Benu Studio
         </a>
         <ul className="hidden md:flex gap-8 text-sm text-paper/70">
           {LINKS.map((l) => (

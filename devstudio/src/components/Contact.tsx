@@ -75,7 +75,7 @@ export default function Contact() {
         </motion.div>
 
         <p className="mt-24 text-sm text-paper/40">
-          © 2026 NeuralStarK <span className="text-ember">◆</span> Neural power. Stark reality.
+          © 2026 Benu Studio <span className="text-ember">✦</span> Conçu et développé avec soin.
         </p>
       </div>
     </footer>
