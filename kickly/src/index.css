@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-pitch-950 text-slate-200 font-sans antialiased;
+    background-image: radial-gradient(
+        circle at 15% -10%,
+        rgba(198, 255, 61, 0.08),
+        transparent 45%
+      ),
+      radial-gradient(circle at 90% 0%, rgba(37, 74, 64, 0.35), transparent 40%);
+    background-attachment: fixed;
+  }
+  ::selection {
+    @apply bg-lime/30 text-white;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-white/5 bg-pitch-900/70 backdrop-blur-sm shadow-card;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-lime px-4 py-2.5 text-sm font-semibold text-pitch-950 transition hover:bg-lime-soft hover:shadow-glow active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-lime/40 hover:text-white;
+  }
+}
+
+/* Thin scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-pitch-700 rounded-full;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
