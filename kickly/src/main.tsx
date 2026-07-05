@@ -1,13 +1,16 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import App from './App'
 import './index.css'
 
+// HashRouter: l'app est servie depuis un sous-dossier GitHub Pages
+// (beckybenu.github.io/facebook/kickly/) sans réécriture serveur —
+// le routage par hash garantit que les liens profonds fonctionnent.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
