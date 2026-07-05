@@ -150,7 +150,19 @@ async function main() {
       });
     }
 
-    // Un match terminé pour alimenter l'historique.
+    // Un match terminé pour alimenter l'historique (avec ses gains versés).
+    const shadow = await prisma.user.findUniqueOrThrow({
+      where: { email: "shadow@demo.gg" },
+    });
+    await prisma.transaction.create({
+      data: {
+        userId: shadow.id,
+        type: "WAGER_PAYOUT",
+        amountCents: 4750,
+        balanceAfterCents: shadow.balanceCents,
+        reference: "Gains — Duel sniper BO3 (frais de service 2,50 €)",
+      },
+    });
     await prisma.match.create({
       data: {
         gameId: games["call-of-duty"],
