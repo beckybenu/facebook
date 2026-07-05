@@ -62,17 +62,16 @@ export default function Hero({ ready }: { ready: boolean }) {
           className="mb-6 flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-paper/60"
         >
           <span className="h-px w-10 bg-ember" />
-          Studio de développement web &amp; mobile
+          NeuralStarK · Studio de développement web &amp; mobile
         </motion.p>
 
         <motion.h1
           initial="hidden"
           animate={ready ? 'visible' : 'hidden'}
-          className="font-display font-extrabold leading-[0.95] text-[clamp(2.8rem,9vw,7.5rem)]"
+          className="font-display font-extrabold leading-[0.95] text-[clamp(2.6rem,8.5vw,7rem)]"
         >
-          <AnimatedLine text="On code des" index={0} />
-          <AnimatedLine text="expériences" index={1} className="text-gradient-animated" />
-          <AnimatedLine text="inoubliables." index={2} className="text-stroke" />
+          <AnimatedLine text="Neural power." index={0} />
+          <AnimatedLine text="Stark reality." index={1} className="text-gradient-animated" />
         </motion.h1>
 
         <motion.p
@@ -81,8 +80,9 @@ export default function Hero({ ready }: { ready: boolean }) {
           transition={{ delay: 1.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="mt-8 max-w-xl text-lg text-paper/70"
         >
-          Sites, applications et produits digitaux conçus au pixel près —
-          rapides, élégants et animés avec soin. De l&apos;idée au lancement.
+          L&apos;intelligence du code au service de résultats concrets. Sites,
+          applications et produits digitaux conçus au pixel près — rapides,
+          élégants et animés avec soin.
         </motion.p>
 
         <motion.div

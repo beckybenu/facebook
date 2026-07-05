@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-const WORDS = ['Bonjour', 'Hello', 'Hola', 'Ciao', 'こんにちは', 'Salam', 'Benu Studio']
+const WORDS = ['Bonjour', 'Hello', 'Hola', 'Ciao', 'こんにちは', 'Salam', 'NeuralStarK']
 
 export default function Preloader({ onDone }: { onDone: () => void }) {
   const [index, setIndex] = useState(0)
@@ -27,7 +27,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         transition={{ duration: 0.18 }}
         className="font-display text-4xl md:text-6xl font-bold"
       >
-        <span className="text-ember mr-3">✦</span>
+        <span className="text-ember mr-3">◆</span>
         {WORDS[index]}
       </motion.p>
 

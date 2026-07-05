@@ -10,6 +10,7 @@ import Work from './components/Work'
 import Stats from './components/Stats'
 import Process from './components/Process'
 import Contact from './components/Contact'
+import ThemeSwitcher from './components/ThemeSwitcher'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -37,6 +38,7 @@ export default function App() {
       />
 
       <Nav ready={!loading} />
+      <ThemeSwitcher />
       <main>
         <Hero ready={!loading} />
         <Marquee />
