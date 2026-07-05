@@ -25,16 +25,17 @@ function DataBadge() {
   const { source, loading } = useData()
   if (loading) {
     return (
-      <span className="chip hidden bg-pitch-800 text-slate-300 sm:flex">
+      <span className="chip flex bg-pitch-800 text-slate-300">
         <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-amber-400" />
-        Chargement des données...
+        <span className="hidden sm:inline">Chargement des données...</span>
+        <span className="sm:hidden">Chargement...</span>
       </span>
     )
   }
   if (source === 'demo') {
     return (
       <span
-        className="chip hidden bg-amber-400/10 text-amber-400 sm:flex"
+        className="chip flex bg-amber-400/10 text-amber-400"
         title="API football injoignable — pronostics calculés sur des données de démonstration"
       >
         <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
@@ -44,7 +45,7 @@ function DataBadge() {
   }
   return (
     <span
-      className="chip hidden bg-pitch-800 text-slate-300 sm:flex"
+      className="chip flex bg-pitch-800 text-slate-300"
       title={
         source === 'live'
           ? 'Calendriers et résultats réels via TheSportsDB'
