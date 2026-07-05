@@ -3,6 +3,7 @@ import { CalendarDays } from 'lucide-react'
 import { leagues } from '../data/leagues'
 import { teamsByLeague } from '../data/teams'
 import { TeamBadge, FormDots } from '../components/TeamBadge'
+import { useData } from '../lib/DataContext'
 import type { Team } from '../data/types'
 
 /** Power rating used to sort a mini table (attack minus defense, scaled). */
@@ -13,10 +14,11 @@ function power(t: Team): number {
 
 export function Leagues() {
   const [active, setActive] = useState(leagues[0].id)
+  const { liveLeagues } = useData() // re-rend la table quand les données live arrivent
   const league = leagues.find((l) => l.id === active)!
   const table = useMemo(
     () => [...teamsByLeague(active)].sort((a, b) => power(b) - power(a)),
-    [active],
+    [active, liveLeagues],
   )
 
   return (

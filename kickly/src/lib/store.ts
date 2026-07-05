@@ -1,33 +1,16 @@
-import { useMemo } from 'react'
-import { buildFixtures } from '../data/fixtures'
-import { predict } from '../data/predictions'
-import type { Fixture, Prediction } from '../data/types'
+import { useData, type EnrichedFixture } from './DataContext'
 
-export interface EnrichedFixture {
-  fixture: Fixture
-  prediction: Prediction
-}
+export type { EnrichedFixture }
 
-/**
- * Central "now". In a real app this comes from the server clock; here we anchor
- * to the actual current time so live/upcoming states behave naturally.
- */
+/** Horloge de référence partagée (fixée au chargement de l'app). */
 export function useNow(): Date {
-  return useMemo(() => new Date(), [])
+  return useData().now
 }
 
-export function useFixtures(now: Date): EnrichedFixture[] {
-  return useMemo(() => {
-    const from = new Date(now)
-    from.setDate(from.getDate() - 1) // include yesterday for finished results
-    return buildFixtures(from).map((fixture) => ({
-      fixture,
-      prediction: predict(fixture),
-    }))
-  }, [now])
+export function useFixtures(_now?: Date): EnrichedFixture[] {
+  return useData().fixtures
 }
 
-export function useFixture(id: string, now: Date): EnrichedFixture | undefined {
-  const all = useFixtures(now)
-  return all.find((f) => f.fixture.id === id)
+export function useFixture(id: string, _now?: Date): EnrichedFixture | undefined {
+  return useData().fixtures.find((f) => f.fixture.id === id)
 }

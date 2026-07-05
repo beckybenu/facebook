@@ -84,7 +84,22 @@ function deriveForm(seed: Seed): Team['form'] {
 
 export const teams: Team[] = seeds.map((s) => ({ ...s, form: s.form ?? deriveForm(s) }))
 
-export const teamById = (id: string): Team | undefined => teams.find((t) => t.id === id)
+// Registre dynamique : les équipes de démo sont pré-enregistrées, les équipes
+// issues de l'API live (préfixe "live-") s'y ajoutent au chargement.
+const registry = new Map<string, Team>(teams.map((t) => [t.id, t]))
 
-export const teamsByLeague = (leagueId: string): Team[] =>
-  teams.filter((t) => t.leagueId === leagueId)
+export function registerTeams(list: Team[]): void {
+  for (const t of list) registry.set(t.id, t)
+}
+
+export const teamById = (id: string): Team | undefined => registry.get(id)
+
+/**
+ * Équipes d'une ligue. Si des équipes live sont enregistrées pour cette
+ * ligue, elles remplacent les équipes de démonstration.
+ */
+export function teamsByLeague(leagueId: string): Team[] {
+  const all = [...registry.values()].filter((t) => t.leagueId === leagueId)
+  const live = all.filter((t) => t.id.startsWith('live-'))
+  return live.length > 0 ? live : all
+}

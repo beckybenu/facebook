@@ -2,7 +2,21 @@
 
 Clone de démonstration de [kickly.io/app](https://www.kickly.io/app) : une application web de **pronostics football propulsés par l'IA**. Analyses de match, probabilités calculées (1/N/2, BTTS, Over/Under), scores projetés et combinés générés automatiquement.
 
-> Projet éducatif. Les pronostics sont produits par un modèle statistique intégré, pas par un vrai flux de données. Ils ne garantissent aucun résultat. Jouez responsable — 18+.
+> Projet éducatif. Les pronostics sont produits par un modèle statistique et ne garantissent aucun résultat. Jouez responsable — 18+.
+
+## Données réelles + repli démo
+
+Au chargement, l'app interroge **TheSportsDB** (API publique, CORS ouvert) pour chaque ligue :
+
+- `eventsnextleague` — les prochains matchs réels du calendrier
+- `eventspastleague` — les derniers résultats, dont sont dérivés les ratings du modèle (attaque = buts marqués/match, défense = buts encaissés/match, forme = 5 derniers résultats)
+
+Comportement (`src/data/api.ts` + `src/lib/DataContext.tsx`) :
+
+- **Données live** : les ligues qui répondent affichent leurs vrais matchs, avec pronostics calculés sur les vraies statistiques.
+- **Mode mixte** : les ligues sans matchs (intersaison, API partielle) conservent les données de démonstration — le badge d'en-tête l'indique.
+- **Mode démo** : si l'API est totalement injoignable (hors-ligne, rate limit), l'app bascule intégralement sur le générateur déterministe. Aucune page blanche, jamais.
+- Les réponses sont mises en cache 15 min dans `localStorage` pour respecter le rate limit.
 
 ## Fonctionnalités
 

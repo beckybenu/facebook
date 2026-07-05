@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Trophy } from 'lucide-react'
 import { teamsByLeague } from '../data/teams'
 import { TeamBadge, FormDots } from '../components/TeamBadge'
+import { useData } from '../lib/DataContext'
 import type { Team } from '../data/types'
 
 /** Rough title probability from team strength, softmax-normalised. */
@@ -14,7 +15,8 @@ function titleOdds(teams: Team[]): Array<{ team: Team; prob: number }> {
 }
 
 export function WorldCup() {
-  const teams = teamsByLeague('wc')
+  const { liveLeagues } = useData() // re-rend quand les équipes live sont enregistrées
+  const teams = useMemo(() => teamsByLeague('wc'), [liveLeagues])
   const odds = useMemo(() => titleOdds(teams), [teams])
   const favourite = odds[0]
 
@@ -55,7 +57,7 @@ export function WorldCup() {
           Favoris pour le titre
         </div>
         <div className="divide-y divide-white/5">
-          {odds.map(({ team, prob }, i) => (
+          {odds.slice(0, 12).map(({ team, prob }, i) => (
             <div key={team.id} className="flex items-center gap-4 px-5 py-3.5">
               <span className="w-5 text-center font-display font-bold text-slate-500">
                 {i + 1}

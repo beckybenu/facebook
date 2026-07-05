@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react'
 import { Logo } from './Logo'
+import { useData } from '../lib/DataContext'
 
 const nav = [
   { to: '/', label: 'Matchs du jour', icon: Home, end: true },
@@ -19,6 +20,42 @@ const nav = [
   { to: '/leagues', label: 'Ligues', icon: CalendarDays },
   { to: '/worldcup', label: 'Coupe du Monde 2026', icon: Trophy },
 ]
+
+function DataBadge() {
+  const { source, loading } = useData()
+  if (loading) {
+    return (
+      <span className="chip hidden bg-pitch-800 text-slate-300 sm:flex">
+        <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-amber-400" />
+        Chargement des données...
+      </span>
+    )
+  }
+  if (source === 'demo') {
+    return (
+      <span
+        className="chip hidden bg-amber-400/10 text-amber-400 sm:flex"
+        title="API football injoignable — pronostics calculés sur des données de démonstration"
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+        Mode démo
+      </span>
+    )
+  }
+  return (
+    <span
+      className="chip hidden bg-pitch-800 text-slate-300 sm:flex"
+      title={
+        source === 'live'
+          ? 'Calendriers et résultats réels via TheSportsDB'
+          : 'Données réelles pour les ligues en saison, démo pour les autres'
+      }
+    >
+      <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-lime" />
+      Données live
+    </span>
+  )
+}
 
 export function Layout() {
   const [open, setOpen] = useState(false)
@@ -109,10 +146,7 @@ export function Layout() {
             />
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <span className="chip hidden bg-pitch-800 text-slate-300 sm:flex">
-              <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-lime" />
-              IA en ligne
-            </span>
+            <DataBadge />
             <button className="btn-ghost hidden py-2 text-xs sm:inline-flex">Connexion</button>
             <button className="btn-primary py-2 text-xs">Commencer</button>
           </div>
