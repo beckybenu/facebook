@@ -32,6 +32,24 @@ interface DataState {
 
 const DataContext = createContext<DataState | null>(null)
 
+const REFRESH_INTERVAL_MS = 60_000
+
+/**
+ * Une ligue mérite un rafraîchissement si un de ses matchs est en cours,
+ * ou censé avoir commencé (coup d'envoi passé depuis moins de 4 h), ou sur
+ * le point de commencer (< 5 min) — pour capter les scores en direct.
+ */
+function leagueNeedsRefresh(fixtures: Fixture[], leagueId: string): boolean {
+  const nowMs = Date.now()
+  return fixtures.some((f) => {
+    if (f.leagueId !== leagueId) return false
+    if (f.status === 'live') return true
+    if (f.status !== 'upcoming') return false
+    const kickoff = new Date(f.kickoff).getTime()
+    return kickoff <= nowMs + 5 * 60_000 && kickoff > nowMs - 4 * 3_600_000
+  })
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const now = useMemo(() => new Date(), [])
 
@@ -84,8 +102,40 @@ export function DataProvider({ children }: { children: ReactNode }) {
     load().catch(() => {
       if (!cancelled) setState((s) => ({ ...s, loading: false }))
     })
+
+    // Scores en direct : rafraîchit uniquement les ligues live qui ont un
+    // match en cours (ou imminent), en contournant le cache localStorage.
+    const timer = setInterval(() => {
+      setState((s) => {
+        const toRefresh = s.liveLeagues.filter((id) => leagueNeedsRefresh(s.fixtures, id))
+        if (toRefresh.length === 0) return s
+        Promise.allSettled(
+          toRefresh.map((id) => loadLeagueLive(id, { force: true })),
+        ).then((results) => {
+          if (cancelled) return
+          setState((prev) => {
+            let fixtures = prev.fixtures
+            for (const r of results) {
+              if (r.status !== 'fulfilled' || !r.value || r.value.fixtures.length === 0) continue
+              registerTeams(r.value.teams)
+              const leagueId = r.value.leagueId
+              fixtures = [
+                ...fixtures.filter((f) => f.leagueId !== leagueId),
+                ...r.value.fixtures,
+              ]
+            }
+            if (fixtures === prev.fixtures) return prev
+            fixtures = [...fixtures].sort((a, b) => a.kickoff.localeCompare(b.kickoff))
+            return { ...prev, fixtures }
+          })
+        })
+        return s
+      })
+    }, REFRESH_INTERVAL_MS)
+
     return () => {
       cancelled = true
+      clearInterval(timer)
     }
   }, [demoFixtures])
 

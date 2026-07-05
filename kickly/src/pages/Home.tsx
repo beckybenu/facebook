@@ -7,6 +7,7 @@ import { MatchCard } from '../components/MatchCard'
 import { DateStrip, LeagueFilter } from '../components/Filters'
 import { pickTeamName } from '../data/predictions'
 import { teamById } from '../data/teams'
+import { leagues } from '../data/leagues'
 import { pct } from '../lib/format'
 
 export function Home() {
@@ -132,7 +133,7 @@ export function Home() {
           { label: 'Sources de données', value: '210+' },
           { label: 'Matchs analysés', value: all.length.toString() },
           { label: 'Confiance moy.', value: pct(avg(all.map((a) => a.prediction.confidence / 100))) },
-          { label: 'Ligues couvertes', value: '7' },
+          { label: 'Ligues couvertes', value: leagues.length.toString() },
         ].map((s) => (
           <div key={s.label} className="card p-4 text-center">
             <div className="font-display text-2xl font-bold text-lime">{s.value}</div>

@@ -15,6 +15,10 @@ export const TSDB_LEAGUE_IDS: Record<string, string> = {
   sa: '4332', // Serie A
   bl: '4331', // Bundesliga
   ucl: '4480', // UEFA Champions League
+  uel: '4481', // UEFA Europa League
+  bra: '4351', // Brasileirão Série A
+  argp: '4406', // Primera División argentine
+  mls: '4346', // Major League Soccer
   wc: '4429', // FIFA World Cup
 }
 
@@ -79,10 +83,13 @@ function cacheSet(key: string, data: unknown): void {
 async function fetchEvents(
   endpoint: 'eventsnextleague' | 'eventspastleague',
   tsdbId: string,
+  force = false,
 ): Promise<TsdbEvent[]> {
   const cacheKey = `kickly:${endpoint}:${tsdbId}`
-  const cached = cacheGet(cacheKey)
-  if (cached) return cached as TsdbEvent[]
+  if (!force) {
+    const cached = cacheGet(cacheKey)
+    if (cached) return cached as TsdbEvent[]
+  }
 
   let lastError: unknown = null
   for (const key of API_KEYS) {
@@ -153,13 +160,17 @@ interface TeamStats {
  * Charge et transforme les données d'une ligue : équipes (avec ratings
  * calculés depuis les vrais résultats récents) + matchs à venir/passés.
  */
-export async function loadLeagueLive(leagueId: string): Promise<LeagueLiveData | null> {
+export async function loadLeagueLive(
+  leagueId: string,
+  opts: { force?: boolean } = {},
+): Promise<LeagueLiveData | null> {
   const tsdbId = TSDB_LEAGUE_IDS[leagueId]
   if (!tsdbId) return null
 
+  const force = opts.force ?? false
   const [next, past] = await Promise.all([
-    fetchEvents('eventsnextleague', tsdbId),
-    fetchEvents('eventspastleague', tsdbId).catch(() => [] as TsdbEvent[]),
+    fetchEvents('eventsnextleague', tsdbId, force),
+    fetchEvents('eventspastleague', tsdbId, force).catch(() => [] as TsdbEvent[]),
   ])
   if (next.length === 0 && past.length === 0) return null
 
