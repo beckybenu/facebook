@@ -157,8 +157,9 @@ export function Layout() {
         </main>
 
         <footer className="border-t border-white/5 px-4 py-6 text-center text-xs text-slate-600 lg:px-8">
-          Kickly · Clone de démonstration à but éducatif. Les pronostics sont générés par un
-          modèle statistique et ne garantissent aucun résultat. Jouez responsable — 18+.
+          Kickly · L'IA au service de vos pronostics football. Les pronostics sont fournis à
+          titre informatif et ne garantissent aucun résultat. Les paris comportent des risques :
+          jouez responsable — 18+.
         </footer>
       </div>
     </div>
