@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-bg text-slate-100 antialiased;
+}
+
+::selection {
+  background: rgba(0, 230, 127, 0.35);
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-[#04150C] hover:bg-accent-dark shadow-glow;
+  }
+  .btn-secondary {
+    @apply btn border border-edge bg-elevated text-slate-100 hover:border-accent/60 hover:text-accent;
+  }
+  .btn-danger {
+    @apply btn bg-danger/15 text-danger border border-danger/40 hover:bg-danger/25;
+  }
+  .card {
+    @apply rounded-xl border border-edge bg-card shadow-card;
+  }
+  .input {
+    @apply w-full rounded-lg border border-edge bg-surface px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted/70 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .section-title {
+    @apply text-2xl font-bold tracking-tight text-white sm:text-3xl;
+  }
+}

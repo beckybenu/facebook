@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  username           String    @unique
+  passwordHash       String
+  role               String    @default("USER") // USER | ADMIN
+  avatarColor        String    @default("#00E67F")
+  bio                String    @default("")
+  country            String    @default("FR")
+  gamertagPsn        String    @default("")
+  gamertagXbox       String    @default("")
+  gamertagActivision String    @default("")
+  gamertagEpic       String    @default("")
+  balanceCents       Int       @default(0)
+  elite              Boolean   @default(false)
+  xp                 Int       @default(0)
+  wins               Int       @default(0)
+  losses             Int       @default(0)
+  createdAt          DateTime  @default(now())
+
+  transactions      Transaction[]
+  createdMatches    Match[]           @relation("CreatedMatches")
+  acceptedMatches   Match[]           @relation("AcceptedMatches")
+  wonMatches        Match[]           @relation("WonMatches")
+  tournamentEntries TournamentEntry[]
+  disputesOpened    Dispute[]
+  notifications     Notification[]
+}
+
+model Transaction {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // DEPOSIT | WITHDRAWAL | WAGER_STAKE | WAGER_PAYOUT | WAGER_REFUND |
+  // TOURNAMENT_ENTRY | TOURNAMENT_PRIZE | BONUS
+  type              String
+  amountCents       Int // signé : négatif = débit, positif = crédit
+  balanceAfterCents Int
+  reference         String   @default("")
+  createdAt         DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Game {
+  id          String @id @default(cuid())
+  slug        String @unique
+  name        String
+  category    String // FPS | Battle Royale | Sport | Combat | Course
+  platforms   String // CSV : PS5,XBOX,PC,CROSS
+  color       String @default("#00E67F")
+  icon        String @default("🎮")
+  description String @default("")
+
+  matches     Match[]
+  tournaments Tournament[]
+}
+
+model Match {
+  id             String    @id @default(cuid())
+  gameId         String
+  game           Game      @relation(fields: [gameId], references: [id])
+  creatorId      String
+  creator        User      @relation("CreatedMatches", fields: [creatorId], references: [id])
+  opponentId     String?
+  opponent       User?     @relation("AcceptedMatches", fields: [opponentId], references: [id])
+  winnerId       String?
+  winner         User?     @relation("WonMatches", fields: [winnerId], references: [id])
+  title          String
+  rules          String    @default("")
+  platform       String // PS5 | XBOX | PC | CROSS
+  region         String    @default("EU")
+  teamSize       Int       @default(1)
+  entryFeeCents  Int
+  // OPEN | ACCEPTED | REPORTED | COMPLETED | DISPUTED | CANCELLED
+  status         String    @default("OPEN")
+  creatorReport  String? // WIN | LOSS
+  opponentReport String? // WIN | LOSS
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  dispute Dispute?
+
+  @@index([status, createdAt])
+}
+
+model Tournament {
+  id            String   @id @default(cuid())
+  gameId        String
+  game          Game     @relation(fields: [gameId], references: [id])
+  name          String
+  description   String   @default("")
+  platform      String   @default("CROSS")
+  teamSize      Int      @default(1)
+  entryFeeCents Int // 0 = entrée gratuite
+  bonusPoolCents Int     @default(0) // cagnotte ajoutée par la maison
+  maxPlayers    Int      @default(8)
+  startsAt      DateTime
+  // REGISTRATION | LIVE | COMPLETED | CANCELLED
+  status        String   @default("REGISTRATION")
+  bracketJson   String   @default("")
+  createdAt     DateTime @default(now())
+
+  entries TournamentEntry[]
+}
+
+model TournamentEntry {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seed         Int?
+  placement    Int?
+  createdAt    DateTime   @default(now())
+
+  @@unique([tournamentId, userId])
+}
+
+model Dispute {
+  id         String   @id @default(cuid())
+  matchId    String   @unique
+  match      Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  openedById String
+  openedBy   User     @relation(fields: [openedById], references: [id])
+  reason     String
+  // OPEN | RESOLVED
+  status     String   @default("OPEN")
+  resolution String   @default("")
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String   @default("")
+  href      String   @default("")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
