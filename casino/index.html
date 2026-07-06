@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaSpin — Casino démo (crédits virtuels)</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand" data-nav="lobby">☄️ <span>Nova<em>Spin</em></span> <small>DÉMO</small></div>
+  <nav class="mainnav">
+    <button data-nav="lobby" class="active">🏠 Lobby</button>
+    <button data-nav="slots">🎰 Machine à sous</button>
+    <button data-nav="crash">🚀 Crash</button>
+    <button data-nav="dice">🎲 Dice</button>
+    <button data-nav="mines">💣 Mines</button>
+    <button data-nav="plinko">🔻 Plinko</button>
+    <button data-nav="fair">🛡️ Provably Fair</button>
+  </nav>
+  <div class="wallet">
+    <div class="balance"><span id="balance">0</span> <b>Ⓝ</b></div>
+    <button id="faucet" class="btn btn-accent" title="Recharger des crédits virtuels">+ 1 000</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ LOBBY ============ -->
+  <section id="view-lobby" class="view active">
+    <div class="hero">
+      <h1>Casino de démonstration</h1>
+      <p>Jouez avec des <b>crédits virtuels Ⓝ</b> — aucun argent réel, aucune inscription.
+         Tous les tirages sont <b>provably fair</b> : vérifiez chaque résultat vous-même.</p>
+    </div>
+    <div class="game-grid">
+      <div class="game-card" data-nav="slots"><div class="gc-icon">🎰</div><h3>Machine à sous</h3><p>3 rouleaux · 5 lignes · jackpot ×500</p></div>
+      <div class="game-card" data-nav="crash"><div class="gc-icon">🚀</div><h3>Crash</h3><p>Encaissez avant l'explosion</p></div>
+      <div class="game-card" data-nav="dice"><div class="gc-icon">🎲</div><h3>Dice</h3><p>Choisissez votre risque, jusqu'à ×49</p></div>
+      <div class="game-card" data-nav="mines"><div class="gc-icon">💣</div><h3>Mines</h3><p>25 cases, évitez les bombes</p></div>
+      <div class="game-card" data-nav="plinko"><div class="gc-icon">🔻</div><h3>Plinko</h3><p>12 rangées, 3 niveaux de risque</p></div>
+      <div class="game-card" data-nav="fair"><div class="gc-icon">🛡️</div><h3>Provably Fair</h3><p>Graines, hash &amp; vérification</p></div>
+    </div>
+    <div class="panel">
+      <h2>💸 Derniers gains <small>(flux simulé)</small></h2>
+      <table class="feed"><thead><tr><th>Joueur</th><th>Jeu</th><th>Mise</th><th>Multi.</th><th>Gain</th></tr></thead>
+      <tbody id="livefeed"></tbody></table>
+    </div>
+  </section>
+
+  <!-- ============ SLOTS ============ -->
+  <section id="view-slots" class="view">
+    <h1>🎰 Machine à sous</h1>
+    <div class="game-layout">
+      <div class="controls panel">
+        <label>Mise totale (5 lignes)</label>
+        <div class="bet-row">
+          <input type="number" id="slots-bet" value="10" min="1" step="1">
+          <button class="btn mini" data-betop="half" data-for="slots-bet">½</button>
+          <button class="btn mini" data-betop="double" data-for="slots-bet">×2</button>
+        </div>
+        <button id="slots-spin" class="btn btn-accent big">TOURNER</button>
+        <div class="result-line" id="slots-result">&nbsp;</div>
+        <details><summary>Table des gains (par ligne)</summary>
+          <table class="paytable">
+            <tr><td>7️⃣ 7️⃣ 7️⃣</td><td>×500</td></tr>
+            <tr><td>💎 💎 💎</td><td>×150</td></tr>
+            <tr><td>⭐ ⭐ ⭐</td><td>×60</td></tr>
+            <tr><td>🍀 🍀 🍀</td><td>×40</td></tr>
+            <tr><td>🔔 🔔 🔔</td><td>×25</td></tr>
+            <tr><td>🍋 🍋 🍋</td><td>×15</td></tr>
+            <tr><td>🍒 🍒 🍒</td><td>×12</td></tr>
+            <tr><td>7️⃣ 7️⃣ +1</td><td>×5</td></tr>
+            <tr><td>💎 💎 +1</td><td>×3</td></tr>
+          </table>
+        </details>
+      </div>
+      <div class="stage panel">
+        <div class="slot-machine">
+          <div class="reels" id="reels">
+            <div class="reel"><div class="cell">🍒</div><div class="cell">🍋</div><div class="cell">🔔</div></div>
+            <div class="reel"><div class="cell">💎</div><div class="cell">⭐</div><div class="cell">🍀</div></div>
+            <div class="reel"><div class="cell">7️⃣</div><div class="cell">🍒</div><div class="cell">🍋</div></div>
+          </div>
+          <div class="payline-marker"></div>
+        </div>
+        <p class="hint">5 lignes actives : 3 horizontales + 2 diagonales. La mise est répartie sur les lignes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CRASH ============ -->
+  <section id="view-crash" class="view">
+    <h1>🚀 Crash</h1>
+    <div class="game-layout">
+      <div class="controls panel">
+        <label>Mise</label>
+        <div class="bet-row">
+          <input type="number" id="crash-bet" value="10" min="1" step="1">
+          <button class="btn mini" data-betop="half" data-for="crash-bet">½</button>
+          <button class="btn mini" data-betop="double" data-for="crash-bet">×2</button>
+        </div>
+        <button id="crash-action" class="btn btn-accent big">DÉCOLLER</button>
+        <div class="result-line" id="crash-result">&nbsp;</div>
+        <div class="crash-history" id="crash-history"></div>
+      </div>
+      <div class="stage panel">
+        <div class="crash-mult" id="crash-mult">×1.00</div>
+        <canvas id="crash-canvas" width="640" height="320"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DICE ============ -->
+  <section id="view-dice" class="view">
+    <h1>🎲 Dice</h1>
+    <div class="game-layout">
+      <div class="controls panel">
+        <label>Mise</label>
+        <div class="bet-row">
+          <input type="number" id="dice-bet" value="10" min="1" step="1">
+          <button class="btn mini" data-betop="half" data-for="dice-bet">½</button>
+          <button class="btn mini" data-betop="double" data-for="dice-bet">×2</button>
+        </div>
+        <div class="dice-mode">
+          <button id="dice-under" class="btn mini active">Sous</button>
+          <button id="dice-over" class="btn mini">Au-dessus</button>
+        </div>
+        <button id="dice-roll" class="btn btn-accent big">LANCER</button>
+        <div class="result-line" id="dice-result">&nbsp;</div>
+      </div>
+      <div class="stage panel">
+        <div class="dice-number" id="dice-number">50.00</div>
+        <input type="range" id="dice-target" min="2" max="98" value="50" step="1">
+        <div class="dice-stats">
+          <div><small>Cible</small><b id="dice-target-label">Sous 50</b></div>
+          <div><small>Chance</small><b id="dice-chance">50.00 %</b></div>
+          <div><small>Multiplicateur</small><b id="dice-payout">×1.98</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MINES ============ -->
+  <section id="view-mines" class="view">
+    <h1>💣 Mines</h1>
+    <div class="game-layout">
+      <div class="controls panel">
+        <label>Mise</label>
+        <div class="bet-row">
+          <input type="number" id="mines-bet" value="10" min="1" step="1">
+          <button class="btn mini" data-betop="half" data-for="mines-bet">½</button>
+          <button class="btn mini" data-betop="double" data-for="mines-bet">×2</button>
+        </div>
+        <label>Nombre de mines</label>
+        <select id="mines-count"></select>
+        <button id="mines-action" class="btn btn-accent big">COMMENCER</button>
+        <div class="dice-stats">
+          <div><small>Multiplicateur</small><b id="mines-mult">×1.00</b></div>
+          <div><small>Gain potentiel</small><b id="mines-win">0</b></div>
+        </div>
+        <div class="result-line" id="mines-result">&nbsp;</div>
+      </div>
+      <div class="stage panel">
+        <div class="mines-grid" id="mines-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLINKO ============ -->
+  <section id="view-plinko" class="view">
+    <h1>🔻 Plinko</h1>
+    <div class="game-layout">
+      <div class="controls panel">
+        <label>Mise</label>
+        <div class="bet-row">
+          <input type="number" id="plinko-bet" value="10" min="1" step="1">
+          <button class="btn mini" data-betop="half" data-for="plinko-bet">½</button>
+          <button class="btn mini" data-betop="double" data-for="plinko-bet">×2</button>
+        </div>
+        <label>Risque</label>
+        <div class="dice-mode">
+          <button class="btn mini plinko-risk" data-risk="low">Faible</button>
+          <button class="btn mini plinko-risk active" data-risk="mid">Moyen</button>
+          <button class="btn mini plinko-risk" data-risk="high">Élevé</button>
+        </div>
+        <button id="plinko-drop" class="btn btn-accent big">LÂCHER LA BILLE</button>
+        <div class="result-line" id="plinko-result">&nbsp;</div>
+      </div>
+      <div class="stage panel">
+        <canvas id="plinko-canvas" width="560" height="520"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROVABLY FAIR ============ -->
+  <section id="view-fair" class="view">
+    <h1>🛡️ Provably Fair</h1>
+    <div class="panel">
+      <h2>Comment ça marche ?</h2>
+      <p>Chaque résultat est calculé par <code>HMAC-SHA256(graine serveur, graine client + ":" + nonce)</code>.
+      Les 8 premiers caractères hexadécimaux du digest, divisés par 2³², donnent un nombre entre 0 et 1.
+      Le hash de la graine serveur est publié <b>avant</b> vos paris : le serveur ne peut donc pas tricher.
+      Faites tourner la graine pour révéler l'ancienne et vérifier vos tirages.</p>
+      <div class="fair-grid">
+        <div><label>Hash de la graine serveur (SHA-256)</label><input id="fair-hash" readonly></div>
+        <div><label>Graine client (modifiable)</label><input id="fair-client"></div>
+        <div><label>Nonce actuel</label><input id="fair-nonce" readonly></div>
+        <div><label>Dernière graine serveur révélée</label><input id="fair-revealed" readonly placeholder="— faites tourner la graine —"></div>
+      </div>
+      <button id="fair-rotate" class="btn btn-accent">🔄 Faire tourner la graine serveur</button>
+    </div>
+    <div class="panel">
+      <h2>Historique des tirages</h2>
+      <table class="feed"><thead><tr><th>#</th><th>Jeu</th><th>Nonce</th><th>Valeur</th></tr></thead>
+      <tbody id="fair-log"></tbody></table>
+    </div>
+  </section>
+
+  <!-- ============ HISTORIQUE GLOBAL ============ -->
+  <aside class="panel history-panel">
+    <h2>📜 Vos paris</h2>
+    <table class="feed"><thead><tr><th>Jeu</th><th>Mise</th><th>Multi.</th><th>Résultat</th></tr></thead>
+    <tbody id="history"></tbody></table>
+  </aside>
+
+</main>
+
+<footer>
+  <p>⚠️ <b>NovaSpin est une démonstration technique.</b> Crédits 100 % virtuels — aucun argent réel ne peut être misé,
+  déposé ou retiré. Ce projet n'est affilié à aucun casino en ligne. Les jeux d'argent réels sont réservés aux
+  adultes et soumis à licence dans votre juridiction. Jouer comporte des risques : endettement, isolement, dépendance.</p>
+</footer>
+
+<div id="toast"></div>
+
+<script src="js/fair.js"></script>
+<script src="js/wallet.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/slots.js"></script>
+<script src="js/crash.js"></script>
+<script src="js/dice.js"></script>
+<script src="js/mines.js"></script>
+<script src="js/plinko.js"></script>
+</body>
+</html>
