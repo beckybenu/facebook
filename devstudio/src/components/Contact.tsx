@@ -67,7 +67,18 @@ export default function Contact() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6, delay: 0.25 }}
+          className="relative inline-block"
         >
+          {/* Ondes concentriques émises par le bouton */}
+          {[0, 1].map((i) => (
+            <motion.span
+              key={i}
+              aria-hidden
+              animate={{ scale: [1, 2.1], opacity: [0.45, 0] }}
+              transition={{ repeat: Infinity, duration: 2.6, delay: i * 1.3, ease: 'easeOut' }}
+              className="absolute inset-0 rounded-full border border-ember pointer-events-none"
+            />
+          ))}
           <MagneticButton href="mailto:beckybenu@gmail.com">
             <Mail className="h-5 w-5" />
             beckybenu@gmail.com

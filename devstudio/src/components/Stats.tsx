@@ -31,14 +31,17 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 export default function Stats() {
   return (
     <section className="border-y border-white/5 bg-white/[0.02]">
-      <div className="mx-auto max-w-6xl px-6 py-20 grid grid-cols-2 gap-10 md:grid-cols-4">
+      <div
+        className="mx-auto max-w-6xl px-6 py-20 grid grid-cols-2 gap-10 md:grid-cols-4"
+        style={{ perspective: 900 }}
+      >
         {STATS.map((s, i) => (
           <motion.div
             key={s.label}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30, rotateX: 60 }}
+            whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6, delay: i * 0.1 }}
+            transition={{ duration: 0.7, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="text-center"
           >
             <p className="font-display text-4xl md:text-5xl font-extrabold text-gradient-animated">

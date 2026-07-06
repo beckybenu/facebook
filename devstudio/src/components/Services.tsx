@@ -30,12 +30,13 @@ const container = {
 }
 
 const card = {
-  hidden: { opacity: 0, y: 60, scale: 0.96 },
+  hidden: { opacity: 0, y: 80, rotateX: 45, scale: 0.92 },
   visible: {
     opacity: 1,
     y: 0,
+    rotateX: 0,
     scale: 1,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
   },
 }
 
@@ -66,6 +67,7 @@ export default function Services() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-80px' }}
+        style={{ perspective: 1200 }}
         className="grid gap-6 md:grid-cols-2"
       >
         {SERVICES.map((s) => (
@@ -73,7 +75,8 @@ export default function Services() {
             key={s.title}
             variants={card}
             whileHover={{ y: -8 }}
-            className="group rounded-3xl border border-white/8 bg-white/[0.03] p-8 transition-colors hover:border-ember/50 hover:bg-white/[0.05]"
+            style={{ transformStyle: 'preserve-3d' }}
+            className="group holo-card rounded-3xl border border-white/8 bg-white/[0.03] backdrop-blur-sm p-8 transition-colors hover:border-ember/50 hover:bg-white/[0.05] hover:shadow-[0_0_50px_rgba(255,92,51,0.12)]"
           >
             <div className="mb-6 inline-flex rounded-2xl bg-ember/10 p-4 text-ember transition-transform duration-500 group-hover:rotate-[360deg]">
               <s.icon className="h-7 w-7" />

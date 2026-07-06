@@ -51,10 +51,10 @@ export default function Process() {
           {STEPS.map((step, i) => (
             <motion.div
               key={step.num}
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: -60, filter: 'blur(10px)', scale: 0.94 }}
+              whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)', scale: 1 }}
               viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.7, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
               className="relative"
             >
               <span className="absolute -left-10 md:-left-16 top-1 flex h-6 w-6 md:h-8 md:w-8 -translate-x-[1px] items-center justify-center rounded-full border border-ember bg-ink text-[10px] md:text-xs font-bold text-ember">

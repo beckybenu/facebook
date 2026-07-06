@@ -8,9 +8,14 @@ const ITEMS = [
 export default function Marquee() {
   const row = [...ITEMS, ...ITEMS]
   return (
-    <section className="relative border-y border-white/5 bg-white/[0.02] py-6 overflow-hidden">
+    <section
+      className="relative border-y border-white/5 bg-white/[0.02] py-6 overflow-hidden"
+      style={{ perspective: 500 }}
+    >
+      {/* Bandeau légèrement incliné en 3D, comme un ticker holographique */}
       <motion.div
         className="flex w-max gap-12 whitespace-nowrap"
+        style={{ rotateX: 14, transformStyle: 'preserve-3d' }}
         animate={{ x: ['0%', '-50%'] }}
         transition={{ repeat: Infinity, duration: 28, ease: 'linear' }}
       >

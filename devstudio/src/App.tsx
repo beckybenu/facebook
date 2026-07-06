@@ -10,6 +10,8 @@ import Work from './components/Work'
 import Stats from './components/Stats'
 import Process from './components/Process'
 import Contact from './components/Contact'
+import Starfield from './components/Starfield'
+import WarpTunnel from './components/WarpTunnel'
 
 export default function App() {
   const [loading, setLoading] = useState(true)
@@ -24,7 +26,8 @@ export default function App() {
   }, [loading])
 
   return (
-    <div className="grain">
+    <div className="grain scanlines">
+      <Starfield />
       <CustomCursor />
       <AnimatePresence mode="wait">
         {loading && <Preloader key="preloader" onDone={() => setLoading(false)} />}
@@ -37,10 +40,11 @@ export default function App() {
       />
 
       <Nav ready={!loading} />
-      <main>
+      <main className="relative z-10">
         <Hero ready={!loading} />
         <Marquee />
         <Services />
+        <WarpTunnel />
         <Work />
         <Stats />
         <Process />
