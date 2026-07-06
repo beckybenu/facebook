@@ -133,6 +133,176 @@ body {
   transform: translateX(130%);
 }
 
+/* ===== Variante Néo-Tokyo ===== */
+
+/* Traits de pluie néon qui tombent */
+.neon-streak {
+  position: absolute;
+  top: -30%;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--sc, #ff2ecc), transparent);
+  opacity: 0.5;
+  animation-name: streak-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes streak-fall {
+  to { transform: translateY(170vh); }
+}
+
+/* Titre glitché : deux copies décalées magenta/cyan qui sautent par à-coups */
+.glitch {
+  position: relative;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #00f0ff;
+  z-index: -1;
+  animation: glitch-a 2.4s infinite steps(1, end);
+}
+.glitch::after {
+  color: #ff2ecc;
+  z-index: -2;
+  animation: glitch-b 3.1s infinite steps(1, end);
+}
+
+@keyframes glitch-a {
+  0%, 88%, 100% { transform: translate(0); clip-path: none; }
+  90% { transform: translate(4px, -3px); clip-path: inset(10% 0 55% 0); }
+  93% { transform: translate(-5px, 2px); clip-path: inset(50% 0 15% 0); }
+  96% { transform: translate(3px, 1px); clip-path: inset(30% 0 40% 0); }
+}
+
+@keyframes glitch-b {
+  0%, 85%, 100% { transform: translate(0); clip-path: none; }
+  87% { transform: translate(-4px, 3px); clip-path: inset(60% 0 10% 0); }
+  91% { transform: translate(5px, -2px); clip-path: inset(15% 0 60% 0); }
+  95% { transform: translate(-2px, -1px); clip-path: inset(40% 0 35% 0); }
+}
+
+/* Grésillement d'enseigne néon */
+.flicker {
+  animation: neon-flicker 4s linear infinite;
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.4; }
+  5% { opacity: 1; }
+  6% { opacity: 0.7; }
+  7% { opacity: 1; }
+  47% { opacity: 1; }
+  48% { opacity: 0.6; }
+  50% { opacity: 1; }
+  82% { opacity: 1; }
+  83% { opacity: 0.5; }
+  85% { opacity: 1; }
+}
+
+/* Carte à liseré néon pulsé */
+.neon-card {
+  border: 1px solid var(--nc, #ff2ecc);
+  background: rgba(255, 255, 255, 0.02);
+  animation: neon-pulse 3s ease-in-out infinite;
+}
+
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 8px color-mix(in srgb, var(--nc) 40%, transparent), inset 0 0 12px color-mix(in srgb, var(--nc) 10%, transparent); }
+  50% { box-shadow: 0 0 22px color-mix(in srgb, var(--nc) 65%, transparent), inset 0 0 18px color-mix(in srgb, var(--nc) 18%, transparent); }
+}
+
+/* Titre projet : séparation RGB au survol */
+.rgb-split {
+  transition: text-shadow 0.25s ease;
+}
+.group:hover .rgb-split {
+  text-shadow: 3px 0 #ff2ecc, -3px 0 #00f0ff;
+}
+
+/* Scanlines plus marquées (Néo-Tokyo) */
+.scanlines-strong::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 55;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 2px,
+    rgba(0, 0, 0, 0.18) 3px
+  );
+}
+
+/* ===== Variante Aurora ===== */
+
+/* Nappe d'aurore boréale qui dérive lentement */
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  animation-name: blob-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes blob-drift {
+  from { transform: translate(-6%, -4%) scale(1) rotate(0deg); }
+  to { transform: translate(8%, 7%) scale(1.3) rotate(12deg); }
+}
+
+/* ===== Variante Matrix ===== */
+
+.cursor-blink {
+  animation: cursor-blink 1s steps(1, end) infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.matrix-glow {
+  color: #00ff88;
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.7), 0 0 40px rgba(0, 255, 136, 0.3);
+}
+
+/* Léger vacillement CRT sur toute la page Matrix */
+.crt {
+  animation: crt-flicker 6s linear infinite;
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.92; }
+  94% { opacity: 1; }
+  97% { opacity: 0.96; }
+  98% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-streak,
+  .glitch::before,
+  .glitch::after,
+  .flicker,
+  .neon-card,
+  .aurora-blob,
+  .crt {
+    animation: none;
+  }
+}
+
 /* Outlined display text */
 .text-stroke {
   -webkit-text-stroke: 1.5px rgba(244, 241, 234, 0.35);

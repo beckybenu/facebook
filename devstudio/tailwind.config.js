@@ -12,6 +12,7 @@ export default {
       fontFamily: {
         display: ['"Syne"', 'sans-serif'],
         body: ['"Inter"', 'system-ui', 'sans-serif'],
+        terminal: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },
