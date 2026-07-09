@@ -180,8 +180,8 @@
     <div id="messages">
       <div class="msg sys">Bienvenue. Donnez une mission à NeuralStarK — il la confiera à l'agent compétent.<br>
       Exemples : « Prépare 3 posts LinkedIn pour la semaine », « Ajoute un rendez-vous vendredi 10h avec Dupont », « Rédige un email de relance pour le client Martin ».<br><br>
-      🔒 Version 100 % navigateur : vos données restent dans ce navigateur (localStorage), votre clé n'est envoyée qu'au fournisseur d'IA choisi.<br>
-      ⚡ Fonctionne avec Claude, <b>Google Gemini (clé gratuite)</b>, Groq, OpenRouter ou toute API compatible OpenAI.</div>
+      🔒 Version 100 % navigateur : vos données restent dans ce navigateur (localStorage).<br>
+      🆓 <b>Mode automatique activé par défaut : aucune clé API nécessaire</b> (un compte gratuit Puter est proposé à la première mission). Vous pouvez aussi brancher Claude, Gemini, Groq, OpenRouter… via la pastille en haut à droite.</div>
     </div>
     <form id="composer">
       <select id="agent-select"><option value="auto">🎯 Routage auto</option></select>
@@ -205,8 +205,10 @@
     <label style="font-size:12px;color:var(--muted)">Fournisseur</label>
     <select id="provider-select" style="width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;font-size:14px;margin:4px 0 10px"></select>
     <p id="provider-hint" style="margin-bottom:10px"></p>
-    <label style="font-size:12px;color:var(--muted)">Clé API</label>
-    <input id="key-input" type="password" placeholder="Votre clé API…" autocomplete="off" style="margin-top:4px" />
+    <div id="key-row">
+      <label style="font-size:12px;color:var(--muted)">Clé API</label>
+      <input id="key-input" type="password" placeholder="Votre clé API…" autocomplete="off" style="margin-top:4px" />
+    </div>
     <label style="font-size:12px;color:var(--muted)">Modèle</label>
     <input id="model-input" type="text" autocomplete="off" style="margin-top:4px" />
     <div id="base-row" style="display:none">
@@ -443,6 +445,11 @@ const CFG_KEY = "neuralstark_llm_v1";
 const LEGACY_KEY = "neuralstark_api_key";
 
 const PROVIDERS = {
+  puter: {
+    label: "🆓 Automatique — sans clé (Puter)", protocol: "puter",
+    defaultModel: "gpt-4o-mini", noKey: true,
+    hint: "<b>Aucune clé API requise.</b> À la première mission, une fenêtre Puter propose de créer un compte gratuit (2 clics) — ensuite tout est automatique. Modèles au choix : gpt-4o-mini, gpt-4o, claude-sonnet-4, etc.",
+  },
   anthropic: {
     label: "Claude (Anthropic)", protocol: "anthropic",
     defaultModel: "claude-opus-4-8",
@@ -473,14 +480,16 @@ const PROVIDERS = {
 function getCfg() {
   try {
     const c = JSON.parse(localStorage.getItem(CFG_KEY) || "null");
-    if (c && c.provider) return c;
+    if (c && c.provider && PROVIDERS[c.provider]) return c;
   } catch {}
   // migration depuis l'ancienne version (clé Anthropic seule)
   const legacy = localStorage.getItem(LEGACY_KEY);
-  return { provider: "anthropic", key: legacy || "", model: PROVIDERS.anthropic.defaultModel, base: "" };
+  if (legacy) return { provider: "anthropic", key: legacy, model: PROVIDERS.anthropic.defaultModel, base: "" };
+  // par défaut : mode automatique, aucune clé nécessaire
+  return { provider: "puter", key: "", model: PROVIDERS.puter.defaultModel, base: "" };
 }
 function setCfg(c) { localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
-const brainReady = () => Boolean(getCfg().key);
+const brainReady = () => { const c = getCfg(); return PROVIDERS[c.provider]?.noKey || Boolean(c.key); };
 const currentModel = () => getCfg().model || PROVIDERS[getCfg().provider].defaultModel;
 const currentProtocol = () => PROVIDERS[getCfg().provider]?.protocol || "anthropic";
 
@@ -638,11 +647,77 @@ async function runGemini(agent, message, hist, onStep) {
   return { text: LIMIT_MSG, steps };
 }
 
+/* --- Protocole Puter (mode automatique, sans clé) --- */
+let puterLoading = null;
+function loadPuter() {
+  if (window.puter?.ai) return Promise.resolve();
+  if (!puterLoading) {
+    puterLoading = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://js.puter.com/v2/";
+      s.onload = resolve;
+      s.onerror = () => { puterLoading = null; reject(new Error("Impossible de charger le service automatique (Puter). Vérifiez votre connexion ou choisissez un autre fournisseur.")); };
+      document.head.appendChild(s);
+    });
+  }
+  return puterLoading;
+}
+
+function partText(content) {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) return content.map((c) => c?.text || "").join("");
+  return "";
+}
+
+async function puterChat(messages, tools) {
+  await loadPuter();
+  const options = { model: currentModel() };
+  if (tools && tools.length) options.tools = tools;
+  let r;
+  try {
+    r = await window.puter.ai.chat(messages, options);
+  } catch (err) {
+    throw new Error(partText(err?.error?.message) || err?.message || "Erreur du service automatique (Puter).");
+  }
+  return r?.message || r || {};
+}
+
+async function runPuter(agent, message, hist, onStep) {
+  const tools = toolsForAgent(agent).map((t) => ({
+    type: "function",
+    function: { name: t.name, description: t.description, parameters: t.input_schema },
+  }));
+  const messages = [
+    { role: "system", content: agent.system },
+    ...hist.map((m) => ({ role: m.role, content: String(m.content) })),
+    { role: "user", content: message },
+  ];
+  const steps = [];
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    const msg = await puterChat(messages, tools);
+    const calls = msg.tool_calls || [];
+    messages.push({ role: "assistant", content: msg.content ?? "", ...(calls.length ? { tool_calls: calls } : {}) });
+    if (!calls.length) return { text: partText(msg.content) || "(aucune réponse)", steps };
+    for (const call of calls) {
+      let input = {};
+      try { input = JSON.parse(call.function?.arguments || "{}"); } catch {}
+      const result = executeTool(agent.name, call.function?.name, input);
+      steps.push({ tool: call.function?.name }); onStep && onStep(call.function?.name);
+      messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
+    }
+  }
+  return { text: LIMIT_MSG, steps };
+}
+
 const LIMIT_MSG = "J'ai atteint la limite d'itérations pour cette mission. Demandez-moi de continuer si besoin.";
 
 /* --- Routage & exécution (tous fournisseurs) --- */
 async function simpleCompletion(system, userMessage) {
   const protocol = currentProtocol();
+  if (protocol === "puter") {
+    const msg = await puterChat([{ role: "system", content: system }, { role: "user", content: userMessage }], null);
+    return partText(msg.content);
+  }
   if (protocol === "anthropic") {
     const r = await anthropicChat({ model: currentModel(), max_tokens: 200, system, messages: [{ role: "user", content: userMessage }] });
     return r.content.find((b) => b.type === "text")?.text || "";
@@ -671,6 +746,7 @@ Réponds UNIQUEMENT par le nom de l'agent, en un seul mot parmi : ${Object.keys(
 
 async function runAgent(agent, message, hist, onStep) {
   const protocol = currentProtocol();
+  if (protocol === "puter") return runPuter(agent, message, hist, onStep);
   if (protocol === "openai") return runOpenAI(agent, message, hist, onStep);
   if (protocol === "gemini") return runGemini(agent, message, hist, onStep);
   return runAnthropic(agent, message, hist, onStep);
@@ -769,6 +845,7 @@ function syncModalFields(fromProviderChange) {
   const p = PROVIDERS[providerId];
   $("#provider-hint").innerHTML = p.hint;
   $("#base-row").style.display = providerId === "custom" ? "block" : "none";
+  $("#key-row").style.display = p.noKey ? "none" : "block";
   if (fromProviderChange) {
     $("#model-input").value = providerId === cfg.provider ? (cfg.model || p.defaultModel) : p.defaultModel;
     $("#key-input").value = providerId === cfg.provider ? cfg.key : "";
