@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeuralStarK — Cerveau d'entreprise</title>
+<style>
+  :root {
+    --bg: #0c0f16;
+    --panel: #131826;
+    --panel-2: #1a2133;
+    --border: #26304a;
+    --text: #e8ecf6;
+    --muted: #8d99b8;
+    --accent: #f0b429;
+    --accent-2: #6c8cff;
+    --ok: #3ecf8e;
+    --danger: #ff6b6b;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(1200px 600px at 80% -10%, #1c2440 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    height: 100vh; height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(12,15,22,.7);
+    flex-wrap: wrap;
+  }
+  .logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, #f37335 100%);
+    display: grid; place-items: center; font-size: 22px;
+  }
+  header h1 { font-size: 18px; letter-spacing: .5px; }
+  header h1 span { color: var(--accent); }
+  header .tagline { color: var(--muted); font-size: 12.5px; }
+  #status-pill {
+    margin-left: auto; font-size: 12px; padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); cursor: pointer;
+  }
+  #status-pill.on { color: var(--ok); border-color: rgba(62,207,142,.4); }
+  #status-pill.off { color: var(--danger); border-color: rgba(255,107,107,.4); }
+
+  main { flex: 1; display: flex; min-height: 0; }
+
+  aside {
+    width: 250px; min-width: 250px; border-right: 1px solid var(--border);
+    padding: 16px 12px; overflow-y: auto;
+  }
+  aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--muted); margin: 4px 8px 10px; }
+  .agent {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px; border-radius: var(--radius); cursor: pointer;
+    border: 1px solid transparent; margin-bottom: 4px;
+  }
+  .agent:hover { background: var(--panel); }
+  .agent.active { background: var(--panel-2); border-color: var(--border); }
+  .agent .em { font-size: 20px; }
+  .agent .nm { font-size: 13.5px; font-weight: 600; }
+  .agent .ds { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+
+  #chat-col { flex: 1.25; display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--border); }
+  #messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { max-width: 82%; padding: 12px 15px; border-radius: var(--radius); font-size: 14px; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.user { align-self: flex-end; background: var(--accent-2); color: #0b1020; border-bottom-right-radius: 4px; font-weight: 500; }
+  .msg.bot { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg.sys { align-self: center; color: var(--muted); font-size: 12.5px; background: none; text-align: center; }
+  .msg .who { font-size: 11.5px; color: var(--accent); margin-bottom: 5px; font-weight: 600; }
+  .msg .steps { margin-top: 8px; font-size: 11.5px; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 7px; }
+  .typing { align-self: flex-start; color: var(--muted); font-size: 13px; padding: 6px 2px; }
+  .typing::after { content: "…"; animation: blink 1.2s infinite; }
+  @keyframes blink { 50% { opacity: .3; } }
+
+  #composer { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--border); }
+  #composer select {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 10px; font-size: 13px; max-width: 170px;
+  }
+  #composer textarea {
+    flex: 1; resize: none; height: 46px; padding: 12px 14px;
+    background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit;
+  }
+  #composer button {
+    background: var(--accent); color: #1a1200; border: none; border-radius: 10px;
+    padding: 0 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  #composer button:disabled { opacity: .5; cursor: wait; }
+
+  #modules { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  #tabs button {
+    background: none; border: none; color: var(--muted); padding: 12px 14px;
+    font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  #tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  #tab-content { flex: 1; overflow-y: auto; padding: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px; margin-bottom: 10px; font-size: 13px;
+  }
+  .card .t { font-weight: 600; font-size: 13.5px; margin-bottom: 3px; }
+  .card .m { color: var(--muted); font-size: 12px; line-height: 1.45; white-space: pre-wrap; }
+  .badge {
+    display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); margin-right: 5px; margin-top: 5px;
+  }
+  .badge.ok { color: var(--ok); border-color: rgba(62,207,142,.4); }
+  .badge.warn { color: var(--accent); border-color: rgba(240,180,41,.4); }
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 30px 10px; }
+  .add-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .add-form input, .add-form textarea {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 11px; font-size: 13px; font-family: inherit;
+  }
+  .add-form textarea { min-height: 70px; resize: vertical; }
+  .add-form button {
+    align-self: flex-start; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer;
+  }
+  .add-form button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Modale clé API */
+  #key-modal {
+    position: fixed; inset: 0; background: rgba(5,7,12,.75); display: none;
+    align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
+  #key-modal.open { display: flex; }
+  #key-modal .box {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+    padding: 26px; max-width: 520px; width: 100%;
+  }
+  #key-modal h3 { margin-bottom: 10px; font-size: 17px; }
+  #key-modal p { color: var(--muted); font-size: 13px; line-height: 1.55; margin-bottom: 14px; }
+  #key-modal input {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; font-size: 14px; margin-bottom: 14px; font-family: monospace;
+  }
+  #key-modal .row { display: flex; gap: 10px; justify-content: flex-end; }
+  #key-modal button {
+    border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+    border-radius: 10px; padding: 10px 18px; font-size: 13.5px; cursor: pointer;
+  }
+  #key-modal button.primary { background: var(--accent); color: #1a1200; border: none; font-weight: 700; }
+
+  @media (max-width: 980px) {
+    aside { display: none; }
+    main { flex-direction: column; }
+    #chat-col { border-right: none; border-bottom: 1px solid var(--border); flex: 1; }
+    #modules { max-height: 45%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🧠</div>
+  <div>
+    <h1>Neural<span>StarK</span></h1>
+    <div class="tagline">Le cerveau d'entreprise — secrétariat · marketing · email · réseaux sociaux · clients · RAG</div>
+  </div>
+  <div id="status-pill" title="Cliquer pour configurer la clé API">…</div>
+</header>
+
+<main>
+  <aside>
+    <h2>L'équipe recrutée</h2>
+    <div id="agents"></div>
+  </aside>
+
+  <section id="chat-col">
+    <div id="messages">
+      <div class="msg sys">Bienvenue. Donnez une mission à NeuralStarK — il la confiera à l'agent compétent.<br>
+      Exemples : « Prépare 3 posts LinkedIn pour la semaine », « Ajoute un rendez-vous vendredi 10h avec Dupont », « Rédige un email de relance pour le client Martin ».<br><br>
+      🔒 Version 100 % navigateur : vos données restent dans ce navigateur (localStorage), votre clé API n'est envoyée qu'à l'API Anthropic.</div>
+    </div>
+    <form id="composer">
+      <select id="agent-select"><option value="auto">🎯 Routage auto</option></select>
+      <textarea id="input" placeholder="Confiez une mission au cerveau…" rows="1"></textarea>
+      <button type="submit" id="send">Envoyer</button>
+    </form>
+  </section>
+
+  <section id="modules">
+    <div id="tabs"></div>
+    <div id="tab-content"></div>
+  </section>
+</main>
+
+<div id="key-modal">
+  <div class="box">
+    <h3>🔑 Activer le cerveau</h3>
+    <p>Collez votre clé API Anthropic (<b>console.anthropic.com</b> → API Keys). Elle est stockée
+    uniquement dans <b>votre navigateur</b> (localStorage) et n'est transmise qu'à l'API Anthropic,
+    directement depuis cette page. Sans clé, le tableau de bord reste utilisable en mode manuel.</p>
+    <input id="key-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+    <div class="row">
+      <button id="key-clear">Effacer la clé</button>
+      <button id="key-cancel">Fermer</button>
+      <button id="key-save" class="primary">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   NeuralStarK — version 100 % statique (GitHub Pages)
+   Données : localStorage · RAG : BM25 en JS · IA : API Claude
+   ============================================================ */
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const MODEL = "claude-opus-4-8";
+const MAX_ITERATIONS = 12;
+
+/* ---------------- Stockage (localStorage) ---------------- */
+const STORE_KEY = "neuralstark_store_v1";
+const DEFAULT_STATE = {
+  company: { name: "Mon Entreprise", description: "", tone: "professionnel et chaleureux", sector: "", website: "" },
+  tasks: [], events: [], contacts: [], emails: [], posts: [], documents: [], activity: [],
+};
+let STATE;
+try { STATE = { ...structuredClone(DEFAULT_STATE), ...JSON.parse(localStorage.getItem(STORE_KEY) || "{}") }; }
+catch { STATE = structuredClone(DEFAULT_STATE); }
+
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(STATE)); }
+function newId(p) { return p + "_" + Math.random().toString(36).slice(2, 10); }
+function logActivity(agent, detail) {
+  STATE.activity.unshift({ agent, detail, at: new Date().toISOString() });
+  STATE.activity = STATE.activity.slice(0, 200);
+  save();
+}
+
+/* ---------------- RAG : chunks + BM25 ---------------- */
+const CHUNK_SIZE = 700, CHUNK_OVERLAP = 120;
+function tokenize(text) {
+  return (text || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .split(/[^a-z0-9]+/).filter((t) => t.length > 1);
+}
+function chunkDocument(doc) {
+  const chunks = [], text = doc.content || "";
+  for (let start = 0; start < text.length; start += CHUNK_SIZE - CHUNK_OVERLAP) {
+    const body = text.slice(start, start + CHUNK_SIZE);
+    if (body.trim()) chunks.push({ title: doc.title, body });
+    if (start + CHUNK_SIZE >= text.length) break;
+  }
+  if (!chunks.length) chunks.push({ title: doc.title, body: doc.title });
+  return chunks;
+}
+function searchKnowledge(query, topK = 4) {
+  const chunks = STATE.documents.flatMap(chunkDocument);
+  if (!chunks.length) return [];
+  const k1 = 1.5, b = 0.75;
+  const chunkTokens = chunks.map((c) => tokenize(c.title + " " + c.body));
+  const avgLen = chunkTokens.reduce((a, t) => a + t.length, 0) / chunkTokens.length;
+  const df = new Map();
+  for (const tokens of chunkTokens) for (const term of new Set(tokens)) df.set(term, (df.get(term) || 0) + 1);
+  const queryTerms = tokenize(query), N = chunks.length;
+  return chunks.map((chunk, i) => {
+    const tokens = chunkTokens[i], tf = new Map();
+    for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
+    let score = 0;
+    for (const term of queryTerms) {
+      const f = tf.get(term) || 0;
+      if (!f) continue;
+      const idf = Math.log(1 + (N - df.get(term) + 0.5) / (df.get(term) + 0.5));
+      score += idf * ((f * (k1 + 1)) / (f + k1 * (1 - b + b * (tokens.length / avgLen))));
+    }
+    return { ...chunk, score };
+  }).filter((c) => c.score > 0).sort((a, b2) => b2.score - a.score).slice(0, topK);
+}
+
+/* ---------------- Outils métier ---------------- */
+const TOOL_DEFINITIONS = [
+  { name: "get_company_profile", description: "Récupère le profil de l'entreprise (nom, secteur, ton, description). À consulter avant de rédiger au nom de l'entreprise.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "update_company_profile", description: "Met à jour le profil de l'entreprise. Ne fournir que les champs à modifier.",
+    input_schema: { type: "object", properties: { name: { type: "string" }, description: { type: "string" }, sector: { type: "string" }, tone: { type: "string" }, website: { type: "string" } }, additionalProperties: false } },
+  { name: "list_tasks", description: "Liste les tâches. Filtrable par statut.",
+    input_schema: { type: "object", properties: { status: { type: "string", enum: ["a_faire", "en_cours", "terminee"] } }, additionalProperties: false } },
+  { name: "create_task", description: "Crée une tâche.",
+    input_schema: { type: "object", properties: { title: { type: "string" }, notes: { type: "string" }, priority: { type: "string", enum: ["basse", "normale", "haute"] }, due: { type: "string", description: "AAAA-MM-JJ" }, assignee: { type: "string" } }, required: ["title"], additionalProperties: false } },
+  { name: "update_task", description: "Met à jour une tâche existante.",
+    input_schema: { type: "object", properties: { id: { type: "string" }, title: { type: "string" }, notes: { type: "string" }, status: { type: "string", enum: ["a_faire", "en_cours", "terminee"] }, priority: { type: "string", enum: ["basse", "normale", "haute"] }, due: { type: "string" }, assignee: { type: "string" } }, required: ["id"], additionalProperties: false } },
+  { name: "list_events", description: "Liste les événements de l'agenda.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "create_event", description: "Ajoute un rendez-vous ou une réunion à l'agenda.",
+    input_schema: { type: "object", properties: { title: { type: "string" }, date: { type: "string", description: "AAAA-MM-JJ" }, time: { type: "string", description: "HH:MM" }, durationMin: { type: "integer" }, attendees: { type: "array", items: { type: "string" } }, location: { type: "string" }, notes: { type: "string" } }, required: ["title", "date"], additionalProperties: false } },
+  { name: "list_contacts", description: "Liste les contacts/clients du CRM.",
+    input_schema: { type: "object", properties: { stage: { type: "string", enum: ["prospect", "qualifie", "negociation", "client", "perdu"] } }, additionalProperties: false } },
+  { name: "upsert_contact", description: "Crée un contact CRM, ou le met à jour si un id est fourni.",
+    input_schema: { type: "object", properties: { id: { type: "string" }, name: { type: "string" }, email: { type: "string" }, phone: { type: "string" }, company: { type: "string" }, stage: { type: "string", enum: ["prospect", "qualifie", "negociation", "client", "perdu"] }, tags: { type: "array", items: { type: "string" } }, notes: { type: "string" } }, required: ["name"], additionalProperties: false } },
+  { name: "log_interaction", description: "Enregistre une interaction dans l'historique d'un contact CRM.",
+    input_schema: { type: "object", properties: { contactId: { type: "string" }, summary: { type: "string" } }, required: ["contactId", "summary"], additionalProperties: false } },
+  { name: "draft_email", description: "Rédige et enregistre un email en brouillon (l'envoi réel est validé par un humain).",
+    input_schema: { type: "object", properties: { to: { type: "string" }, subject: { type: "string" }, body: { type: "string" } }, required: ["to", "subject", "body"], additionalProperties: false } },
+  { name: "list_emails", description: "Liste les emails en boîte d'envoi.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "schedule_post", description: "Planifie une publication sur un réseau social (validation humaine avant envoi).",
+    input_schema: { type: "object", properties: { network: { type: "string", enum: ["linkedin", "facebook", "instagram", "x", "tiktok"] }, content: { type: "string" }, hashtags: { type: "array", items: { type: "string" } }, scheduledFor: { type: "string", description: "AAAA-MM-JJ HH:MM" } }, required: ["network", "content"], additionalProperties: false } },
+  { name: "list_posts", description: "Liste les publications planifiées.",
+    input_schema: { type: "object", properties: {}, additionalProperties: false } },
+  { name: "kb_search", description: "Recherche dans la base de connaissances (RAG). À utiliser dès qu'une question porte sur des informations internes.",
+    input_schema: { type: "object", properties: { query: { type: "string" } }, required: ["query"], additionalProperties: false } },
+  { name: "kb_add_document", description: "Ajoute un document à la base de connaissances (RAG).",
+    input_schema: { type: "object", properties: { title: { type: "string" }, content: { type: "string" }, tags: { type: "array", items: { type: "string" } } }, required: ["title", "content"], additionalProperties: false } },
+  { name: "kb_list_documents", description: "Liste les documents de la base de connaissances (sans le contenu).",
+    input_schema: { type: "object", properties: {}, additionalProperties: false } },
+];
+
+const EXECUTORS = {
+  get_company_profile: () => STATE.company,
+  update_company_profile: (i) => { Object.assign(STATE.company, i); save(); return STATE.company; },
+  list_tasks: ({ status } = {}) => status ? STATE.tasks.filter((t) => t.status === status) : STATE.tasks,
+  create_task: (i) => { const t = { id: newId("task"), title: i.title, notes: i.notes || "", status: "a_faire", priority: i.priority || "normale", due: i.due || null, assignee: i.assignee || null, createdAt: new Date().toISOString() }; STATE.tasks.push(t); save(); return t; },
+  update_task: (i) => { const t = STATE.tasks.find((x) => x.id === i.id); if (!t) return { error: "Tâche introuvable : " + i.id }; Object.assign(t, i); save(); return t; },
+  list_events: () => [...STATE.events].sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || ""))),
+  create_event: (i) => { const e = { id: newId("evt"), durationMin: 60, ...i, createdAt: new Date().toISOString() }; STATE.events.push(e); save(); return e; },
+  list_contacts: ({ stage } = {}) => stage ? STATE.contacts.filter((c) => c.stage === stage) : STATE.contacts,
+  upsert_contact: (i) => {
+    if (i.id) { const c = STATE.contacts.find((x) => x.id === i.id); if (!c) return { error: "Contact introuvable : " + i.id }; Object.assign(c, i); save(); return c; }
+    const c = { id: newId("ct"), stage: "prospect", tags: [], notes: "", interactions: [], ...i, createdAt: new Date().toISOString() };
+    STATE.contacts.push(c); save(); return c;
+  },
+  log_interaction: ({ contactId, summary }) => {
+    const c = STATE.contacts.find((x) => x.id === contactId);
+    if (!c) return { error: "Contact introuvable : " + contactId };
+    c.interactions.push({ date: new Date().toISOString(), summary }); save(); return c;
+  },
+  draft_email: (i) => { const e = { id: newId("em"), status: "brouillon", ...i, createdAt: new Date().toISOString() }; STATE.emails.push(e); save(); return e; },
+  list_emails: () => STATE.emails,
+  schedule_post: (i) => { const p = { id: newId("post"), hashtags: [], status: i.scheduledFor ? "planifie" : "brouillon", ...i, createdAt: new Date().toISOString() }; STATE.posts.push(p); save(); return p; },
+  list_posts: () => STATE.posts,
+  kb_search: ({ query }) => {
+    const results = searchKnowledge(query);
+    if (!results.length) return { results: [], note: "Aucun passage pertinent trouvé dans la base de connaissances." };
+    return { results: results.map((r) => ({ source: r.title, extrait: r.body, score: Number(r.score.toFixed(3)) })) };
+  },
+  kb_add_document: (i) => { const d = { id: newId("doc"), tags: [], ...i, createdAt: new Date().toISOString() }; STATE.documents.push(d); save(); return { id: d.id, title: d.title, length: d.content.length }; },
+  kb_list_documents: () => STATE.documents.map((d) => ({ id: d.id, title: d.title, tags: d.tags, createdAt: d.createdAt })),
+};
+
+function actionSummary(name, i, result) {
+  if (result && result.error) return result.error;
+  switch (name) {
+    case "create_task": return "Tâche créée : " + i.title;
+    case "update_task": return "Tâche mise à jour : " + i.id;
+    case "create_event": return `Événement : ${i.title} le ${i.date}`;
+    case "upsert_contact": return (i.id ? "Contact mis à jour : " : "Contact créé : ") + i.name;
+    case "log_interaction": return "Interaction enregistrée (" + i.contactId + ")";
+    case "draft_email": return `Email rédigé → ${i.to} : « ${i.subject} »`;
+    case "schedule_post": return `Post ${i.network}` + (i.scheduledFor ? " planifié pour " + i.scheduledFor : " en brouillon");
+    case "kb_add_document": return "Document ajouté au RAG : " + i.title;
+    case "kb_search": return `Recherche RAG : « ${i.query} »`;
+    case "update_company_profile": return "Profil entreprise mis à jour";
+    default: return name;
+  }
+}
+
+function executeTool(agentName, name, input) {
+  const fn = EXECUTORS[name];
+  if (!fn) return { error: "Outil inconnu : " + name };
+  const result = fn(input || {});
+  logActivity(agentName, actionSummary(name, input || {}, result));
+  return result;
+}
+
+/* ---------------- Les agents ---------------- */
+const COMMON_RULES = `
+Règles communes :
+- Tu travailles pour l'entreprise décrite par l'outil get_company_profile — consulte-le quand tu rédiges au nom de l'entreprise.
+- Réponds toujours en français, sauf si l'utilisateur écrit dans une autre langue.
+- Utilise les outils pour AGIR (créer, enregistrer, planifier), pas seulement pour proposer. Les emails et posts ne sont jamais envoyés directement : ils sont enregistrés pour validation humaine, donc tu peux les créer sans demander de permission.
+- Si une information interne est nécessaire, interroge d'abord la base de connaissances avec kb_search.
+- Termine par un résumé bref et clair de ce que tu as fait.`;
+
+const AGENTS = {
+  secretaire: { name: "secretaire", label: "Léa — Secrétaire de direction", emoji: "🗂️",
+    description: "Agenda, rendez-vous, tâches, organisation, comptes rendus.",
+    tools: ["get_company_profile", "list_tasks", "create_task", "update_task", "list_events", "create_event", "kb_search", "draft_email", "list_emails"],
+    system: `Tu es Léa, la secrétaire de direction de l'entreprise. Tu es organisée, précise et proactive.
+Tes missions : gérer l'agenda (créer et lister les rendez-vous), gérer les tâches (créer, prioriser, suivre), rédiger des comptes rendus et des courriers administratifs, préparer les journées de travail.
+Quand on te demande d'organiser quelque chose, crée concrètement les événements et tâches nécessaires avec les outils.${COMMON_RULES}` },
+  marketing: { name: "marketing", label: "Marc — Responsable marketing", emoji: "📈",
+    description: "Stratégie marketing, campagnes, contenus, positionnement.",
+    tools: ["get_company_profile", "update_company_profile", "kb_search", "kb_add_document", "create_task", "schedule_post", "list_posts", "draft_email"],
+    system: `Tu es Marc, le responsable marketing de l'entreprise. Tu es créatif, orienté résultats et tu connais les meilleures pratiques du marketing digital.
+Tes missions : concevoir des campagnes et des plans marketing, rédiger des contenus (slogans, pages, offres), définir le positionnement et les personas, décliner une campagne en tâches concrètes et en publications planifiées.
+Quand tu produis un plan ou une stratégie qui mérite d'être conservé, enregistre-le dans la base de connaissances avec kb_add_document.${COMMON_RULES}` },
+  email: { name: "email", label: "Émilie — Chargée de communication email", emoji: "✉️",
+    description: "Rédaction d'emails : prospection, relance, newsletters, réponses clients.",
+    tools: ["get_company_profile", "kb_search", "list_contacts", "draft_email", "list_emails", "log_interaction"],
+    system: `Tu es Émilie, chargée de la communication par email. Tu écris des emails percutants, personnalisés et sans fautes.
+Tes missions : emails de prospection, relances, newsletters, réponses aux clients, séquences d'emails.
+Chaque email demandé doit être créé avec draft_email (objet accrocheur, corps structuré, appel à l'action clair). Adapte le ton au profil de l'entreprise et au destinataire. Si l'email concerne un contact du CRM, enregistre l'interaction.${COMMON_RULES}` },
+  social: { name: "social", label: "Sofia — Community manager", emoji: "📱",
+    description: "Réseaux sociaux : posts, calendriers éditoriaux, hashtags.",
+    tools: ["get_company_profile", "kb_search", "schedule_post", "list_posts", "create_task"],
+    system: `Tu es Sofia, community manager de l'entreprise. Tu maîtrises les codes de chaque réseau (LinkedIn, Facebook, Instagram, X, TikTok).
+Tes missions : rédiger des posts adaptés à chaque plateforme, proposer des calendriers éditoriaux, choisir les bons hashtags et les bons horaires de publication.
+Chaque post produit doit être enregistré avec schedule_post. Pour un calendrier éditorial, planifie chaque post individuellement avec une date.${COMMON_RULES}` },
+  crm: { name: "crm", label: "Karim — Responsable relation client", emoji: "🤝",
+    description: "CRM : contacts, pipeline commercial, suivi et relances clients.",
+    tools: ["get_company_profile", "list_contacts", "upsert_contact", "log_interaction", "draft_email", "create_task", "kb_search"],
+    system: `Tu es Karim, responsable de la relation client. Tu connais le pipeline commercial sur le bout des doigts.
+Tes missions : gérer les fiches contacts (création, mise à jour, étapes du pipeline : prospect → qualifié → négociation → client), enregistrer les interactions, préparer les relances (email + tâche de suivi), analyser l'état du portefeuille clients.
+Quand on te signale un échange avec un client, mets à jour sa fiche et son historique.${COMMON_RULES}` },
+  rag: { name: "rag", label: "Nora — Gestionnaire des connaissances (RAG)", emoji: "📚",
+    description: "Base de connaissances : ingestion de documents, recherche, réponses sourcées.",
+    tools: ["kb_search", "kb_add_document", "kb_list_documents", "get_company_profile"],
+    system: `Tu es Nora, gestionnaire de la base de connaissances de l'entreprise (système RAG).
+Tes missions : ingérer les documents fournis (kb_add_document, avec un titre clair et des tags), répondre aux questions en t'appuyant EXCLUSIVEMENT sur les passages retournés par kb_search, en citant tes sources (titre du document).
+Si la base ne contient pas la réponse, dis-le honnêtement plutôt que d'inventer, et propose d'ajouter le document manquant.${COMMON_RULES}` },
+  direction: { name: "direction", label: "NeuralStarK — Cerveau central", emoji: "🧠",
+    description: "Vue d'ensemble, coordination, missions transverses multi-domaines.",
+    tools: "*",
+    system: `Tu es NeuralStarK, le cerveau central de l'entreprise. Tu coordonnes tous les départements : secrétariat, marketing, email, réseaux sociaux, relation client et gestion des connaissances.
+Tu prends en charge les missions transverses : lancer une campagne complète (posts + emails + tâches), faire un point global sur l'activité, préparer un lancement de produit de bout en bout.
+Décompose les demandes complexes et exécute chaque étape avec les outils appropriés. Sois exhaustif et rigoureux.${COMMON_RULES}` },
+};
+
+/* ---------------- Cerveau : appels API Claude ---------------- */
+const KEY_STORAGE = "neuralstark_api_key";
+const getApiKey = () => localStorage.getItem(KEY_STORAGE) || "";
+
+async function claudeRequest(body) {
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": getApiKey(),
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify(body),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j?.error?.message || ("Erreur API (" + r.status + ")"));
+  return j;
+}
+
+function toolsForAgent(agent) {
+  if (agent.tools === "*") return TOOL_DEFINITIONS;
+  return TOOL_DEFINITIONS.filter((t) => agent.tools.includes(t.name));
+}
+
+async function routeToAgent(message) {
+  const guide = Object.values(AGENTS).map((a) => `- ${a.name} : ${a.description}`).join("\n");
+  const response = await claudeRequest({
+    model: MODEL,
+    max_tokens: 1024,
+    output_config: {
+      effort: "low",
+      format: {
+        type: "json_schema",
+        schema: { type: "object", properties: { agent: { type: "string", enum: Object.keys(AGENTS) } }, required: ["agent"], additionalProperties: false },
+      },
+    },
+    system: `Tu es le routeur de NeuralStarK, le cerveau d'entreprise. Choisis l'agent le plus compétent pour traiter la demande.\nAgents disponibles :\n${guide}\nChoisis "direction" si la demande couvre plusieurs domaines à la fois ou demande une vue d'ensemble.`,
+    messages: [{ role: "user", content: message }],
+  });
+  try {
+    const { agent } = JSON.parse(response.content.find((b) => b.type === "text")?.text || "{}");
+    return AGENTS[agent] || AGENTS.direction;
+  } catch { return AGENTS.direction; }
+}
+
+async function runAgent(agent, message, hist, onStep) {
+  const tools = toolsForAgent(agent);
+  const messages = [...hist, { role: "user", content: message }];
+  const steps = [];
+
+  for (let i = 0; i < MAX_ITERATIONS; i++) {
+    const response = await claudeRequest({
+      model: MODEL,
+      max_tokens: 16000,
+      thinking: { type: "adaptive" },
+      system: agent.system,
+      tools,
+      messages,
+    });
+    messages.push({ role: "assistant", content: response.content });
+    if (response.stop_reason === "pause_turn") continue;
+
+    const toolUses = response.content.filter((b) => b.type === "tool_use");
+    if (response.stop_reason !== "tool_use" || !toolUses.length) {
+      const text = response.content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+      return { text, steps };
+    }
+    const toolResults = [];
+    for (const call of toolUses) {
+      const result = executeTool(agent.name, call.name, call.input);
+      steps.push({ tool: call.name });
+      onStep && onStep(call.name);
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: call.id,
+        content: JSON.stringify(result),
+        ...(result && result.error ? { is_error: true } : {}),
+      });
+    }
+    messages.push({ role: "user", content: toolResults });
+  }
+  return { text: "J'ai atteint la limite d'itérations pour cette mission. Demandez-moi de continuer si besoin.", steps };
+}
+
+/* ---------------- Interface ---------------- */
+let history = [];
+let currentTab = "tasks";
+const TABS = [
+  { id: "tasks", label: "✅ Tâches" }, { id: "events", label: "📅 Agenda" },
+  { id: "contacts", label: "🤝 Clients" }, { id: "emails", label: "✉️ Emails" },
+  { id: "posts", label: "📱 Réseaux" }, { id: "documents", label: "📚 Connaissances" },
+  { id: "activity", label: "⚡ Activité" },
+];
+
+function refreshStatus() {
+  const pill = $("#status-pill");
+  if (getApiKey()) { pill.textContent = "● cerveau actif — " + MODEL; pill.className = "on"; }
+  else { pill.textContent = "○ cliquez ici pour entrer votre clé API"; pill.className = "off"; }
+}
+
+function renderAgents() {
+  const sel = $("#agent-select"), div = $("#agents");
+  for (const a of Object.values(AGENTS)) {
+    sel.insertAdjacentHTML("beforeend", `<option value="${a.name}">${a.emoji} ${esc(a.label.split("—")[0].trim())}</option>`);
+    div.insertAdjacentHTML("beforeend",
+      `<div class="agent" data-agent="${a.name}"><div class="em">${a.emoji}</div><div><div class="nm">${esc(a.label)}</div><div class="ds">${esc(a.description)}</div></div></div>`);
+  }
+  div.querySelectorAll(".agent").forEach((el) => el.addEventListener("click", () => {
+    sel.value = el.dataset.agent;
+    div.querySelectorAll(".agent").forEach((x) => x.classList.remove("active"));
+    el.classList.add("active");
+    $("#input").focus();
+  }));
+}
+
+function addMsg(cls, html) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.innerHTML = html;
+  $("#messages").appendChild(div);
+  $("#messages").scrollTop = $("#messages").scrollHeight;
+  return div;
+}
+
+$("#composer").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = $("#input");
+  const text = input.value.trim();
+  if (!text) return;
+  if (!getApiKey()) { openKeyModal(); return; }
+  input.value = "";
+  addMsg("user", esc(text));
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.textContent = "NeuralStarK réfléchit et agit";
+  $("#messages").appendChild(typing);
+  $("#send").disabled = true;
+  try {
+    const sel = $("#agent-select").value;
+    const agent = sel !== "auto" && AGENTS[sel] ? AGENTS[sel] : await routeToAgent(text);
+    typing.textContent = `${agent.emoji} ${agent.label.split("—")[0].trim()} travaille`;
+    const r = await runAgent(agent, text, history, (tool) => { typing.textContent = `${agent.emoji} action : ${tool}`; renderTab(); });
+    history = [...history, { role: "user", content: text }, { role: "assistant", content: r.text || "(aucune réponse)" }].slice(-12);
+    const stepsHtml = r.steps.length ? `<div class="steps">⚙️ ${r.steps.length} action(s) : ${r.steps.map((s) => esc(s.tool)).join(", ")}</div>` : "";
+    addMsg("bot", `<div class="who">${agent.emoji} ${esc(agent.label)}</div>${esc(r.text)}${stepsHtml}`);
+    renderTab();
+  } catch (err) {
+    addMsg("sys", "⚠ " + esc(err.message));
+  } finally {
+    typing.remove();
+    $("#send").disabled = false;
+    input.focus();
+  }
+});
+
+$("#input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#composer").requestSubmit(); }
+});
+
+/* ---- Modale clé API ---- */
+function openKeyModal() {
+  $("#key-input").value = getApiKey();
+  $("#key-modal").classList.add("open");
+  $("#key-input").focus();
+}
+$("#status-pill").addEventListener("click", openKeyModal);
+$("#key-cancel").addEventListener("click", () => $("#key-modal").classList.remove("open"));
+$("#key-clear").addEventListener("click", () => { localStorage.removeItem(KEY_STORAGE); $("#key-input").value = ""; refreshStatus(); });
+$("#key-save").addEventListener("click", () => {
+  const v = $("#key-input").value.trim();
+  if (v) localStorage.setItem(KEY_STORAGE, v);
+  $("#key-modal").classList.remove("open");
+  refreshStatus();
+});
+
+/* ---- Modules ---- */
+const STATUS_LABEL = { a_faire: "à faire", en_cours: "en cours", terminee: "terminée" };
+
+function renderTabs() {
+  const tabs = $("#tabs");
+  tabs.innerHTML = TABS.map((t) => `<button data-tab="${t.id}" class="${t.id === currentTab ? "active" : ""}">${t.label}</button>`).join("");
+  tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { currentTab = b.dataset.tab; renderTabs(); renderTab(); }));
+}
+
+function renderTab() {
+  const c = $("#tab-content");
+  const R = { tasks: renderTasks, events: renderEvents, contacts: renderContacts, emails: renderEmails, posts: renderPosts, documents: renderDocs, activity: renderActivity };
+  c.innerHTML = R[currentTab]();
+  bindForms(c);
+}
+
+function renderTasks() {
+  const items = STATE.tasks.map((t) => `
+    <div class="card"><div class="t">${esc(t.title)}</div>
+    ${t.notes ? `<div class="m">${esc(t.notes)}</div>` : ""}
+    <span class="badge ${t.status === "terminee" ? "ok" : t.status === "en_cours" ? "warn" : ""}">${STATUS_LABEL[t.status] || t.status}</span>
+    <span class="badge">priorité ${esc(t.priority)}</span>
+    ${t.due ? `<span class="badge">échéance ${esc(t.due)}</span>` : ""}
+    ${t.assignee ? `<span class="badge">👤 ${esc(t.assignee)}</span>` : ""}</div>`).join("");
+  return `<form class="add-form" data-tool="create_task">
+      <input name="title" placeholder="Nouvelle tâche…" required />
+      <button>+ Ajouter la tâche</button>
+    </form>
+    ${items || '<div class="empty">Aucune tâche. Demandez au cerveau d’en créer, ou ajoutez-en une.</div>'}`;
+}
+
+function renderEvents() {
+  const items = EXECUTORS.list_events().map((e) => `
+    <div class="card"><div class="t">📅 ${esc(e.title)}</div>
+    <div class="m">${esc(e.date)}${e.time ? " à " + esc(e.time) : ""}${e.durationMin ? ` · ${e.durationMin} min` : ""}${e.location ? " · " + esc(e.location) : ""}</div>
+    ${(e.attendees || []).length ? `<span class="badge">👥 ${esc(e.attendees.join(", "))}</span>` : ""}
+    ${e.notes ? `<div class="m">${esc(e.notes)}</div>` : ""}</div>`).join("");
+  return items || '<div class="empty">Agenda vide. Ex. : « Ajoute une réunion équipe lundi à 9h ».</div>';
+}
+
+function renderContacts() {
+  const items = STATE.contacts.map((ct) => `
+    <div class="card"><div class="t">${esc(ct.name)}${ct.company ? ` — ${esc(ct.company)}` : ""}</div>
+    <div class="m">${esc([ct.email, ct.phone].filter(Boolean).join(" · "))}</div>
+    <span class="badge warn">${esc(ct.stage)}</span>
+    ${(ct.tags || []).map((tg) => `<span class="badge">${esc(tg)}</span>`).join("")}
+    ${(ct.interactions || []).length ? `<div class="m" style="margin-top:6px">Dernière interaction : ${esc(ct.interactions[ct.interactions.length - 1].summary)}</div>` : ""}</div>`).join("");
+  return items || '<div class="empty">CRM vide. Ex. : « Ajoute le prospect Jean Dupont de la société Acme ».</div>';
+}
+
+function renderEmails() {
+  const items = [...STATE.emails].reverse().map((e) => `
+    <div class="card"><div class="t">✉️ ${esc(e.subject)}</div>
+    <div class="m">À : ${esc(e.to)}</div>
+    <div class="m" style="margin-top:6px">${esc(e.body)}</div>
+    <span class="badge warn">${esc(e.status)} — validation humaine requise</span></div>`).join("");
+  return items || '<div class="empty">Boîte d’envoi vide. Ex. : « Rédige un email de bienvenue pour un nouveau client ».</div>';
+}
+
+function renderPosts() {
+  const NET = { linkedin: "💼 LinkedIn", facebook: "👍 Facebook", instagram: "📸 Instagram", x: "✖️ X", tiktok: "🎵 TikTok" };
+  const items = [...STATE.posts].reverse().map((p) => `
+    <div class="card"><div class="t">${NET[p.network] || esc(p.network)}</div>
+    <div class="m" style="margin-top:4px">${esc(p.content)}</div>
+    ${(p.hashtags || []).map((h) => `<span class="badge">#${esc(h)}</span>`).join("")}
+    <span class="badge ${p.scheduledFor ? "ok" : "warn"}">${p.scheduledFor ? "planifié : " + esc(p.scheduledFor) : "brouillon"}</span></div>`).join("");
+  return items || '<div class="empty">Aucune publication. Ex. : « Prépare un calendrier de posts pour la semaine ».</div>';
+}
+
+function renderDocs() {
+  const items = STATE.documents.map((d) => `
+    <div class="card"><div class="t">📄 ${esc(d.title)}</div>
+    <div class="m">${(d.content || "").length} caractères · ajouté le ${new Date(d.createdAt).toLocaleDateString("fr-FR")}</div>
+    ${(d.tags || []).map((t) => `<span class="badge">${esc(t)}</span>`).join("")}</div>`).join("");
+  return `<form class="add-form" data-tool="kb_add_document">
+      <input name="title" placeholder="Titre du document…" required />
+      <textarea name="content" placeholder="Collez ici le contenu (procédures, offres, FAQ…) — il alimentera le RAG." required></textarea>
+      <button>+ Ajouter à la base de connaissances</button>
+    </form>
+    ${items || '<div class="empty">Base de connaissances vide. Ajoutez vos documents : les agents s’en serviront pour répondre avec précision.</div>'}`;
+}
+
+function renderActivity() {
+  const items = STATE.activity.map((a) => `
+    <div class="card"><div class="m"><b style="color:var(--text)">${esc(a.agent)}</b> · ${esc(a.detail)}</div>
+    <span class="badge">${new Date(a.at).toLocaleString("fr-FR")}</span></div>`).join("");
+  return items || '<div class="empty">Aucune activité pour le moment.</div>';
+}
+
+function bindForms(root) {
+  root.querySelectorAll("form.add-form").forEach((f) => {
+    f.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(f).entries());
+      executeTool("utilisateur", f.dataset.tool, payload);
+      f.reset();
+      renderTab();
+    });
+  });
+}
+
+renderAgents();
+renderTabs();
+renderTab();
+refreshStatus();
+if (!getApiKey()) setTimeout(openKeyModal, 800);
+</script>
+</body>
+</html>
