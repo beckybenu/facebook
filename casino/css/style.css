@@ -178,6 +178,34 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
 code { background: var(--bg); padding: 2px 6px; border-radius: 5px; font-size: 13px; color: var(--gold); }
 #view-fair p { line-height: 1.7; color: var(--muted); }
 
+/* ---------- Mode en ligne ---------- */
+.netstatus {
+  background: var(--panel2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px 12px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.netstatus.on { border-color: var(--accent); color: var(--accent); }
+.net-help { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 10px; }
+.net-form { display: grid; grid-template-columns: 1fr 2fr auto; gap: 12px; align-items: end; margin: 12px 0; }
+@media (max-width: 700px) { .net-form { grid-template-columns: 1fr; } }
+.net-form label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+.net-form input {
+  width: 100%; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 14px;
+}
+.crash-social { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 800px) { .crash-social { grid-template-columns: 1fr; } }
+.chat-log {
+  height: 180px; overflow-y: auto; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 13px;
+}
+.chat-msg { margin-bottom: 6px; line-height: 1.4; }
+.chat-msg b { color: var(--accent); margin-right: 6px; }
+.chat-row { display: flex; gap: 8px; margin-top: 10px; }
+.chat-row input {
+  flex: 1; background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 14px;
+}
+
 /* ---------- History / footer / toast ---------- */
 .history-panel { margin-top: 30px; }
 footer { border-top: 1px solid var(--border); padding: 20px; text-align: center; }

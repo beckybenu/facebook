@@ -20,6 +20,7 @@
     <button data-nav="fair">🛡️ Provably Fair</button>
   </nav>
   <div class="wallet">
+    <div class="netstatus" id="net-status" data-nav="lobby" title="Mode en ligne — configurer dans le lobby">🔴 Hors ligne</div>
     <div class="balance"><span id="balance">0</span> <b>Ⓝ</b></div>
     <button id="faucet" class="btn btn-accent" title="Recharger des crédits virtuels">+ 1 000</button>
   </div>
@@ -41,6 +42,24 @@
       <div class="game-card" data-nav="mines"><div class="gc-icon">💣</div><h3>Mines</h3><p>25 cases, évitez les bombes</p></div>
       <div class="game-card" data-nav="plinko"><div class="gc-icon">🔻</div><h3>Plinko</h3><p>12 rangées, 3 niveaux de risque</p></div>
       <div class="game-card" data-nav="fair"><div class="gc-icon">🛡️</div><h3>Provably Fair</h3><p>Graines, hash &amp; vérification</p></div>
+    </div>
+    <div class="panel">
+      <h2>🌐 Mode en ligne — multijoueur <small>(crédits virtuels)</small></h2>
+      <p class="net-help">Connectez-vous à un serveur NovaSpin pour jouer les rounds <b>Crash</b> en même temps
+      que les autres joueurs, discuter dans le chat et apparaître au classement.
+      Lancez le serveur avec <code>node casino/server/server.js</code> (voir le README) —
+      GitHub Pages n'héberge que le site, pas le serveur.</p>
+      <div class="net-form">
+        <div><label>Votre pseudo</label><input id="net-pseudo" maxlength="24"></div>
+        <div><label>URL du serveur</label><input id="net-url" placeholder="ex. https://mon-serveur.onrender.com"></div>
+        <button id="net-connect" class="btn btn-accent">Se connecter</button>
+      </div>
+      <p class="net-help" id="net-state">Non connecté — les jeux fonctionnent en mode solo.</p>
+    </div>
+    <div class="panel">
+      <h2>🏆 Classement en ligne <small>(meilleurs gains Crash du serveur)</small></h2>
+      <table class="feed"><thead><tr><th>#</th><th>Joueur</th><th>Multi.</th><th>Gain</th></tr></thead>
+      <tbody id="leaderboard"><tr><td colspan="4" style="color:var(--muted)">Connectez-vous à un serveur pour voir le classement</td></tr></tbody></table>
     </div>
     <div class="panel">
       <h2>💸 Derniers gains <small>(flux simulé)</small></h2>
@@ -108,6 +127,22 @@
       <div class="stage panel">
         <div class="crash-mult" id="crash-mult">×1.00</div>
         <canvas id="crash-canvas" width="640" height="320"></canvas>
+        <small class="hint" id="crash-seedhash"></small>
+      </div>
+    </div>
+    <div class="crash-social">
+      <div class="panel">
+        <h2>👥 Paris du round <small>(mode en ligne)</small></h2>
+        <table class="feed"><thead><tr><th>Joueur</th><th>Mise</th><th>Statut</th></tr></thead>
+        <tbody id="crash-players"></tbody></table>
+      </div>
+      <div class="panel">
+        <h2>💬 Chat du salon</h2>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-row">
+          <input id="chat-input" maxlength="200" placeholder="Votre message…">
+          <button id="chat-send" class="btn">Envoyer</button>
+        </div>
       </div>
     </div>
   </section>
@@ -238,6 +273,7 @@
 <script src="js/fair.js"></script>
 <script src="js/wallet.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/net.js"></script>
 <script src="js/slots.js"></script>
 <script src="js/crash.js"></script>
 <script src="js/dice.js"></script>
