@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeuralStarK — Cerveau d'entreprise</title>
+<style>
+  :root {
+    --bg: #0c0f16;
+    --panel: #131826;
+    --panel-2: #1a2133;
+    --border: #26304a;
+    --text: #e8ecf6;
+    --muted: #8d99b8;
+    --accent: #f0b429;
+    --accent-2: #6c8cff;
+    --ok: #3ecf8e;
+    --danger: #ff6b6b;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(1200px 600px at 80% -10%, #1c2440 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(12,15,22,.7);
+  }
+  .logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent) 0%, #f37335 100%);
+    display: grid; place-items: center; font-size: 22px;
+  }
+  header h1 { font-size: 18px; letter-spacing: .5px; }
+  header h1 span { color: var(--accent); }
+  header .tagline { color: var(--muted); font-size: 12.5px; }
+  #status-pill {
+    margin-left: auto; font-size: 12px; padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  #status-pill.on { color: var(--ok); border-color: rgba(62,207,142,.4); }
+  #status-pill.off { color: var(--danger); border-color: rgba(255,107,107,.4); }
+
+  main { flex: 1; display: flex; min-height: 0; }
+
+  /* ---- Sidebar agents ---- */
+  aside {
+    width: 250px; min-width: 250px; border-right: 1px solid var(--border);
+    padding: 16px 12px; overflow-y: auto;
+  }
+  aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--muted); margin: 4px 8px 10px; }
+  .agent {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px; border-radius: var(--radius); cursor: pointer;
+    border: 1px solid transparent; margin-bottom: 4px;
+  }
+  .agent:hover { background: var(--panel); }
+  .agent.active { background: var(--panel-2); border-color: var(--border); }
+  .agent .em { font-size: 20px; }
+  .agent .nm { font-size: 13.5px; font-weight: 600; }
+  .agent .ds { font-size: 11.5px; color: var(--muted); margin-top: 2px; line-height: 1.35; }
+
+  /* ---- Zone centrale : chat ---- */
+  #chat-col { flex: 1.25; display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--border); }
+  #messages { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { max-width: 82%; padding: 12px 15px; border-radius: var(--radius); font-size: 14px; line-height: 1.55; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.user { align-self: flex-end; background: var(--accent-2); color: #0b1020; border-bottom-right-radius: 4px; font-weight: 500; }
+  .msg.bot { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .msg.sys { align-self: center; color: var(--muted); font-size: 12.5px; background: none; text-align: center; }
+  .msg .who { font-size: 11.5px; color: var(--accent); margin-bottom: 5px; font-weight: 600; }
+  .msg .steps { margin-top: 8px; font-size: 11.5px; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 7px; }
+  .typing { align-self: flex-start; color: var(--muted); font-size: 13px; padding: 6px 2px; }
+  .typing::after { content: "…"; animation: blink 1.2s infinite; }
+  @keyframes blink { 50% { opacity: .3; } }
+
+  #composer { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--border); }
+  #composer select {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 10px; font-size: 13px; max-width: 170px;
+  }
+  #composer textarea {
+    flex: 1; resize: none; height: 46px; padding: 12px 14px;
+    background: var(--panel); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit;
+  }
+  #composer button {
+    background: var(--accent); color: #1a1200; border: none; border-radius: 10px;
+    padding: 0 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  #composer button:disabled { opacity: .5; cursor: wait; }
+
+  /* ---- Colonne droite : modules ---- */
+  #modules { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  #tabs button {
+    background: none; border: none; color: var(--muted); padding: 12px 14px;
+    font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+  }
+  #tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  #tab-content { flex: 1; overflow-y: auto; padding: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px; margin-bottom: 10px; font-size: 13px;
+  }
+  .card .t { font-weight: 600; font-size: 13.5px; margin-bottom: 3px; }
+  .card .m { color: var(--muted); font-size: 12px; line-height: 1.45; white-space: pre-wrap; }
+  .badge {
+    display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); margin-right: 5px; margin-top: 5px;
+  }
+  .badge.ok { color: var(--ok); border-color: rgba(62,207,142,.4); }
+  .badge.warn { color: var(--accent); border-color: rgba(240,180,41,.4); }
+  .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 30px 10px; }
+  .add-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .add-form input, .add-form textarea {
+    background: var(--panel); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 11px; font-size: 13px; font-family: inherit;
+  }
+  .add-form textarea { min-height: 70px; resize: vertical; }
+  .add-form button {
+    align-self: flex-start; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer;
+  }
+  .add-form button:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 980px) {
+    aside { display: none; }
+    main { flex-direction: column; }
+    #chat-col { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🧠</div>
+  <div>
+    <h1>Neural<span>StarK</span></h1>
+    <div class="tagline">Le cerveau d'entreprise — secrétariat · marketing · email · réseaux sociaux · clients · RAG</div>
+  </div>
+  <div id="status-pill">connexion…</div>
+</header>
+
+<main>
+  <aside>
+    <h2>L'équipe recrutée</h2>
+    <div id="agents"></div>
+  </aside>
+
+  <section id="chat-col">
+    <div id="messages">
+      <div class="msg sys">Bienvenue. Donnez une mission à NeuralStarK — il la confiera à l'agent compétent.<br>
+      Exemples : « Prépare 3 posts LinkedIn pour la semaine », « Ajoute un rendez-vous vendredi 10h avec Dupont », « Rédige un email de relance pour le client Martin ».</div>
+    </div>
+    <form id="composer">
+      <select id="agent-select"><option value="auto">🎯 Routage auto</option></select>
+      <textarea id="input" placeholder="Confiez une mission au cerveau…" rows="1"></textarea>
+      <button type="submit" id="send">Envoyer</button>
+    </form>
+  </section>
+
+  <section id="modules">
+    <div id="tabs"></div>
+    <div id="tab-content"></div>
+  </section>
+</main>
+
+<script>
+const $ = (s) => document.querySelector(s);
+let DATA = null;
+let history = [];
+let currentTab = "tasks";
+
+const TABS = [
+  { id: "tasks", label: "✅ Tâches" },
+  { id: "events", label: "📅 Agenda" },
+  { id: "contacts", label: "🤝 Clients" },
+  { id: "emails", label: "✉️ Emails" },
+  { id: "posts", label: "📱 Réseaux" },
+  { id: "documents", label: "📚 Connaissances" },
+  { id: "activity", label: "⚡ Activité" },
+];
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+async function loadStatus() {
+  try {
+    const s = await api("/api/status");
+    const pill = $("#status-pill");
+    pill.textContent = s.ready ? `● cerveau actif — ${s.model}` : "○ clé API manquante — chat désactivé";
+    pill.className = s.ready ? "on" : "off";
+    const sel = $("#agent-select");
+    const agentsDiv = $("#agents");
+    agentsDiv.innerHTML = "";
+    for (const a of s.agents) {
+      sel.insertAdjacentHTML("beforeend", `<option value="${a.name}">${a.emoji} ${esc(a.label.split("—")[0].trim())}</option>`);
+      agentsDiv.insertAdjacentHTML("beforeend",
+        `<div class="agent" data-agent="${a.name}"><div class="em">${a.emoji}</div><div><div class="nm">${esc(a.label)}</div><div class="ds">${esc(a.description)}</div></div></div>`);
+    }
+    agentsDiv.querySelectorAll(".agent").forEach((el) => el.addEventListener("click", () => {
+      sel.value = el.dataset.agent;
+      agentsDiv.querySelectorAll(".agent").forEach((x) => x.classList.remove("active"));
+      el.classList.add("active");
+      $("#input").focus();
+    }));
+  } catch { $("#status-pill").textContent = "hors ligne"; }
+}
+
+async function loadData() {
+  try { DATA = await api("/api/data"); renderTab(); } catch {}
+}
+
+function addMsg(cls, html) {
+  const div = document.createElement("div");
+  div.className = "msg " + cls;
+  div.innerHTML = html;
+  $("#messages").appendChild(div);
+  $("#messages").scrollTop = $("#messages").scrollHeight;
+  return div;
+}
+
+$("#composer").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = $("#input");
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = "";
+  addMsg("user", esc(text));
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.textContent = "NeuralStarK réfléchit et agit";
+  $("#messages").appendChild(typing);
+  $("#send").disabled = true;
+  try {
+    const r = await api("/api/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, agent: $("#agent-select").value, history }),
+    });
+    history = r.history || [];
+    let stepsHtml = "";
+    if (r.steps && r.steps.length) {
+      stepsHtml = `<div class="steps">⚙️ ${r.steps.length} action(s) : ${r.steps.map((s) => esc(s.tool)).join(", ")}</div>`;
+    }
+    addMsg("bot", `<div class="who">${r.agent.emoji} ${esc(r.agent.label)}</div>${esc(r.text)}${stepsHtml}`);
+    loadData();
+  } catch (err) {
+    addMsg("sys", "⚠ " + esc(err.message));
+  } finally {
+    typing.remove();
+    $("#send").disabled = false;
+    input.focus();
+  }
+});
+
+$("#input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#composer").requestSubmit(); }
+});
+
+/* ---- Modules ---- */
+
+function renderTabs() {
+  const tabs = $("#tabs");
+  tabs.innerHTML = TABS.map((t) => `<button data-tab="${t.id}" class="${t.id === currentTab ? "active" : ""}">${t.label}</button>`).join("");
+  tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    currentTab = b.dataset.tab;
+    renderTabs(); renderTab();
+  }));
+}
+
+function renderTab() {
+  const c = $("#tab-content");
+  if (!DATA) { c.innerHTML = '<div class="empty">Chargement…</div>'; return; }
+  const R = {
+    tasks: renderTasks, events: renderEvents, contacts: renderContacts,
+    emails: renderEmails, posts: renderPosts, documents: renderDocs, activity: renderActivity,
+  };
+  c.innerHTML = R[currentTab]();
+  bindForms(c);
+}
+
+const STATUS_LABEL = { a_faire: "à faire", en_cours: "en cours", terminee: "terminée" };
+
+function renderTasks() {
+  const items = DATA.tasks.map((t) => `
+    <div class="card"><div class="t">${esc(t.title)}</div>
+    ${t.notes ? `<div class="m">${esc(t.notes)}</div>` : ""}
+    <span class="badge ${t.status === "terminee" ? "ok" : t.status === "en_cours" ? "warn" : ""}">${STATUS_LABEL[t.status] || t.status}</span>
+    <span class="badge">priorité ${esc(t.priority)}</span>
+    ${t.due ? `<span class="badge">échéance ${esc(t.due)}</span>` : ""}
+    ${t.assignee ? `<span class="badge">👤 ${esc(t.assignee)}</span>` : ""}</div>`).join("");
+  return `
+    <form class="add-form" data-tool="create_task">
+      <input name="title" placeholder="Nouvelle tâche…" required />
+      <button>+ Ajouter la tâche</button>
+    </form>
+    ${items || '<div class="empty">Aucune tâche. Demandez au cerveau d\\'en créer, ou ajoutez-en une.</div>'}`;
+}
+
+function renderEvents() {
+  const items = DATA.events.map((e) => `
+    <div class="card"><div class="t">📅 ${esc(e.title)}</div>
+    <div class="m">${esc(e.date)}${e.time ? " à " + esc(e.time) : ""}${e.durationMin ? ` · ${e.durationMin} min` : ""}${e.location ? " · " + esc(e.location) : ""}</div>
+    ${(e.attendees || []).length ? `<span class="badge">👥 ${esc(e.attendees.join(", "))}</span>` : ""}
+    ${e.notes ? `<div class="m">${esc(e.notes)}</div>` : ""}</div>`).join("");
+  return items || '<div class="empty">Agenda vide. Ex. : « Ajoute une réunion équipe lundi à 9h ».</div>';
+}
+
+function renderContacts() {
+  const items = DATA.contacts.map((ct) => `
+    <div class="card"><div class="t">${esc(ct.name)}${ct.company ? ` — ${esc(ct.company)}` : ""}</div>
+    <div class="m">${esc([ct.email, ct.phone].filter(Boolean).join(" · "))}</div>
+    <span class="badge warn">${esc(ct.stage)}</span>
+    ${(ct.tags || []).map((tg) => `<span class="badge">${esc(tg)}</span>`).join("")}
+    ${(ct.interactions || []).length ? `<div class="m" style="margin-top:6px">Dernière interaction : ${esc(ct.interactions[ct.interactions.length - 1].summary)}</div>` : ""}</div>`).join("");
+  return items || '<div class="empty">CRM vide. Ex. : « Ajoute le prospect Jean Dupont de la société Acme ».</div>';
+}
+
+function renderEmails() {
+  const items = [...DATA.emails].reverse().map((e) => `
+    <div class="card"><div class="t">✉️ ${esc(e.subject)}</div>
+    <div class="m">À : ${esc(e.to)}</div>
+    <div class="m" style="margin-top:6px">${esc(e.body)}</div>
+    <span class="badge warn">${esc(e.status)} — validation humaine requise</span></div>`).join("");
+  return items || '<div class="empty">Boîte d\\'envoi vide. Ex. : « Rédige un email de bienvenue pour un nouveau client ».</div>';
+}
+
+function renderPosts() {
+  const NET = { linkedin: "💼 LinkedIn", facebook: "👍 Facebook", instagram: "📸 Instagram", x: "✖️ X", tiktok: "🎵 TikTok" };
+  const items = [...DATA.posts].reverse().map((p) => `
+    <div class="card"><div class="t">${NET[p.network] || esc(p.network)}</div>
+    <div class="m" style="margin-top:4px">${esc(p.content)}</div>
+    ${(p.hashtags || []).map((h) => `<span class="badge">#${esc(h)}</span>`).join("")}
+    <span class="badge ${p.scheduledFor ? "ok" : "warn"}">${p.scheduledFor ? "planifié : " + esc(p.scheduledFor) : "brouillon"}</span></div>`).join("");
+  return items || '<div class="empty">Aucune publication. Ex. : « Prépare un calendrier de posts pour la semaine ».</div>';
+}
+
+function renderDocs() {
+  const items = DATA.documents.map((d) => `
+    <div class="card"><div class="t">📄 ${esc(d.title)}</div>
+    <div class="m">${d.length} caractères · ajouté le ${new Date(d.createdAt).toLocaleDateString("fr-FR")}</div>
+    ${(d.tags || []).map((t) => `<span class="badge">${esc(t)}</span>`).join("")}</div>`).join("");
+  return `
+    <form class="add-form" data-tool="kb_add_document">
+      <input name="title" placeholder="Titre du document…" required />
+      <textarea name="content" placeholder="Collez ici le contenu (procédures, offres, FAQ…) — il alimentera le RAG." required></textarea>
+      <button>+ Ajouter à la base de connaissances</button>
+    </form>
+    ${items || '<div class="empty">Base de connaissances vide. Ajoutez vos documents : les agents s\\'en serviront pour répondre avec précision.</div>'}`;
+}
+
+function renderActivity() {
+  const items = DATA.activity.map((a) => `
+    <div class="card"><div class="m"><b style="color:var(--text)">${esc(a.agent)}</b> · ${esc(a.detail)}</div>
+    <span class="badge">${new Date(a.at).toLocaleString("fr-FR")}</span></div>`).join("");
+  return items || '<div class="empty">Aucune activité pour le moment.</div>';
+}
+
+function bindForms(root) {
+  root.querySelectorAll("form.add-form").forEach((f) => {
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(f).entries());
+      try {
+        await api("/api/tools/" + f.dataset.tool, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        f.reset();
+        loadData();
+      } catch (err) { alert(err.message); }
+    });
+  });
+}
+
+renderTabs();
+loadStatus();
+loadData();
+setInterval(loadData, 15000);
+</script>
+</body>
+</html>
