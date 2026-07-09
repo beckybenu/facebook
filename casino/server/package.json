@@ -1,0 +1,12 @@
+{
+  "name": "novaspin-server",
+  "version": "1.0.0",
+  "description": "Serveur multijoueur NovaSpin — crédits virtuels uniquement, aucun argent réel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
