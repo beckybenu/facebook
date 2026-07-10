@@ -10,6 +10,7 @@ import Abysse from './variants/Abysse'
 import Chronoflux from './variants/Chronoflux'
 import Tesseract from './variants/Tesseract'
 import TrouNoir from './variants/TrouNoir'
+import Constellation from './variants/Constellation'
 
 // L'Atelier embarque Three.js : chargé uniquement quand on visite la démo
 const Atelier = lazy(() => import('./variants/Atelier'))
@@ -49,6 +50,8 @@ export default function App() {
       return <Tesseract />
     case 'trounoir':
       return <TrouNoir />
+    case 'constellation':
+      return <Constellation />
     case 'atelier':
       return (
         <Suspense

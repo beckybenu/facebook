@@ -123,8 +123,17 @@ const ERAS: Era[] = [
   },
   {
     title: 'Hors catalogue',
-    subtitle: 'Vraie 3D temps réel dans le navigateur',
+    subtitle: 'Pièces uniques',
     proposals: [
+      {
+        href: '#/constellation',
+        num: '12',
+        name: 'Constellation',
+        desc: 'Noir velours et typographie monumentale — un cerveau de milliers de triangles colorés scintillants comme signature, corps de texte ultra-léger, un seul violet pour l’action.',
+        colors: ['#8052ff', '#ffb829'],
+        bg: 'from-[#17102e] to-[#000000]',
+        features: ['Cerveau de particules', 'Typo monumentale', 'Vide absolu', 'Un seul accent'],
+      },
       {
         href: '#/atelier',
         num: '11',
