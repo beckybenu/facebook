@@ -4,6 +4,7 @@ import Nova from './variants/Nova'
 import NeoTokyo from './variants/NeoTokyo'
 import Aurora from './variants/Aurora'
 import MatrixTerm from './variants/MatrixTerm'
+import Singularite from './variants/Singularite'
 
 const getRoute = () => window.location.hash.replace(/^#\/?/, '')
 
@@ -28,6 +29,8 @@ export default function App() {
       return <Nova />
     case 'matrix':
       return <MatrixTerm />
+    case 'singularite':
+      return <Singularite />
     default:
       return <Selector />
   }

@@ -291,6 +291,135 @@ body {
   98% { opacity: 1; }
 }
 
+/* ===== Variante Singularité (année 2350) ===== */
+
+/* Texte iridescent : le spectre de couleur tourne en continu */
+.iridescent-text {
+  background: linear-gradient(100deg, #00ffd5, #7b2fff, #ff2ea6, #00ffd5);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: iridescent-slide 5s linear infinite;
+}
+
+.iridescent-bg {
+  background: linear-gradient(100deg, #00ffd5, #7b2fff, #ff2ea6, #00ffd5);
+  background-size: 300% 100%;
+  animation: iridescent-slide 5s linear infinite;
+}
+
+@keyframes iridescent-slide {
+  to { background-position: 300% 50%; }
+}
+
+/* Aberration chromatique qui respire */
+.chromatic {
+  animation: chromatic-breathe 4s ease-in-out infinite;
+}
+
+@keyframes chromatic-breathe {
+  0%, 100% { filter: drop-shadow(0 0 0 transparent); }
+  50% { filter: drop-shadow(2px 0 0 rgba(255, 46, 166, 0.55)) drop-shadow(-2px 0 0 rgba(0, 255, 213, 0.55)); }
+}
+
+/* Coins chanfreinés façon panneau de vaisseau */
+.chamfer {
+  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+}
+.chamfer-lg {
+  clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%, 0 22px);
+}
+
+/* Bordure d'énergie : un dégradé conique tourne sous un masque de bordure */
+.energy-border {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  isolation: isolate;
+}
+.energy-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  background: conic-gradient(from var(--eb-angle, 0deg), #00ffd5, #7b2fff, #ff2ea6, #00ffd5);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: energy-rotate 4s linear infinite;
+  z-index: -1;
+}
+
+@property --eb-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes energy-rotate {
+  to { --eb-angle: 360deg; }
+}
+
+/* Rotation des anneaux du gyroscope */
+.gyro-spin {
+  animation-name: gyro-rotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes gyro-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Cœur d'énergie pulsant */
+.core-pulse {
+  background: radial-gradient(circle, #e8e6ff, #7b2fff 55%, transparent 75%);
+  box-shadow: 0 0 60px #7b2fffaa, 0 0 120px #00ffd544;
+  animation: core-pulse 3s ease-in-out infinite;
+}
+
+@keyframes core-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.18); opacity: 1; }
+}
+
+/* Lévitation lente */
+.levitate {
+  animation: levitate 6s ease-in-out infinite;
+}
+
+@keyframes levitate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+/* Éclat de données : panneau translucide biseauté */
+.shard {
+  clip-path: polygon(0 6%, 100% 0, 100% 94%, 0 100%);
+  background: linear-gradient(160deg, rgba(123, 47, 255, 0.14), rgba(0, 255, 213, 0.07));
+  border: 1px solid rgba(232, 230, 255, 0.14);
+  backdrop-filter: blur(8px);
+  transition: box-shadow 0.4s ease;
+}
+.shard:hover {
+  box-shadow: 0 24px 70px rgba(123, 47, 255, 0.35);
+}
+
+/* Portail : anneau conique en rotation, flouté vers l'extérieur */
+.portal {
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, #00ffd5, #7b2fff, #ff2ea6, #00ffd5);
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 66%, #000 72%, transparent 76%);
+  mask: radial-gradient(circle, transparent 62%, #000 66%, #000 72%, transparent 76%);
+  animation: portal-spin 7s linear infinite;
+  filter: blur(1px) drop-shadow(0 0 30px rgba(123, 47, 255, 0.6));
+}
+
+@keyframes portal-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .neon-streak,
   .glitch::before,
@@ -298,7 +427,15 @@ body {
   .flicker,
   .neon-card,
   .aurora-blob,
-  .crt {
+  .crt,
+  .iridescent-text,
+  .iridescent-bg,
+  .chromatic,
+  .energy-border::before,
+  .gyro-spin,
+  .core-pulse,
+  .levitate,
+  .portal {
     animation: none;
   }
 }

@@ -1,6 +1,18 @@
 import { motion } from 'framer-motion'
 
-const PROPOSALS = [
+type Proposal = {
+  href: string
+  num: string
+  name: string
+  desc: string
+  colors: string[]
+  bg: string
+  features: string[]
+  wide?: boolean
+  badge?: string
+}
+
+const PROPOSALS: Proposal[] = [
   {
     href: '#/neo',
     num: '01',
@@ -37,6 +49,17 @@ const PROPOSALS = [
     bg: 'from-[#03140a] to-[#020803]',
     features: ['Pluie de code', 'Texte décodé', 'Terminal animé'],
   },
+  {
+    href: '#/singularite',
+    num: '05',
+    name: 'Singularité · 2350',
+    desc: 'Post-singularité — couleurs iridescentes, champ quantique réactif, gyroscope en lévitation, portail d’énergie.',
+    colors: ['#7b2fff', '#00ffd5'],
+    bg: 'from-[#150533] to-[#010104]',
+    features: ['Spectre iridescent', 'Particules quantiques', 'Gyroscope 3D', 'Portail d’énergie'],
+    wide: true,
+    badge: 'Nouveau',
+  },
 ]
 
 export default function Selector() {
@@ -69,9 +92,17 @@ export default function Selector() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ y: -8, scale: 1.015 }}
-            className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br ${p.bg} p-8 flex flex-col justify-between min-h-[240px]`}
+            className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br ${p.bg} p-8 flex flex-col justify-between min-h-[240px] ${p.wide ? 'md:col-span-2' : ''}`}
             style={{ boxShadow: `0 0 0 rgba(0,0,0,0)` }}
           >
+            {p.badge && (
+              <span
+                className="absolute top-5 right-5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#010104]"
+                style={{ background: `linear-gradient(100deg, ${p.colors[1]}, ${p.colors[0]})` }}
+              >
+                {p.badge}
+              </span>
+            )}
             {/* halo coloré au survol */}
             <div
               aria-hidden
