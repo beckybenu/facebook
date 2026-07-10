@@ -17,6 +17,10 @@ vos fichiers.
 ## ✨ Fonctionnalités
 
 - **130 agents** catégorisés, chacun avec son rôle et son prompt système.
+- **🧩 Packs métiers** : choisissez votre **domaine d'activité** (peinture, avocats,
+  médecin, commerce, restauration… 19 métiers) et l'app active automatiquement la
+  sélection d'agents adaptée — l'orchestrateur ne route plus que dans ce pack.
+  Voir [`docs/SECTEURS.md`](docs/SECTEURS.md).
 - **🧠 Neural Cerveau Central — orchestrateur** : décrivez votre besoin en langage
   naturel, il **route** automatiquement vers le ou les agents pertinents parmi les 130,
   délègue, et **synthétise** la réponse (les agents mobilisés sont affichés).

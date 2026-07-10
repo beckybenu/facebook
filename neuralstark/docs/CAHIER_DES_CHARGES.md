@@ -104,6 +104,25 @@ l'**orchestrateur**. Pour une demande en langage naturel, il :
 Le endpoint `POST /api/route` expose le routage seul (sans génération), utile pour
 prévisualiser ou piloter d'autres intégrations.
 
+### 3.4 Packs métiers (domaines d'activité)
+
+Une étude d'avocats n'a pas besoin des mêmes agents qu'une entreprise de peinture.
+Le sélecteur **« Domaine d'activité »** (barre latérale) active un **pack métier** :
+une sélection curée des 130 agents adaptée au secteur choisi.
+
+- **19 métiers couverts** (+ « Tous les métiers ») : peinture, construction/BTP,
+  menuiserie, plombier/électricien, étude d'avocats/notariat, cabinet médical,
+  laboratoire/pharmacie, commerce, hôtellerie/restauration, conseil/expertise
+  comptable, immobilier, industrie, transport, agence marketing, éducation,
+  bien-être/coaching, tourisme, médias/presse, administration publique.
+- Les **7 agents du Cœur IA** sont inclus dans tous les packs.
+- Le **catalogue** n'affiche que les agents du pack, et le **routeur de
+  l'orchestrateur est restreint au pack** (ex. en mode « avocats », une question
+  chantier ne sera jamais routée vers `Neural Calculateur de Matériaux`).
+- Le choix est **persisté** (localStorage) et modifiable à tout moment.
+- Source de vérité : `scripts/generate-sectors.mjs` → `data/sectors.json` (tous les
+  ids sont validés contre le catalogue à la génération). Détail : `docs/SECTEURS.md`.
+
 ## 4. Stack technique & déploiement
 
 - **Architecture client-first** : RAG (`lib/rag.js`), routeur (`lib/router.js`) et LLM

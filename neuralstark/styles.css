@@ -55,6 +55,21 @@ body {
 .brand-text strong { font-size: 16px; letter-spacing: .2px; }
 .brand-text span { font-size: 11px; color: var(--muted); }
 
+.sector { padding: 2px 14px 8px; }
+.sector-label {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+}
+.sector select {
+  width: 100%; padding: 9px 10px; border-radius: 10px; cursor: pointer;
+  background: linear-gradient(135deg, rgba(124,58,237,.22), rgba(34,211,238,.10)), var(--surface);
+  border: 1px solid rgba(124,58,237,.45); color: var(--text);
+  font-size: 13px; font-weight: 600; outline: none; appearance: auto;
+}
+.sector select:focus { border-color: var(--accent); }
+.sector select option { background: var(--surface); color: var(--text); }
+.sector-desc { font-size: 11px; color: var(--muted); line-height: 1.4; margin: 6px 1px 0; }
+
 .search { padding: 4px 14px 10px; }
 .search input {
   width: 100%; padding: 10px 12px; border-radius: 10px;
