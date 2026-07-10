@@ -7,7 +7,9 @@ import { generate, orchestrate, providerInfo, getConfig, setConfig } from "./lib
 const state = {
   agents: [], categories: {}, byId: {}, active: null, history: [], sending: false,
   rag: null, router: null,
+  sectors: [], sector: null, allowed: null, // allowed = Set d'ids d'agents du pack métier (null = tous)
 };
+const LS_SECTOR = "neuralstark:sector:v1";
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, props = {}, ...kids) => {
@@ -29,9 +31,14 @@ async function boot() {
   state.agents = agentsRes.agents;
   state.categories = agentsRes.categories;
   state.byId = Object.fromEntries(state.agents.map((a) => [a.id, a]));
-  $("#agent-count-badge").textContent = `${agentsRes.count} agents`;
 
-  state.router = new AgentRouter(state.agents);
+  try {
+    const sec = await fetch("data/sectors.json").then((r) => r.json());
+    state.sectors = sec.sectors || [];
+  } catch { state.sectors = []; }
+  wireSectorPicker();
+  applySector(localStorage.getItem(LS_SECTOR) || "tous", { silent: true });
+
   state.rag = new RagStore();
   try {
     const man = await fetch("data/knowledge/manifest.json").then((r) => r.json());
@@ -47,6 +54,62 @@ async function boot() {
   wireMobileNav();
   $("#agent-search").addEventListener("input", (e) => renderAgentList(e.target.value));
   $("#clear-chat").addEventListener("click", clearChat);
+}
+
+// ---------- Domaines d'activité (packs métiers) ----------
+function currentSector() {
+  return state.sectors.find((s) => s.id === state.sector) || null;
+}
+
+function wireSectorPicker() {
+  const sel = $("#sector-select");
+  if (!sel || !state.sectors.length) { $(".sector")?.remove(); return; }
+  sel.innerHTML = "";
+  for (const s of state.sectors) {
+    const opt = document.createElement("option");
+    opt.value = s.id;
+    opt.textContent = `${s.icon} ${s.label} (${s.count})`;
+    sel.append(opt);
+  }
+  sel.addEventListener("change", () => applySector(sel.value));
+}
+
+function applySector(id, { silent = false } = {}) {
+  const s = state.sectors.find((x) => x.id === id) || state.sectors[0];
+  if (!s) { // pas de sectors.json : app non filtrée
+    state.sector = null; state.allowed = null;
+    state.router = new AgentRouter(state.agents);
+    return;
+  }
+  state.sector = s.id;
+  localStorage.setItem(LS_SECTOR, s.id);
+  state.allowed = s.id === "tous" ? null : new Set(s.agents);
+
+  // Le routeur de l'orchestrateur ne considère que les agents du pack.
+  const pool = state.allowed ? state.agents.filter((a) => state.allowed.has(a.id)) : state.agents;
+  state.router = new AgentRouter(pool);
+
+  const sel = $("#sector-select");
+  if (sel && sel.value !== s.id) sel.value = s.id;
+  const desc = $("#sector-desc");
+  if (desc) desc.textContent = s.description;
+  $("#agent-count-badge").textContent = `${s.count} agents`;
+
+  // Si l'agent actif n'est plus dans le pack, on repasse sur l'orchestrateur.
+  if (state.active && state.allowed && !state.allowed.has(state.active.id)) {
+    selectAgent("cerveau-central");
+  } else {
+    renderAgentList($("#agent-search")?.value || "");
+  }
+  if (!silent && state.active?.id === "cerveau-central") {
+    addMessage("bot",
+      `🧩 Pack métier activé : **${s.icon} ${s.label}** — ${s.count} agents sélectionnés pour ce domaine. ` +
+      `Je ne mobilise plus que les spécialistes utiles à votre activité.`);
+  }
+}
+
+function agentVisible(a) {
+  return !state.allowed || state.allowed.has(a.id);
 }
 
 // ---------- Navigation mobile (menu ☰) ----------
@@ -93,7 +156,7 @@ function renderAgentList(filter = "") {
 
   for (const [key, cat] of Object.entries(state.categories)) {
     const agents = state.agents.filter(
-      (a) => a.category === key && a.id !== "cerveau-central" &&
+      (a) => a.category === key && a.id !== "cerveau-central" && agentVisible(a) &&
       (!q || a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q))
     );
     if (!agents.length) continue;
