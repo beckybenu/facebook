@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuralStark — Le cerveau IA de votre entreprise</title>
+  <meta name="description" content="130 agents IA spécialisés + RAG local. Le cerveau d'entreprise qui apprend de vos documents." />
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Barre latérale : catalogue d'agents -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◆</div>
+        <div class="brand-text">
+          <strong>NeuralStark</strong>
+          <span>L'intelligence sans limite</span>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="agent-search" type="search" placeholder="Rechercher un agent…" autocomplete="off" />
+      </div>
+
+      <div class="sidebar-meta">
+        <span id="agent-count-badge" class="badge">130 agents</span>
+        <span id="provider-badge" class="badge badge-muted">…</span>
+      </div>
+
+      <nav id="agent-list" class="agent-list" aria-label="Catalogue des agents"></nav>
+    </aside>
+
+    <!-- Zone de conversation -->
+    <main class="chat">
+      <header class="chat-header" id="chat-header">
+        <div class="chat-agent">
+          <div class="chat-agent-icon" id="active-icon" style="--c:#7c3aed">🧠</div>
+          <div>
+            <h1 id="active-name">Choisissez un agent</h1>
+            <p id="active-desc">Sélectionnez l'un des 130 agents dans le panneau de gauche pour commencer.</p>
+          </div>
+        </div>
+        <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
+      </header>
+
+      <section id="messages" class="messages">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-orb">◆</div>
+          <h2>Bienvenue dans NeuralStark</h2>
+          <p>130 agents IA spécialisés, un moteur RAG qui apprend de vos documents.<br />
+             Choisissez un agent à gauche, ajoutez vos documents à droite, puis posez votre question.</p>
+        </div>
+      </section>
+
+      <form id="composer" class="composer" autocomplete="off">
+        <textarea id="composer-input" rows="1" placeholder="Écrivez votre message…  (Entrée pour envoyer, Maj+Entrée pour un saut de ligne)" disabled></textarea>
+        <button id="send-btn" type="submit" disabled>Envoyer</button>
+      </form>
+    </main>
+
+    <!-- Base de connaissances (RAG) -->
+    <aside class="knowledge">
+      <div class="knowledge-head">
+        <h2>Base de connaissances</h2>
+        <span id="rag-stats" class="badge badge-muted">0 doc</span>
+      </div>
+      <p class="knowledge-hint">Les agents répondent à partir de ces documents (RAG).</p>
+
+      <form id="doc-form" class="doc-form">
+        <input id="doc-name" type="text" placeholder="Nom du document (ex : Devis-2026.txt)" />
+        <textarea id="doc-content" rows="5" placeholder="Collez ici le contenu d'un document interne…"></textarea>
+        <div class="doc-actions">
+          <label class="file-btn">
+            Importer un fichier
+            <input id="doc-file" type="file" accept=".txt,.md,.csv,.json,.log" hidden />
+          </label>
+          <button type="submit" class="primary-btn">Ajouter à la base</button>
+        </div>
+      </form>
+
+      <div id="doc-list" class="doc-list"></div>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
