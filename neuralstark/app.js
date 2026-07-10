@@ -44,8 +44,22 @@ async function boot() {
   wireComposer();
   wireDocForm();
   wireSettings();
+  wireMobileNav();
   $("#agent-search").addEventListener("input", (e) => renderAgentList(e.target.value));
   $("#clear-chat").addEventListener("click", clearChat);
+}
+
+// ---------- Navigation mobile (menu ☰) ----------
+function setSidebar(open) {
+  $(".sidebar")?.classList.toggle("open", open);
+  $("#sidebar-backdrop")?.classList.toggle("show", open);
+}
+function wireMobileNav() {
+  $("#menu-btn")?.addEventListener("click", () => {
+    const sb = $(".sidebar");
+    setSidebar(!sb.classList.contains("open"));
+  });
+  $("#sidebar-backdrop")?.addEventListener("click", () => setSidebar(false));
 }
 
 function updateProviderBadge() {
@@ -126,6 +140,7 @@ function selectAgent(id) {
   $("#composer-input").focus();
   pushBotIntro(a);
   renderAgentList($("#agent-search").value);
+  setSidebar(false); // referme le menu mobile après sélection
 }
 
 function pushBotIntro(a) {
