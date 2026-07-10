@@ -73,6 +73,22 @@ body {
 .badge-live { background: rgba(34,211,140,.16); color: #59e6a8; border-color: rgba(34,211,140,.4); }
 
 .agent-list { overflow-y: auto; padding: 4px 8px 20px; min-height: 0; flex: 1; }
+
+/* Carte orchestrateur (Neural Cerveau Central) */
+.orchestrator-card {
+  display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
+  margin: 2px 0 12px; padding: 11px 12px; cursor: pointer;
+  border-radius: 12px; color: var(--text);
+  background: linear-gradient(135deg, rgba(124,58,237,.28), rgba(34,211,238,.16));
+  border: 1px solid rgba(124,58,237,.5);
+  box-shadow: 0 6px 22px rgba(124,58,237,.25);
+}
+.orchestrator-card:hover { border-color: var(--accent); }
+.orchestrator-card.active { box-shadow: 0 0 0 2px var(--accent), 0 6px 22px rgba(124,58,237,.3); }
+.orchestrator-card .orch-icon { font-size: 22px; }
+.orch-text { display: flex; flex-direction: column; line-height: 1.25; overflow: hidden; }
+.orch-text strong { font-size: 13px; }
+.orch-text span { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cat-group { margin-bottom: 4px; }
 .cat-header {
   display: flex; align-items: center; gap: 8px; width: 100%;
@@ -149,6 +165,16 @@ body {
 .msg-bubble strong { color: inherit; }
 .msg-bubble code { background: rgba(255,255,255,.08); padding: 1px 5px; border-radius: 5px; font-size: 12px; }
 .msg-bubble em { color: var(--muted); font-style: normal; font-size: 12px; opacity: .85; }
+
+.routed { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.routed-label { font-size: 11px; color: var(--muted); width: 100%; margin-bottom: 2px; }
+.routed-chip {
+  font-size: 11px; padding: 3px 9px; border-radius: 999px;
+  background: color-mix(in srgb, var(--c,#7c3aed) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c,#7c3aed) 45%, transparent);
+  color: var(--text);
+}
+.routed-chip.lead { font-weight: 700; box-shadow: 0 0 0 1px color-mix(in srgb, var(--c,#7c3aed) 55%, transparent); }
 
 .sources { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
 .source-chip {

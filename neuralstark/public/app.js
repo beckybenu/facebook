@@ -57,9 +57,26 @@ function renderAgentList(filter = "") {
   list.innerHTML = "";
   const q = filter.trim().toLowerCase();
 
+  // Carte « orchestrateur » épinglée en haut : le Neural Cerveau Central.
+  const brain = state.byId["cerveau-central"];
+  if (brain && (!q || brain.name.toLowerCase().includes(q) || "orchestrateur".includes(q))) {
+    const card = el("button", {
+      class: "orchestrator-card" + (state.active?.id === brain.id ? " active" : ""),
+      type: "button", title: "Orchestre automatiquement les 130 agents",
+    },
+      el("span", { class: "orch-icon" }, brain.icon),
+      el("div", { class: "orch-text" },
+        el("strong", {}, brain.name),
+        el("span", {}, "Orchestrateur — route vers les 130 agents"),
+      ),
+    );
+    card.addEventListener("click", () => selectAgent(brain.id));
+    list.append(card);
+  }
+
   for (const [key, cat] of Object.entries(state.categories)) {
     const agents = state.agents.filter(
-      (a) => a.category === key &&
+      (a) => a.category === key && a.id !== "cerveau-central" &&
       (!q || a.name.toLowerCase().includes(q) || a.description.toLowerCase().includes(q))
     );
     if (!agents.length) continue;
@@ -117,6 +134,16 @@ function selectAgent(id) {
 }
 
 function pushBotIntro(a) {
+  if (a.id === "cerveau-central") {
+    addMessage("bot",
+      `Bonjour 👋 Je suis **${a.name}**, l'orchestrateur de NeuralStark.\n\n` +
+      `Décrivez votre besoin en langage naturel — j'**analyse** votre demande, je la **route** ` +
+      `automatiquement vers le ou les agents les plus pertinents parmi les 130, et je **synthétise** ` +
+      `une réponse à partir de votre base de connaissances.\n\n` +
+      `_Exemples : « ce devis est-il rentable ? », « rédige un post pour Instagram », ` +
+      `« quel est le tarif façade ? », « prépare l'onboarding d'un nouveau peintre »._`, [], a);
+    return;
+  }
   addMessage("bot", `Bonjour 👋 Je suis **${a.name}**. ${a.description}\n\nPosez-moi votre question — je m'appuierai sur les documents de votre base de connaissances.`, [], a);
 }
 
@@ -144,10 +171,22 @@ function mdToHtml(md) {
   return html;
 }
 
-function addMessage(role, content, sources = [], agent = state.active) {
+function addMessage(role, content, sources = [], agent = state.active, routed = []) {
   $("#empty-state")?.remove();
   const avatar = role === "user" ? "🧑" : (agent?.icon || "🧠");
   const bubble = el("div", { class: "msg-bubble", html: mdToHtml(content) });
+  if (routed?.length) {
+    const r = el("div", { class: "routed" },
+      el("span", { class: "routed-label" }, "🧠 Agents mobilisés :"));
+    routed.forEach((ag, i) => {
+      r.append(el("span", {
+        class: "routed-chip" + (i === 0 ? " lead" : ""),
+        style: `--c:${ag.color}`,
+        title: `pertinence ${ag.score}`,
+      }, `${ag.icon} ${ag.name}`));
+    });
+    bubble.append(r);
+  }
   if (sources?.length) {
     const s = el("div", { class: "sources" });
     for (const src of sources) s.append(el("span", { class: "source-chip" }, `📄 ${src.source}`));
@@ -219,7 +258,7 @@ async function onSend(e) {
     if (data.error) {
       addMessage("bot", `⚠️ ${data.error}`);
     } else {
-      addMessage("bot", data.answer, data.sources || []);
+      addMessage("bot", data.answer, data.sources || [], state.active, data.routed || []);
       state.history.push({ role: "assistant", content: data.answer });
     }
   } catch (err) {

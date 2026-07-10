@@ -27,6 +27,7 @@ complète, exécutable en une commande, **sans dépendance externe** :
 | Brique | Livré |
 |--------|-------|
 | Catalogue des 130 agents | ✅ `public/data/agents.json` (généré, catégorisé, avec prompts système) |
+| **Orchestrateur Neural Cerveau Central** | ✅ routage automatique vers les agents pertinents + synthèse (`server/router.js`) |
 | Interface de chat multi-agents | ✅ SPA (sidebar catalogue, chat, panneau connaissances) |
 | Moteur RAG local | ✅ ingestion, chunking, index TF-IDF, recherche cosinus, citations |
 | Abstraction LLM | ✅ mode démo hors-ligne **ou** API compatible OpenAI (OpenAI/DeepSeek/Groq/Ollama…) |
@@ -84,6 +85,25 @@ Le `systemPrompt` cadre le comportement (rôle, réponse en français, appui sur
 contexte RAG, interdiction d'inventer). Le catalogue est **généré** par
 `scripts/generate-agents.mjs` (source unique de vérité, 130 entrées, contrôle d'intégrité).
 
+### 3.3 Orchestration — le Neural Cerveau Central
+
+Le `Neural Cerveau Central` n'est pas un agent comme les autres : c'est
+l'**orchestrateur**. Pour une demande en langage naturel, il :
+
+1. **Route** — `server/router.js` construit un corpus TF-IDF à partir du nom, de la
+   description et de la catégorie des 129 autres agents, puis classe les agents par
+   **similarité cosinus** avec la demande. Les top-K (défaut 3) sont retenus.
+2. **Récupère** — le moteur RAG remonte les passages documentaires pertinents.
+3. **Compose** — `orchestrate()` (dans `llm.js`) délègue au(x) spécialiste(s) retenu(s)
+   et produit une réponse coordonnée. En mode démo, la réponse est extractive et affiche
+   la décision de routage ; en mode live, le LLM reçoit la liste des spécialistes
+   présélectionnés + le contexte RAG et rédige la synthèse.
+4. **Trace** — la réponse renvoie `routed[]` (agents mobilisés + score), affichés comme
+   puces dans l'interface pour la transparence.
+
+Le endpoint `POST /api/route` expose le routage seul (sans génération), utile pour
+prévisualiser ou piloter d'autres intégrations.
+
 ## 4. Stack technique
 
 - **Runtime** : Node.js ≥ 18 (HTTP natif, `fetch` global, `--test`). Aucune dépendance npm.
@@ -111,8 +131,8 @@ extractives depuis vos documents). Avec une clé, les réponses sont rédigées 
 - **Vocal** : `Neural Écouteur/Haut-parleur Vocal` (Whisper + TTS).
 - **Vision** : agents d'analyse de photos de chantier (avant/après, surfaces, couleurs).
 - **Automatisation n8n** : déclencheurs, workflows, connecteurs.
-- **Orchestration inter-agents** : `Neural Cerveau Central` route une demande vers le
-  bon agent et compose plusieurs agents.
+- **Orchestration avancée** : exécution réellement parallèle de plusieurs spécialistes
+  puis fusion de leurs réponses (la v1 route + délègue au meilleur ; cf. §3.3).
 - **Multi-tenant & droits**, authentification, déploiement serveur.
 
 ## 7. Sécurité & confidentialité

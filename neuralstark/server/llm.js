@@ -97,3 +97,73 @@ export async function generate({ agent, message, history = [], passages = [] }) 
   const answer = await callOpenAICompatible(messages);
   return { answer, sources, mode: "live" };
 }
+
+// ---------- Orchestration (Neural Cerveau Central) ----------
+// L'orchestrateur analyse la demande, s'appuie sur les agents pré-sélectionnés par
+// le routeur, puis produit une réponse coordonnée (+ contexte RAG).
+function demoOrchestration(orchestrator, message, routed, passages) {
+  const header = `**${orchestrator.name}** 🧠 — j'ai analysé votre demande et je la route vers les agents les plus pertinents.`;
+  if (!routed.length) {
+    return (
+      `${header}\n\n` +
+      `Je n'ai pas identifié d'agent spécialisé clairement adapté à « ${message} ». ` +
+      `Reformulez votre demande ou précisez le domaine (finance, RH, marketing, chantier…).`
+    );
+  }
+  const pick = routed
+    .map((r, i) => `- ${i === 0 ? "→ " : ""}${r.agent.icon} **${r.agent.name}** — ${r.agent.description} _(pertinence ${r.score})_`)
+    .join("\n");
+  const lead = routed[0].agent;
+
+  let delegation;
+  if (passages.length) {
+    const bullets = passages.slice(0, 3).map((p) => {
+      const snip = p.text.replace(/\s+/g, " ").slice(0, 200).trim();
+      return `- **${p.source}** : ${snip}${p.text.length > 200 ? "…" : ""}`;
+    }).join("\n");
+    delegation =
+      `\n\n**Réponse coordonnée** (via ${lead.name}, à partir de votre base de connaissances) :\n\n${bullets}`;
+  } else {
+    delegation =
+      `\n\n**${lead.name}** prend le relais, mais aucun document interne pertinent n'a été trouvé. ` +
+      `Ajoutez des documents dans la base de connaissances pour une réponse fondée sur vos données.`;
+  }
+
+  return (
+    `${header}\n\n**Agents sélectionnés :**\n${pick}${delegation}\n\n` +
+    `_Mode démo : routage + extraction. Configurez \`LLM_API_KEY\` pour une synthèse rédigée par le LLM._`
+  );
+}
+
+export async function orchestrate({ orchestrator, message, history = [], passages = [], routed = [] }) {
+  const sources = passages.map((p, i) => ({ n: i + 1, source: p.source, score: Number(p.score.toFixed(3)) }));
+  const routedOut = routed.map((r) => ({
+    id: r.agent.id, name: r.agent.name, icon: r.agent.icon, color: r.agent.color, score: r.score,
+  }));
+
+  if (!API_KEY) {
+    return { answer: demoOrchestration(orchestrator, message, routed, passages), sources, routed: routedOut, mode: "demo" };
+  }
+
+  const roster = routed.length
+    ? routed.map((r, i) => `${i + 1}. ${r.agent.name} — ${r.agent.description}`).join("\n")
+    : "(aucun agent spécialisé n'a été présélectionné)";
+  const context = buildContextBlock(passages);
+
+  const system =
+    `Tu es « Neural Cerveau Central », l'orchestrateur en chef de la plateforme NeuralStark, ` +
+    `qui coordonne 130 agents IA spécialisés. Pour la demande de l'utilisateur, le routeur a ` +
+    `présélectionné ces agents spécialisés :\n${roster}\n\n` +
+    `Ta mission : produire UNE réponse coordonnée en français. Commence par indiquer brièvement ` +
+    `à quel(s) agent(s) tu délègues et pourquoi, puis donne la réponse en t'appuyant en priorité ` +
+    `sur le contexte documentaire ci-dessous. N'invente rien qui n'y figure pas.` +
+    (context ? `\n\n--- CONTEXTE (RAG) ---\n${context}\n--- FIN ---` : `\n\n(Aucun document interne pertinent trouvé.)`);
+
+  const messages = [
+    { role: "system", content: system },
+    ...history.slice(-6).map((m) => ({ role: m.role, content: m.content })),
+    { role: "user", content: message },
+  ];
+  const answer = await callOpenAICompatible(messages);
+  return { answer, sources, routed: routedOut, mode: "live" };
+}

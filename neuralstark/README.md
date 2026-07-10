@@ -17,6 +17,9 @@ vos fichiers.
 ## ✨ Fonctionnalités
 
 - **130 agents** catégorisés, chacun avec son rôle et son prompt système.
+- **🧠 Neural Cerveau Central — orchestrateur** : décrivez votre besoin en langage
+  naturel, il **route** automatiquement vers le ou les agents pertinents parmi les 130,
+  délègue, et **synthétise** la réponse (les agents mobilisés sont affichés).
 - **Chat multi-agents** avec rendu Markdown et affichage des **sources**.
 - **Moteur RAG** local : ingestion, chunking, index TF-IDF, recherche par similarité
   cosinus, citations. **Aucune dépendance externe.**
@@ -57,7 +60,8 @@ neuralstark/
 ├── server/
 │   ├── server.js        # HTTP natif : statique + API REST
 │   ├── rag.js           # moteur RAG (chunk, TF-IDF, cosinus, persistance, seed)
-│   └── llm.js           # abstraction LLM (démo / API compatible OpenAI)
+│   ├── router.js        # routeur d'agents (cœur du Cerveau Central orchestrateur)
+│   └── llm.js           # abstraction LLM + orchestration (démo / API compatible OpenAI)
 ├── public/
 │   ├── index.html · styles.css · app.js   # SPA (0 build)
 │   └── data/agents.json # catalogue généré des 130 agents
@@ -76,6 +80,7 @@ neuralstark/
 |---------|-------|------|
 | `GET` | `/api/health` | état serveur + fournisseur LLM + stats RAG |
 | `GET` | `/api/agents` | catalogue des 130 agents |
+| `POST` | `/api/route` | classe les agents pertinents pour une demande (`{message, k}`) |
 | `GET` | `/api/documents` | liste des documents de la base |
 | `POST` | `/api/documents` | ajoute un document (`{name, content}`) |
 | `DELETE` | `/api/documents/:id` | supprime un document |

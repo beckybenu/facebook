@@ -5,7 +5,8 @@ import { readFile, stat } from "node:fs/promises";
 import { dirname, join, normalize, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { RagStore } from "./rag.js";
-import { generate, providerInfo } from "./llm.js";
+import { AgentRouter } from "./router.js";
+import { generate, orchestrate, providerInfo } from "./llm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -14,11 +15,13 @@ const PORT = process.env.PORT || 5178;
 
 const rag = new RagStore();
 let AGENTS = null;
+let ROUTER = null;
 async function loadAgents() {
   if (!AGENTS) {
     const raw = await readFile(join(PUBLIC, "data", "agents.json"), "utf8");
     AGENTS = JSON.parse(raw);
     AGENTS.byId = Object.fromEntries(AGENTS.agents.map((a) => [a.id, a]));
+    ROUTER = new AgentRouter(AGENTS.agents);
   }
   return AGENTS;
 }
@@ -110,6 +113,18 @@ const server = createServer(async (req, res) => {
       return sendJson(res, ok ? 200 : 404, { removed: ok, stats: rag.stats() });
     }
 
+    // Aperçu du routage seul (pour l'UI, sans générer de réponse).
+    if (pathname === "/api/route" && req.method === "POST") {
+      await loadAgents();
+      const body = await readBody(req);
+      const message = (body.message || "").toString().trim();
+      if (!message) return sendJson(res, 400, { error: "message vide" });
+      const routed = ROUTER.route(message, body.k || 3).map((r) => ({
+        id: r.agent.id, name: r.agent.name, icon: r.agent.icon, color: r.agent.color, score: r.score,
+      }));
+      return sendJson(res, 200, { routed });
+    }
+
     if (pathname === "/api/chat" && req.method === "POST") {
       const a = await loadAgents();
       const body = await readBody(req);
@@ -117,16 +132,19 @@ const server = createServer(async (req, res) => {
       const message = (body.message || "").toString().trim();
       if (!agent) return sendJson(res, 400, { error: "agent inconnu" });
       if (!message) return sendJson(res, 400, { error: "message vide" });
+      const history = Array.isArray(body.history) ? body.history : [];
+
+      // Le Cerveau Central orchestre : il route vers les agents pertinents et compose.
+      if (agent.id === "cerveau-central") {
+        const routed = ROUTER.route(message, 3);
+        const passages = rag.search(message, 4);
+        const result = await orchestrate({ orchestrator: agent, message, history, passages, routed });
+        return sendJson(res, 200, { agent: { id: agent.id, name: agent.name }, orchestrated: true, ...result });
+      }
+
       const passages = rag.search(message, 4);
-      const result = await generate({
-        agent, message,
-        history: Array.isArray(body.history) ? body.history : [],
-        passages,
-      });
-      return sendJson(res, 200, {
-        agent: { id: agent.id, name: agent.name },
-        ...result,
-      });
+      const result = await generate({ agent, message, history, passages });
+      return sendJson(res, 200, { agent: { id: agent.id, name: agent.name }, ...result });
     }
 
     if (pathname.startsWith("/api/")) {
