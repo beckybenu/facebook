@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import Selector from './variants/Selector'
 import Nova from './variants/Nova'
 import NeoTokyo from './variants/NeoTokyo'
@@ -10,6 +10,9 @@ import Abysse from './variants/Abysse'
 import Chronoflux from './variants/Chronoflux'
 import Tesseract from './variants/Tesseract'
 import TrouNoir from './variants/TrouNoir'
+
+// L'Atelier embarque Three.js : chargé uniquement quand on visite la démo
+const Atelier = lazy(() => import('./variants/Atelier'))
 
 const getRoute = () => window.location.hash.replace(/^#\/?/, '')
 
@@ -46,6 +49,18 @@ export default function App() {
       return <Tesseract />
     case 'trounoir':
       return <TrouNoir />
+    case 'atelier':
+      return (
+        <Suspense
+          fallback={
+            <div className="min-h-screen bg-[#0b0e1a] flex items-center justify-center font-display text-xl text-white/70">
+              ⬢ Byte chausse ses bottes 3D…
+            </div>
+          }
+        >
+          <Atelier />
+        </Suspense>
+      )
     default:
       return <Selector />
   }

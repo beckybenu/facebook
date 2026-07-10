@@ -121,6 +121,21 @@ const ERAS: Era[] = [
       },
     ],
   },
+  {
+    title: 'Hors catalogue',
+    subtitle: 'Vraie 3D temps réel dans le navigateur',
+    proposals: [
+      {
+        href: '#/atelier',
+        num: '11',
+        name: 'L’Atelier de Byte',
+        desc: 'Notre mascotte robot en 3D code votre site en direct, cligne des yeux, saute de son bureau et court autour de la scène pendant qu’un site s’assemble en plein vol. Caméra pilotée par ta souris.',
+        colors: ['#ffcf5c', '#59f3ff'],
+        bg: 'from-[#1d1a2e] to-[#0b0e1a]',
+        features: ['Mascotte 3D animée', 'Elle code & court', 'Site qui s’assemble', 'Caméra parallaxe'],
+      },
+    ],
+  },
 ]
 
 let cardIndex = 0
