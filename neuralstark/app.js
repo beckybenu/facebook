@@ -54,6 +54,10 @@ async function boot() {
   wireMobileNav();
   $("#agent-search").addEventListener("input", (e) => renderAgentList(e.target.value));
   $("#clear-chat").addEventListener("click", clearChat);
+
+  // Le client ne parle qu'à UN assistant : la conversation démarre directement
+  // avec le Cerveau Central, qui mobilise les spécialistes en coulisses.
+  selectAgent("cerveau-central");
 }
 
 // ---------- Domaines d'activité (packs métiers) ----------
@@ -138,20 +142,16 @@ function renderAgentList(filter = "") {
   list.innerHTML = "";
   const q = filter.trim().toLowerCase();
 
+  // Bandeau : le client parle à UN assistant, l'équipe travaille en coulisses.
   const brain = state.byId["cerveau-central"];
-  if (brain && (!q || brain.name.toLowerCase().includes(q) || "orchestrateur".includes(q))) {
-    const card = el("button", {
-      class: "orchestrator-card" + (state.active?.id === brain.id ? " active" : ""),
-      type: "button", title: "Orchestre automatiquement les 130 agents",
-    },
+  if (brain) {
+    list.append(el("div", { class: "orchestrator-card static" },
       el("span", { class: "orch-icon" }, brain.icon),
       el("div", { class: "orch-text" },
-        el("strong", {}, brain.name),
-        el("span", {}, "Orchestrateur — route vers les 130 agents"),
+        el("strong", {}, "Votre assistant unique"),
+        el("span", {}, "Il mobilise l'équipe ci-dessous pour vous"),
       ),
-    );
-    card.addEventListener("click", () => selectAgent(brain.id));
-    list.append(card);
+    ));
   }
 
   for (const [key, cat] of Object.entries(state.categories)) {
@@ -172,14 +172,15 @@ function renderAgentList(filter = "") {
     const wrap = el("div", { class: "cat-agents" });
     for (const a of agents) {
       const item = el("button", {
-        class: "agent-item" + (state.active?.id === a.id ? " active" : ""),
-        type: "button", title: a.description,
+        class: "agent-item", type: "button",
+        title: `${a.description} — Cliquez pour une présentation, posez simplement votre question dans le chat.`,
       },
         el("span", { class: "agent-dot", style: `background:${a.color}` }),
         el("span", { class: "a-name" }, a.name),
         el("span", { class: "a-num" }, `#${a.number}`),
       );
-      item.addEventListener("click", () => selectAgent(a.id));
+      // Le client ne change pas d'interlocuteur : un clic présente le spécialiste.
+      item.addEventListener("click", () => introSpecialist(a));
       wrap.append(item);
     }
     group.append(header, wrap);
@@ -195,8 +196,13 @@ function selectAgent(id) {
   document.documentElement.style.setProperty("--c", a.color);
   const icon = $("#active-icon");
   icon.textContent = a.icon; icon.style.setProperty("--c", a.color);
-  $("#active-name").textContent = a.name;
-  $("#active-desc").textContent = a.description;
+  if (a.id === "cerveau-central") {
+    $("#active-name").textContent = "Assistant NeuralStark";
+    $("#active-desc").textContent = "Un seul interlocuteur — il mobilise automatiquement vos agents spécialisés.";
+  } else {
+    $("#active-name").textContent = a.name;
+    $("#active-desc").textContent = a.description;
+  }
   $("#messages").innerHTML = "";
   $("#composer-input").disabled = false;
   $("#send-btn").disabled = false;
@@ -208,16 +214,31 @@ function selectAgent(id) {
 
 function pushBotIntro(a) {
   if (a.id === "cerveau-central") {
+    const s = currentSector();
+    const sectorLine = s && s.id !== "tous"
+      ? `Votre espace est configuré pour **${s.icon} ${s.label}** : une équipe de **${s.count} agents spécialisés** travaille pour vous en coulisses.`
+      : `Une équipe de **130 agents spécialisés** travaille pour vous en coulisses.`;
     addMessage("bot",
-      `Bonjour 👋 Je suis **${a.name}**, l'orchestrateur de NeuralStark.\n\n` +
-      `Décrivez votre besoin en langage naturel — j'**analyse** votre demande, je la **route** ` +
-      `automatiquement vers le ou les agents les plus pertinents parmi les 130, et je **synthétise** ` +
-      `une réponse à partir de votre base de connaissances.\n\n` +
+      `Bonjour 👋 Je suis votre **assistant NeuralStark**.\n\n` +
+      `${sectorLine}\n\n` +
+      `**Vous n'avez rien à chercher** : décrivez simplement votre besoin, ` +
+      `je mobilise automatiquement les bons spécialistes et je vous réponds à partir de vos documents.\n\n` +
       `_Exemples : « ce devis est-il rentable ? », « rédige un post pour Instagram », ` +
-      `« quel est le tarif façade ? », « prépare l'onboarding d'un nouveau peintre »._`, [], a);
+      `« quel est le tarif façade ? », « prépare l'arrivée d'un nouvel employé »._`, [], a);
     return;
   }
   addMessage("bot", `Bonjour 👋 Je suis **${a.name}**. ${a.description}\n\nPosez-moi votre question — je m'appuierai sur les documents de votre base de connaissances.`, [], a);
+}
+
+// Présente un spécialiste dans le chat sans changer d'interlocuteur.
+function introSpecialist(a) {
+  addMessage("bot",
+    `${a.icon} **${a.name}** fait partie de votre équipe (${a.categoryLabel}).\n\n` +
+    `${a.description}\n\n` +
+    `_Inutile de le sélectionner : posez simplement votre question, ` +
+    `je le mobiliserai automatiquement s'il est le plus compétent._`);
+  setSidebar(false);
+  $("#composer-input")?.focus();
 }
 
 // ---------- Rendu messages ----------
