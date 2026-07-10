@@ -104,25 +104,36 @@ l'**orchestrateur**. Pour une demande en langage naturel, il :
 Le endpoint `POST /api/route` expose le routage seul (sans génération), utile pour
 prévisualiser ou piloter d'autres intégrations.
 
-## 4. Stack technique
+## 4. Stack technique & déploiement
 
-- **Runtime** : Node.js ≥ 18 (HTTP natif, `fetch` global, `--test`). Aucune dépendance npm.
-- **Frontend** : HTML/CSS/JS vanilla, aucune étape de build.
-- **LLM** : n'importe quelle API compatible OpenAI `/chat/completions`.
-- Cohérent avec l'orientation technique évoquée sur le projet (Rust/Flutter en cible
-  produit) : ce MVP privilégie une base **portable et sans friction** pour la démo ;
-  le moteur RAG et l'API sont réimplémentables tels quels côté Rust.
+- **Architecture client-first** : RAG (`lib/rag.js`), routeur (`lib/router.js`) et LLM
+  (`lib/llm.js`) tournent **dans le navigateur** (ES modules, aucune étape de build).
+  Persistance de la base de connaissances en `localStorage`.
+- **Frontend** : HTML/CSS/JS vanilla, chemins **relatifs** → **site statique** déployable
+  tel quel sur **GitHub Pages** (`.nojekyll` inclus), sans backend.
+  URL type : `https://<user>.github.io/<repo>/neuralstark/`.
+- **Serveur Node optionnel** (`server/`) : HTTP natif, sert les mêmes fichiers et ajoute
+  une API REST (base de connaissances partagée côté serveur). Node.js ≥ 18, 0 dépendance.
+- **LLM** : mode démo hors-ligne, ou toute API compatible OpenAI `/chat/completions`
+  (clé saisie via ⚙️, stockée localement dans le navigateur).
+- Cohérent avec l'orientation produit (Rust/Flutter en cible) : ce MVP privilégie une base
+  **portable et sans friction** ; le moteur RAG et le routeur sont réimplémentables tels quels.
 
 ## 5. Installation & lancement
 
+Site statique — le servir avec n'importe quel serveur HTTP :
+
 ```bash
 cd neuralstark
-cp .env.example .env          # optionnel : renseigner LLM_API_KEY pour le mode « live »
-npm start                     # → http://localhost:5178
+python3 -m http.server 5178     # → http://localhost:5178
+# ou : npx serve .   ·   ou : npm start (serveur Node natif + API REST)
 ```
 
-Aucune clé n'est requise : sans `LLM_API_KEY`, l'app tourne en **mode démo** (réponses
-extractives depuis vos documents). Avec une clé, les réponses sont rédigées par le LLM.
+Pour **GitHub Pages** : aucune build, le dossier est auto-suffisant ; une fois sur la
+branche servie par Pages, l'app est en ligne à `…/<repo>/neuralstark/`.
+
+Aucune clé n'est requise : par défaut, l'app tourne en **mode démo** (réponses extractives
+depuis vos documents). Via ⚙️ LLM, ajoutez une clé pour des réponses rédigées par le LLM.
 
 ## 6. Évolutions prévues
 

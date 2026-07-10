@@ -225,7 +225,7 @@ const out = {
   agents,
 };
 
-const target = join(__dirname, "..", "public", "data", "agents.json");
+const target = join(__dirname, "..", "data", "agents.json");
 mkdirSync(dirname(target), { recursive: true });
 writeFileSync(target, JSON.stringify(out, null, 2), "utf8");
 console.log(`✓ ${agents.length} agents écrits dans ${target}`);

@@ -10,7 +10,8 @@ import { generate, orchestrate, providerInfo } from "./llm.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const PUBLIC = join(ROOT, "public");
+// La racine web est le dossier NeuralStark lui-même (site statique déployable tel quel).
+const PUBLIC = ROOT;
 const PORT = process.env.PORT || 5178;
 
 const rag = new RagStore();
@@ -18,7 +19,7 @@ let AGENTS = null;
 let ROUTER = null;
 async function loadAgents() {
   if (!AGENTS) {
-    const raw = await readFile(join(PUBLIC, "data", "agents.json"), "utf8");
+    const raw = await readFile(join(ROOT, "data", "agents.json"), "utf8");
     AGENTS = JSON.parse(raw);
     AGENTS.byId = Object.fromEntries(AGENTS.agents.map((a) => [a.id, a]));
     ROUTER = new AgentRouter(AGENTS.agents);

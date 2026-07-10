@@ -42,7 +42,10 @@
             <p id="active-desc">Sélectionnez l'un des 130 agents dans le panneau de gauche pour commencer.</p>
           </div>
         </div>
-        <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
+        <div class="header-actions">
+          <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
+          <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
+        </div>
       </header>
 
       <section id="messages" class="messages">
@@ -84,6 +87,34 @@
     </aside>
   </div>
 
-  <script src="app.js"></script>
+  <!-- Réglages LLM -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-card">
+      <h2>Connecter un modèle LLM</h2>
+      <p class="modal-hint">
+        Sans clé, NeuralStark fonctionne en <strong>mode démo</strong> (réponses extraites de vos
+        documents), 100 % dans le navigateur. Ajoutez une clé pour des réponses génératives via une
+        API compatible OpenAI (OpenAI, DeepSeek, Groq, Ollama, LM Studio…). La clé reste stockée
+        <strong>localement</strong> dans votre navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+      </p>
+      <label class="modal-label">Clé API
+        <input id="cfg-key" type="password" placeholder="sk-…  (laisser vide = mode démo)" autocomplete="off" />
+      </label>
+      <label class="modal-label">URL de base
+        <input id="cfg-base" type="text" placeholder="https://api.openai.com/v1" />
+      </label>
+      <label class="modal-label">Modèle
+        <input id="cfg-model" type="text" placeholder="gpt-4o-mini" />
+      </label>
+      <div class="modal-actions">
+        <button id="cfg-clear" class="ghost-btn">Réinitialiser</button>
+        <span style="flex:1"></span>
+        <button id="cfg-cancel" class="ghost-btn">Annuler</button>
+        <button id="cfg-save" class="primary-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>

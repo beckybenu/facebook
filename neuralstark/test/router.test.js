@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { AgentRouter } from "../server/router.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const AGENTS = JSON.parse(readFileSync(join(__dirname, "..", "public", "data", "agents.json"), "utf8")).agents;
+const AGENTS = JSON.parse(readFileSync(join(__dirname, "..", "data", "agents.json"), "utf8")).agents;
 
 test("le routeur exclut le Cerveau Central de ses cibles", () => {
   const router = new AgentRouter(AGENTS);

@@ -24,57 +24,72 @@ vos fichiers.
 - **Moteur RAG** local : ingestion, chunking, index TF-IDF, recherche par similarité
   cosinus, citations. **Aucune dépendance externe.**
 - **Base de connaissances** : ajout/suppression de documents, import de fichiers,
-  persistance sur disque.
-- **LLM au choix** : fonctionne **hors-ligne** (mode démo extractif) ou avec n'importe
-  quelle API compatible OpenAI (OpenAI, DeepSeek, Groq, Ollama, LM Studio, vLLM…).
+  persistance (localStorage côté navigateur).
+- **100 % navigateur** : RAG, routeur et LLM tournent côté client → **déployable en
+  site statique** (GitHub Pages), aucun backend requis.
+- **LLM au choix** : fonctionne **hors-ligne** (mode démo extractif) ou, via le bouton
+  **⚙️ LLM**, avec n'importe quelle API compatible OpenAI (OpenAI, DeepSeek, Groq,
+  Ollama, LM Studio, vLLM…) — la clé reste stockée localement dans le navigateur.
 
 ## 🚀 Démarrage rapide
 
+Comme c'est un site **statique**, il suffit de servir le dossier avec n'importe quel
+serveur HTTP :
+
 ```bash
 cd neuralstark
-npm start          # → http://localhost:5178
+python3 -m http.server 5178      # → http://localhost:5178
+# ou : npx serve .   ·   ou : npm start  (serveur Node natif optionnel, + API REST)
 ```
 
-Node.js ≥ 18 requis. Rien à installer (zéro dépendance npm). Deux documents de
+Node.js ≥ 18 pour les scripts/tests. Zéro dépendance npm. Deux documents de
 démonstration (profil SwissPaints + un devis) sont chargés au premier lancement, donc
 le RAG marche immédiatement.
 
+> ⚠️ Ouvrir `index.html` via `file://` ne marche pas (les modules ES et `fetch`
+> exigent `http://`). Passez par un serveur HTTP local ou GitHub Pages.
+
 ### Activer un vrai LLM (optionnel)
 
-```bash
-cp .env.example .env
-# puis, dans .env :
-#   LLM_API_KEY=sk-...
-#   LLM_BASE_URL=https://api.deepseek.com/v1   (ou OpenAI, Groq, Ollama…)
-#   LLM_MODEL=deepseek-chat
-npm start
-```
+Cliquez sur **⚙️ LLM** dans l'en-tête, renseignez votre clé, l'URL de base et le modèle
+(ex. DeepSeek : `https://api.deepseek.com/v1`, `deepseek-chat`). Sans clé, l'app reste
+en **mode démo**. ⚠️ La clé n'est **jamais** committée : elle vit uniquement dans le
+`localStorage` de votre navigateur.
 
-Sans clé, l'app reste en **mode démo** (réponses construites par extraction depuis vos
-documents). ⚠️ Ne mettez jamais de clé API en clair dans le code ou dans un commit.
+## 🌐 Déploiement GitHub Pages
+
+Aucune étape de build. Le dossier `neuralstark/` est un site statique auto-suffisant
+(chemins **relatifs**, `.nojekyll` inclus). Une fois le dossier présent sur la branche
+servie par Pages (par défaut `main`), l'application est disponible à :
+
+```
+https://<user>.github.io/<repo>/neuralstark/
+```
 
 ## 🗂️ Structure
 
 ```
 neuralstark/
-├── server/
-│   ├── server.js        # HTTP natif : statique + API REST
-│   ├── rag.js           # moteur RAG (chunk, TF-IDF, cosinus, persistance, seed)
-│   ├── router.js        # routeur d'agents (cœur du Cerveau Central orchestrateur)
-│   └── llm.js           # abstraction LLM + orchestration (démo / API compatible OpenAI)
-├── public/
-│   ├── index.html · styles.css · app.js   # SPA (0 build)
-│   └── data/agents.json # catalogue généré des 130 agents
-├── scripts/
-│   └── generate-agents.mjs  # source de vérité → régénère agents.json
-├── data/knowledge/      # documents de démonstration (seed)
-├── docs/
-│   ├── CAHIER_DES_CHARGES.md
-│   └── MODULES.md       # les 130 modules détaillés
+├── index.html · styles.css · app.js   # site statique (0 build), point d'entrée
+├── .nojekyll                           # sert le dossier tel quel sur GitHub Pages
+├── lib/                                # cœur applicatif côté navigateur (ES modules)
+│   ├── rag.js       # moteur RAG (chunk, TF-IDF, cosinus, localStorage, seed)
+│   ├── router.js    # routeur d'agents (cœur du Cerveau Central orchestrateur)
+│   └── llm.js       # LLM : mode démo ou API compatible OpenAI + orchestration
+├── data/
+│   ├── agents.json         # catalogue généré des 130 agents
+│   └── knowledge/          # documents de démonstration (seed) + manifest.json
+├── scripts/generate-agents.mjs  # source de vérité → régénère agents.json
+├── server/                 # serveur Node natif OPTIONNEL (mêmes fonctions + API REST)
+├── docs/                   # CAHIER_DES_CHARGES.md · MODULES.md (les 130 modules)
 └── package.json
 ```
 
-## 🔌 API
+## 🔌 API (serveur Node optionnel uniquement)
+
+Le site fonctionne sans backend. Si vous lancez `npm start`, un serveur Node natif
+expose en plus une API REST (utile pour une base de connaissances partagée/persistée
+côté serveur) :
 
 | Méthode | Route | Rôle |
 |---------|-------|------|

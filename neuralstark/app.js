@@ -1,14 +1,15 @@
-// NeuralStark — logique frontend (vanilla JS, aucune dépendance).
+// NeuralStark — application 100 % navigateur (aucun backend).
+// RAG, routeur et LLM tournent côté client ; déployable en site statique (GitHub Pages).
+import { RagStore } from "./lib/rag.js";
+import { AgentRouter } from "./lib/router.js";
+import { generate, orchestrate, providerInfo, getConfig, setConfig } from "./lib/llm.js";
+
 const state = {
-  agents: [],
-  categories: {},
-  byId: {},
-  active: null,
-  history: [],       // { role, content }
-  sending: false,
+  agents: [], categories: {}, byId: {}, active: null, history: [], sending: false,
+  rag: null, router: null,
 };
 
-const $ = (sel) => document.querySelector(sel);
+const $ = (s) => document.querySelector(s);
 const el = (tag, props = {}, ...kids) => {
   const n = document.createElement(tag);
   Object.entries(props).forEach(([k, v]) => {
@@ -22,42 +23,44 @@ const el = (tag, props = {}, ...kids) => {
   return n;
 };
 
-// ---------- Chargement ----------
+// ---------- Boot ----------
 async function boot() {
-  const [agentsRes, health] = await Promise.all([
-    fetch("/api/agents").then((r) => r.json()),
-    fetch("/api/health").then((r) => r.json()).catch(() => null),
-  ]);
+  const agentsRes = await fetch("data/agents.json").then((r) => r.json());
   state.agents = agentsRes.agents;
   state.categories = agentsRes.categories;
   state.byId = Object.fromEntries(state.agents.map((a) => [a.id, a]));
   $("#agent-count-badge").textContent = `${agentsRes.count} agents`;
 
-  if (health?.provider) {
-    const b = $("#provider-badge");
-    if (health.provider.mode === "live") {
-      b.textContent = `LLM: ${health.provider.model}`;
-      b.className = "badge badge-live";
-    } else {
-      b.textContent = "Mode démo";
-    }
-  }
+  state.router = new AgentRouter(state.agents);
+  state.rag = new RagStore();
+  try {
+    const man = await fetch("data/knowledge/manifest.json").then((r) => r.json());
+    await state.rag.seedIfEmpty(man.files || []);
+  } catch { /* pas de seed : la base démarre vide */ }
 
+  updateProviderBadge();
   renderAgentList();
-  await refreshDocs();
+  refreshDocs();
   wireComposer();
   wireDocForm();
+  wireSettings();
   $("#agent-search").addEventListener("input", (e) => renderAgentList(e.target.value));
   $("#clear-chat").addEventListener("click", clearChat);
 }
 
-// ---------- Catalogue d'agents ----------
+function updateProviderBadge() {
+  const b = $("#provider-badge");
+  const p = providerInfo();
+  if (p.mode === "live") { b.textContent = `LLM: ${p.model}`; b.className = "badge badge-live"; }
+  else { b.textContent = "Mode démo"; b.className = "badge badge-muted"; }
+}
+
+// ---------- Catalogue ----------
 function renderAgentList(filter = "") {
   const list = $("#agent-list");
   list.innerHTML = "";
   const q = filter.trim().toLowerCase();
 
-  // Carte « orchestrateur » épinglée en haut : le Neural Cerveau Central.
   const brain = state.byId["cerveau-central"];
   if (brain && (!q || brain.name.toLowerCase().includes(q) || "orchestrateur".includes(q))) {
     const card = el("button", {
@@ -89,12 +92,11 @@ function renderAgentList(filter = "") {
       el("span", { class: "chevron" }, "▼"),
     );
     header.addEventListener("click", () => group.classList.toggle("collapsed"));
-
     const wrap = el("div", { class: "cat-agents" });
     for (const a of agents) {
       const item = el("button", {
         class: "agent-item" + (state.active?.id === a.id ? " active" : ""),
-        type: "button", "data-id": a.id, title: a.description,
+        type: "button", title: a.description,
       },
         el("span", { class: "agent-dot", style: `background:${a.color}` }),
         el("span", { class: "a-name" }, a.name),
@@ -106,29 +108,22 @@ function renderAgentList(filter = "") {
     group.append(header, wrap);
     list.append(group);
   }
-  if (!list.children.length) {
-    list.append(el("div", { class: "doc-empty" }, "Aucun agent ne correspond."));
-  }
+  if (!list.children.length) list.append(el("div", { class: "doc-empty" }, "Aucun agent ne correspond."));
 }
 
 function selectAgent(id) {
   const a = state.byId[id];
   if (!a) return;
-  state.active = a;
-  state.history = [];
+  state.active = a; state.history = [];
   document.documentElement.style.setProperty("--c", a.color);
-
   const icon = $("#active-icon");
-  icon.textContent = a.icon;
-  icon.style.setProperty("--c", a.color);
+  icon.textContent = a.icon; icon.style.setProperty("--c", a.color);
   $("#active-name").textContent = a.name;
   $("#active-desc").textContent = a.description;
-
   $("#messages").innerHTML = "";
   $("#composer-input").disabled = false;
   $("#send-btn").disabled = false;
   $("#composer-input").focus();
-
   pushBotIntro(a);
   renderAgentList($("#agent-search").value);
 }
@@ -147,9 +142,8 @@ function pushBotIntro(a) {
   addMessage("bot", `Bonjour 👋 Je suis **${a.name}**. ${a.description}\n\nPosez-moi votre question — je m'appuierai sur les documents de votre base de connaissances.`, [], a);
 }
 
-// ---------- Messages ----------
+// ---------- Rendu messages ----------
 function mdToHtml(md) {
-  // Mini-rendu Markdown sûr (échappe le HTML, gère gras / code / listes / paragraphes).
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const lines = esc(md).split("\n");
   let html = "", inList = false;
@@ -176,15 +170,10 @@ function addMessage(role, content, sources = [], agent = state.active, routed = 
   const avatar = role === "user" ? "🧑" : (agent?.icon || "🧠");
   const bubble = el("div", { class: "msg-bubble", html: mdToHtml(content) });
   if (routed?.length) {
-    const r = el("div", { class: "routed" },
-      el("span", { class: "routed-label" }, "🧠 Agents mobilisés :"));
-    routed.forEach((ag, i) => {
-      r.append(el("span", {
-        class: "routed-chip" + (i === 0 ? " lead" : ""),
-        style: `--c:${ag.color}`,
-        title: `pertinence ${ag.score}`,
-      }, `${ag.icon} ${ag.name}`));
-    });
+    const r = el("div", { class: "routed" }, el("span", { class: "routed-label" }, "🧠 Agents mobilisés :"));
+    routed.forEach((ag, i) => r.append(el("span", {
+      class: "routed-chip" + (i === 0 ? " lead" : ""), style: `--c:${ag.color}`, title: `pertinence ${ag.score}`,
+    }, `${ag.icon} ${ag.name}`)));
     bubble.append(r);
   }
   if (sources?.length) {
@@ -192,13 +181,9 @@ function addMessage(role, content, sources = [], agent = state.active, routed = 
     for (const src of sources) s.append(el("span", { class: "source-chip" }, `📄 ${src.source}`));
     bubble.append(s);
   }
-  const msg = el("div", { class: `msg ${role}` },
-    el("div", { class: "msg-avatar" }, avatar),
-    bubble,
-  );
+  const msg = el("div", { class: `msg ${role}` }, el("div", { class: "msg-avatar" }, avatar), bubble);
   const box = $("#messages");
-  box.append(msg);
-  box.scrollTop = box.scrollHeight;
+  box.append(msg); box.scrollTop = box.scrollHeight;
   return msg;
 }
 
@@ -206,11 +191,9 @@ function addTyping() {
   $("#empty-state")?.remove();
   const msg = el("div", { class: "msg bot", id: "typing" },
     el("div", { class: "msg-avatar" }, state.active?.icon || "🧠"),
-    el("div", { class: "msg-bubble typing", html: "<span></span><span></span><span></span>" }),
-  );
+    el("div", { class: "msg-bubble typing", html: "<span></span><span></span><span></span>" }));
   const box = $("#messages");
-  box.append(msg);
-  box.scrollTop = box.scrollHeight;
+  box.append(msg); box.scrollTop = box.scrollHeight;
 }
 
 function clearChat() {
@@ -223,13 +206,8 @@ function clearChat() {
 // ---------- Composer ----------
 function wireComposer() {
   const input = $("#composer-input");
-  input.addEventListener("input", () => {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 160) + "px";
-  });
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#composer").requestSubmit(); }
-  });
+  input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 160) + "px"; });
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#composer").requestSubmit(); } });
   $("#composer").addEventListener("submit", onSend);
 }
 
@@ -238,92 +216,93 @@ async function onSend(e) {
   const input = $("#composer-input");
   const message = input.value.trim();
   if (!message || !state.active || state.sending) return;
-
-  state.sending = true;
-  $("#send-btn").disabled = true;
+  state.sending = true; $("#send-btn").disabled = true;
   input.value = ""; input.style.height = "auto";
-
   addMessage("user", message);
   state.history.push({ role: "user", content: message });
   addTyping();
 
   try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ agentId: state.active.id, message, history: state.history }),
-    });
-    const data = await res.json();
-    $("#typing")?.remove();
-    if (data.error) {
-      addMessage("bot", `⚠️ ${data.error}`);
+    const passages = state.rag.search(message, 4);
+    let data;
+    if (state.active.id === "cerveau-central") {
+      const routed = state.router.route(message, 3);
+      data = await orchestrate({ orchestrator: state.active, message, history: state.history, passages, routed });
     } else {
-      addMessage("bot", data.answer, data.sources || [], state.active, data.routed || []);
-      state.history.push({ role: "assistant", content: data.answer });
+      data = await generate({ agent: state.active, message, history: state.history, passages });
     }
+    $("#typing")?.remove();
+    addMessage("bot", data.answer, data.sources || [], state.active, data.routed || []);
+    state.history.push({ role: "assistant", content: data.answer });
   } catch (err) {
     $("#typing")?.remove();
-    addMessage("bot", `⚠️ Erreur réseau : ${err.message}`);
+    addMessage("bot", `⚠️ Erreur : ${err.message}. Vérifiez votre clé/URL dans ⚙️ ou repassez en mode démo.`);
   } finally {
-    state.sending = false;
-    $("#send-btn").disabled = false;
-    input.focus();
+    state.sending = false; $("#send-btn").disabled = false; input.focus();
   }
 }
 
-// ---------- Base de connaissances (RAG) ----------
+// ---------- Base de connaissances ----------
 function wireDocForm() {
-  $("#doc-form").addEventListener("submit", async (e) => {
+  $("#doc-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const name = $("#doc-name").value.trim() || "document.txt";
     const content = $("#doc-content").value.trim();
     if (content.length < 3) return;
-    await fetch("/api/documents", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, content }),
-    });
+    state.rag.addDocument(name, content);
     $("#doc-name").value = ""; $("#doc-content").value = "";
-    await refreshDocs();
+    refreshDocs();
   });
-
   $("#doc-file").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      $("#doc-content").value = reader.result;
-      if (!$("#doc-name").value.trim()) $("#doc-name").value = file.name;
-    };
+    reader.onload = () => { $("#doc-content").value = reader.result; if (!$("#doc-name").value.trim()) $("#doc-name").value = file.name; };
     reader.readAsText(file);
   });
 }
 
-async function refreshDocs() {
-  const data = await fetch("/api/documents").then((r) => r.json());
+function refreshDocs() {
+  const docs = state.rag.list();
+  const stats = state.rag.stats();
   const list = $("#doc-list");
   list.innerHTML = "";
-  $("#rag-stats").textContent = `${data.stats.documents} doc · ${data.stats.chunks} extraits`;
-  if (!data.documents.length) {
-    list.append(el("div", { class: "doc-empty" }, "Aucun document.\nAjoutez-en pour activer le RAG."));
-    return;
-  }
-  for (const d of data.documents) {
-    const card = el("div", { class: "doc-card" },
+  $("#rag-stats").textContent = `${stats.documents} doc · ${stats.chunks} extraits`;
+  if (!docs.length) { list.append(el("div", { class: "doc-empty" }, "Aucun document.\nAjoutez-en pour activer le RAG.")); return; }
+  for (const d of docs) {
+    list.append(el("div", { class: "doc-card" },
       el("span", { class: "doc-icon" }, "📄"),
       el("div", { class: "doc-info" },
         el("div", { class: "doc-title", title: d.name }, d.name),
-        el("div", { class: "doc-sub" }, `${d.chunks} extrait${d.chunks > 1 ? "s" : ""}`),
-      ),
-      el("button", { class: "doc-del", title: "Supprimer", onclick: () => removeDoc(d.id) }, "×"),
-    );
-    list.append(card);
+        el("div", { class: "doc-sub" }, `${d.chunks} extrait${d.chunks > 1 ? "s" : ""}`)),
+      el("button", { class: "doc-del", title: "Supprimer", onclick: () => { state.rag.removeDocument(d.id); refreshDocs(); } }, "×"),
+    ));
   }
 }
 
-async function removeDoc(id) {
-  await fetch(`/api/documents/${id}`, { method: "DELETE" });
-  await refreshDocs();
+// ---------- Réglages LLM (⚙️) ----------
+function wireSettings() {
+  const modal = $("#settings-modal");
+  const open = () => {
+    const c = getConfig();
+    $("#cfg-key").value = c.apiKey || "";
+    $("#cfg-base").value = c.baseUrl || "https://api.openai.com/v1";
+    $("#cfg-model").value = c.model || "gpt-4o-mini";
+    modal.classList.add("open");
+  };
+  const close = () => modal.classList.remove("open");
+  $("#settings-btn").addEventListener("click", open);
+  $("#cfg-cancel").addEventListener("click", close);
+  modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+  $("#cfg-save").addEventListener("click", () => {
+    setConfig({
+      apiKey: $("#cfg-key").value.trim(),
+      baseUrl: $("#cfg-base").value.trim() || "https://api.openai.com/v1",
+      model: $("#cfg-model").value.trim() || "gpt-4o-mini",
+    });
+    updateProviderBadge(); close();
+  });
+  $("#cfg-clear").addEventListener("click", () => { setConfig({}); updateProviderBadge(); close(); });
 }
 
 boot();
