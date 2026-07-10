@@ -88,7 +88,11 @@ contexte RAG, interdiction d'inventer). Le catalogue est **généré** par
 ### 3.3 Orchestration — le Neural Cerveau Central
 
 Le `Neural Cerveau Central` n'est pas un agent comme les autres : c'est
-l'**orchestrateur**. Pour une demande en langage naturel, il :
+l'**orchestrateur** — et **l'unique interlocuteur du client**. La conversation
+démarre directement avec lui ; l'utilisateur n'a jamais à chercher quel agent
+utiliser (la liste latérale n'est qu'une vitrine informative de l'équipe : un clic
+présente le spécialiste sans changer d'interlocuteur). Pour une demande en langage
+naturel, il :
 
 1. **Route** — `server/router.js` construit un corpus TF-IDF à partir du nom, de la
    description et de la catégorie des 129 autres agents, puis classe les agents par

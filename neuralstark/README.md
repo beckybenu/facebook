@@ -21,9 +21,11 @@ vos fichiers.
   médecin, commerce, restauration… 19 métiers) et l'app active automatiquement la
   sélection d'agents adaptée — l'orchestrateur ne route plus que dans ce pack.
   Voir [`docs/SECTEURS.md`](docs/SECTEURS.md).
-- **🧠 Neural Cerveau Central — orchestrateur** : décrivez votre besoin en langage
-  naturel, il **route** automatiquement vers le ou les agents pertinents parmi les 130,
-  délègue, et **synthétise** la réponse (les agents mobilisés sont affichés).
+- **🧠 Un seul interlocuteur** : le client parle uniquement à l'**assistant NeuralStark**
+  (Neural Cerveau Central). La conversation démarre directement — aucun agent à chercher.
+  L'assistant **route** automatiquement chaque demande vers le ou les spécialistes
+  pertinents, délègue, et **synthétise** la réponse (les agents mobilisés sont affichés).
+  La liste latérale n'est qu'une vitrine de l'équipe.
 - **Chat multi-agents** avec rendu Markdown et affichage des **sources**.
 - **Moteur RAG** local : ingestion, chunking, index TF-IDF, recherche par similarité
   cosinus, citations. **Aucune dépendance externe.**
