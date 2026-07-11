@@ -8,11 +8,13 @@ import {
   actionStatus, setActionStatus, pendingCount,
   getCompanyName, setCompanyName,
 } from "./lib/cockpit.js";
+import { AutomationEngine, TRIGGERS, loadJournal } from "./lib/automation.js";
 
 const state = {
   agents: [], categories: {}, byId: {}, active: null, history: [], sending: false,
   rag: null, router: null,
   sectors: [], sector: null, allowed: null, // allowed = Set d'ids d'agents du pack métier (null = tous)
+  engine: null, // Neural Automation Engine
 };
 const LS_SECTOR = "neuralstark:sector:v1";
 
@@ -64,22 +66,27 @@ async function boot() {
   // avec le Cerveau Central, qui mobilise les spécialistes en coulisses.
   selectAgent("cerveau-central");
   wireCockpit();
+  wireAutomations();
+  startEngine(); // les agents commencent à travailler en autonomie
 }
 
 // ---------- Cockpit (l'IA pilote l'entreprise) ----------
 function setView(view) {
-  const chat = view === "chat";
-  $("#messages").hidden = !chat;
-  $("#composer").hidden = !chat;
-  $("#cockpit").hidden = chat;
-  $("#tab-chat").classList.toggle("active", chat);
-  $("#tab-cockpit").classList.toggle("active", !chat);
-  if (!chat) renderCockpit();
+  const views = { chat: ["#messages", "#composer"], cockpit: ["#cockpit"], autom: ["#autom"] };
+  for (const [name, sels] of Object.entries(views)) {
+    for (const sel of sels) { const n = $(sel); if (n) n.hidden = name !== view; }
+  }
+  $("#tab-chat").classList.toggle("active", view === "chat");
+  $("#tab-cockpit").classList.toggle("active", view === "cockpit");
+  $("#tab-autom").classList.toggle("active", view === "autom");
+  if (view === "cockpit") renderCockpit();
+  if (view === "autom") renderAutomations();
 }
 
 function wireCockpit() {
   $("#tab-chat").addEventListener("click", () => setView("chat"));
   $("#tab-cockpit").addEventListener("click", () => setView("cockpit"));
+  $("#tab-autom").addEventListener("click", () => setView("autom"));
   $("#refresh-briefing").addEventListener("click", renderCockpit);
   const company = $("#company-name");
   company.value = getCompanyName();
@@ -146,6 +153,138 @@ function delegateAction(a) {
   $("#composer").requestSubmit();
 }
 
+// ---------- Neural Automation Engine (les agents travaillent seuls) ----------
+function startEngine() {
+  state.engine?.stop();
+  state.engine = new AutomationEngine({
+    sectorId: state.sector || "tous",
+    allowed: state.allowed,
+    byId: state.byId,
+    runAgent: async (agent, message) =>
+      generate({ agent, message, passages: state.rag.search(message, 3) }),
+    onRun: (wf, results, reason) => {
+      // Notification dans le chat : le travail s'est fait tout seul.
+      const head = results[0];
+      addMessage("bot",
+        `⚡ **Automation « ${wf.icon} ${wf.name} » exécutée** _(${reason})_\n\n` +
+        (head ? head.answer.split("\n").slice(0, 6).join("\n") : "") +
+        (results.length > 1 ? `\n\n_(+ ${results.length - 1} étape(s) — détail dans le journal ⚡)_` : ""));
+      if (!$("#autom")?.hidden) renderAutomations();
+      if (!$("#cockpit")?.hidden) renderCockpit();
+    },
+  });
+  state.engine.start(30_000); // vérifie les déclencheurs toutes les 30 s + rattrapage
+}
+
+function fmtLastRun(ts) {
+  if (!ts) return "jamais exécutée";
+  const d = new Date(ts);
+  return "dernière exécution : " + d.toLocaleDateString("fr-CH") + " " +
+    d.toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" });
+}
+
+function renderAutomations() {
+  const list = $("#workflow-list");
+  if (!list || !state.engine) return;
+  list.innerHTML = "";
+  for (const wf of state.engine.workflows) {
+    const chain = el("div", { class: "wf-chain" });
+    wf.steps.forEach((s, i) => {
+      const agent = state.byId[s.agentId];
+      if (i > 0) chain.append(el("span", { class: "wf-arrow" }, "→"));
+      chain.append(el("span", { class: "wf-step", title: s.task }, `${agent?.icon || "🤖"} ${agent?.name || s.agentId}`));
+    });
+    const toggle = el("label", { class: "switch", title: wf.enabled ? "Désactiver" : "Activer" });
+    const cb = el("input", { type: "checkbox" });
+    cb.checked = wf.enabled;
+    cb.addEventListener("change", () => { state.engine.toggle(wf.id, cb.checked); renderAutomations(); });
+    toggle.append(cb, el("span", { class: "slider" }));
+
+    const card = el("div", { class: "wf-card" + (wf.enabled ? "" : " off") },
+      el("div", { class: "wf-top" },
+        el("span", { class: "wf-icon" }, wf.icon),
+        el("span", { class: "wf-name" }, wf.name),
+        el("span", { class: "wf-trigger" }, `⏱ ${TRIGGERS[wf.trigger]?.label || wf.trigger}`),
+        toggle,
+      ),
+      chain,
+      el("div", { class: "wf-bottom" },
+        el("span", { class: "wf-last" }, fmtLastRun(wf.lastRun)),
+        wf.custom ? el("button", { class: "wf-del", title: "Supprimer", onclick: () => { state.engine.removeCustom(wf.id); renderAutomations(); } }, "🗑") : "",
+        el("button", { class: "wf-run", onclick: async (e) => {
+          e.target.disabled = true; e.target.textContent = "Exécution…";
+          await state.engine.run(wf, "manuel");
+          renderAutomations();
+        } }, "▶ Exécuter maintenant"),
+      ),
+    );
+    list.append(card);
+  }
+  if (!state.engine.workflows.length) {
+    list.append(el("div", { class: "journal-empty" }, "Aucune automation pour ce domaine — créez-en une !"));
+  }
+  renderJournal();
+}
+
+function renderJournal() {
+  const box = $("#journal");
+  if (!box) return;
+  box.innerHTML = "";
+  const entries = loadJournal().filter((e) => e.sectorId === (state.sector || "tous")).slice(0, 15);
+  if (!entries.length) {
+    box.append(el("div", { class: "journal-empty" }, "Rien pour l'instant — vos agents consigneront ici chaque tâche accomplie."));
+    return;
+  }
+  for (const e of entries) {
+    const d = new Date(e.ts);
+    const det = el("details", {},
+      el("summary", {},
+        `${e.icon} ${e.name}`,
+        el("span", { class: "wf-trigger" }, e.reason),
+        el("span", { class: "j-time" }, d.toLocaleDateString("fr-CH") + " " + d.toLocaleTimeString("fr-CH", { hour: "2-digit", minute: "2-digit" })),
+      ),
+    );
+    for (const r of e.results) {
+      det.append(el("div", { class: "j-step" },
+        el("span", { class: "j-agent" }, `${r.icon} ${r.agentName}`),
+        el("div", { html: mdToHtml(r.answer) }),
+      ));
+    }
+    box.append(det);
+  }
+}
+
+function wireAutomations() {
+  const form = $("#autom-form");
+  $("#new-autom-btn").addEventListener("click", () => {
+    form.hidden = !form.hidden;
+    if (!form.hidden) {
+      const trig = $("#af-trigger");
+      trig.innerHTML = "";
+      for (const [k, t] of Object.entries(TRIGGERS)) {
+        trig.append(el("option", { value: k }, t.label));
+      }
+      const ag = $("#af-agent");
+      ag.innerHTML = "";
+      const pool = state.allowed ? state.agents.filter((a) => state.allowed.has(a.id)) : state.agents;
+      for (const a of pool.filter((a) => a.id !== "cerveau-central")) {
+        ag.append(el("option", { value: a.id }, `${a.icon} ${a.name}`));
+      }
+    }
+  });
+  $("#af-cancel").addEventListener("click", () => { form.hidden = true; });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = $("#af-name").value.trim();
+    const task = $("#af-task").value.trim();
+    if (!name || !task) return;
+    state.engine.addCustom({ name, trigger: $("#af-trigger").value, agentId: $("#af-agent").value, task });
+    $("#af-name").value = ""; $("#af-task").value = "";
+    form.hidden = true;
+    renderAutomations();
+  });
+}
+
 // ---------- Domaines d'activité (packs métiers) ----------
 function currentSector() {
   return state.sectors.find((s) => s.id === state.sector) || null;
@@ -198,6 +337,11 @@ function applySector(id, { silent = false } = {}) {
   }
   const cockpit = $("#cockpit");
   if (cockpit && !cockpit.hidden) renderCockpit();
+  // Reconstruit le moteur d'automation sur le nouveau pack métier.
+  if (state.engine) {
+    startEngine();
+    if (!$("#autom")?.hidden) renderAutomations();
+  }
 }
 
 function agentVisible(a) {
@@ -311,8 +455,9 @@ function pushBotIntro(a) {
       `${sectorLine}\n\n` +
       `**Vous n'avez rien à chercher** : décrivez simplement votre besoin, ` +
       `je mobilise automatiquement les bons spécialistes et je vous réponds à partir de vos documents.\n\n` +
-      `📊 Ouvrez le **Cockpit** (en haut) : j'y surveille votre activité, je vous prépare un ` +
-      `**briefing du jour** et un **plan d'actions** que vous pouvez me déléguer en un clic.\n\n` +
+      `📊 Le **Cockpit** vous donne l'état de votre activité en un coup d'œil. ` +
+      `⚡ Dans **Automations**, mes agents travaillent **tout seuls** : briefing quotidien, veille ` +
+      `documentaire, relances hebdomadaires… Chaque tâche accomplie est consignée au journal.\n\n` +
       `_Exemples : « ce devis est-il rentable ? », « rédige un post pour Instagram », ` +
       `« quel est le tarif façade ? », « prépare l'arrivée d'un nouvel employé »._`, [], a);
     return;
@@ -441,6 +586,8 @@ function wireDocForm() {
     state.rag.addDocument(name, content);
     $("#doc-name").value = ""; $("#doc-content").value = "";
     refreshDocs();
+    // Déclenche les automations « nouveau document » (veille documentaire…).
+    state.engine?.notifyDocAdded(name);
   });
   $("#doc-file").addEventListener("change", (e) => {
     const file = e.target.files[0];

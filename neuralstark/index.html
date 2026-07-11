@@ -54,6 +54,7 @@
           <div class="view-tabs" role="tablist">
             <button id="tab-chat" class="view-tab active" role="tab">💬 Assistant</button>
             <button id="tab-cockpit" class="view-tab" role="tab">📊 Cockpit</button>
+            <button id="tab-autom" class="view-tab" role="tab">⚡ Automations</button>
           </div>
           <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
           <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
@@ -94,6 +95,40 @@
             <h3>✅ Plan d'actions — je m'en occupe</h3>
           </div>
           <div id="action-list" class="action-list"></div>
+        </div>
+      </section>
+
+      <!-- Automations : les agents travaillent en autonomie -->
+      <section id="autom" class="autom" hidden>
+        <div class="autom-head">
+          <div>
+            <h2>⚡ Neural Automation Engine</h2>
+            <p>Vos agents exécutent ces tâches <strong>automatiquement</strong>, sans intervention.
+               <span id="engine-status" class="engine-status">● moteur actif</span></p>
+          </div>
+          <button id="new-autom-btn" class="primary-btn">+ Nouvelle automation</button>
+        </div>
+
+        <form id="autom-form" class="autom-form" hidden>
+          <input id="af-name" type="text" placeholder="Nom (ex : Rapport client du lundi)" maxlength="60" required />
+          <div class="autom-form-row">
+            <select id="af-trigger"></select>
+            <select id="af-agent"></select>
+          </div>
+          <textarea id="af-task" rows="2" placeholder="Instruction pour l'agent (ex : Prépare le récapitulatif des chantiers terminés…)" required></textarea>
+          <div class="autom-form-row">
+            <button type="button" id="af-cancel" class="ghost-btn">Annuler</button>
+            <button type="submit" class="primary-btn">Créer l'automation</button>
+          </div>
+        </form>
+
+        <div id="workflow-list" class="workflow-list"></div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>🗞️ Journal d'activité — ce que vos agents ont fait</h3>
+          </div>
+          <div id="journal" class="journal"></div>
         </div>
       </section>
 
