@@ -51,6 +51,10 @@
           </div>
         </div>
         <div class="header-actions">
+          <div class="view-tabs" role="tablist">
+            <button id="tab-chat" class="view-tab active" role="tab">💬 Assistant</button>
+            <button id="tab-cockpit" class="view-tab" role="tab">📊 Cockpit</button>
+          </div>
           <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
           <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
         </div>
@@ -62,6 +66,34 @@
           <h2>Bienvenue dans NeuralStark</h2>
           <p>Un seul assistant, 130 agents spécialisés en coulisses.<br />
              Décrivez simplement votre besoin — il s'occupe du reste.</p>
+        </div>
+      </section>
+
+      <!-- Cockpit : l'IA pilote l'entreprise -->
+      <section id="cockpit" class="cockpit" hidden>
+        <div class="cockpit-head">
+          <div>
+            <h2>Cockpit d'entreprise</h2>
+            <p>Votre IA surveille l'activité et vous propose les actions du jour.</p>
+          </div>
+          <input id="company-name" type="text" placeholder="Nom de votre entreprise…" maxlength="80" />
+        </div>
+
+        <div id="kpi-row" class="kpi-row"></div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>📋 Briefing du jour</h3>
+            <button id="refresh-briefing" class="ghost-btn">Actualiser</button>
+          </div>
+          <div id="briefing" class="briefing"></div>
+        </div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>✅ Plan d'actions — je m'en occupe</h3>
+          </div>
+          <div id="action-list" class="action-list"></div>
         </div>
       </section>
 

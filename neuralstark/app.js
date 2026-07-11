@@ -3,6 +3,11 @@
 import { RagStore } from "./lib/rag.js";
 import { AgentRouter } from "./lib/router.js";
 import { generate, orchestrate, providerInfo, getConfig, setConfig } from "./lib/llm.js";
+import {
+  extractInsights, buildBriefing, getActionPlan,
+  actionStatus, setActionStatus, pendingCount,
+  getCompanyName, setCompanyName,
+} from "./lib/cockpit.js";
 
 const state = {
   agents: [], categories: {}, byId: {}, active: null, history: [], sending: false,
@@ -58,6 +63,87 @@ async function boot() {
   // Le client ne parle qu'à UN assistant : la conversation démarre directement
   // avec le Cerveau Central, qui mobilise les spécialistes en coulisses.
   selectAgent("cerveau-central");
+  wireCockpit();
+}
+
+// ---------- Cockpit (l'IA pilote l'entreprise) ----------
+function setView(view) {
+  const chat = view === "chat";
+  $("#messages").hidden = !chat;
+  $("#composer").hidden = !chat;
+  $("#cockpit").hidden = chat;
+  $("#tab-chat").classList.toggle("active", chat);
+  $("#tab-cockpit").classList.toggle("active", !chat);
+  if (!chat) renderCockpit();
+}
+
+function wireCockpit() {
+  $("#tab-chat").addEventListener("click", () => setView("chat"));
+  $("#tab-cockpit").addEventListener("click", () => setView("cockpit"));
+  $("#refresh-briefing").addEventListener("click", renderCockpit);
+  const company = $("#company-name");
+  company.value = getCompanyName();
+  company.addEventListener("change", () => { setCompanyName(company.value.trim()); renderCockpit(); });
+}
+
+function renderCockpit() {
+  const s = currentSector();
+  const insights = extractInsights(state.rag);
+  const plan = getActionPlan(state.sector, state.allowed);
+  const pending = pendingCount(state.sector || "tous", plan);
+
+  // KPIs
+  const fmt = (n) => n.toLocaleString("fr-CH", { maximumFractionDigits: 0 });
+  const kpis = [
+    { value: String(insights.documents), label: "Documents surveillés" },
+    { value: insights.amounts ? `${fmt(insights.total)} ${insights.currency}` : "—", label: "Volume détecté" },
+    { value: String(s ? s.count : state.agents.length), label: "Agents actifs" },
+    { value: String(pending), label: "Actions en attente" },
+  ];
+  const row = $("#kpi-row");
+  row.innerHTML = "";
+  for (const k of kpis) {
+    row.append(el("div", { class: "kpi-tile" },
+      el("div", { class: "kpi-value" }, k.value),
+      el("div", { class: "kpi-label" }, k.label)));
+  }
+
+  // Briefing
+  const company = getCompanyName();
+  let briefing = buildBriefing({ sector: s, insights, actionsPending: pending });
+  if (company) briefing = briefing.replace("**Briefing du", `**${company} — briefing du`);
+  $("#briefing").innerHTML = mdToHtml(briefing);
+
+  // Plan d'actions
+  const list = $("#action-list");
+  list.innerHTML = "";
+  for (const a of plan) {
+    const agent = state.byId[a.agentId];
+    const status = actionStatus(state.sector || "tous", a.id);
+    const item = el("div", { class: "action-item " + status },
+      el("span", { class: "act-icon" }, agent?.icon || "🤖"),
+      el("div", { class: "act-info" },
+        el("div", { class: "act-title" }, a.title),
+        el("div", { class: "act-agent" }, `Confié à ${agent?.name || "l'assistant"}`)),
+      status === "todo"
+        ? el("button", { class: "act-btn", onclick: () => delegateAction(a) }, "Déléguer à l'IA")
+        : el("span", { class: "act-agent" }, status === "delegated" ? "✔ En cours" : "✔ Fait"),
+      status !== "done"
+        ? el("button", { class: "act-done", title: "Marquer comme fait", onclick: () => { setActionStatus(state.sector || "tous", a.id, "done"); renderCockpit(); } }, "Fait")
+        : el("button", { class: "act-done", title: "Remettre à faire", onclick: () => { setActionStatus(state.sector || "tous", a.id, "todo"); renderCockpit(); } }, "↺"),
+    );
+    list.append(item);
+  }
+  if (!plan.length) list.append(el("div", { class: "doc-empty" }, "Aucune action proposée pour ce domaine."));
+}
+
+// Délègue une action : bascule sur le chat et envoie la demande à l'assistant.
+function delegateAction(a) {
+  setActionStatus(state.sector || "tous", a.id, "delegated");
+  setView("chat");
+  const input = $("#composer-input");
+  input.value = a.prompt;
+  $("#composer").requestSubmit();
 }
 
 // ---------- Domaines d'activité (packs métiers) ----------
@@ -110,6 +196,8 @@ function applySector(id, { silent = false } = {}) {
       `🧩 Pack métier activé : **${s.icon} ${s.label}** — ${s.count} agents sélectionnés pour ce domaine. ` +
       `Je ne mobilise plus que les spécialistes utiles à votre activité.`);
   }
+  const cockpit = $("#cockpit");
+  if (cockpit && !cockpit.hidden) renderCockpit();
 }
 
 function agentVisible(a) {
@@ -223,6 +311,8 @@ function pushBotIntro(a) {
       `${sectorLine}\n\n` +
       `**Vous n'avez rien à chercher** : décrivez simplement votre besoin, ` +
       `je mobilise automatiquement les bons spécialistes et je vous réponds à partir de vos documents.\n\n` +
+      `📊 Ouvrez le **Cockpit** (en haut) : j'y surveille votre activité, je vous prépare un ` +
+      `**briefing du jour** et un **plan d'actions** que vous pouvez me déléguer en un clic.\n\n` +
       `_Exemples : « ce devis est-il rentable ? », « rédige un post pour Instagram », ` +
       `« quel est le tarif façade ? », « prépare l'arrivée d'un nouvel employé »._`, [], a);
     return;
