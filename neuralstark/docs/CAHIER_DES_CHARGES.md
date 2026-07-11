@@ -150,6 +150,31 @@ NeuralStark de « répondre » à « gérer » :
 C'est la brique produit qui concrétise la promesse : *l'entrepreneur paie une IA
 qui pilote son entreprise*, au-delà du simple question/réponse.
 
+### 3.6 Neural Automation Engine — les agents travaillent en autonomie
+
+Le mode **⚡ Automations** (`lib/automation.js`) transforme les 130 agents en
+main-d'œuvre autonome, sur le modèle de n8n :
+
+- **Workflow = déclencheur → chaîne d'agents.** Déclencheurs : toutes les heures,
+  chaque jour, chaque semaine, ou **événement** (nouveau document ajouté à la base).
+  La sortie de chaque étape nourrit l'étape suivante (ex. briefing : `Suiveur de
+  KPI` analyse → `Gardien de Trésorerie` alerte sur cette analyse).
+- **Workflows par défaut** provisionnés selon le pack métier (seuls ceux dont tous
+  les agents existent dans le pack sont installés) : briefing quotidien, veille
+  documentaire, relances commerciales, présence réseaux sociaux, + spécifiques
+  (chantiers pour le BTP, synthèse de dossiers pour les avocats, stocks pour le
+  commerce/industrie).
+- **Autonomie réelle côté client** : le moteur vérifie les échéances toutes les
+  30 s tant que l'app est ouverte et **rattrape au démarrage** les exécutions
+  manquées (le briefing du jour tourne seul dès l'ouverture). Chaque exécution est
+  consignée au **journal d'activité** (persisté) et notifiée dans le chat.
+- **Automations personnalisées** : l'entrepreneur crée les siennes (nom,
+  déclencheur, agent, instruction) sans code ; interrupteurs on/off et exécution
+  manuelle sur chaque workflow.
+- **Limite assumée du statique** : sans backend, le moteur ne tourne que quand
+  l'app est ouverte. Le serveur Node optionnel (`server/`) est la cible naturelle
+  pour une exécution 24 h/24 (même moteur, mêmes workflows).
+
 ## 4. Stack technique & déploiement
 
 - **Architecture client-first** : RAG (`lib/rag.js`), routeur (`lib/router.js`) et LLM

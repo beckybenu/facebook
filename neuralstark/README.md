@@ -21,6 +21,15 @@ vos fichiers.
   médecin, commerce, restauration… 19 métiers) et l'app active automatiquement la
   sélection d'agents adaptée — l'orchestrateur ne route plus que dans ce pack.
   Voir [`docs/SECTEURS.md`](docs/SECTEURS.md).
+- **⚡ Neural Automation Engine (façon n8n)** : les agents travaillent **en
+  autonomie**. Des workflows « déclencheur → chaîne d'agents » s'exécutent seuls :
+  briefing quotidien (KPI → alerte trésorerie), veille documentaire à chaque nouveau
+  document, relances commerciales et présence réseaux sociaux hebdomadaires, plus des
+  workflows par métier (préparation des chantiers, synthèse de dossiers, surveillance
+  des stocks…). Interrupteurs on/off, exécution manuelle, **journal d'activité** de
+  tout ce que les agents ont fait, et **créateur d'automations personnalisées**
+  (nom + déclencheur + agent + instruction). Le moteur vérifie les échéances toutes
+  les 30 s et **rattrape les exécutions manquées** à l'ouverture.
 - **📊 Cockpit d'entreprise** : l'IA ne fait pas que répondre, elle **gère**. Le
   cockpit affiche les indicateurs extraits de vos documents (volume d'affaires
   détecté, documents surveillés), un **briefing du jour** généré par l'assistant et
