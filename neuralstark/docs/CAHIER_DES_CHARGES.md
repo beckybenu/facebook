@@ -4,9 +4,11 @@
 
 ## 1. Vision
 
-NeuralStark est un **cerveau d'entreprise** : un assistant IA privé, façon « ChatGPT
-dédié à votre organisation », nourri par **vos propres documents** (devis, factures,
-emails, rapports, procédures, photos de chantier…). Il permet de :
+NeuralStark est un **cerveau d'entreprise** : une IA qu'un entrepreneur **paie pour
+gérer sa PME**. Pas un simple chatbot — un directeur des opérations virtuel, nourri
+par **les documents de l'entreprise** (devis, factures, emails, rapports, procédures,
+photos de chantier…), qui surveille l'activité, briefe le dirigeant chaque jour,
+propose les actions à mener et les exécute quand on les lui délègue. Il permet de :
 
 - **Trouver l'information instantanément** — questions en langage naturel, réponses
   contextuelles issues de vos données internes.
@@ -126,6 +128,27 @@ une sélection curée des 130 agents adaptée au secteur choisi.
 - Le choix est **persisté** (localStorage) et modifiable à tout moment.
 - Source de vérité : `scripts/generate-sectors.mjs` → `data/sectors.json` (tous les
   ids sont validés contre le catalogue à la génération). Détail : `docs/SECTEURS.md`.
+
+### 3.5 Cockpit — l'IA gère l'entreprise
+
+Le mode **Cockpit** (onglet 📊 dans l'en-tête, module `lib/cockpit.js`) fait passer
+NeuralStark de « répondre » à « gérer » :
+
+- **Indicateurs** extraits automatiquement de la base de connaissances : documents
+  surveillés, montants détectés (analyse CHF/EUR des devis et factures), agents
+  actifs, actions en attente.
+- **Briefing du jour** : l'assistant fait le point (état de la base, volume
+  d'affaires repéré, alertes — ex. base vide — et priorités), personnalisé au nom
+  de l'entreprise et au métier.
+- **Plan d'actions** : liste d'actions adaptée au pack métier (ex. peinture :
+  planifier les chantiers, calculer les matériaux, publier un avant/après ;
+  avocats : synthèse de dossiers, vérification de contrats…). Chaque action porte
+  le nom de l'agent responsable et un bouton **« Déléguer à l'IA »** : l'app
+  bascule dans le chat, l'assistant mobilise le spécialiste et produit le
+  livrable. Statuts (à faire / en cours / fait) persistés en localStorage.
+
+C'est la brique produit qui concrétise la promesse : *l'entrepreneur paie une IA
+qui pilote son entreprise*, au-delà du simple question/réponse.
 
 ## 4. Stack technique & déploiement
 

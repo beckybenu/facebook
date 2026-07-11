@@ -21,6 +21,12 @@ vos fichiers.
   médecin, commerce, restauration… 19 métiers) et l'app active automatiquement la
   sélection d'agents adaptée — l'orchestrateur ne route plus que dans ce pack.
   Voir [`docs/SECTEURS.md`](docs/SECTEURS.md).
+- **📊 Cockpit d'entreprise** : l'IA ne fait pas que répondre, elle **gère**. Le
+  cockpit affiche les indicateurs extraits de vos documents (volume d'affaires
+  détecté, documents surveillés), un **briefing du jour** généré par l'assistant et
+  un **plan d'actions** adapté au métier — chaque action se **délègue à l'IA en un
+  clic** (elle bascule dans le chat, mobilise le bon spécialiste et produit le
+  livrable). Statuts persistés (à faire / en cours / fait).
 - **🧠 Un seul interlocuteur** : le client parle uniquement à l'**assistant NeuralStark**
   (Neural Cerveau Central). La conversation démarre directement — aucun agent à chercher.
   L'assistant **route** automatiquement chaque demande vers le ou les spécialistes
