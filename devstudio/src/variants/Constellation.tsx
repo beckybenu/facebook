@@ -14,9 +14,12 @@ const IRIS = '#8052ff'
 const AMBER = '#ffb829'
 const ASH = '#9a9a9a'
 const MIST = '#bdbdbd'
-const PALETTE = [IRIS, AMBER, '#1fbf9e', '#ff4fd8', '#4f7dff', '#b18bff']
+const PALETTE = [IRIS, AMBER, '#1fbf9e', '#ff4fd8', '#4f7dff', '#b18bff', '#6a3df5', '#2f9bff']
 
-const font = { fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }
+const font = {
+  fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
+  fontFeatureSettings: "'ss01' on",
+} as const
 
 function hash(n: number) {
   const x = Math.sin(n * 127.1 + 311.7) * 43758.5453
@@ -50,7 +53,7 @@ function BrainConstellation() {
     const ctx = canvas.getContext('2d')!
     let raf = 0
     const dpr = Math.min(2, window.devicePixelRatio || 1)
-    const size = () => Math.min(680, Math.max(340, canvas.parentElement!.clientWidth))
+    const size = () => Math.min(740, Math.max(340, canvas.parentElement!.clientWidth))
     let S = size()
     const setup = () => {
       S = size()
@@ -68,19 +71,19 @@ function BrainConstellation() {
     type P = { x: number; y: number; c: string; s: number; ph: number; rot: number }
     const parts: P[] = []
     let seed = 1
-    while (parts.length < 1500 && seed < 40000) {
+    while (parts.length < 2400 && seed < 90000) {
       seed++
       const x = hash(seed * 1.7) * 2.4 - 1.2
       const y = hash(seed * 3.1) * 1.7 - 0.85
       if (!inBrain(x, y)) continue
       // sillons : on creuse la densité le long de bandes sinueuses
       const fold = Math.sin(Math.atan2(y, x) * 6 + Math.hypot(x, y) * 11)
-      if (Math.abs(fold) < 0.24 && hash(seed * 5.3) < 0.8) continue
+      if (Math.abs(fold) < 0.22 && hash(seed * 5.3) < 0.8) continue
       parts.push({
         x,
         y,
         c: PALETTE[Math.floor(hash(seed * 7.7) * PALETTE.length)],
-        s: 1.6 + hash(seed * 9.1) * 2.6,
+        s: 1.3 + hash(seed * 9.1) * 2.2,
         ph: hash(seed * 11.3) * Math.PI * 2,
         rot: hash(seed * 13.7) * Math.PI * 2,
       })
@@ -259,10 +262,10 @@ export default function Constellation() {
             style={{
               fontSize: 14,
               fontWeight: 600,
-              letterSpacing: '0.35px',
+              letterSpacing: '0.025em',
               background: IRIS,
-              borderRadius: 24,
-              padding: '14px 22px',
+              borderRadius: 22.5,
+              padding: '14.4px 16px',
             }}
           >
             Demander un accès
@@ -281,13 +284,13 @@ export default function Constellation() {
               initial={{ opacity: 0, y: 34 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              style={{ fontSize: 'clamp(44px, 5.6vw, 84px)', fontWeight: 400, lineHeight: 1.08, letterSpacing: '-0.04em' }}
+              style={{ fontSize: 'clamp(44px, 6.1vw, 78px)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.04em' }}
             >
-              Votre projet a
+              Votre entreprise
               <br />
-              une réponse.
+              a la réponse.
               <br />
-              Demandez à Benu.
+              Demandez-la à Benu.
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 24 }}
@@ -309,7 +312,7 @@ export default function Constellation() {
               <a
                 href={`mailto:${EMAIL}`}
                 className="uppercase text-white transition-transform hover:scale-[1.04]"
-                style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.35px', background: IRIS, borderRadius: 24, padding: '15px 24px' }}
+                style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.025em', background: IRIS, borderRadius: 22.5, padding: '14.4px 16px' }}
               >
                 Démarrer un projet
               </a>
@@ -412,7 +415,7 @@ export default function Constellation() {
         <section className="py-[120px] pb-[96px]">
           <motion.div {...fadeUp}>
             <Label>Contact</Label>
-            <h2 style={{ fontSize: 'clamp(52px, 8vw, 113px)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.04em' }}>
+            <h2 style={{ fontSize: 'clamp(52px, 8vw, 113px)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.04em' }}>
               Construisons
               <br />
               votre constellation.
@@ -421,7 +424,7 @@ export default function Constellation() {
               <a
                 href={`mailto:${EMAIL}`}
                 className="uppercase text-white transition-transform hover:scale-[1.04]"
-                style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.35px', background: IRIS, borderRadius: 24, padding: '15px 24px' }}
+                style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.025em', background: IRIS, borderRadius: 22.5, padding: '14.4px 16px' }}
               >
                 Demander un accès
               </a>
