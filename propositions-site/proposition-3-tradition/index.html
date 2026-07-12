@@ -169,7 +169,7 @@
   .hero-bg.loaded {
     background:
       linear-gradient(180deg, rgba(20,16,14,0.74) 0%, rgba(20,16,14,0.5) 42%, rgba(20,16,14,0.95) 100%),
-      url("https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80");
+      url("fabrice-2.jpg");
     background-size: cover; background-position: center;
   }
   .hero-watermark {
@@ -337,7 +337,7 @@
 
   /* ---------- Contact / CTA ---------- */
   .cta-final { text-align: center; overflow: hidden; background: var(--ink); }
-  .cta-final .cta-bg { position: absolute; inset: 0; z-index: 0; opacity: 0.16; background: url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=80") center/cover; }
+  .cta-final .cta-bg { position: absolute; inset: 0; z-index: 0; opacity: 0.16; background: url("fabrice-3.jpg") center/cover; }
   .cta-final::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent, var(--ink) 78%); z-index: 1; }
   .cta-inner { position: relative; z-index: 3; max-width: 720px; margin: 0 auto; }
   .cta-final h2 { font-size: clamp(2.4rem, 6vw, 4.4rem); color: var(--cream-2); }
@@ -511,8 +511,8 @@
     <div class="wrap about-grid">
       <figure class="about-figure reveal">
         <div class="frame">
-          <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=900&q=80"
-               alt="Portrait de Fabrice Alvarez, thérapeute en médecine traditionnelle chinoise" loading="lazy" />
+          <img src="fabrice-1.jpg"
+               alt="Fabrice Alvarez, thérapeute en médecine traditionnelle chinoise" loading="lazy" />
           <span class="corner" aria-hidden="true"></span>
           <figcaption class="tag">Fabrice Alvarez</figcaption>
         </div>
@@ -758,7 +758,7 @@
       var heroBg = document.getElementById('heroBg');
       var img = new Image();
       img.onload = function () { heroBg.classList.add('loaded'); };
-      img.src = 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80';
+      img.src = 'fabrice-2.jpg';
 
       // Scroll reveal via IntersectionObserver
       var reveals = document.querySelectorAll('.reveal');
