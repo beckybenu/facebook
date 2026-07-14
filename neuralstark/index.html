@@ -168,18 +168,39 @@
       <h2>Connecter un modèle LLM</h2>
       <p class="modal-hint">
         Sans clé, NeuralStark fonctionne en <strong>mode démo</strong> (réponses extraites de vos
-        documents), 100 % dans le navigateur. Ajoutez une clé pour des réponses génératives via une
-        API compatible OpenAI (OpenAI, DeepSeek, Groq, Ollama, LM Studio…). La clé reste stockée
-        <strong>localement</strong> dans votre navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+        documents), 100 % dans le navigateur. Choisissez un fournisseur, collez votre clé, et les
+        réponses deviennent génératives. La clé reste stockée <strong>localement</strong> dans votre
+        navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+      </p>
+      <label class="modal-label">Fournisseur
+        <select id="cfg-provider">
+          <option value="groq" selected>Groq — gratuit, recommandé</option>
+          <option value="openrouter">OpenRouter — modèles gratuits</option>
+          <option value="ollama">Ollama — local, sans clé</option>
+          <option value="lmstudio">LM Studio — local, sans clé</option>
+          <option value="openai">OpenAI — ⚠️ bloqué en navigateur</option>
+          <option value="custom">Autre (personnalisé)</option>
+        </select>
+      </label>
+      <p id="cfg-provider-hint" class="modal-hint modal-key-hint">
+        🔑 Obtenez votre clé <strong>gratuite</strong> sur
+        <a id="cfg-key-link" href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>,
+        puis collez-la ci-dessous.
+      </p>
+      <p class="modal-hint modal-warn" id="cfg-cors-warn" hidden>
+        ⚠️ Ce site étant <strong>100 % navigateur</strong> (sans serveur), <strong>OpenAI et
+        DeepSeek bloquent les appels</strong> (CORS) → « Failed to fetch ». Choisissez plutôt
+        <strong>Groq</strong> ou <strong>OpenRouter</strong>, ou lancez le serveur Node optionnel
+        (<code>npm start</code>).
       </p>
       <label class="modal-label">Clé API
-        <input id="cfg-key" type="password" placeholder="sk-…  (laisser vide = mode démo)" autocomplete="off" />
+        <input id="cfg-key" type="password" placeholder="gsk-…  (laisser vide = mode démo)" autocomplete="off" />
       </label>
       <label class="modal-label">URL de base
-        <input id="cfg-base" type="text" placeholder="https://api.openai.com/v1" />
+        <input id="cfg-base" type="text" placeholder="https://api.groq.com/openai/v1" />
       </label>
       <label class="modal-label">Modèle
-        <input id="cfg-model" type="text" placeholder="gpt-4o-mini" />
+        <input id="cfg-model" type="text" placeholder="llama-3.3-70b-versatile" />
       </label>
       <div class="modal-actions">
         <button id="cfg-clear" class="ghost-btn">Réinitialiser</button>

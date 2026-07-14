@@ -617,24 +617,70 @@ function refreshDocs() {
 }
 
 // ---------- Réglages LLM (⚙️) ----------
+// Préréglages fournisseurs : Groq/OpenRouter autorisent les appels navigateur (CORS) ;
+// OpenAI/DeepSeek les bloquent (utilisable uniquement via le serveur Node optionnel).
+const LLM_PRESETS = {
+  groq:       { baseUrl: "https://api.groq.com/openai/v1", model: "llama-3.3-70b-versatile",
+                keyUrl: "https://console.groq.com/keys", keyLabel: "console.groq.com/keys", free: true },
+  openrouter: { baseUrl: "https://openrouter.ai/api/v1", model: "meta-llama/llama-3.3-70b-instruct:free",
+                keyUrl: "https://openrouter.ai/settings/keys", keyLabel: "openrouter.ai/settings/keys", free: true },
+  ollama:     { baseUrl: "http://localhost:11434/v1", model: "llama3.1", noKey: true },
+  lmstudio:   { baseUrl: "http://localhost:1234/v1", model: "local-model", noKey: true },
+  openai:     { baseUrl: "https://api.openai.com/v1", model: "gpt-4o-mini",
+                keyUrl: "https://platform.openai.com/api-keys", keyLabel: "platform.openai.com/api-keys", cors: true },
+  custom:     { baseUrl: "", model: "" },
+};
+
+function providerOfBaseUrl(baseUrl) {
+  for (const [id, p] of Object.entries(LLM_PRESETS)) {
+    if (p.baseUrl && baseUrl === p.baseUrl) return id;
+  }
+  return "custom";
+}
+
+function applyPresetUI(id) {
+  const p = LLM_PRESETS[id] || LLM_PRESETS.custom;
+  const hint = $("#cfg-provider-hint");
+  if (p.noKey) {
+    hint.innerHTML = "✅ Fournisseur <strong>local</strong> : aucune clé requise. " +
+      "Saisissez n'importe quoi comme clé (ex. <code>local</code>) pour activer le mode LLM.";
+  } else if (p.keyUrl) {
+    hint.innerHTML = `🔑 Obtenez votre clé ${p.free ? "<strong>gratuite</strong> " : ""}sur ` +
+      `<a href="${p.keyUrl}" target="_blank" rel="noopener">${p.keyLabel}</a>, puis collez-la ci-dessous.`;
+  } else {
+    hint.innerHTML = "Renseignez l'URL de base et le modèle de votre fournisseur compatible OpenAI.";
+  }
+  $("#cfg-cors-warn").hidden = !p.cors;
+}
+
 function wireSettings() {
   const modal = $("#settings-modal");
   const open = () => {
     const c = getConfig();
+    const provider = c.baseUrl ? providerOfBaseUrl(c.baseUrl) : "groq";
+    const preset = LLM_PRESETS[provider];
+    $("#cfg-provider").value = provider;
     $("#cfg-key").value = c.apiKey || "";
-    $("#cfg-base").value = c.baseUrl || "https://api.openai.com/v1";
-    $("#cfg-model").value = c.model || "gpt-4o-mini";
+    $("#cfg-base").value = c.baseUrl || preset.baseUrl;
+    $("#cfg-model").value = c.model || preset.model;
+    applyPresetUI(provider);
     modal.classList.add("open");
   };
   const close = () => modal.classList.remove("open");
   $("#settings-btn").addEventListener("click", open);
   $("#cfg-cancel").addEventListener("click", close);
   modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+  $("#cfg-provider").addEventListener("change", (e) => {
+    const p = LLM_PRESETS[e.target.value] || LLM_PRESETS.custom;
+    $("#cfg-base").value = p.baseUrl;
+    $("#cfg-model").value = p.model;
+    applyPresetUI(e.target.value);
+  });
   $("#cfg-save").addEventListener("click", () => {
     setConfig({
       apiKey: $("#cfg-key").value.trim(),
-      baseUrl: $("#cfg-base").value.trim() || "https://api.openai.com/v1",
-      model: $("#cfg-model").value.trim() || "gpt-4o-mini",
+      baseUrl: $("#cfg-base").value.trim() || LLM_PRESETS.groq.baseUrl,
+      model: $("#cfg-model").value.trim() || LLM_PRESETS.groq.model,
     });
     updateProviderBadge(); close();
   });
