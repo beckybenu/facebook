@@ -72,10 +72,24 @@ le RAG marche immédiatement.
 
 ### Activer un vrai LLM (optionnel)
 
-Cliquez sur **⚙️ LLM** dans l'en-tête, renseignez votre clé, l'URL de base et le modèle
-(ex. DeepSeek : `https://api.deepseek.com/v1`, `deepseek-chat`). Sans clé, l'app reste
-en **mode démo**. ⚠️ La clé n'est **jamais** committée : elle vit uniquement dans le
-`localStorage` de votre navigateur.
+Cliquez sur **⚙️ LLM** dans l'en-tête, renseignez votre clé, l'URL de base et le modèle.
+Sans clé, l'app reste en **mode démo**. ⚠️ La clé n'est **jamais** committée : elle vit
+uniquement dans le `localStorage` de votre navigateur.
+
+> ⚠️ **Important (site statique)** : sans backend, l'appel LLM part **directement du
+> navigateur**. Le fournisseur doit donc autoriser les requêtes navigateur (CORS).
+> **OpenAI et DeepSeek les bloquent** → vous obtiendrez « Failed to fetch ».
+> Fournisseurs qui fonctionnent depuis un site statique :
+>
+> | Fournisseur | URL de base | Exemple de modèle |
+> |---|---|---|
+> | **Groq** | `https://api.groq.com/openai/v1` | `llama-3.3-70b-versatile` |
+> | **OpenRouter** | `https://openrouter.ai/api/v1` | `openai/gpt-4o-mini` |
+> | **Ollama** (local) | `http://localhost:11434/v1` | `llama3.1` |
+> | **LM Studio** (local) | `http://localhost:1234/v1` | (modèle chargé) |
+>
+> Pour utiliser **OpenAI / DeepSeek** malgré tout, il faut lancer le **serveur Node
+> optionnel** (`npm start`), qui relaie les appels côté serveur (pas de blocage CORS).
 
 ## 🌐 Déploiement GitHub Pages
 
