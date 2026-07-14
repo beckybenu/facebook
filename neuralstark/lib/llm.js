@@ -12,7 +12,7 @@ export function setConfig(cfg) {
 export function providerInfo() {
   const c = getConfig();
   return c.apiKey
-    ? { mode: "live", model: c.model || "gpt-4o-mini", baseUrl: (c.baseUrl || "https://api.openai.com/v1") }
+    ? { mode: "live", model: c.model || "llama-3.3-70b-versatile", baseUrl: (c.baseUrl || "https://api.groq.com/openai/v1") }
     : { mode: "demo", model: "démo-extractif", baseUrl: null };
 }
 
@@ -29,7 +29,7 @@ const BROWSER_FRIENDLY = "Groq (https://api.groq.com/openai/v1), OpenRouter " +
 
 async function callOpenAICompatible(messages) {
   const c = getConfig();
-  const baseUrl = (c.baseUrl || "https://api.openai.com/v1").replace(/\/$/, "");
+  const baseUrl = (c.baseUrl || "https://api.groq.com/openai/v1").replace(/\/$/, "");
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 45000);
@@ -38,7 +38,7 @@ async function callOpenAICompatible(messages) {
     res = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${c.apiKey}` },
-      body: JSON.stringify({ model: c.model || "gpt-4o-mini", messages, temperature: 0.3, max_tokens: 900 }),
+      body: JSON.stringify({ model: c.model || "llama-3.3-70b-versatile", messages, temperature: 0.3, max_tokens: 900 }),
       signal: ctrl.signal,
     });
   } catch (e) {

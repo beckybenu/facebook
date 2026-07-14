@@ -234,11 +234,15 @@ body {
 .modal-hint code { font-size: 11px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; }
 .modal-warn { border-left: 3px solid #f59e0b; padding-left: 11px; background: rgba(245, 158, 11, .07); border-radius: 0 8px 8px 0; padding-top: 8px; padding-bottom: 8px; }
 .modal-label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-.modal-label input {
+.modal-label input, .modal-label select {
   background: var(--bg-2); border: 1px solid var(--border); color: var(--text);
   border-radius: 9px; padding: 9px 11px; font-size: 13px; outline: none; font-family: inherit;
 }
-.modal-label input:focus { border-color: var(--accent); }
+.modal-label input:focus, .modal-label select:focus { border-color: var(--accent); }
+.modal-label select { cursor: pointer; }
+.modal-label select option { background: var(--surface); color: var(--text); }
+.modal-hint a { color: var(--accent-2); font-weight: 600; }
+.modal-key-hint { margin: -4px 0 14px; }
 .modal-actions { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
 .modal-actions .primary-btn { flex: none; padding: 9px 18px; }
 
