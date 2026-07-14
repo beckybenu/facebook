@@ -94,8 +94,16 @@
       <p class="modal-hint">
         Sans clé, NeuralStark fonctionne en <strong>mode démo</strong> (réponses extraites de vos
         documents), 100 % dans le navigateur. Ajoutez une clé pour des réponses génératives via une
-        API compatible OpenAI (OpenAI, DeepSeek, Groq, Ollama, LM Studio…). La clé reste stockée
-        <strong>localement</strong> dans votre navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+        API compatible OpenAI. La clé reste stockée <strong>localement</strong> dans votre navigateur
+        et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+      </p>
+      <p class="modal-hint modal-warn">
+        ⚠️ Ce site étant <strong>100 % navigateur</strong> (sans serveur), le fournisseur doit
+        autoriser les appels navigateur (CORS). <strong>OpenAI et DeepSeek les bloquent</strong> —
+        vous obtiendrez « Failed to fetch ». Fournisseurs qui fonctionnent&nbsp;:
+        <strong>Groq</strong> (<code>https://api.groq.com/openai/v1</code>),
+        <strong>OpenRouter</strong> (<code>https://openrouter.ai/api/v1</code>) ou un modèle
+        <strong>local</strong> (Ollama&nbsp;: <code>http://localhost:11434/v1</code>, LM&nbsp;Studio).
       </p>
       <label class="modal-label">Clé API
         <input id="cfg-key" type="password" placeholder="sk-…  (laisser vide = mode démo)" autocomplete="off" />
