@@ -217,7 +217,27 @@ depuis vos documents). Via ⚙️ LLM, ajoutez une clé pour des réponses rédi
   puis fusion de leurs réponses (la v1 route + délègue au meilleur ; cf. §3.3).
 - **Multi-tenant & droits**, authentification, déploiement serveur.
 
-## 7. Sécurité & confidentialité
+## 7. Offre commerciale & licences
+
+- **3 abonnements mensuels** : Standard 99 CHF (assistant + documents + 1 métier),
+  Médium 199 CHF (+ Cockpit + automations), Premium 399 CHF (+ automations
+  personnalisées, tous les métiers, connexion LLM).
+- **Clé de licence obligatoire** : format `NSK1-<payload>.<signature>` (ECDSA
+  P-256), contenant plan, entreprise et date d'expiration. Sans clé valide ou après
+  expiration → **écran de verrouillage** (« l'abonnement s'arrête ») ; les données
+  locales du client sont conservées et restaurées à la réactivation.
+- **Outil vendeur** `scripts/generate-license.mjs` : la clé privée de signature est
+  générée localement (`scripts/.keys/`, gitignorée) et ne quitte jamais le vendeur ;
+  seule la clé publique est embarquée dans l'app.
+- **Parcours client** : écran d'abonnement (3 cartes tarifs + activation + case CGV)
+  → onboarding en 2 étapes (métier, nom d'entreprise) → application. Fonctions non
+  incluses = 🔒 visibles avec invitation à passer au plan supérieur.
+- **Légal** : `legal.html` — CGV/CGU (expiration = suspension), politique de
+  confidentialité (traitement 100 % local), mentions légales à compléter.
+- Limite documentée : verrouillage côté client (app statique) — dissuasif mais
+  contournable par un utilisateur technique ; la validation serveur est la cible.
+
+## 8. Sécurité & confidentialité
 
 - **100 % local possible** : le RAG fonctionne hors-ligne ; aucune donnée ne sort si
   aucune API LLM n'est configurée. Avec une API distante, seuls la question et les

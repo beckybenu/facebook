@@ -1,0 +1,12 @@
+{
+  "jwk": {
+    "key_ops": [
+      "verify"
+    ],
+    "ext": true,
+    "kty": "EC",
+    "x": "IdT32bmO3BFw-EH4FfoEHuCdsNHxfPTCZcSuLlrYoZ8",
+    "y": "IZXLM9XCx9f-svlP6_2k2ou12xxgsjvL1-yzvj7gafc",
+    "crv": "P-256"
+  }
+}
