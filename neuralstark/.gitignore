@@ -4,5 +4,3 @@ node_modules/
 data/rag-store.json
 *.log
 .DS_Store
-# Clé PRIVÉE de signature des licences — ne JAMAIS committer
-scripts/.keys/

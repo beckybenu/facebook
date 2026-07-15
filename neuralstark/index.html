@@ -9,57 +9,6 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Écran d'abonnement / activation (affiché sans licence valide) -->
-  <div id="paywall" class="paywall" hidden>
-    <div class="paywall-inner">
-      <div class="paywall-brand">
-        <div class="brand-mark">◆</div>
-        <div>
-          <h1>NeuralStark</h1>
-          <p>Le cerveau IA qui gère votre entreprise</p>
-        </div>
-      </div>
-      <div id="paywall-alert" class="paywall-alert" hidden></div>
-
-      <div id="pricing" class="pricing"></div>
-
-      <form id="activate-form" class="activate">
-        <h2>Vous avez une clé de licence ?</h2>
-        <input id="license-input" type="text" placeholder="NSK1-…" autocomplete="off" spellcheck="false" />
-        <label class="accept">
-          <input id="accept-cgv" type="checkbox" />
-          <span>J'accepte les <a href="legal.html#cgv" target="_blank">Conditions Générales</a></span>
-        </label>
-        <button type="submit" class="primary-btn big">Activer mon abonnement</button>
-        <p id="activate-error" class="activate-error" hidden></p>
-      </form>
-
-      <p class="paywall-contact">
-        Pas encore de clé ? <a href="mailto:contact@neuralstark.ch?subject=Abonnement%20NeuralStark">Contactez-nous</a>
-        pour souscrire · <a href="legal.html" target="_blank">Documents légaux</a>
-      </p>
-    </div>
-  </div>
-
-  <!-- Onboarding (1er lancement après activation) -->
-  <div id="onboarding" class="paywall" hidden>
-    <div class="paywall-inner narrow">
-      <div class="paywall-brand">
-        <div class="brand-mark">◆</div>
-        <div><h1>Bienvenue !</h1><p>2 questions et votre IA est prête.</p></div>
-      </div>
-      <div id="ob-step1">
-        <h2 class="ob-title">Quel est votre métier ?</h2>
-        <div id="ob-sectors" class="ob-sectors"></div>
-      </div>
-      <div id="ob-step2" hidden>
-        <h2 class="ob-title">Le nom de votre entreprise ?</h2>
-        <input id="ob-company" type="text" placeholder="Ex : SwissPaints Sàrl" maxlength="80" />
-        <button id="ob-go" class="primary-btn big">C'est parti 🚀</button>
-      </div>
-    </div>
-  </div>
-
   <div id="app">
     <!-- Barre latérale : catalogue d'agents -->
     <aside class="sidebar">
@@ -77,26 +26,16 @@
         <p id="sector-desc" class="sector-desc"></p>
       </div>
 
+      <div class="search">
+        <input id="agent-search" type="search" placeholder="Découvrir votre équipe d'agents…" autocomplete="off" />
+      </div>
+
       <div class="sidebar-meta">
         <span id="agent-count-badge" class="badge">130 agents</span>
-        <span id="plan-badge" class="badge badge-muted">—</span>
-        <span id="provider-badge" class="badge badge-muted" hidden>…</span>
+        <span id="provider-badge" class="badge badge-muted">…</span>
       </div>
 
-      <button id="team-toggle" class="team-toggle" type="button">
-        <span>👥 Voir mon équipe IA</span>
-        <span class="chevron">▼</span>
-      </button>
-      <div id="team-panel" class="team-panel" hidden>
-        <div class="search">
-          <input id="agent-search" type="search" placeholder="Rechercher un spécialiste…" autocomplete="off" />
-        </div>
-        <nav id="agent-list" class="agent-list" aria-label="Catalogue des agents"></nav>
-      </div>
-
-      <div class="sidebar-foot">
-        <a href="legal.html" target="_blank">CGV · Confidentialité</a>
-      </div>
+      <nav id="agent-list" class="agent-list" aria-label="Catalogue des agents"></nav>
     </aside>
     <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
@@ -114,8 +53,8 @@
         <div class="header-actions">
           <div class="view-tabs" role="tablist">
             <button id="tab-chat" class="view-tab active" role="tab">💬 Assistant</button>
-            <button id="tab-cockpit" class="view-tab" role="tab">📊 Mon entreprise</button>
-            <button id="tab-autom" class="view-tab" role="tab">⚡ Travail auto</button>
+            <button id="tab-cockpit" class="view-tab" role="tab">📊 Cockpit</button>
+            <button id="tab-autom" class="view-tab" role="tab">⚡ Automations</button>
           </div>
           <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
           <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
@@ -202,10 +141,10 @@
     <!-- Base de connaissances (RAG) -->
     <aside class="knowledge">
       <div class="knowledge-head">
-        <h2>📁 Mes documents</h2>
+        <h2>Base de connaissances</h2>
         <span id="rag-stats" class="badge badge-muted">0 doc</span>
       </div>
-      <p class="knowledge-hint">Ajoutez vos devis, factures et notes : votre IA apprend de vos fichiers et s'en sert pour répondre.</p>
+      <p class="knowledge-hint">Les agents répondent à partir de ces documents (RAG).</p>
 
       <form id="doc-form" class="doc-form">
         <input id="doc-name" type="text" placeholder="Nom du document (ex : Devis-2026.txt)" />

@@ -9,10 +9,6 @@ import {
   getCompanyName, setCompanyName,
 } from "./lib/cockpit.js";
 import { AutomationEngine, TRIGGERS, loadJournal } from "./lib/automation.js";
-import {
-  initLicense, checkStoredLicense, verifyLicenseKey, storeKey,
-  license, plan, can, PLANS,
-} from "./lib/license.js";
 
 const state = {
   agents: [], categories: {}, byId: {}, active: null, history: [], sending: false,
@@ -21,7 +17,6 @@ const state = {
   engine: null, // Neural Automation Engine
 };
 const LS_SECTOR = "neuralstark:sector:v1";
-const LS_ONBOARD = "neuralstark:onboarded:v1";
 
 const $ = (s) => document.querySelector(s);
 const el = (tag, props = {}, ...kids) => {
@@ -37,74 +32,8 @@ const el = (tag, props = {}, ...kids) => {
   return n;
 };
 
-// ---------- Boot : licence d'abord, app ensuite ----------
+// ---------- Boot ----------
 async function boot() {
-  await initLicense();
-  wirePaywall();
-  const { license: lic, reason } = await checkStoredLicense();
-  if (!lic) { showPaywall(reason); return; }
-  await startApp();
-}
-
-// ---------- Écran d'abonnement / activation ----------
-function showPaywall(reason) {
-  const alert = $("#paywall-alert");
-  if (reason === "expired") {
-    alert.textContent = "⏸ Votre abonnement a expiré. Renouvelez votre clé pour réactiver NeuralStark — vos données sont conservées.";
-    alert.hidden = false;
-  } else if (reason && reason !== "none") {
-    alert.textContent = "Cette clé de licence n'est pas valide. Vérifiez-la ou contactez-nous.";
-    alert.hidden = false;
-  } else {
-    alert.hidden = true;
-  }
-  renderPricing();
-  $("#paywall").hidden = false;
-}
-
-function renderPricing() {
-  const box = $("#pricing");
-  box.innerHTML = "";
-  for (const [id, p] of Object.entries(PLANS)) {
-    const card = el("div", { class: "price-card" + (p.highlight ? " highlight" : "") },
-      p.highlight ? el("span", { class: "pc-pop" }, "LE PLUS CHOISI") : "",
-      el("h3", {}, p.label),
-      el("p", { class: "pc-tagline" }, p.tagline),
-      el("div", { class: "pc-price" }, p.price, el("span", {}, " " + p.period)),
-      el("ul", {}, ...p.features.map((f) => el("li", {}, f))),
-    );
-    box.append(card);
-  }
-}
-
-function wirePaywall() {
-  $("#activate-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const err = $("#activate-error");
-    err.hidden = true;
-    if (!$("#accept-cgv").checked) {
-      err.textContent = "Merci d'accepter les Conditions Générales pour continuer.";
-      err.hidden = false;
-      return;
-    }
-    const key = $("#license-input").value.trim();
-    const res = await verifyLicenseKey(key);
-    if (!res.ok) {
-      err.textContent = res.reason === "expired"
-        ? "Cette clé a expiré — contactez-nous pour renouveler votre abonnement."
-        : "Clé invalide. Vérifiez que vous l'avez copiée en entier (NSK1-…).";
-      err.hidden = false;
-      return;
-    }
-    storeKey(key);
-    await checkStoredLicense();
-    $("#paywall").hidden = true;
-    await startApp();
-  });
-}
-
-// ---------- Démarrage de l'application (licence valide) ----------
-async function startApp() {
   const agentsRes = await fetch("data/agents.json").then((r) => r.json());
   state.agents = agentsRes.agents;
   state.categories = agentsRes.categories;
@@ -138,98 +67,7 @@ async function startApp() {
   selectAgent("cerveau-central");
   wireCockpit();
   wireAutomations();
-  wireTeamToggle();
-  applyPlanGating();
-  if (can("automations")) startEngine(); // les agents travaillent seuls (Médium+)
-  maybeShowOnboarding();
-}
-
-// ---------- Gating par plan d'abonnement ----------
-function applyPlanGating() {
-  const lic = license();
-  const p = plan();
-  const badge = $("#plan-badge");
-  if (badge && lic && p) {
-    badge.textContent = `Plan ${p.label} · expire ${new Date(lic.exp).toLocaleDateString("fr-CH")}`;
-    badge.className = "badge";
-  }
-  lockTab("#tab-cockpit", can("cockpit"), "Le Cockpit (indicateurs, briefing, plan d'actions)", "Médium");
-  lockTab("#tab-autom", can("automations"), "Le travail automatique (vos agents en autonomie)", "Médium");
-  if (!can("customAutomations")) $("#new-autom-btn")?.setAttribute("hidden", "");
-  if (!can("llm")) $("#settings-btn")?.setAttribute("hidden", "");
-  updateSectorPickerForPlan();
-}
-
-function lockTab(sel, allowed, featureLabel, requiredPlan) {
-  const tab = $(sel);
-  if (!tab) return;
-  tab.classList.toggle("locked", !allowed);
-  if (!allowed) tab.dataset.lock = JSON.stringify({ featureLabel, requiredPlan });
-  else delete tab.dataset.lock;
-}
-
-function showUpgrade(featureLabel, requiredPlan) {
-  setView("chat");
-  addMessage("bot",
-    `🔒 **${featureLabel}** fait partie du plan **${requiredPlan}**.\n\n` +
-    `Votre abonnement actuel : **${plan()?.label}**. ` +
-    `Pour en profiter, passez au plan supérieur — contactez-nous : contact@neuralstark.ch.`);
-}
-
-// Standard/Médium : un seul métier (choisi à l'installation). Premium : tous.
-function updateSectorPickerForPlan() {
-  const sel = $("#sector-select");
-  if (!sel || !state.sectors.length) return;
-  if (can("allSectors")) { sel.disabled = false; return; }
-  const current = state.sector || "tous";
-  for (const opt of [...sel.options]) {
-    if (opt.value !== current) opt.remove();
-  }
-  sel.disabled = true;
-  sel.title = "Changer de métier nécessite le plan Premium";
-}
-
-// ---------- Onboarding (1er lancement) ----------
-function maybeShowOnboarding() {
-  const done = localStorage.getItem(LS_ONBOARD);
-  const badSector = !can("allSectors") && (state.sector || "tous") === "tous";
-  if (done && !badSector) return;
-  const grid = $("#ob-sectors");
-  grid.innerHTML = "";
-  for (const s of state.sectors) {
-    if (s.id === "tous" && !can("allSectors")) continue;
-    const card = el("button", { class: "ob-sector", type: "button" },
-      el("span", { class: "os-icon" }, s.icon),
-      el("span", {}, s.label));
-    card.addEventListener("click", () => {
-      applySector(s.id, { silent: true });
-      $("#ob-step1").hidden = true;
-      $("#ob-step2").hidden = false;
-      $("#ob-company").focus();
-    });
-    grid.append(card);
-  }
-  $("#ob-go").onclick = () => {
-    setCompanyName($("#ob-company").value.trim());
-    localStorage.setItem(LS_ONBOARD, "1");
-    $("#onboarding").hidden = true;
-    updateSectorPickerForPlan();
-    clearChat(); // regénère l'accueil avec le métier et l'entreprise
-  };
-  $("#ob-step1").hidden = false;
-  $("#ob-step2").hidden = true;
-  $("#onboarding").hidden = false;
-}
-
-// ---------- Équipe IA repliée ----------
-function wireTeamToggle() {
-  const btn = $("#team-toggle");
-  const panel = $("#team-panel");
-  btn?.addEventListener("click", () => {
-    const open = panel.hidden;
-    panel.hidden = !open;
-    btn.classList.toggle("open", open);
-  });
+  startEngine(); // les agents commencent à travailler en autonomie
 }
 
 // ---------- Cockpit (l'IA pilote l'entreprise) ----------
@@ -245,20 +83,10 @@ function setView(view) {
   if (view === "autom") renderAutomations();
 }
 
-function tabClick(view, sel) {
-  const tab = $(sel);
-  if (tab?.dataset.lock) {
-    const { featureLabel, requiredPlan } = JSON.parse(tab.dataset.lock);
-    showUpgrade(featureLabel, requiredPlan);
-    return;
-  }
-  setView(view);
-}
-
 function wireCockpit() {
   $("#tab-chat").addEventListener("click", () => setView("chat"));
-  $("#tab-cockpit").addEventListener("click", () => tabClick("cockpit", "#tab-cockpit"));
-  $("#tab-autom").addEventListener("click", () => tabClick("autom", "#tab-autom"));
+  $("#tab-cockpit").addEventListener("click", () => setView("cockpit"));
+  $("#tab-autom").addEventListener("click", () => setView("autom"));
   $("#refresh-briefing").addEventListener("click", renderCockpit);
   const company = $("#company-name");
   company.value = getCompanyName();
@@ -536,8 +364,8 @@ function wireMobileNav() {
 function updateProviderBadge() {
   const b = $("#provider-badge");
   const p = providerInfo();
-  if (p.mode === "live") { b.textContent = `IA: ${p.model}`; b.className = "badge badge-live"; b.hidden = false; }
-  else { b.hidden = true; }
+  if (p.mode === "live") { b.textContent = `LLM: ${p.model}`; b.className = "badge badge-live"; }
+  else { b.textContent = "Mode démo"; b.className = "badge badge-muted"; }
 }
 
 // ---------- Catalogue ----------

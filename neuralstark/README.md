@@ -52,25 +52,6 @@ vos fichiers.
   **⚙️ LLM**, avec n'importe quelle API compatible OpenAI (OpenAI, DeepSeek, Groq,
   Ollama, LM Studio, vLLM…) — la clé reste stockée localement dans le navigateur.
 
-## 💳 Offre commerciale (abonnements + licences)
-
-L'accès nécessite une **clé de licence** (pas d'essai gratuit). Trois plans :
-**Standard 99** · **Médium 199** · **Premium 399 CHF/mois** — sans clé valide ou
-après expiration, l'app se **verrouille** sur l'écran d'abonnement (les données
-locales du client sont conservées).
-
-- Standard : assistant + documents + 1 métier · Médium : + Cockpit + automations ·
-  Premium : + automations personnalisées, tous les métiers, connexion LLM.
-- **Générer une clé client** (outil vendeur) :
-  `node scripts/generate-license.mjs --plan premium --months 12 --company "Client"`.
-  ⚠️ La clé privée de signature (`scripts/.keys/`, gitignorée) ne doit **jamais**
-  être partagée ni committée — sauvegardez-la en lieu sûr.
-- Clés signées ECDSA P-256, vérifiées dans le navigateur (`lib/license.js`).
-  Limite : verrouillage côté client (dissuasif, pas inviolable) — la validation
-  serveur 24/7 viendra avec le backend.
-- Documents légaux : [`legal.html`](legal.html) (CGV/CGU, confidentialité,
-  mentions légales `[À COMPLÉTER]`).
-
 ## 🚀 Démarrage rapide
 
 Comme c'est un site **statique**, il suffit de servir le dossier avec n'importe quel
