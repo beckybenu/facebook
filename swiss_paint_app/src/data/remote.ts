@@ -155,3 +155,42 @@ export function removeLocal(name: CollectionName, id: string): void {
   if (idx >= 0) list.splice(idx, 1)
   apiFetch(`${PATHS[name]}/${id}`, { method: 'DELETE' }).catch(() => {})
 }
+
+// ---------- IA ----------
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export async function aiStatus(): Promise<boolean> {
+  if (!isCloud()) return false
+  try {
+    const r = await apiFetch('ai/status')
+    if (!r.ok) return false
+    return (await r.json()).available === true
+  } catch {
+    return false
+  }
+}
+
+export async function aiChat(messages: ChatMessage[]): Promise<{ ok: boolean; reply?: string; error?: string }> {
+  try {
+    const r = await apiFetch('ai/chat', { method: 'POST', body: JSON.stringify({ messages }) })
+    const j = await r.json()
+    if (!r.ok) return { ok: false, error: j.error || 'Erreur IA.' }
+    return { ok: true, reply: j.reply }
+  } catch {
+    return { ok: false, error: 'Serveur injoignable.' }
+  }
+}
+
+export async function aiDevis(prompt: string): Promise<{ ok: boolean; devis?: unknown; error?: string }> {
+  try {
+    const r = await apiFetch('ai/devis', { method: 'POST', body: JSON.stringify({ prompt }) })
+    const j = await r.json()
+    if (!r.ok) return { ok: false, error: j.error || 'Erreur IA.' }
+    return { ok: true, devis: j }
+  } catch {
+    return { ok: false, error: 'Serveur injoignable.' }
+  }
+}

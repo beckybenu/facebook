@@ -36,6 +36,14 @@ export default function AdminHome() {
       </div>
 
       <div className="section-title">Gestion</div>
+      <button className="list-row" onClick={() => navigate('/assistant')}>
+        <span className="row-bar" />
+        <div className="row-main">
+          <div className="row-title">✨ Assistant IA</div>
+          <div className="row-sub">Poser une question, rédiger un devis ou un email</div>
+        </div>
+        <span className="row-chevron">›</span>
+      </button>
       <button className="list-row" onClick={() => navigate('/admin/pointages')}>
         <span className="row-bar" />
         <div className="row-main">

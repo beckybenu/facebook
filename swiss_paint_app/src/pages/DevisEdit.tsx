@@ -5,6 +5,14 @@ import { devisDb, uid } from '../data/db'
 import type { Devis, DevisItem, DevisUnit, DevisStatus } from '../types'
 import { COMPANY, DEFAULT_INTRO, DEFAULT_REMARQUES } from '../lib/company'
 import { UNIT_LABELS, formatCHF, lineAmount, devisTotals } from '../lib/utils'
+import { useAuth } from '../context/AuthContext'
+import { aiDevis, aiStatus } from '../data/remote'
+
+interface AiDevisResult {
+  titre?: string
+  sousTitre?: string
+  items?: Array<Partial<DevisItem>>
+}
 
 function emptyItem(): DevisItem {
   return { id: uid('it'), titre: '', description: '', note: '', unit: 'forfait', montant: 0 }
@@ -14,8 +22,54 @@ export default function DevisEdit() {
   const { id } = useParams()
   const navigate = useNavigate()
   const isNew = !id
+  const { cloud } = useAuth()
   const [existing, setExisting] = useState<Devis | null>(null)
   const [error, setError] = useState('')
+
+  // Assistant IA (génération des lignes)
+  const [aiOn, setAiOn] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [aiBusy, setAiBusy] = useState(false)
+  const [aiError, setAiError] = useState('')
+
+  useEffect(() => {
+    if (cloud) aiStatus().then(setAiOn)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cloud])
+
+  async function generateWithAI() {
+    if (!aiPrompt.trim()) return
+    setAiBusy(true)
+    setAiError('')
+    const res = await aiDevis(aiPrompt.trim())
+    setAiBusy(false)
+    if (!res.ok) {
+      setAiError(res.error || 'Erreur IA.')
+      return
+    }
+    const d = res.devis as AiDevisResult
+    const items: DevisItem[] = (d.items || []).map((it) => {
+      const base: DevisItem = {
+        id: uid('it'),
+        titre: it.titre || '',
+        description: it.description || '',
+        note: it.note || '',
+        unit: (it.unit as DevisUnit) || 'forfait',
+        quantite: it.quantite,
+        prixUnitaire: it.prixUnitaire,
+        montant: it.montant || 0,
+      }
+      base.montant = lineAmount(base)
+      return base
+    })
+    setForm((f) => ({
+      ...f,
+      titre: d.titre || f.titre,
+      sousTitre: d.sousTitre || f.sousTitre,
+      items: items.length ? items : f.items,
+    }))
+    setAiPrompt('')
+  }
 
   const today = new Date().toISOString().slice(0, 10)
   const [form, setForm] = useState<Omit<Devis, 'id' | 'createdAt'>>({
@@ -162,6 +216,29 @@ export default function DevisEdit() {
       </div>
 
       <div className="section-title">Lignes du devis</div>
+
+      {aiOn && (
+        <div className="card" style={{ border: '1.5px solid #fecaca' }}>
+          <div className="card-title" style={{ fontSize: 15 }}>
+            ✨ Générer avec l'IA
+          </div>
+          <div className="card-sub" style={{ marginBottom: 8 }}>
+            Décris les travaux, l'IA rédige les lignes du devis.
+          </div>
+          <div className="field" style={{ marginBottom: 8 }}>
+            <textarea
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="Ex : Repeindre un appartement 3.5 pièces à Lausanne, murs et plafonds blanc, environ 80 m², plus protection et nettoyage."
+            />
+          </div>
+          {aiError && <div className="error-msg">{aiError}</div>}
+          <button className="btn btn-dark" onClick={generateWithAI} disabled={aiBusy}>
+            {aiBusy ? 'Génération…' : '✨ Générer les lignes'}
+          </button>
+        </div>
+      )}
+
       {form.items.map((it, idx) => (
         <div className="card" key={it.id}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

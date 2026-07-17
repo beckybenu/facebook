@@ -61,6 +61,10 @@ export default function Home() {
               <span className="tile-icon">🧾</span>
               Devis
             </button>
+            <button className="home-tile" onClick={() => navigate('/assistant')}>
+              <span className="tile-icon">✨</span>
+              Assistant IA
+            </button>
           </div>
         </>
       )}

@@ -13,6 +13,10 @@ services:
         generateValue: true # secret généré automatiquement
       - key: DATA_FILE
         value: /var/data/data.json # chemin sur le disque persistant
+      - key: ANTHROPIC_API_KEY
+        sync: false # à saisir dans le dashboard Render (active l'assistant IA)
+      - key: ANTHROPIC_MODEL
+        value: claude-opus-4-8 # modèle IA (modifiable : claude-haiku-4-5 pour réduire les coûts)
     disk:
       name: swisspaints-data
       mountPath: /var/data

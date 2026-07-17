@@ -45,11 +45,20 @@ Le plus simple : **Render** (https://render.com), offre gratuite.
 
 ## Variables d'environnement
 
-| Variable     | Rôle                                              | Défaut               |
-| ------------ | ------------------------------------------------- | -------------------- |
-| `PORT`       | Port d'écoute                                      | `4000`               |
-| `JWT_SECRET` | Secret de signature des jetons (à définir en prod) | valeur de dev        |
-| `DATA_FILE`  | Chemin du fichier de données JSON                  | `./data.json`        |
+| Variable            | Rôle                                                    | Défaut            |
+| ------------------- | ------------------------------------------------------- | ----------------- |
+| `PORT`              | Port d'écoute                                            | `4000`            |
+| `JWT_SECRET`        | Secret de signature des jetons (à définir en prod)      | valeur de dev     |
+| `DATA_FILE`         | Chemin du fichier de données JSON                        | `./data.json`     |
+| `ANTHROPIC_API_KEY` | Clé API Claude — **active l'assistant IA** (devis, chat) | *(non défini)*    |
+| `ANTHROPIC_MODEL`   | Modèle IA utilisé                                        | `claude-opus-4-8` |
+
+## Assistant IA (optionnel)
+
+Pour activer l'assistant IA (génération de devis, chat écrit/vocal), ajoute une
+clé API Claude dans `ANTHROPIC_API_KEY` (obtenue sur https://console.anthropic.com).
+Sans cette clé, l'app fonctionne normalement mais les fonctions IA sont désactivées.
+Pour réduire les coûts, tu peux passer `ANTHROPIC_MODEL` à `claude-haiku-4-5`.
 
 ## Principaux points d'API
 
@@ -64,6 +73,8 @@ Le plus simple : **Render** (https://render.com), offre gratuite.
 | POST/DEL| `/api/users`            | admin            |
 | POST/DEL| `/api/devis`            | admin / ouvrier  |
 | POST/DEL| `/api/documents`        | admin            |
+| POST    | `/api/ai/chat`          | admin / ouvrier (assistant) |
+| POST    | `/api/ai/devis`         | admin / ouvrier (génération devis) |
 
 ## Sécurité (note)
 

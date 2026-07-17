@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { load, save, collection, uid, DATA_FILE } from './store.js'
 import { seedIfEmpty } from './seed.js'
+import { aiChat, aiDevis, aiAvailable } from './ai.js'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'swisspaints-dev-secret-change-me'
 const PORT = process.env.PORT || 4000
@@ -215,6 +216,40 @@ app.post('/api/documents', auth, requireAdmin, (req, res) => res.json(upsert('do
 app.delete('/api/documents/:id', auth, requireAdmin, (req, res) => {
   removeById('documents', req.params.id)
   res.json({ ok: true })
+})
+
+// ---------- IA (admin / ouvrier) ----------
+const requireEmploye = (req, res, next) =>
+  req.user.role === 'admin' || req.user.role === 'ouvrier'
+    ? next()
+    : res.status(403).json({ error: 'Réservé aux employés.' })
+
+app.get('/api/ai/status', auth, (_req, res) => res.json({ available: aiAvailable() }))
+
+app.post('/api/ai/chat', auth, requireEmploye, async (req, res) => {
+  const messages = Array.isArray(req.body?.messages) ? req.body.messages : []
+  if (messages.length === 0) return res.status(400).json({ error: 'Aucun message.' })
+  if (!aiAvailable()) return res.status(503).json({ error: "L'assistant IA n'est pas configuré sur le serveur." })
+  try {
+    const reply = await aiChat(messages)
+    res.json({ reply })
+  } catch (e) {
+    console.error('AI chat error:', e.message)
+    res.status(500).json({ error: "Erreur de l'assistant IA." })
+  }
+})
+
+app.post('/api/ai/devis', auth, requireEmploye, async (req, res) => {
+  const prompt = req.body?.prompt
+  if (!prompt) return res.status(400).json({ error: 'Décris les travaux à devis.' })
+  if (!aiAvailable()) return res.status(503).json({ error: "L'assistant IA n'est pas configuré sur le serveur." })
+  try {
+    const devis = await aiDevis(prompt)
+    res.json(devis)
+  } catch (e) {
+    console.error('AI devis error:', e.message)
+    res.status(500).json({ error: "Erreur de génération du devis." })
+  }
 })
 
 app.listen(PORT, () => {
