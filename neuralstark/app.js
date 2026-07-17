@@ -67,20 +67,42 @@ async function boot() {
   selectAgent("cerveau-central");
   wireCockpit();
   wireAutomations();
+  wireBottomNav();
+  document.body.dataset.view = "chat";
   startEngine(); // les agents commencent à travailler en autonomie
 }
 
 // ---------- Cockpit (l'IA pilote l'entreprise) ----------
 function setView(view) {
-  const views = { chat: ["#messages", "#composer"], cockpit: ["#cockpit"], autom: ["#autom"] };
-  for (const [name, sels] of Object.entries(views)) {
-    for (const sel of sels) { const n = $(sel); if (n) n.hidden = name !== view; }
+  // Vues principales (zone centrale). « docs » et « team » sont des vues plein
+  // écran sur mobile (gérées en CSS via body[data-view]) : la zone centrale garde
+  // alors son dernier état.
+  const mains = { chat: ["#messages", "#composer"], cockpit: ["#cockpit"], autom: ["#autom"] };
+  if (mains[view]) {
+    for (const [name, sels] of Object.entries(mains)) {
+      for (const sel of sels) { const n = $(sel); if (n) n.hidden = name !== view; }
+    }
+    $("#tab-chat").classList.toggle("active", view === "chat");
+    $("#tab-cockpit").classList.toggle("active", view === "cockpit");
+    $("#tab-autom").classList.toggle("active", view === "autom");
   }
-  $("#tab-chat").classList.toggle("active", view === "chat");
-  $("#tab-cockpit").classList.toggle("active", view === "cockpit");
-  $("#tab-autom").classList.toggle("active", view === "autom");
+  document.body.dataset.view = view;
+  for (const b of document.querySelectorAll(".bn-item")) {
+    b.classList.toggle("active", b.dataset.view === view);
+  }
   if (view === "cockpit") renderCockpit();
   if (view === "autom") renderAutomations();
+  if (view === "team") {
+    // Sur mobile, la vue Équipe montre directement la liste des agents.
+    const panel = $("#team-panel");
+    if (panel?.hidden) { panel.hidden = false; $("#team-toggle")?.classList.add("open"); }
+  }
+}
+
+function wireBottomNav() {
+  for (const b of document.querySelectorAll(".bn-item")) {
+    b.addEventListener("click", () => setView(b.dataset.view));
+  }
 }
 
 function wireCockpit() {
