@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a12" />
   <title>NeuralStark — Le cerveau IA de votre entreprise</title>
   <meta name="description" content="130 agents IA spécialisés + RAG local. Le cerveau d'entreprise qui apprend de vos documents." />
   <link rel="icon" href="assets/favicon.svg" />
@@ -133,7 +134,7 @@
       </section>
 
       <form id="composer" class="composer" autocomplete="off">
-        <textarea id="composer-input" rows="1" placeholder="Écrivez votre message…  (Entrée pour envoyer, Maj+Entrée pour un saut de ligne)" disabled></textarea>
+        <textarea id="composer-input" rows="1" placeholder="Écrivez votre message…" title="Entrée pour envoyer · Maj+Entrée pour un saut de ligne" disabled></textarea>
         <button id="send-btn" type="submit" disabled>Envoyer</button>
       </form>
     </main>
@@ -210,6 +211,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Navigation mobile (type application native) -->
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Navigation principale">
+    <button class="bn-item active" data-view="chat"><span class="bn-icon">💬</span>Assistant</button>
+    <button class="bn-item" data-view="cockpit"><span class="bn-icon">📊</span>Entreprise</button>
+    <button class="bn-item" data-view="autom"><span class="bn-icon">⚡</span>Auto</button>
+    <button class="bn-item" data-view="docs"><span class="bn-icon">📁</span>Docs</button>
+    <button class="bn-item" data-view="team"><span class="bn-icon">👥</span>Équipe</button>
+  </nav>
 
   <script type="module" src="app.js"></script>
 </body>
