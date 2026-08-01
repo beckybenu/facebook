@@ -1,30 +1,46 @@
-# Roulette d'entraînement 🎯
+# Roulette — analyse de vitesse 🎡📈
 
-Une roulette (roue de la fortune) pour s'entraîner : on fait tourner la roue et le
-hasard choisit l'exercice à faire. Idéal pour la muscu, le cardio, les langues, la
-musique… ou n'importe quelle liste d'exercices que tu définis.
+Outil pour **s'entraîner à mesurer la physique d'une roulette** :
 
-## Utilisation
+- **estimer la vitesse angulaire du plateau** (tours/min) ;
+- **mesurer le temps que met le plateau pour faire un tour** ;
+- **mesurer la vitesse de la bille** tant qu'elle est visible ;
+- **tracer l'évolution de la vitesse au cours du temps** (courbe de décélération).
 
-Ouvre simplement `index.html` dans un navigateur — aucune installation, aucun serveur.
-Le fichier est 100 % autonome (HTML + CSS + JavaScript, sans dépendance), donc il
-marche aussi tel quel sur GitHub Pages.
+Application autonome (HTML/CSS/JS, sans dépendance). Ouvre `index.html` dans un
+navigateur, ou visite la version publiée sur GitHub Pages.
 
-## Fonctionnalités
+## Méthode de mesure
 
-- **Roue animée** dessinée sur `<canvas>`, avec rotation réaliste (décélération douce)
-  et pointeur qui désigne l'exercice tiré.
-- **Personnalisable** : ajoute, supprime, mélange tes propres exercices (jusqu'à 24).
-- **Listes prédéfinies** : Musculation, Cardio, Étirements, Langues, Musique.
-- **Options** :
-  - *Retirer après tirage* — pour enchaîner sans répétition.
-  - *Son* — tic-tic pendant la rotation + jingle à l'arrivée (Web Audio, sans fichier).
-  - *Minuteur* — lance un compte à rebours (20 s → 2 min) pour chronométrer l'exercice.
-- **Historique** des derniers tirages.
-- **Sauvegarde locale** (localStorage) : ta liste et ton historique sont conservés.
+On chronomètre l'intervalle **T** entre deux passages du même repère (le haut de la
+roue) :
+
+- **Plateau** : `vitesse = 60 / T` tours/min · `vitesse angulaire = 360 / T` °/s
+- **Bille** : `vitesse = 2π·R / T` m/s, où **R** est le rayon de la piste de bille
+  (réglable, défaut 0,30 m)
+
+Chaque tour mesuré est ajouté au tableau et aux graphiques ; comme le plateau et la
+bille ralentissent, la suite des points dessine la **courbe de décélération**, dont
+la pente moyenne (régression linéaire) est affichée.
+
+## Deux modes
+
+- **🎡 Simulateur** — une roulette animée (plateau + bille qui décélère réellement
+  et tombe dans une case). Idéal pour t'entraîner : lance un tirage et tape en rythme.
+- **🎬 Vidéo externe** — masque le simulateur ; ouvre ta propre vidéo de roulette à
+  côté et tape en rythme dessus pour l'analyser.
+
+## Comment mesurer
+
+À chaque **tour complet**, tape une fois :
+
+- **Plateau** → bouton bleu ou touche **F**
+- **Bille** → bouton vert ou touche **J**
+
+Les deux canaux sont indépendants : tu peux mesurer les deux en même temps (une main
+sur F, une sur J). Dans le simulateur, **Espace** lance/arrête le tirage.
 
 ## Personnalisation
 
-Les couleurs, les listes prédéfinies et les durées de minuteur se modifient en haut
-du `<script>` dans `index.html` (constantes `COLORS`, `PRESETS`, et les `<option>` du
-sélecteur de minuteur).
+Séquence des numéros, physique du simulateur (vitesses initiales, décélérations) et
+géométrie de la roue se règlent en haut du `<script>` dans `index.html`.
