@@ -96,6 +96,16 @@
   .numgrid .gh{width:100%;font-size:.8rem;color:var(--gold);font-weight:700;margin-bottom:2px}
   .numgrid button{width:34px;height:34px;border:0;border-radius:8px;color:#fff;font-weight:800;font-size:.85rem;cursor:pointer;opacity:.9}
   .numgrid button:hover{opacity:1;outline:2px solid #fff}
+  #videoStage{display:none;width:100%;flex-direction:column;align-items:center}
+  .vwrap{position:relative;width:min(86vw,520px);border-radius:14px;overflow:hidden;background:#000;
+    box-shadow:0 18px 40px rgba(0,0,0,.5)}
+  #vid{width:100%;display:block}
+  #vOverlay{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+  .vfile{margin-bottom:12px;text-align:center}
+  .vfile input{color:var(--muted);font-size:.86rem}
+  .vhint{margin-top:10px;text-align:center;font-size:.86rem;color:var(--gold);min-height:1.2em;font-weight:600}
+  .vlive{margin-top:8px;text-align:center;font-size:.9rem;color:var(--muted)}
+  .vlive b{color:var(--txt);font-variant-numeric:tabular-nums}
   canvas.chart{width:100%;height:170px;display:block;background:#0f141d;border-radius:12px;border:1px solid var(--line)}
   .chartTitle{font-size:.82rem;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
   .chartTitle b{color:var(--txt)}
@@ -124,7 +134,34 @@
         <div class="pointer"></div>
         <canvas class="wheel" id="wheel" width="600" height="600"></canvas>
       </div>
-      <div id="videoNote">Ouvre ta vidéo de roulette dans une autre fenêtre et <b>tape en rythme</b> ci-dessous. Le repère est le haut de la roue&nbsp;: tape à chaque passage du zéro (plateau) et de la bille.</div>
+      <div id="videoStage">
+        <div class="vfile">
+          <input type="file" id="vFile" accept="video/*" />
+          <div style="font-size:.78rem;color:var(--muted);margin-top:4px">La vidéo reste sur ton appareil — rien n'est envoyé.</div>
+        </div>
+        <div class="vwrap">
+          <video id="vid" playsinline muted></video>
+          <canvas id="vOverlay"></canvas>
+        </div>
+        <div class="ctrls">
+          <button class="btn" id="vPlay">▶︎ Lecture</button>
+          <button class="btn" id="vBack">⟨ −0,1s</button>
+          <button class="btn" id="vFwd">+0,1s ⟩</button>
+          <select id="vSpeed" style="background:#0f141d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px">
+            <option value="0.25">0,25×</option><option value="0.5">0,5×</option>
+            <option value="1" selected>1×</option><option value="2">2×</option>
+          </select>
+        </div>
+        <div class="ctrls">
+          <button class="btn primary" id="vCalibBtn">🎯 Calibrer (3 clics)</button>
+          <button class="btn" id="vTrackBtn" disabled>🤖 Suivi auto</button>
+          <label style="display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.86rem">
+            <input type="checkbox" id="vFlip" /> inverser l'ordre des n°</label>
+        </div>
+        <div class="vhint" id="vHint"></div>
+        <div class="vlive" id="vLive"></div>
+      </div>
+      <div id="videoNote">Charge une vidéo ci-dessus (vue de dessus la plus nette possible), ou <b>tape en rythme</b> à la main sur une vidéo ouverte à côté. Le repère est le haut de la roue&nbsp;: tape à chaque passage du zéro (plateau) et de la bille.</div>
 
       <div class="ctrls" id="simCtrls">
         <button class="btn primary" id="launch">🎯 Lancer le tirage</button>
@@ -227,6 +264,7 @@
   </div>
 
   <footer>
+    App jumelle&nbsp;: <a href="../roulette-vision/" style="color:var(--accent2)">Roulette Vision — comparateur de méthodes</a> (vision par ordinateur).<br>
     Méthode&nbsp;: on chronomètre l'intervalle entre deux passages du même repère.<br>
     Vitesse angulaire plateau = 60 / T (tr/min)&nbsp;·&nbsp;Vitesse bille = 2π·R / T (m/s), avec T le temps d'un tour et R le rayon de la piste.
   </footer>
@@ -625,9 +663,25 @@
     });
   }
 
+  function makeVPred(idx, advance){
+    const offset = parseFloat($("vOffset").value)||0;
+    const center = ((Math.round(idx + advance + offset)%vN)+vN)%vN;
+    const set = []; for(let k=-2;k<=3;k++) set.push(((center+k)%vN+vN)%vN);
+    vPred = { refIdx:idx, rotorAdvance:advance, center, set, tPredict:now(),
+              tMedia:(VT.video && VT.video.src) ? VT.video.currentTime : null };
+    renderVPred();
+    $("vpredVerdict").innerHTML = "🎯 Secteur annoncé — clique <b>Résultat</b> à l'arrivée.";
+  }
+
   function vPredict(){
+    // suivi auto : le numéro au repère et la vitesse rotor sont déjà connus
+    if(VT.tracking && VT.refIdx!=null){
+      const dt = parseFloat($("vDt").value)||0, ARCv = 2*Math.PI/vN;
+      makeVPred(VT.refIdx, -(VT.wZero*dt)*vtSeqDir()/ARCv);
+      return;
+    }
     const w = rotorRadPerSec();
-    if(w===null){ alert("Tape d'abord le PLATEAU (touche F) au moins 2 fois pour mesurer la vitesse du rotor."); return; }
+    if(w===null){ alert("Mesure d'abord la vitesse du plateau : lance le suivi auto sur une vidéo chargée, ou tape le PLATEAU (touche F) au moins 2 fois."); return; }
     renderGrid("ref");
   }
 
@@ -639,12 +693,7 @@
       const dt = parseFloat($("vDt").value)||0;
       const dir = parseInt($("vDir").value,10);
       const offset = parseFloat($("vOffset").value)||0;
-      const advance = dir * (w*dt)/(2*Math.PI) * vN;    // cases parcourues par le rotor pendant Δt
-      const center = ((Math.round(idx + advance + offset)%vN)+vN)%vN;
-      const set = []; for(let k=-2;k<=3;k++) set.push(((center+k)%vN+vN)%vN);
-      vPred = { refIdx: idx, rotorAdvance: advance, center, set, tPredict: now() };
-      renderVPred();
-      $("vpredVerdict").innerHTML = "🎯 Secteur annoncé — clique <b>Résultat</b> à l'arrivée.";
+      makeVPred(idx, dir * (w*dt)/(2*Math.PI) * vN);    // cases parcourues par le rotor pendant Δt
     } else if(vAwait==="result"){
       if(!vPred){ $("vGrid").style.display="none"; vAwait=null; return; }
       const hit = vPred.set.includes(idx);
@@ -655,7 +704,10 @@
         : `❌ Raté — gagnant <b style="color:${col}">${num}</b> (à ${vCircDist(idx)} case${vCircDist(idx)>1?"s":""} du secteur).`;
       // auto-calibrage : Δt (temps Prédire→Résultat) + décalage (erreur signée)
       if($("vAuto").checked){
-        const measuredDt = (now() - vPred.tPredict)/1000;                 // ≈ délai de chute réel
+        // sur vidéo chargée on mesure en temps vidéo (insensible aux pauses)
+        const measuredDt = (vPred.tMedia!=null && VT.video && VT.video.src)
+          ? (VT.video.currentTime - vPred.tMedia)
+          : (now() - vPred.tPredict)/1000;
         if(measuredDt>0.4 && measuredDt<12){
           const curDt = parseFloat($("vDt").value)||0;
           $("vDt").value = (curDt + 0.3*(measuredDt-curDt)).toFixed(2);    // moyenne amortie
@@ -685,6 +737,217 @@
   function saveVScore(){ try{ localStorage.setItem("roulette.vscore",JSON.stringify(vScore)); }catch(e){} }
   function loadVScore(){ try{ const s=JSON.parse(localStorage.getItem("roulette.vscore")); if(s){vScore.n=s.n||0;vScore.h=s.h||0;} }catch(e){} }
 
+  /* ============ SUIVI AUTOMATIQUE SUR VIDÉO CHARGÉE ============ */
+  // La bille = le point le plus brillant sur l'anneau de la piste.
+  // Le zéro   = le point le plus vert sur l'anneau des numéros (case verte).
+  // On suit leurs angles image par image -> vitesses, décélération, numéro au repère.
+  const VT = {
+    video:null, work:null, wctx:null, ov:null, octx:null,
+    cx:0, cy:0, rTrack:0, rRing:0,
+    calibStep:0, ready:false, tracking:false,
+    lastT:null, aBall:null, aZero:null, wBall:0, wZero:0,
+    t0:null, lastPush:-1, refIdx:null,
+    series:{ rotor:[], ball:[] }
+  };
+  const REF_ANGLE = -Math.PI/2;          // repère = haut de l'image
+
+  function vtInit(){
+    VT.video = $("vid"); VT.ov = $("vOverlay"); VT.octx = VT.ov.getContext("2d");
+    VT.work = document.createElement("canvas"); VT.wctx = VT.work.getContext("2d",{willReadFrequently:true});
+  }
+
+  function vtLoadFile(file){
+    if(!file) return;
+    VT.video.src = URL.createObjectURL(file);
+    VT.tracking = false; VT.ready = false; VT.calibStep = 0;
+    VT.aBall = VT.aZero = null; VT.lastT = null; VT.t0 = null;
+    VT.series.rotor = []; VT.series.ball = [];
+    $("vTrackBtn").disabled = true;
+    $("vHint").textContent = "Vidéo chargée — clique 🎯 Calibrer, puis 3 clics sur l'image.";
+    VT.video.onloadedmetadata = () => {
+      VT.work.width = VT.video.videoWidth; VT.work.height = VT.video.videoHeight;
+      VT.ov.width = VT.video.videoWidth;   VT.ov.height = VT.video.videoHeight;
+      // valeurs de départ raisonnables (centre de l'image)
+      VT.cx = VT.ov.width/2; VT.cy = VT.ov.height/2;
+      VT.rTrack = Math.min(VT.ov.width,VT.ov.height)*0.42;
+      VT.rRing  = VT.rTrack*0.78;
+      vtDrawOverlay();
+    };
+  }
+
+  function vtCanvasPos(e){
+    const r = VT.ov.getBoundingClientRect();
+    return { x:(e.clientX-r.left)*(VT.ov.width/r.width), y:(e.clientY-r.top)*(VT.ov.height/r.height) };
+  }
+  function vtClick(e){
+    if(!VT.calibStep) return;
+    const p = vtCanvasPos(e);
+    if(VT.calibStep===1){
+      VT.cx=p.x; VT.cy=p.y; VT.calibStep=2;
+      $("vHint").textContent = "2/3 — clique sur la PISTE DE LA BILLE (le sillon où roule la bille).";
+    } else if(VT.calibStep===2){
+      VT.rTrack = Math.hypot(p.x-VT.cx, p.y-VT.cy); VT.calibStep=3;
+      $("vHint").textContent = "3/3 — clique sur l'ANNEAU DES NUMÉROS (sur une case colorée).";
+    } else {
+      VT.rRing = Math.hypot(p.x-VT.cx, p.y-VT.cy); VT.calibStep=0;
+      VT.ready = true; $("vTrackBtn").disabled = false;
+      $("vHint").textContent = "✅ Calibré — lance la lecture puis clique 🤖 Suivi auto.";
+    }
+    vtDrawOverlay();
+  }
+  function vtStartCalib(){
+    if(!VT.video.src){ $("vHint").textContent = "Charge d'abord une vidéo."; return; }
+    VT.calibStep = 1; VT.ready = false; VT.tracking = false;
+    $("vHint").textContent = "1/3 — clique au CENTRE de la roue.";
+    try{ VT.ov.scrollIntoView({block:"center", behavior:"smooth"}); }catch(e){}
+    vtDrawOverlay();
+  }
+
+  function vtDrawOverlay(){
+    const c = VT.octx; if(!c) return;
+    c.clearRect(0,0,VT.ov.width,VT.ov.height);
+    if(!VT.cx && !VT.cy) return;
+    // repères de calibration
+    c.strokeStyle="rgba(61,220,132,.9)"; c.lineWidth=2;
+    c.beginPath(); c.arc(VT.cx,VT.cy,VT.rTrack,0,Math.PI*2); c.stroke();
+    c.strokeStyle="rgba(255,209,102,.9)";
+    c.beginPath(); c.arc(VT.cx,VT.cy,VT.rRing,0,Math.PI*2); c.stroke();
+    c.strokeStyle="rgba(255,255,255,.65)"; c.lineWidth=1;
+    c.beginPath(); c.moveTo(VT.cx-10,VT.cy); c.lineTo(VT.cx+10,VT.cy);
+    c.moveTo(VT.cx,VT.cy-10); c.lineTo(VT.cx,VT.cy+10); c.stroke();
+    // ligne du repère (haut)
+    c.strokeStyle="#ffd166"; c.lineWidth=3;
+    c.beginPath(); c.moveTo(VT.cx,VT.cy-VT.rTrack-14); c.lineTo(VT.cx,VT.cy-VT.rTrack+6); c.stroke();
+    // marqueurs suivis
+    if(VT.aBall!==null){
+      const x=VT.cx+VT.rTrack*Math.cos(VT.aBall), y=VT.cy+VT.rTrack*Math.sin(VT.aBall);
+      c.beginPath(); c.arc(x,y,9,0,Math.PI*2); c.strokeStyle="#fff"; c.lineWidth=3; c.stroke();
+    }
+    if(VT.aZero!==null){
+      const x=VT.cx+VT.rRing*Math.cos(VT.aZero), y=VT.cy+VT.rRing*Math.sin(VT.aZero);
+      c.beginPath(); c.arc(x,y,9,0,Math.PI*2); c.strokeStyle="#3ddc84"; c.lineWidth=3; c.stroke();
+    }
+  }
+
+  // cherche l'angle qui maximise un score le long d'un anneau (3 rayons pour la robustesse)
+  function vtScanRing(img, x0, y0, w, h, r, scoreFn){
+    const N_S = 720, sc = new Float32Array(N_S);
+    let best = -1e9;
+    for(let k=0;k<N_S;k++){
+      const a = k*2*Math.PI/N_S, ca=Math.cos(a), sa=Math.sin(a);
+      let s=-1e9;
+      for(let dr=-4; dr<=4; dr+=4){
+        const px = Math.round(VT.cx+(r+dr)*ca)-x0, py = Math.round(VT.cy+(r+dr)*sa)-y0;
+        if(px<0||py<0||px>=w||py>=h) continue;
+        const i=(py*w+px)*4;
+        const v = scoreFn(img[i],img[i+1],img[i+2]);
+        if(v>s) s=v;
+      }
+      sc[k]=s; if(s>best) best=s;
+    }
+    if(best<=0) return null;
+    // centroïde vectoriel des pixels les plus marqués : pas de biais sur un aplat
+    // saturé, et aucune discontinuité au passage de l'angle 0.
+    const thr = best*0.75;
+    let sx=0, sy=0;
+    for(let k=0;k<N_S;k++){
+      const wgt = sc[k]-thr;
+      if(wgt>0){ const a=k*2*Math.PI/N_S; sx+=wgt*Math.cos(a); sy+=wgt*Math.sin(a); }
+    }
+    if(sx===0 && sy===0) return null;
+    return Math.atan2(sy,sx);
+  }
+
+  function vtStep(t){
+    const v = VT.video;
+    if(!v.videoWidth) return;
+    VT.wctx.drawImage(v,0,0,VT.work.width,VT.work.height);
+    const rMax = Math.max(VT.rTrack,VT.rRing)+8;
+    const x0 = Math.max(0,Math.floor(VT.cx-rMax)), y0 = Math.max(0,Math.floor(VT.cy-rMax));
+    const x1 = Math.min(VT.work.width, Math.ceil(VT.cx+rMax)), y1 = Math.min(VT.work.height, Math.ceil(VT.cy+rMax));
+    const w = x1-x0, h = y1-y0;
+    if(w<=0||h<=0) return;
+    const img = VT.wctx.getImageData(x0,y0,w,h).data;
+
+    const aBall = vtScanRing(img,x0,y0,w,h,VT.rTrack,(r,g,b)=> r+g+b);              // le plus brillant
+    const aZero = vtScanRing(img,x0,y0,w,h,VT.rRing ,(r,g,b)=> 2*g-r-b);            // le plus vert
+
+    // image dupliquée (même contenu) : on n'en tire aucune vitesse
+    if(aBall===VT.aBall && aZero===VT.aZero) return;
+
+    if(VT.lastT!==null){
+      const dt = t - VT.lastT;
+      if(dt>0.001 && dt<0.5){
+        if(aBall!==null && VT.aBall!==null) VT.wBall = vtSmooth(VT.wBall, vtDelta(VT.aBall,aBall)/dt);
+        if(aZero!==null && VT.aZero!==null) VT.wZero = vtSmooth(VT.wZero, vtDelta(VT.aZero,aZero)/dt);
+        vtPublish(t);
+      } else if(dt<=0 || dt>=0.5){ VT.wBall=0; VT.wZero=0; }   // pause / saut
+    } else { VT.t0 = t; }
+    if(aBall!==null) VT.aBall=aBall;
+    if(aZero!==null) VT.aZero=aZero;
+    VT.lastT=t;
+    vtDrawOverlay();
+  }
+  function vtDelta(prev,cur){ if(prev===null) return 0; let d=cur-prev;
+    while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return d; }
+  function vtSmooth(prev,cur){ return isFinite(cur) ? (prev? prev*0.7+cur*0.3 : cur) : prev; }
+
+  function vtPublish(t){
+    const wR=Math.abs(VT.wZero), wB=Math.abs(VT.wBall);
+    const rpm = wR*60/(2*Math.PI), per = wR>0.01 ? 2*Math.PI/wR : null;
+    const spd = wB*radiusM(),      bper= wB>0.01 ? 2*Math.PI/wB : null;
+    $("wRpm").innerHTML   = (rpm?rpm.toFixed(1):"—")+'<small>tr/min</small>';
+    $("wPeriod").innerHTML= (per?per.toFixed(2):"—")+'<small>s</small>';
+    $("wAng").innerHTML   = (wR?(wR*180/Math.PI).toFixed(0):"—")+'<small>°/s</small>';
+    $("bSpeed").innerHTML = (spd?spd.toFixed(2):"—")+'<small>m/s</small>';
+    $("bPeriod").innerHTML= (bper?bper.toFixed(2):"—")+'<small>s</small>';
+    $("bKmh").innerHTML   = (spd?(spd*3.6).toFixed(1):"—")+'<small>km/h</small>';
+    // numéro actuellement au repère
+    VT.refIdx = vtRefIndex();
+    const numTxt = VT.refIdx!=null ? vSEQ[VT.refIdx] : "—";
+    $("vLive").innerHTML = `Plateau <b>${rpm.toFixed(1)}</b> tr/min · Bille <b>${spd.toFixed(2)}</b> m/s · Au repère : <b>${numTxt}</b>`;
+    // courbes de décélération
+    const rel = t - VT.t0;
+    if(rel - VT.lastPush >= 0.25){
+      VT.lastPush = rel;
+      if(rpm>0) VT.series.rotor.push({x:rel,y:rpm});
+      if(spd>0) VT.series.ball.push({x:rel,y:spd});
+      if(VT.series.rotor.length>600) VT.series.rotor.shift();
+      if(VT.series.ball.length>600) VT.series.ball.shift();
+      drawChart($("chartW"), VT.series.rotor, "#4f8cff", "tr/min");
+      drawChart($("chartB"), VT.series.ball , "#3ddc84", "m/s");
+    }
+  }
+
+  function vtSeqDir(){ return $("vFlip") && $("vFlip").checked ? -1 : 1; }
+  function vtRefIndex(){
+    if(VT.aZero===null) return null;
+    const ARCv = 2*Math.PI/vN;
+    let d = REF_ANGLE - VT.aZero;
+    while(d<0) d+=2*Math.PI;
+    const i = Math.round(d*vtSeqDir()/ARCv);
+    return ((i%vN)+vN)%vN;
+  }
+
+  function vtToggleTracking(){
+    if(!VT.ready) return;
+    VT.tracking = !VT.tracking;
+    $("vTrackBtn").textContent = VT.tracking ? "⏹ Arrêter le suivi" : "🤖 Suivi auto";
+    $("vHint").textContent = VT.tracking
+      ? "Suivi en cours — la bille (blanc) et le zéro (vert) sont entourés sur l'image."
+      : "Suivi arrêté.";
+    if(VT.tracking){ VT.lastT=null; VT.lastPush=-1; vtSchedule(); }
+  }
+  function vtSchedule(){
+    if(!VT.tracking) return;
+    const v = VT.video;
+    if(v.requestVideoFrameCallback){
+      v.requestVideoFrameCallback((now_,meta)=>{ if(!VT.tracking) return; vtStep(meta.mediaTime); vtSchedule(); });
+    } else {
+      requestAnimationFrame(()=>{ if(!VT.tracking) return; vtStep(v.currentTime); vtSchedule(); });
+    }
+  }
+
   /* ===================== MODE ===================== */
   let mode = "sim";
   function setMode(m){
@@ -696,6 +959,7 @@
     $("wheel").style.display = m==="sim" ? "block":"none";
     document.querySelector(".pointer").style.display = m==="sim" ? "block":"none";
     $("videoNote").style.display = m==="video" ? "block":"none";
+    $("videoStage").style.display = m==="video" ? "flex":"none";
     $("predPanel").style.display = m==="sim" ? "block":"none";
     $("vpredPanel").style.display = m==="video" ? "block":"none";
     if(m==="video"){ stopAuto(); stopSpin(); }
@@ -711,6 +975,14 @@
   $("vPredictBtn").onclick = vPredict;
   $("vResultBtn").onclick = () => renderGrid("result");
   $("vType").addEventListener("change", setWheelType);
+  $("vFile").addEventListener("change", e => vtLoadFile(e.target.files[0]));
+  $("vCalibBtn").onclick = vtStartCalib;
+  $("vTrackBtn").onclick = vtToggleTracking;
+  $("vOverlay").addEventListener("click", vtClick);
+  $("vPlay").onclick = () => { const v=VT.video; if(v.paused){ v.play(); $("vPlay").textContent="⏸ Pause"; } else { v.pause(); $("vPlay").textContent="▶︎ Lecture"; } };
+  $("vBack").onclick = () => { VT.video.currentTime = Math.max(0, VT.video.currentTime-0.1); };
+  $("vFwd").onclick  = () => { VT.video.currentTime = VT.video.currentTime+0.1; };
+  $("vSpeed").addEventListener("change", e => { VT.video.playbackRate = parseFloat(e.target.value); });
   $("vpredReset").onclick = () => { vScore.n=0; vScore.h=0; saveVScore(); updateVScore(); };
   $("resetBtn").onclick = resetMeasures;
   $("tapWheel").onclick = () => tap("w");
@@ -728,7 +1000,7 @@
   });
 
   /* init */
-  loadScore(); loadVScore(); setWheelType(); setMode("sim");
+  vtInit(); loadScore(); loadVScore(); setWheelType(); setMode("sim");
   drawWheel(); resetMeasures(); renderPrediction(); updateScore(); updateVScore();
 })();
 </script>

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Roulette Vision — comparateur de méthodes</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1b2230; --line:#2a3446;
+    --txt:#e8edf5; --muted:#93a1b5; --a:#4f8cff; --b:#ff5ad0;
+    --gold:#ffd166; --green:#3ddc84; --shadow:0 18px 50px rgba(0,0,0,.45); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 15% -10%,#1a2740 0%,var(--bg) 55%) fixed;
+    color:var(--txt);min-height:100%;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  .logo{width:44px;height:44px;border-radius:12px;
+    background:conic-gradient(from 0deg,var(--a),var(--b),var(--gold),var(--a));box-shadow:var(--shadow)}
+  h1{font-size:1.5rem;margin:0}
+  .sub{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .stage{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,var(--bg2),#12161f);
+    border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px 24px;box-shadow:var(--shadow)}
+  .vwrap{position:relative;width:min(86vw,520px);border-radius:14px;overflow:hidden;background:#000}
+  video{width:100%;display:block}
+  #ov{position:absolute;inset:0;width:100%;height:100%}
+  .ctrls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+  .btn{border:1px solid var(--line);background:#0f141d;color:var(--txt);border-radius:11px;padding:11px 18px;
+    cursor:pointer;font-weight:700;font-size:.95rem;transition:.15s}
+  .btn:hover{border-color:var(--a);color:#fff}
+  .btn.primary{border:0;color:#fff;background:linear-gradient(135deg,var(--a),#6f6bff);box-shadow:0 8px 20px rgba(79,140,255,.3)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .status{margin-top:14px;text-align:center;font-size:.9rem;color:var(--gold);font-weight:600;min-height:1.3em}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;
+    box-shadow:var(--shadow);margin-bottom:18px}
+  .panel h2{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:0 0 12px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:#0f141d;border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+  .stat .lab{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.6px}
+  .stat .val{font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px}
+  .stat.A .val{color:#8fb6ff} .stat.B .val{color:#ff9ae0}
+  .stat .val small{font-size:.7rem;color:var(--muted);font-weight:600;margin-left:3px}
+  .legend{display:flex;gap:16px;font-size:.82rem;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+  .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  canvas.chart{width:100%;height:180px;display:block;background:#0f141d;border-radius:12px;border:1px solid var(--line)}
+  .cfg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.88rem;color:var(--muted);margin-top:12px}
+  .cfg input{width:78px;background:#0f141d;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 9px}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left;color:var(--muted)}
+  th{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  .verdict{margin-top:12px;font-size:.9rem;line-height:1.5}
+  .note{color:var(--muted);font-size:.8rem;line-height:1.45;margin-top:12px}
+  footer{color:var(--muted);text-align:center;font-size:.8rem;margin-top:30px;line-height:1.5}
+  a{color:var(--a)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"></div>
+    <div>
+      <h1>Roulette Vision — comparateur de méthodes</h1>
+      <div class="sub">Deux algorithmes de vision analysent la même vidéo en même temps, et on compare leurs mesures.</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="stage">
+      <div style="margin-bottom:12px;text-align:center">
+        <input type="file" id="file" accept="video/*" style="color:var(--muted);font-size:.86rem" />
+        <div style="font-size:.78rem;color:var(--muted);margin-top:4px">La vidéo reste sur ton appareil — rien n'est envoyé.</div>
+      </div>
+      <div class="vwrap">
+        <video id="vid" playsinline muted></video>
+        <canvas id="ov"></canvas>
+      </div>
+      <div class="ctrls">
+        <button class="btn" id="play">▶︎ Lecture</button>
+        <button class="btn primary" id="analyse" disabled>🔍 Analyser</button>
+        <button class="btn" id="reset">⟲ Réinitialiser</button>
+      </div>
+      <div class="status" id="status">Charge une vidéo de roulette (vue de dessus la plus nette possible).</div>
+    </section>
+
+    <aside>
+      <div class="panel">
+        <h2>Détection automatique</h2>
+        <div id="detect" style="font-size:.9rem;color:var(--muted);line-height:1.6">
+          Aucune analyse en cours.
+        </div>
+        <div class="cfg">Rayon réel de la piste : <input type="number" id="radius" value="0.30" step="0.01" min="0.05" /> m</div>
+      </div>
+
+      <div class="panel">
+        <h2>Mesures — les deux méthodes</h2>
+        <div class="stats">
+          <div class="stat A"><div class="lab">A · anneau+couleur</div><div class="val" id="aSpeed">—<small>m/s</small></div></div>
+          <div class="stat B"><div class="lab">B · mouvement</div><div class="val" id="bSpeed">—<small>m/s</small></div></div>
+          <div class="stat A"><div class="lab">A · tours/s bille</div><div class="val" id="aRev">—<small>tr/s</small></div></div>
+          <div class="stat B"><div class="lab">B · tours/s bille</div><div class="val" id="bRev">—<small>tr/s</small></div></div>
+        </div>
+        <div class="legend" style="margin-top:14px">
+          <span><i style="background:#4f8cff"></i>Méthode A (anneau + luminosité)</span>
+          <span><i style="background:#ff5ad0"></i>Méthode B (mouvement + cercle)</span>
+        </div>
+        <canvas class="chart" id="chart" width="740" height="360"></canvas>
+      </div>
+
+      <div class="panel">
+        <h2>Comparaison</h2>
+        <table>
+          <thead><tr><th>Critère</th><th>A · anneau</th><th>B · mouvement</th></tr></thead>
+          <tbody>
+            <tr><td>Vitesse moyenne</td><td id="cAmean">—</td><td id="cBmean">—</td></tr>
+            <tr><td>Bruit (à-coups)</td><td id="cAnoise">—</td><td id="cBnoise">—</td></tr>
+            <tr><td>Images exploitées</td><td id="cAn">—</td><td id="cBn">—</td></tr>
+            <tr><td>Calibration requise</td><td>centre + rayon</td><td>aucune</td></tr>
+          </tbody>
+        </table>
+        <div class="verdict" id="verdict"></div>
+        <div class="note">
+          <b>A · anneau + luminosité</b> : on balaie un cercle fixe et on prend le point le plus brillant.
+          Rapide et stable si le centre est bien calibré, mais aveugle si la bille sort de l'anneau
+          et trompée par les reflets.<br><br>
+          <b>B · mouvement + ajustement de cercle</b> : on compare chaque image à la précédente pour isoler
+          ce qui bouge, puis on ajuste un cercle (moindres carrés) sur la trajectoire de la bille — le centre
+          et le rayon sont donc <b>déduits automatiquement</b>. Plus autonome, mais sensible aux mouvements
+          parasites (main du croupier, caméra qui bouge).
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    App jumelle de la <a href="../roulette-entrainement/">Roulette — analyse de vitesse</a>.<br>
+    Outil d'analyse et d'apprentissage : mesurer la physique d'une roue filmée, pas prédire un gain.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const vid = $("vid"), ov = $("ov"), octx = ov.getContext("2d");
+  const work = document.createElement("canvas"), wctx = work.getContext("2d",{willReadFrequently:true});
+  const small = document.createElement("canvas"), sctx = small.getContext("2d",{willReadFrequently:true});
+  const SW = 240;                                  // largeur d'analyse du mouvement
+
+  const S = {
+    running:false, prevGray:null, scale:1,
+    pts:[],                                        // trajectoire détectée (méthode B)
+    fit:null,                                      // {cx, cy, r} ajusté automatiquement
+    lastT:null, aA:null, aB:null, wA:0, wB:0,
+    t0:null, lastPush:-1, series:{A:[],B:[]},
+    nA:0, nB:0, jitA:[], jitB:[], prevWA:null, prevWB:null
+  };
+
+  const radiusM = () => { const v=parseFloat($("radius").value); return (isFinite(v)&&v>0)?v:0.30; };
+
+  /* ---------- chargement ---------- */
+  $("file").addEventListener("change", e => {
+    const f = e.target.files[0]; if(!f) return;
+    vid.src = URL.createObjectURL(f);
+    resetAll();
+    $("analyse").disabled = false;
+    $("status").textContent = "Vidéo chargée — lance la lecture puis clique 🔍 Analyser.";
+  });
+  vid.addEventListener("loadedmetadata", () => {
+    work.width = vid.videoWidth; work.height = vid.videoHeight;
+    ov.width = vid.videoWidth;   ov.height = vid.videoHeight;
+    S.scale = vid.videoWidth / SW;
+    small.width = SW; small.height = Math.round(vid.videoHeight / S.scale);
+    draw();
+  });
+
+  function resetAll(){
+    S.running=false; S.prevGray=null; S.pts=[]; S.fit=null; S.lastT=null;
+    S.aA=S.aB=null; S.wA=S.wB=0; S.t0=null; S.lastPush=-1;
+    S.series.A=[]; S.series.B=[]; S.nA=S.nB=0; S.jitA=[]; S.jitB=[]; S.prevWA=S.prevWB=null;
+    $("analyse").textContent = "🔍 Analyser";
+    $("detect").innerHTML = "Aucune analyse en cours.";
+    ["aSpeed","bSpeed","aRev","bRev"].forEach(id=>{
+      const u = id.endsWith("Speed")?"m/s":"tr/s"; $(id).innerHTML = `—<small>${u}</small>`; });
+    ["cAmean","cBmean","cAnoise","cBnoise","cAn","cBn"].forEach(id=>$(id).textContent="—");
+    $("verdict").textContent = "";
+    drawChart(); draw();
+  }
+  $("reset").onclick = resetAll;
+
+  /* ---------- lecture ---------- */
+  $("play").onclick = () => {
+    if(vid.paused){ vid.play(); $("play").textContent="⏸ Pause"; }
+    else { vid.pause(); $("play").textContent="▶︎ Lecture"; }
+  };
+  $("analyse").onclick = () => {
+    S.running = !S.running;
+    $("analyse").textContent = S.running ? "⏹ Arrêter" : "🔍 Analyser";
+    if(S.running){ S.lastT=null; schedule(); }
+  };
+  function schedule(){
+    if(!S.running) return;
+    if(vid.requestVideoFrameCallback)
+      vid.requestVideoFrameCallback((n,meta)=>{ if(!S.running) return; step(meta.mediaTime); schedule(); });
+    else requestAnimationFrame(()=>{ if(!S.running) return; step(vid.currentTime); schedule(); });
+  }
+
+  /* ---------- méthode B : mouvement + ajustement de cercle ---------- */
+  function detectMotion(){
+    sctx.drawImage(vid,0,0,small.width,small.height);
+    const d = sctx.getImageData(0,0,small.width,small.height).data;
+    const n = small.width*small.height;
+    const gray = new Float32Array(n);
+    for(let i=0;i<n;i++){ const j=i*4; gray[i] = (d[j]*0.3 + d[j+1]*0.59 + d[j+2]*0.11); }
+    let best=-1, bi=-1;
+    if(S.prevGray){
+      for(let i=0;i<n;i++){
+        const diff = Math.abs(gray[i]-S.prevGray[i]);
+        if(diff < 22) continue;                     // seuil de mouvement
+        const sc = diff * (gray[i]/255);            // ce qui bouge ET qui est clair = la bille
+        if(sc>best){ best=sc; bi=i; }
+      }
+    }
+    S.prevGray = gray;
+    if(bi<0 || best<8) return null;
+    // centroïde pondéré autour du maximum (fenêtre ±6 px)
+    const bx = bi%small.width, by = (bi/small.width)|0;
+    let sx=0, sy=0, sw=0;
+    for(let y=Math.max(0,by-6); y<=Math.min(small.height-1,by+6); y++)
+      for(let x=Math.max(0,bx-6); x<=Math.min(small.width-1,bx+6); x++){
+        const i=y*small.width+x;
+        const w = Math.max(0, gray[i]-120);         // pondère les pixels clairs (la bille)
+        if(w>0){ sx+=x*w; sy+=y*w; sw+=w; }
+      }
+    if(sw<=0) return {x:bx*S.scale, y:by*S.scale};
+    return { x:(sx/sw)*S.scale, y:(sy/sw)*S.scale };
+  }
+
+  // ajustement de cercle par moindres carrés (Kåsa) : x²+y² + a·x + b·y + c = 0
+  function fitCircle(pts){
+    const n=pts.length; if(n<20) return null;
+    let Sx=0,Sy=0,Sxx=0,Syy=0,Sxy=0,Sz=0,Sxz=0,Syz=0;
+    for(const p of pts){
+      const z=p.x*p.x+p.y*p.y;
+      Sx+=p.x; Sy+=p.y; Sxx+=p.x*p.x; Syy+=p.y*p.y; Sxy+=p.x*p.y; Sz+=z; Sxz+=p.x*z; Syz+=p.y*z;
+    }
+    const M=[[Sxx,Sxy,Sx],[Sxy,Syy,Sy],[Sx,Sy,n]], V=[-Sxz,-Syz,-Sz];
+    const det=(m)=> m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+                  - m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+                  + m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+    const D=det(M); if(Math.abs(D)<1e-9) return null;
+    const rep=(col)=> M.map((row,i)=> row.map((v,j)=> j===col ? V[i] : v));
+    const a=det(rep(0))/D, b=det(rep(1))/D, c=det(rep(2))/D;
+    const cx=-a/2, cy=-b/2, r2=cx*cx+cy*cy-c;
+    if(!(r2>0)) return null;
+    const r=Math.sqrt(r2);
+    // résidu moyen : mesure de la qualité de l'ajustement
+    let res=0; for(const p of pts) res += Math.abs(Math.hypot(p.x-cx,p.y-cy)-r);
+    return { cx, cy, r, res:res/n };
+  }
+
+  /* ---------- méthode A : anneau + luminosité ---------- */
+  function scanRing(cx, cy, r){
+    const rMax=r+8;
+    const x0=Math.max(0,Math.floor(cx-rMax)), y0=Math.max(0,Math.floor(cy-rMax));
+    const x1=Math.min(work.width,Math.ceil(cx+rMax)), y1=Math.min(work.height,Math.ceil(cy+rMax));
+    const w=x1-x0, h=y1-y0; if(w<=0||h<=0) return null;
+    const img=wctx.getImageData(x0,y0,w,h).data;
+    const N=720, sc=new Float32Array(N); let best=-1e9;
+    for(let k=0;k<N;k++){
+      const a=k*2*Math.PI/N, ca=Math.cos(a), sa=Math.sin(a);
+      let s=-1e9;
+      for(let dr=-4;dr<=4;dr+=4){
+        const px=Math.round(cx+(r+dr)*ca)-x0, py=Math.round(cy+(r+dr)*sa)-y0;
+        if(px<0||py<0||px>=w||py>=h) continue;
+        const i=(py*w+px)*4, v=img[i]+img[i+1]+img[i+2];
+        if(v>s) s=v;
+      }
+      sc[k]=s; if(s>best) best=s;
+    }
+    if(best<=0) return null;
+    const thr=best*0.75; let sx=0, sy=0;
+    for(let k=0;k<N;k++){ const wg=sc[k]-thr; if(wg>0){ const a=k*2*Math.PI/N; sx+=wg*Math.cos(a); sy+=wg*Math.sin(a); } }
+    return (sx===0&&sy===0) ? null : Math.atan2(sy,sx);
+  }
+
+  /* ---------- boucle d'analyse ---------- */
+  function step(t){
+    if(!vid.videoWidth) return;
+    wctx.drawImage(vid,0,0,work.width,work.height);
+
+    const m = detectMotion();
+    if(m){ S.pts.push(m); if(S.pts.length>400) S.pts.shift(); }
+
+    if(!S.fit && S.pts.length>=40){
+      const f = fitCircle(S.pts);
+      if(f && f.r>20 && f.r<Math.max(work.width,work.height) && f.res < f.r*0.25) S.fit = f;
+    }
+
+    let aB=null, aA=null;
+    if(S.fit){
+      if(m) aB = Math.atan2(m.y-S.fit.cy, m.x-S.fit.cx);
+      aA = scanRing(S.fit.cx, S.fit.cy, S.fit.r);
+    }
+
+    if(S.lastT!==null && S.fit){
+      const dt = t-S.lastT;
+      if(dt>0.001 && dt<0.5){
+        if(aA!==null && S.aA!==null){ S.wA = smooth(S.wA, delta(S.aA,aA)/dt); S.nA++;
+          if(S.prevWA!==null) S.jitA.push(Math.abs(S.wA-S.prevWA)); S.prevWA=S.wA; }
+        if(aB!==null && S.aB!==null){ S.wB = smooth(S.wB, delta(S.aB,aB)/dt); S.nB++;
+          if(S.prevWB!==null) S.jitB.push(Math.abs(S.wB-S.prevWB)); S.prevWB=S.wB; }
+        publish(t);
+      }
+    }
+    if(S.t0===null) S.t0=t;
+    if(aA!==null) S.aA=aA;
+    if(aB!==null) S.aB=aB;
+    S.lastT=t;
+    draw(m);
+  }
+  function delta(p,c){ if(p===null) return 0; let d=c-p;
+    while(d>Math.PI) d-=2*Math.PI; while(d<-Math.PI) d+=2*Math.PI; return d; }
+  function smooth(prev,cur){ return isFinite(cur) ? (prev? prev*0.7+cur*0.3 : cur) : prev; }
+  const mean = a => a.length ? a.reduce((s,v)=>s+v,0)/a.length : 0;
+
+  function publish(t){
+    const wA=Math.abs(S.wA), wB=Math.abs(S.wB), R=radiusM();
+    $("aSpeed").innerHTML = (wA*R).toFixed(2)+'<small>m/s</small>';
+    $("bSpeed").innerHTML = (wB*R).toFixed(2)+'<small>m/s</small>';
+    $("aRev").innerHTML   = (wA/(2*Math.PI)).toFixed(2)+'<small>tr/s</small>';
+    $("bRev").innerHTML   = (wB/(2*Math.PI)).toFixed(2)+'<small>tr/s</small>';
+    $("detect").innerHTML = S.fit
+      ? `✅ Cercle ajusté automatiquement<br>centre <b>${S.fit.cx.toFixed(0)}, ${S.fit.cy.toFixed(0)}</b> px · rayon <b>${S.fit.r.toFixed(0)}</b> px<br>
+         résidu moyen <b>${S.fit.res.toFixed(1)}</b> px · <b>${S.pts.length}</b> points de trajectoire`
+      : `Recherche de la trajectoire… <b>${S.pts.length}</b> points collectés (40 requis).`;
+    const rel = t-S.t0;
+    if(rel-S.lastPush >= 0.2){
+      S.lastPush = rel;
+      if(wA>0) S.series.A.push({x:rel,y:wA*R});
+      if(wB>0) S.series.B.push({x:rel,y:wB*R});
+      if(S.series.A.length>500) S.series.A.shift();
+      if(S.series.B.length>500) S.series.B.shift();
+      drawChart(); updateCompare();
+    }
+  }
+
+  function updateCompare(){
+    const R=radiusM();
+    const mA=mean(S.series.A.map(p=>p.y)), mB=mean(S.series.B.map(p=>p.y));
+    const jA=mean(S.jitA)*R, jB=mean(S.jitB)*R;
+    $("cAmean").textContent = mA?mA.toFixed(2)+" m/s":"—";
+    $("cBmean").textContent = mB?mB.toFixed(2)+" m/s":"—";
+    $("cAnoise").textContent = jA?jA.toFixed(3):"—";
+    $("cBnoise").textContent = jB?jB.toFixed(3):"—";
+    $("cAn").textContent = S.nA||"—";
+    $("cBn").textContent = S.nB||"—";
+    if(mA && mB){
+      const ecart = Math.abs(mA-mB), pct = 100*ecart/Math.max(mA,mB);
+      const stable = jA<jB ? "A (anneau)" : "B (mouvement)";
+      $("verdict").innerHTML =
+        `Écart entre les deux méthodes : <b>${ecart.toFixed(2)} m/s</b> (${pct.toFixed(1)} %).<br>`+
+        (pct<10 ? `<span style="color:var(--green)">✅ Les deux méthodes concordent</span> — la mesure est fiable.`
+                : `<span style="color:var(--gold)">⚠️ Les méthodes divergent</span> — vérifie la netteté de la vidéo et le cercle détecté.`)+
+        `<br>Méthode la plus stable ici : <b>${stable}</b>.`;
+    }
+  }
+
+  /* ---------- rendus ---------- */
+  function draw(m){
+    octx.clearRect(0,0,ov.width,ov.height);
+    if(S.fit){
+      octx.strokeStyle="rgba(79,140,255,.85)"; octx.lineWidth=2;
+      octx.beginPath(); octx.arc(S.fit.cx,S.fit.cy,S.fit.r,0,Math.PI*2); octx.stroke();
+      octx.strokeStyle="rgba(255,255,255,.6)"; octx.lineWidth=1;
+      octx.beginPath(); octx.moveTo(S.fit.cx-10,S.fit.cy); octx.lineTo(S.fit.cx+10,S.fit.cy);
+      octx.moveTo(S.fit.cx,S.fit.cy-10); octx.lineTo(S.fit.cx,S.fit.cy+10); octx.stroke();
+      if(S.aA!==null){
+        const x=S.fit.cx+S.fit.r*Math.cos(S.aA), y=S.fit.cy+S.fit.r*Math.sin(S.aA);
+        octx.strokeStyle="#4f8cff"; octx.lineWidth=3;
+        octx.beginPath(); octx.arc(x,y,11,0,Math.PI*2); octx.stroke();
+      }
+    }
+    // nuage de trajectoire (méthode B)
+    octx.fillStyle="rgba(255,90,208,.35)";
+    for(const p of S.pts){ octx.beginPath(); octx.arc(p.x,p.y,2,0,Math.PI*2); octx.fill(); }
+    if(m){
+      octx.strokeStyle="#ff5ad0"; octx.lineWidth=3;
+      octx.beginPath(); octx.moveTo(m.x-9,m.y); octx.lineTo(m.x+9,m.y);
+      octx.moveTo(m.x,m.y-9); octx.lineTo(m.x,m.y+9); octx.stroke();
+    }
+  }
+
+  function drawChart(){
+    const cv=$("chart"), c=cv.getContext("2d"), W=cv.width, H=cv.height;
+    c.clearRect(0,0,W,H);
+    const padL=50,padR=14,padT=14,padB=28;
+    const x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    c.strokeStyle="rgba(255,255,255,.15)"; c.lineWidth=1;
+    c.beginPath(); c.moveTo(x0,y1); c.lineTo(x0,y0); c.lineTo(x1,y0); c.stroke();
+    c.font="11px sans-serif"; c.fillStyle="#93a1b5";
+    const all=S.series.A.concat(S.series.B);
+    if(!all.length){ c.textAlign="center"; c.fillText("Lance l'analyse pour tracer les deux courbes…",(x0+x1)/2,(y0+y1)/2); return; }
+    const maxX=Math.max(...all.map(p=>p.x),1), maxY=Math.max(...all.map(p=>p.y))*1.15||1;
+    const sx=v=>x0+(v/maxX)*(x1-x0), sy=v=>y0-(v/maxY)*(y0-y1);
+    c.textAlign="right"; c.textBaseline="middle";
+    for(let k=0;k<=4;k++){ const yy=y1+(y0-y1)*k/4;
+      c.strokeStyle="rgba(255,255,255,.06)"; c.beginPath(); c.moveTo(x0,yy); c.lineTo(x1,yy); c.stroke();
+      c.fillStyle="#93a1b5"; c.fillText((maxY*(1-k/4)).toFixed(1),x0-6,yy); }
+    c.textAlign="center"; c.textBaseline="top";
+    for(let k=0;k<=4;k++) c.fillText((maxX*k/4).toFixed(0)+"s", x0+(x1-x0)*k/4, y0+6);
+    const line=(pts,col)=>{ if(!pts.length) return;
+      c.strokeStyle=col; c.lineWidth=2.5; c.beginPath();
+      pts.forEach((p,i)=>{ const X=sx(p.x),Y=sy(p.y); i?c.lineTo(X,Y):c.moveTo(X,Y); }); c.stroke(); };
+    line(S.series.A,"#4f8cff"); line(S.series.B,"#ff5ad0");
+  }
+
+  drawChart();
+})();
+</script>
+</body>
+</html>
