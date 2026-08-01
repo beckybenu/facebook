@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Roulette — analyse de vitesse</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1b2230; --line:#2a3446;
+    --txt:#e8edf5; --muted:#93a1b5; --accent:#ff5a5f; --accent2:#4f8cff;
+    --gold:#ffd166; --green:#3ddc84; --shadow:0 18px 50px rgba(0,0,0,.45); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 15% -10%,#1a2740 0%,var(--bg) 55%) fixed;
+    color:var(--txt);min-height:100%;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 60px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  .logo{width:44px;height:44px;border-radius:12px;
+    background:conic-gradient(from 0deg,#c0392b,#111 25%,#c0392b 50%,#111 75%,#3ddc84 100%);box-shadow:var(--shadow)}
+  h1{font-size:1.5rem;margin:0}
+  .sub{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .stage{position:relative;display:flex;flex-direction:column;align-items:center;
+    background:linear-gradient(180deg,var(--bg2),#12161f);border:1px solid var(--line);
+    border-radius:var(--radius);padding:22px 18px 26px;box-shadow:var(--shadow)}
+  .modeBar{display:flex;gap:8px;margin-bottom:16px;background:#0f141d;border:1px solid var(--line);
+    border-radius:12px;padding:4px;align-self:center}
+  .modeBar button{border:0;background:transparent;color:var(--muted);padding:8px 16px;border-radius:9px;
+    cursor:pointer;font-weight:700;font-size:.9rem}
+  .modeBar button.active{background:var(--accent2);color:#fff}
+  .wheelBox{position:relative;width:min(74vw,420px);aspect-ratio:1/1}
+  canvas.wheel{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 22px 45px rgba(0,0,0,.5)}
+  .pointer{position:absolute;top:-4px;left:50%;transform:translateX(-50%);z-index:5;width:0;height:0;
+    border-left:15px solid transparent;border-right:15px solid transparent;border-top:26px solid var(--gold);
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+  #videoNote{color:var(--muted);text-align:center;font-size:.86rem;max-width:360px;margin-top:4px;display:none}
+  .ctrls{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+  .btn{border:1px solid var(--line);background:#0f141d;color:var(--txt);border-radius:11px;
+    padding:11px 18px;cursor:pointer;font-weight:700;transition:.15s;font-size:.95rem}
+  .btn:hover{border-color:var(--accent2);color:#fff}
+  .btn.primary{border:0;color:#fff;background:linear-gradient(135deg,var(--accent),#ff8a5f);
+    box-shadow:0 8px 20px rgba(255,90,95,.32)}
+  .btn.primary:active{transform:translateY(2px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+
+  .taps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;width:100%;max-width:420px}
+  .tap{border:0;border-radius:14px;padding:18px 10px;cursor:pointer;color:#fff;font-weight:800;
+    display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .06s,filter .15s;user-select:none}
+  .tap:active{transform:scale(.96)}
+  .tap.wheel{background:linear-gradient(135deg,#4f8cff,#3a6fd8)}
+  .tap.ball{background:linear-gradient(135deg,#3ddc84,#22a862)}
+  .tap .kbd{font-size:.72rem;opacity:.85;font-weight:600;background:rgba(0,0,0,.25);padding:2px 8px;border-radius:6px}
+  .tap.flash{filter:brightness(1.5)}
+  .tapHint{color:var(--muted);font-size:.82rem;margin-top:12px;text-align:center;max-width:420px}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;box-shadow:var(--shadow);margin-bottom:18px}
+  .panel h2{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:0 0 12px;
+    display:flex;justify-content:space-between;align-items:center}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:#0f141d;border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+  .stat .lab{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.6px}
+  .stat .val{font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px}
+  .stat .val small{font-size:.72rem;color:var(--muted);font-weight:600;margin-left:3px}
+  .stat.w .val{color:#7db0ff}
+  .stat.b .val{color:#6be0a4}
+
+  .cfg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.88rem;color:var(--muted)}
+  .cfg input{width:80px;background:#0f141d;border:1px solid var(--line);color:var(--txt);border-radius:8px;
+    padding:7px 9px;font-size:.9rem}
+  .link{color:var(--accent2);cursor:pointer;font-size:.82rem;font-weight:600}
+  .link:hover{text-decoration:underline}
+
+  table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:4px}
+  th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left;color:var(--muted)}
+  th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+  .tblWrap{max-height:190px;overflow:auto}
+
+  canvas.chart{width:100%;height:170px;display:block;background:#0f141d;border-radius:12px;border:1px solid var(--line)}
+  .chartTitle{font-size:.82rem;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
+  .chartTitle b{color:var(--txt)}
+  footer{color:var(--muted);text-align:center;font-size:.8rem;margin-top:30px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"></div>
+    <div>
+      <h1>Roulette — analyse de vitesse</h1>
+      <div class="sub">Estime la vitesse du plateau (tours/min), le temps par tour, la vitesse de la bille, et trace la décélération.</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- ===== STAGE ===== -->
+    <section class="stage">
+      <div class="modeBar">
+        <button id="mSim" class="active">🎡 Simulateur</button>
+        <button id="mVideo">🎬 Vidéo externe</button>
+      </div>
+
+      <div class="wheelBox">
+        <div class="pointer"></div>
+        <canvas class="wheel" id="wheel" width="600" height="600"></canvas>
+      </div>
+      <div id="videoNote">Ouvre ta vidéo de roulette dans une autre fenêtre et <b>tape en rythme</b> ci-dessous. Le repère est le haut de la roue&nbsp;: tape à chaque passage du zéro (plateau) et de la bille.</div>
+
+      <div class="ctrls" id="simCtrls">
+        <button class="btn primary" id="launch">🎯 Lancer le tirage</button>
+        <button class="btn" id="stopBtn" disabled>Arrêter</button>
+      </div>
+
+      <div class="taps">
+        <button class="tap wheel" id="tapWheel">
+          🔵 Tour de PLATEAU
+          <span class="kbd">clic / touche F</span>
+        </button>
+        <button class="tap ball" id="tapBall">
+          🟢 Tour de BILLE
+          <span class="kbd">clic / touche J</span>
+        </button>
+      </div>
+      <div class="tapHint">Tape une fois à chaque tour complet. Le plateau et la bille se mesurent chacun de leur côté&nbsp;— tu peux faire les deux mains en même temps (F&nbsp;=&nbsp;plateau, J&nbsp;=&nbsp;bille).</div>
+    </section>
+
+    <!-- ===== ANALYSE ===== -->
+    <aside>
+      <div class="panel">
+        <h2>Mesures en direct <span class="link" id="resetBtn">réinitialiser</span></h2>
+        <div class="stats">
+          <div class="stat w"><div class="lab">Plateau — vitesse</div><div class="val" id="wRpm">—<small>tr/min</small></div></div>
+          <div class="stat w"><div class="lab">Plateau — 1 tour</div><div class="val" id="wPeriod">—<small>s</small></div></div>
+          <div class="stat b"><div class="lab">Bille — vitesse</div><div class="val" id="bSpeed">—<small>m/s</small></div></div>
+          <div class="stat b"><div class="lab">Bille — 1 tour</div><div class="val" id="bPeriod">—<small>s</small></div></div>
+          <div class="stat w"><div class="lab">Plateau — angulaire</div><div class="val" id="wAng">—<small>°/s</small></div></div>
+          <div class="stat b"><div class="lab">Bille — vitesse</div><div class="val" id="bKmh">—<small>km/h</small></div></div>
+        </div>
+        <div class="cfg" style="margin-top:14px">
+          <span>Rayon piste bille :</span>
+          <input type="number" id="radius" value="0.30" step="0.01" min="0.05" /> m
+          <span id="truth" style="margin-left:auto"></span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="chartTitle"><span>Plateau — décélération <b>(tr/min)</b></span><span id="wSlope"></span></div>
+        <canvas class="chart" id="chartW" width="740" height="340"></canvas>
+        <div class="chartTitle" style="margin-top:16px"><span>Bille — décélération <b>(m/s)</b></span><span id="bSlope"></span></div>
+        <canvas class="chart" id="chartB" width="740" height="340"></canvas>
+      </div>
+
+      <div class="panel">
+        <h2>Détail des tours</h2>
+        <div class="tblWrap">
+          <table>
+            <thead><tr><th>#</th><th>t (s)</th><th>Plateau T</th><th>tr/min</th><th>Bille T</th><th>Bille m/s</th></tr></thead>
+            <tbody id="tbody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">Aucune mesure encore</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    Méthode&nbsp;: on chronomètre l'intervalle entre deux passages du même repère.<br>
+    Vitesse angulaire plateau = 60 / T (tr/min)&nbsp;·&nbsp;Vitesse bille = 2π·R / T (m/s), avec T le temps d'un tour et R le rayon de la piste.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const now = () => performance.now();
+
+  /* ===================== ROULETTE (simulateur) ===================== */
+  const SEQ = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+  const canvas = $("wheel"), ctx = canvas.getContext("2d");
+  const R = canvas.width/2, cx = R, cy = R;
+  const N = SEQ.length, ARC = Math.PI*2/N;
+
+  // geometry (canvas px)
+  const R_rim = R-4, R_num_out = R-26, R_num_in = R-70, R_track = R*0.80, R_pocketRing = R*0.60, R_hub = R*0.30;
+
+  let rotorAngle = 0, ballAngle = 0, ballR = R_track;
+  let wRotor = 0, wBall = 0;           // rad/s (rotor +, ball -)
+  let phase = "idle";                   // idle | orbit | dropping | settled
+  let running = false, lastFrame = 0, spinStart = 0, resultNum = null;
+  let truthLog = [];                    // ground-truth rotor rpm over time
+
+  function pocketColor(num, i){ return num===0 ? "#1f8a4c" : (RED.has(num) ? "#c0392b" : "#20262e"); }
+
+  function drawWheel(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // outer wood
+    ctx.beginPath(); ctx.arc(cx,cy,R_rim,0,Math.PI*2);
+    ctx.fillStyle="#5a3b1e"; ctx.fill();
+    ctx.lineWidth=8; ctx.strokeStyle="#2a1a0d"; ctx.stroke();
+    // pockets
+    for(let i=0;i<N;i++){
+      const a0 = rotorAngle + i*ARC, a1 = a0+ARC, num = SEQ[i];
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R_num_out,a0,a1); ctx.closePath();
+      ctx.fillStyle = pocketColor(num,i); ctx.fill();
+      ctx.strokeStyle="rgba(255,255,255,.10)"; ctx.lineWidth=1; ctx.stroke();
+      // number
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(a0+ARC/2);
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillStyle="#fff"; ctx.font="700 15px sans-serif";
+      ctx.fillText(num, (R_num_out+R_num_in)/2, 0); ctx.restore();
+    }
+    // inner ring separating numbers from bowl
+    ctx.beginPath(); ctx.arc(cx,cy,R_num_in,0,Math.PI*2);
+    ctx.fillStyle="#12161f"; ctx.fill();
+    ctx.lineWidth=3; ctx.strokeStyle="#3a2a18"; ctx.stroke();
+    // ball track groove
+    ctx.beginPath(); ctx.arc(cx,cy,R_track,0,Math.PI*2);
+    ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=6; ctx.stroke();
+    // turret / hub
+    ctx.beginPath(); ctx.arc(cx,cy,R_hub,0,Math.PI*2);
+    const g=ctx.createRadialGradient(cx-10,cy-12,4,cx,cy,R_hub);
+    g.addColorStop(0,"#e9d9b8"); g.addColorStop(1,"#8c6b3f");
+    ctx.fillStyle=g; ctx.fill();
+    ctx.lineWidth=4; ctx.strokeStyle="#2a1a0d"; ctx.stroke();
+    // ball
+    if(phase!=="idle"){
+      const bx = cx + ballR*Math.cos(ballAngle), by = cy + ballR*Math.sin(ballAngle);
+      ctx.beginPath(); ctx.arc(bx,by,9,0,Math.PI*2);
+      const bg=ctx.createRadialGradient(bx-3,by-3,1,bx,by,9);
+      bg.addColorStop(0,"#fff"); bg.addColorStop(1,"#c7ccd4");
+      ctx.fillStyle=bg; ctx.fill();
+      ctx.lineWidth=1; ctx.strokeStyle="rgba(0,0,0,.4)"; ctx.stroke();
+    }
+  }
+
+  function launch(){
+    if(mode!=="sim") return;
+    resetMeasures();
+    rotorAngle = Math.random()*Math.PI*2;
+    ballAngle  = Math.random()*Math.PI*2;
+    ballR = R_track;
+    wRotor = 2.4 + Math.random()*1.6;          // ~23–38 tr/min
+    wBall  = -(15 + Math.random()*7);          // opposite direction
+    phase = "orbit"; running = true; resultNum = null; truthLog = [];
+    spinStart = now(); lastFrame = spinStart;
+    $("launch").disabled = true; $("stopBtn").disabled = false;
+    $("truth").textContent = "";
+    requestAnimationFrame(loop);
+  }
+  function stopSpin(){ running = false; phase = "idle"; $("launch").disabled=false; $("stopBtn").disabled=true; drawWheel(); }
+
+  function loop(ts){
+    if(!running){ return; }
+    const dt = Math.min(0.05,(ts-lastFrame)/1000); lastFrame = ts;
+    const tSec = (ts-spinStart)/1000;
+
+    // rotor: slow friction
+    wRotor = Math.max(0.6, wRotor - 0.045*dt*Math.sign(wRotor)*0 - 0.05*dt); // near-constant slow decay
+    rotorAngle += wRotor*dt;
+    // log ground truth rpm each 0.25s
+    if(!truthLog.length || tSec - truthLog[truthLog.length-1].t >= 0.25)
+      truthLog.push({t:tSec, rpm: Math.abs(wRotor)*60/(2*Math.PI)});
+
+    if(phase==="orbit"){
+      wBall += 2.3*dt;                          // ball slows (wBall negative → toward 0)
+      ballAngle += wBall*dt;
+      if(Math.abs(wBall) < 6){ phase="dropping"; }
+    } else if(phase==="dropping"){
+      wBall += 1.6*dt;
+      ballAngle += wBall*dt;
+      ballR += (R_pocketRing - ballR)*Math.min(1,3*dt);   // spiral inward
+      if(ballR <= R_pocketRing+1.5){
+        phase="settled";
+        // couple to rotor, snap to nearest pocket
+        const rel = ((ballAngle - rotorAngle)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+        const idx = Math.round(rel/ARC)%N;
+        resultNum = SEQ[idx];
+        ballAngle = rotorAngle + idx*ARC + ARC/2;
+      }
+    } else if(phase==="settled"){
+      ballAngle += wRotor*dt; ballR = R_pocketRing;
+      // keep spinning with rotor; show result
+      $("truth").innerHTML = `Résultat : <b style="color:${resultNum===0?'#3ddc84':(RED.has(resultNum)?'#ff6b6b':'#c7ccd4')}">${resultNum}</b>`;
+    }
+
+    drawWheel();
+    requestAnimationFrame(loop);
+  }
+
+  /* ===================== MESURES (taps) ===================== */
+  // Each channel: array of tap timestamps (ms). Lap i uses taps[i-1..i].
+  const W = { taps:[], laps:[] };   // wheel
+  const B = { taps:[], laps:[] };   // ball
+  let t0 = null;                    // reference time of first tap (any channel)
+
+  function resetMeasures(){
+    W.taps=[]; W.laps=[]; B.taps=[]; B.laps=[]; t0=null;
+    render(); drawChart($("chartW"),[],"#4f8cff","tr/min"); drawChart($("chartB"),[],"#3ddc84","m/s");
+  }
+
+  function radiusM(){ const v=parseFloat($("radius").value); return (isFinite(v)&&v>0)? v : 0.30; }
+
+  function tap(ch){
+    const t = now();
+    if(t0===null) t0 = t;
+    const C = ch==="w" ? W : B;
+    C.taps.push(t);
+    if(C.taps.length>=2){
+      const T = (t - C.taps[C.taps.length-2])/1000;      // period (s)
+      if(T>0.02){                                        // ignore accidental double taps
+        const at = (t - t0)/1000;                        // time since first tap
+        const lap = { n:C.laps.length+1, at, T };
+        if(ch==="w"){ lap.rpm = 60/T; lap.deg = 360/T; }
+        else { lap.rpm = 60/T; lap.speed = (2*Math.PI*radiusM())/T; }
+        C.laps.push(lap);
+      }
+    }
+    flash(ch); render();
+  }
+  function flash(ch){ const el = ch==="w"?$("tapWheel"):$("tapBall");
+    el.classList.add("flash"); setTimeout(()=>el.classList.remove("flash"),90); }
+
+  function fmt(x,d=2){ return (x==null||!isFinite(x))?"—":x.toFixed(d); }
+
+  function render(){
+    const wl = W.laps[W.laps.length-1], bl = B.laps[B.laps.length-1];
+    $("wRpm").innerHTML   = (wl?fmt(wl.rpm,1):"—")+'<small>tr/min</small>';
+    $("wPeriod").innerHTML= (wl?fmt(wl.T,2):"—")+'<small>s</small>';
+    $("wAng").innerHTML   = (wl?fmt(wl.deg,0):"—")+'<small>°/s</small>';
+    $("bSpeed").innerHTML = (bl?fmt(bl.speed,2):"—")+'<small>m/s</small>';
+    $("bPeriod").innerHTML= (bl?fmt(bl.T,2):"—")+'<small>s</small>';
+    $("bKmh").innerHTML   = (bl?fmt(bl.speed*3.6,1):"—")+'<small>km/h</small>';
+
+    // slope (average deceleration) via linear fit
+    $("wSlope").textContent = slopeText(W.laps.map(l=>[l.at,l.rpm]),"tr/min/s");
+    $("bSlope").textContent = slopeText(B.laps.map(l=>l.speed!=null?[l.at,l.speed]:null).filter(Boolean),"m/s²");
+
+    // table
+    const rows = Math.max(W.laps.length,B.laps.length);
+    const tb = $("tbody");
+    if(rows===0){ tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">Aucune mesure encore</td></tr>'; }
+    else{
+      let html="";
+      for(let i=0;i<rows;i++){
+        const w=W.laps[i], b=B.laps[i];
+        const at = (w?w.at:(b?b.at:0));
+        html += `<tr><td>${i+1}</td><td>${fmt(at,1)}</td>`+
+                `<td>${w?fmt(w.T,3):"·"}</td><td>${w?fmt(w.rpm,1):"·"}</td>`+
+                `<td>${b?fmt(b.T,3):"·"}</td><td>${b&&b.speed!=null?fmt(b.speed,2):"·"}</td></tr>`;
+      }
+      tb.innerHTML = html;
+      tb.parentElement.parentElement.scrollTop = 1e6;
+    }
+
+    drawChart($("chartW"), W.laps.map(l=>({x:l.at,y:l.rpm})), "#4f8cff", "tr/min");
+    drawChart($("chartB"), B.laps.filter(l=>l.speed!=null).map(l=>({x:l.at,y:l.speed})), "#3ddc84", "m/s");
+  }
+
+  function slopeText(pts, unit){
+    if(pts.length<2) return "";
+    const n=pts.length; let sx=0,sy=0,sxx=0,sxy=0;
+    for(const [x,y] of pts){ sx+=x; sy+=y; sxx+=x*x; sxy+=x*y; }
+    const d = n*sxx - sx*sx; if(Math.abs(d)<1e-9) return "";
+    const m = (n*sxy - sx*sy)/d;
+    return `pente ≈ ${m.toFixed(2)} ${unit}`;
+  }
+
+  /* ===================== CHART ===================== */
+  function drawChart(cv, pts, color, unit){
+    const c = cv.getContext("2d"), W_=cv.width, H_=cv.height;
+    c.clearRect(0,0,W_,H_);
+    const padL=48, padR=14, padT=14, padB=28;
+    const x0=padL, x1=W_-padR, y0=H_-padB, y1=padT;
+    // axes
+    c.strokeStyle="rgba(255,255,255,.15)"; c.lineWidth=1;
+    c.beginPath(); c.moveTo(x0,y1); c.lineTo(x0,y0); c.lineTo(x1,y0); c.stroke();
+    c.fillStyle="#93a1b5"; c.font="11px sans-serif";
+    if(pts.length===0){
+      c.textAlign="center"; c.fillText("Tape en rythme pour tracer la courbe…",(x0+x1)/2,(y0+y1)/2);
+      return;
+    }
+    const maxX = Math.max(...pts.map(p=>p.x), 1);
+    const maxY = Math.max(...pts.map(p=>p.y))*1.15 || 1;
+    const sx = v => x0 + (v/maxX)*(x1-x0);
+    const sy = v => y0 - (v/maxY)*(y0-y1);
+    // grid + y labels
+    c.textAlign="right"; c.textBaseline="middle";
+    for(let k=0;k<=4;k++){
+      const yy = y1 + (y0-y1)*k/4, val = maxY*(1-k/4);
+      c.strokeStyle="rgba(255,255,255,.06)"; c.beginPath(); c.moveTo(x0,yy); c.lineTo(x1,yy); c.stroke();
+      c.fillStyle="#93a1b5"; c.fillText(val.toFixed(maxY<10?1:0), x0-6, yy);
+    }
+    // x labels
+    c.textAlign="center"; c.textBaseline="top";
+    for(let k=0;k<=4;k++){ const xx=x0+(x1-x0)*k/4; c.fillText((maxX*k/4).toFixed(0)+"s", xx, y0+6); }
+    // line
+    c.strokeStyle=color; c.lineWidth=2.5; c.beginPath();
+    pts.forEach((p,i)=>{ const X=sx(p.x),Y=sy(p.y); i?c.lineTo(X,Y):c.moveTo(X,Y); });
+    c.stroke();
+    // points
+    c.fillStyle=color;
+    pts.forEach(p=>{ c.beginPath(); c.arc(sx(p.x),sy(p.y),3.5,0,Math.PI*2); c.fill(); });
+    // last value label
+    const last=pts[pts.length-1];
+    c.fillStyle="#e8edf5"; c.textAlign="right"; c.textBaseline="bottom";
+    c.font="700 12px sans-serif";
+    c.fillText(last.y.toFixed(maxY<10?2:1)+" "+unit, x1, sy(last.y)-6);
+  }
+
+  /* ===================== MODE ===================== */
+  let mode = "sim";
+  function setMode(m){
+    mode = m;
+    $("mSim").classList.toggle("active", m==="sim");
+    $("mVideo").classList.toggle("active", m==="video");
+    $("simCtrls").style.display = m==="sim" ? "flex":"none";
+    $("wheel").style.display = m==="sim" ? "block":"none";
+    document.querySelector(".pointer").style.display = m==="sim" ? "block":"none";
+    $("videoNote").style.display = m==="video" ? "block":"none";
+    if(m==="video"){ stopSpin(); }
+  }
+
+  /* ===================== EVENTS ===================== */
+  $("launch").onclick = launch;
+  $("stopBtn").onclick = stopSpin;
+  $("resetBtn").onclick = resetMeasures;
+  $("tapWheel").onclick = () => tap("w");
+  $("tapBall").onclick  = () => tap("b");
+  $("mSim").onclick = () => setMode("sim");
+  $("mVideo").onclick = () => setMode("video");
+  $("radius").addEventListener("input", render);
+  window.addEventListener("keydown", e=>{
+    if(e.repeat) return;
+    const k = e.key.toLowerCase();
+    if(k==="f"){ e.preventDefault(); tap("w"); }
+    else if(k==="j"){ e.preventDefault(); tap("b"); }
+    else if(k===" " && mode==="sim"){ e.preventDefault(); if(!running) launch(); else stopSpin(); }
+  });
+
+  /* init */
+  setMode("sim"); drawWheel(); resetMeasures();
+})();
+</script>
+</body>
+</html>
