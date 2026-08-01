@@ -23,6 +23,22 @@ Chaque tour mesuré est ajouté au tableau et aux graphiques ; comme le plateau 
 bille ralentissent, la suite des points dessine la **courbe de décélération**, dont
 la pente moyenne (régression linéaire) est affichée.
 
+## Prédiction — secteur de 6 numéros 🔮
+
+Pendant qu'un tirage tourne (mode Simulateur), clique **🔮 Prédire** (ou touche **P**) :
+l'app extrapole la physique à partir des vitesses actuelles du plateau et de la bille,
+calcule la case d'arrivée idéale, et annonce un **secteur de 6 numéros** — le numéro
+prédit et ses **5 voisins sur le cylindre** (adjacence physique, pas l'ordre 1-2-3).
+Le secteur est surligné en or sur la roue.
+
+Quand la bille se pose, l'app compare : ✅ dans le secteur / ❌ raté (avec l'écart en
+cases), et tient un **score de réussite** cumulé — pour t'entraîner à annoncer de plus
+en plus tôt. Un léger **rebond aléatoire (scatter)** est simulé à la chute (comme en
+vrai), d'où un *secteur* plutôt qu'un seul numéro garanti : on vise ~70-80 % de réussite.
+
+> Astuce : en jeu réel, prédis sur les **derniers tours de bille**, c'est là que
+> l'extrapolation est la plus fiable.
+
 ## Deux modes
 
 - **🎡 Simulateur** — une roulette animée (plateau + bille qui décélère réellement
