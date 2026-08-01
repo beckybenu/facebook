@@ -88,7 +88,14 @@
   .verdict{margin-top:12px;font-weight:700;font-size:1rem;min-height:1.2em}
   .score{margin-top:6px;color:var(--muted);font-size:.92rem}
   .note{margin-top:12px;color:var(--muted);font-size:.8rem;line-height:1.45}
+  ol.note{padding-left:18px} ol.note li{margin:3px 0}
   #predPanel{border-color:#3a4a2f;background:linear-gradient(180deg,#1c2618,#161b22)}
+  #vpredPanel{border-color:#3a2f4a;background:linear-gradient(180deg,#211826,#161b22)}
+  .vrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .numgrid{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding:10px;background:#0f141d;border:1px solid var(--line);border-radius:12px}
+  .numgrid .gh{width:100%;font-size:.8rem;color:var(--gold);font-weight:700;margin-bottom:2px}
+  .numgrid button{width:34px;height:34px;border:0;border-radius:8px;color:#fff;font-weight:800;font-size:.85rem;cursor:pointer;opacity:.9}
+  .numgrid button:hover{opacity:1;outline:2px solid #fff}
   canvas.chart{width:100%;height:170px;display:block;background:#0f141d;border-radius:12px;border:1px solid var(--line)}
   .chartTitle{font-size:.82rem;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
   .chartTitle b{color:var(--txt)}
@@ -148,6 +155,34 @@
         <div class="note">Le secteur = le numéro prédit et ses 5 voisins <b>sur le cylindre</b> (pas dans l'ordre 1-2-3). En jeu réel, prédis sur les <b>derniers tours de bille</b> pour plus de précision&nbsp;: la bille rebondit en tombant (scatter), d'où un secteur plutôt qu'un seul numéro.</div>
       </div>
 
+      <div class="panel" id="vpredPanel" style="display:none">
+        <h2>🔮 Prédiction sur vidéo réelle <span class="link" id="vpredReset">réinit. score</span></h2>
+        <div class="cfg">
+          Roulette :
+          <select id="vType"><option value="37">Européenne (37)</option><option value="38">Américaine (38)</option></select>
+          Rotor :
+          <select id="vDir"><option value="1">horaire ↻</option><option value="-1">anti-horaire ↺</option></select>
+        </div>
+        <div class="cfg" style="margin-top:8px">
+          Délai de chute Δt : <input type="number" id="vDt" value="2.5" step="0.1" min="0" style="width:64px" /> s
+          <span style="margin-left:14px">Décalage : <input type="number" id="vOffset" value="0" step="1" style="width:56px" /> cases</span>
+          <label style="margin-left:auto"><input type="checkbox" id="vAuto" checked /> auto-calibrage</label>
+        </div>
+        <ol class="note">
+          <li>Tape le <b>plateau (F)</b> et la <b>bille (J)</b> en rythme sur la vidéo (au moins 1 tour de plateau pour la vitesse rotor).</li>
+          <li>Au <b>dernier passage de la bille sur ton repère</b> (juste avant qu'elle décroche), clique <b>🔮 Prédire</b> puis choisis le numéro alors au repère.</li>
+          <li>À l'arrivée, clique <b>Résultat</b> et entre le numéro gagnant&nbsp;: verdict, score, et le décalage s'affine tout seul.</li>
+        </ol>
+        <div class="vrow">
+          <button class="btn primary" id="vPredictBtn">🔮 Prédire</button>
+          <button class="btn" id="vResultBtn">Résultat</button>
+        </div>
+        <div id="vGrid" class="numgrid" style="display:none"></div>
+        <div id="vpredChips" class="chips" style="margin-top:12px"></div>
+        <div id="vpredVerdict" class="verdict"></div>
+        <div id="vpredScore" class="score"></div>
+      </div>
+
       <div class="panel">
         <h2>Mesures en direct <span class="link" id="resetBtn">réinitialiser</span></h2>
         <div class="stats">
@@ -197,6 +232,8 @@
 
   /* ===================== ROULETTE (simulateur) ===================== */
   const SEQ = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const EU_SEQ = SEQ;
+  const US_SEQ = [0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,"00",27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
   const RED = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
   const canvas = $("wheel"), ctx = canvas.getContext("2d");
   const R = canvas.width/2, cx = R, cy = R;
@@ -215,7 +252,7 @@
   let predSet = null, predCenter = null;
   const score = { n:0, h:0 };
 
-  function pocketColor(num, i){ return num===0 ? "#1f8a4c" : (RED.has(num) ? "#c0392b" : "#20262e"); }
+  function pocketColor(num, i){ return (num===0||num==="00") ? "#1f8a4c" : (RED.has(num) ? "#c0392b" : "#20262e"); }
 
   function drawWheel(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -515,6 +552,95 @@
     c.fillText(last.y.toFixed(maxY<10?2:1)+" "+unit, x1, sy(last.y)-6);
   }
 
+  /* ===================== PRÉDICTION SUR VIDÉO RÉELLE ===================== */
+  // Visual-ballistics léger : au dernier passage de la bille sur un repère, on note
+  // le numéro du rotor sous le repère. Pendant le délai de chute Δt, le rotor avance
+  // de (ω_rotor·Δt) ; + un décalage constant appris par roue/croupier (auto-calibrage).
+  const vScore = { n:0, h:0 };
+  let vSEQ = EU_SEQ, vN = 37, vIdxOf = {};
+  let vAwait = null;              // 'ref' | 'result' | null
+  let vPred = null;              // { refIdx, rotorAdvance, center, set }
+
+  function buildSeqIndex(){ vIdxOf = {}; vSEQ.forEach((val,i)=>{ vIdxOf[String(val)] = i; }); }
+  function setWheelType(){
+    vN = parseInt($("vType").value,10);
+    vSEQ = vN===38 ? US_SEQ : EU_SEQ;
+    buildSeqIndex();
+  }
+
+  function rotorRadPerSec(){ const l = W.laps[W.laps.length-1]; return l ? (2*Math.PI/l.T) : null; }
+
+  function renderGrid(purpose){
+    vAwait = purpose;
+    const g = $("vGrid"); g.style.display = "flex"; g.innerHTML = "";
+    const head = document.createElement("div"); head.className = "gh";
+    head.textContent = purpose==="ref" ? "Numéro au REPÈRE au moment du déclenchement :" : "Numéro GAGNANT :";
+    g.appendChild(head);
+    const zeros = vN===38 ? ["0","00"] : ["0"];
+    const nums = zeros.concat(Array.from({length:36},(_,i)=>String(i+1)));
+    nums.forEach(v=>{
+      const b = document.createElement("button");
+      const val = (v==="00") ? "00" : Number(v);
+      b.textContent = v; b.style.background = pocketColor(val);
+      b.onclick = () => pickNumber(val);
+      g.appendChild(b);
+    });
+  }
+
+  function vPredict(){
+    const w = rotorRadPerSec();
+    if(w===null){ alert("Tape d'abord le PLATEAU (touche F) au moins 2 fois pour mesurer la vitesse du rotor."); return; }
+    renderGrid("ref");
+  }
+
+  function pickNumber(val){
+    const idx = vIdxOf[String(val)];
+    if(idx===undefined){ return; }
+    if(vAwait==="ref"){
+      const w = rotorRadPerSec() || 0;
+      const dt = parseFloat($("vDt").value)||0;
+      const dir = parseInt($("vDir").value,10);
+      const offset = parseFloat($("vOffset").value)||0;
+      const advance = dir * (w*dt)/(2*Math.PI) * vN;    // cases parcourues par le rotor pendant Δt
+      const center = ((Math.round(idx + advance + offset)%vN)+vN)%vN;
+      const set = []; for(let k=-2;k<=3;k++) set.push(((center+k)%vN+vN)%vN);
+      vPred = { refIdx: idx, rotorAdvance: advance, center, set };
+      renderVPred();
+      $("vpredVerdict").innerHTML = "🎯 Secteur annoncé — clique <b>Résultat</b> à l'arrivée.";
+    } else if(vAwait==="result"){
+      if(!vPred){ $("vGrid").style.display="none"; vAwait=null; return; }
+      const hit = vPred.set.includes(idx);
+      vScore.n++; if(hit) vScore.h++; saveVScore();
+      const num = vSEQ[idx], col = (num===0||num==="00")?"#3ddc84":(RED.has(num)?"#ff6b6b":"#c7ccd4");
+      $("vpredVerdict").innerHTML = hit
+        ? `✅ <span style="color:var(--green)">Dans le secteur&nbsp;!</span> Gagnant : <b style="color:${col}">${num}</b>.`
+        : `❌ Raté — gagnant <b style="color:${col}">${num}</b> (à ${vCircDist(idx)} case${vCircDist(idx)>1?"s":""} du secteur).`;
+      // auto-calibrage du décalage : erreur signée entre le réel et (repère + avance rotor)
+      if($("vAuto").checked){
+        const predicted = Math.round(vPred.refIdx + vPred.rotorAdvance);
+        let err = ((idx - predicted)%vN+vN)%vN; if(err>vN/2) err -= vN;   // erreur signée
+        const cur = parseFloat($("vOffset").value)||0;
+        $("vOffset").value = (cur + 0.5*err).toFixed(1);                  // ajustement amorti
+      }
+      updateVScore();
+    }
+    $("vGrid").style.display = "none"; vAwait = null;
+  }
+
+  function vCircDist(idx){ let m=99; vPred.set.forEach(p=>{ let d=Math.abs(p-idx); d=Math.min(d,vN-d); m=Math.min(m,d); }); return m; }
+  function renderVPred(){
+    const box = $("vpredChips"); box.innerHTML = "";
+    if(!vPred) return;
+    vPred.set.forEach(idx=>{
+      const num = vSEQ[idx], d = document.createElement("div");
+      d.className = "chip-n" + (idx===vPred.center?" center":"");
+      d.style.background = pocketColor(num); d.textContent = num; box.appendChild(d);
+    });
+  }
+  function updateVScore(){ $("vpredScore").innerHTML = vScore.n ? `Réussite : <b>${vScore.h}/${vScore.n}</b> (${Math.round(100*vScore.h/vScore.n)}%)` : ""; }
+  function saveVScore(){ try{ localStorage.setItem("roulette.vscore",JSON.stringify(vScore)); }catch(e){} }
+  function loadVScore(){ try{ const s=JSON.parse(localStorage.getItem("roulette.vscore")); if(s){vScore.n=s.n||0;vScore.h=s.h||0;} }catch(e){} }
+
   /* ===================== MODE ===================== */
   let mode = "sim";
   function setMode(m){
@@ -525,6 +651,8 @@
     $("wheel").style.display = m==="sim" ? "block":"none";
     document.querySelector(".pointer").style.display = m==="sim" ? "block":"none";
     $("videoNote").style.display = m==="video" ? "block":"none";
+    $("predPanel").style.display = m==="sim" ? "block":"none";
+    $("vpredPanel").style.display = m==="video" ? "block":"none";
     if(m==="video"){ stopSpin(); }
   }
 
@@ -533,6 +661,10 @@
   $("stopBtn").onclick = stopSpin;
   $("predictBtn").onclick = predict;
   $("predReset").onclick = () => { score.n=0; score.h=0; saveScore(); updateScore(); };
+  $("vPredictBtn").onclick = vPredict;
+  $("vResultBtn").onclick = () => renderGrid("result");
+  $("vType").addEventListener("change", setWheelType);
+  $("vpredReset").onclick = () => { vScore.n=0; vScore.h=0; saveVScore(); updateVScore(); };
   $("resetBtn").onclick = resetMeasures;
   $("tapWheel").onclick = () => tap("w");
   $("tapBall").onclick  = () => tap("b");
@@ -549,7 +681,8 @@
   });
 
   /* init */
-  loadScore(); setMode("sim"); drawWheel(); resetMeasures(); renderPrediction(); updateScore();
+  loadScore(); loadVScore(); setWheelType(); setMode("sim");
+  drawWheel(); resetMeasures(); renderPrediction(); updateScore(); updateVScore();
 })();
 </script>
 </body>

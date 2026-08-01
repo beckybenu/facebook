@@ -39,12 +39,32 @@ vrai), d'où un *secteur* plutôt qu'un seul numéro garanti : on vise ~70-80 % 
 > Astuce : en jeu réel, prédis sur les **derniers tours de bille**, c'est là que
 > l'extrapolation est la plus fiable.
 
+### Prédiction sur vraie vidéo (mode 🎬)
+
+Le mode **Vidéo externe** ajoute un prédicteur « visual ballistics » utilisable sur de
+vraies roulettes (vidéo ou live à côté) :
+
+1. **Réglages** : type de roue (37 européenne / 38 américaine), sens du rotor,
+   **délai de chute Δt** (temps entre le décrochage de la bille et l'immobilisation),
+   et **décalage** (constante propre à la roue/au croupier — laissée à l'auto-calibrage).
+2. Tu tapes le **plateau (F)** et la **bille (J)** en rythme sur la vidéo.
+3. Au **dernier passage de la bille sur ton repère** (juste avant qu'elle décroche), tu
+   cliques **🔮 Prédire** et tu choisis le **numéro alors au repère**.
+4. L'app projette : pendant Δt, le rotor avance de `ω_rotor·Δt` cases → elle en déduit
+   la case d'arrivée et annonce le **secteur de 6 numéros**.
+5. À l'arrivée, tu cliques **Résultat** et entres le numéro gagnant : verdict, **score**,
+   et le **décalage s'affine automatiquement** (auto-calibrage) au fil des tirages.
+
+> ⚠️ La prédiction de roulette réelle reste **approximative** (roue inclinée, rebonds,
+> variations du croupier). Cet outil est fait pour **comprendre et t'entraîner à la
+> méthode**, pas pour garantir un gain. À utiliser de façon responsable.
+
 ## Deux modes
 
 - **🎡 Simulateur** — une roulette animée (plateau + bille qui décélère réellement
   et tombe dans une case). Idéal pour t'entraîner : lance un tirage et tape en rythme.
 - **🎬 Vidéo externe** — masque le simulateur ; ouvre ta propre vidéo de roulette à
-  côté et tape en rythme dessus pour l'analyser.
+  côté, tape en rythme, mesure et **prédis** (voir ci-dessus).
 
 ## Comment mesurer
 
