@@ -72,8 +72,9 @@
   <div class="grid">
     <section class="stage">
       <div style="margin-bottom:12px;text-align:center">
-        <input type="file" id="file" accept="video/*" style="color:var(--muted);font-size:.86rem" />
-        <div style="font-size:.78rem;color:var(--muted);margin-top:4px">La vidéo reste sur ton appareil — rien n'est envoyé.</div>
+        <button class="btn primary" id="cam" style="margin-bottom:8px">📷 Caméra live (ma roulette)</button>
+        <div><input type="file" id="file" accept="video/*" style="color:var(--muted);font-size:.86rem" /></div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Tout reste sur ton appareil — aucune image n'est envoyée.</div>
       </div>
       <div class="vwrap">
         <video id="vid" playsinline muted></video>
@@ -164,11 +165,37 @@
   /* ---------- chargement ---------- */
   $("file").addEventListener("change", e => {
     const f = e.target.files[0]; if(!f) return;
+    stopCamera(); vid.srcObject = null;
     vid.src = URL.createObjectURL(f);
     resetAll();
     $("analyse").disabled = false;
     $("status").textContent = "Vidéo chargée — lance la lecture puis clique 🔍 Analyser.";
   });
+
+  /* ---- caméra live : analyser sa propre roulette ---- */
+  let stream = null, wakeLock = null;
+  function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+  async function keepAwake(){ try{ if(navigator.wakeLock) wakeLock = await navigator.wakeLock.request("screen"); }catch(e){} }
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible" && stream) keepAwake(); });
+
+  $("cam").onclick = async () => {
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      $("status").textContent = "Caméra non disponible sur ce navigateur."; return;
+    }
+    try{
+      stopCamera();
+      stream = await navigator.mediaDevices.getUserMedia({
+        video:{ facingMode:{ideal:"environment"}, width:{ideal:1280}, height:{ideal:720}, frameRate:{ideal:60} },
+        audio:false });
+      vid.src = ""; vid.srcObject = stream;
+      resetAll(); await vid.play();
+      $("analyse").disabled = false; $("play").textContent = "⏸ Pause";
+      $("status").textContent = "📷 Caméra active — cadre la roue de dessus, puis 🔍 Analyser (le cercle se détecte tout seul).";
+      keepAwake();
+    }catch(e){
+      $("status").textContent = "Caméra refusée ou indisponible (" + (e.name||e.message) + "). En HTTPS uniquement.";
+    }
+  };
   vid.addEventListener("loadedmetadata", () => {
     work.width = vid.videoWidth; work.height = vid.videoHeight;
     ov.width = vid.videoWidth;   ov.height = vid.videoHeight;

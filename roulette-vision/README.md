@@ -45,10 +45,24 @@ détection de mouvement subit la gigue pixel.
 
 ## Utilisation
 
-1. Charge une vidéo de roulette (**vue de dessus la plus nette possible**).
+1. **📷 Caméra live** pour analyser ta propre roue en direct, ou charge une vidéo
+   (**vue de dessus la plus nette possible**).
 2. Lance la **lecture**, puis clique **🔍 Analyser**.
 3. Après ~40 points de trajectoire, le cercle s'ajuste tout seul et les deux méthodes
    se mettent à mesurer en parallèle.
+
+### Mode live sur sa propre roulette
+
+Cette app est la plus pratique en direct : elle **n'a besoin d'aucune calibration**, le centre
+et le rayon de la roue sont déduits de la trajectoire de la bille. L'écran reste allumé
+pendant la mesure (Wake Lock) et aucune image ne quitte l'appareil.
+
+- **HTTPS obligatoire** (adresse GitHub Pages) — la caméra est bloquée en `file://`.
+- Téléphone **stable et au-dessus de la roue** : la méthode B ajuste un cercle sur la
+  trajectoire, une caméra qui bouge fausse l'ajustement.
+- Lumière homogène, peu de reflets ; **60 i/s** si possible.
+- Surveille le **résidu moyen** affiché : quelques pixels = bon ajustement, beaucoup =
+  détection parasitée (main, reflet, caméra qui bouge).
 
 > Outil d'**analyse et d'apprentissage** : il sert à mesurer la physique d'une roue filmée
 > et à comparer des algorithmes de vision — pas à prédire un gain.
