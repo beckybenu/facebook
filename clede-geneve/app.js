@@ -52,6 +52,34 @@
     burger.setAttribute("aria-expanded", "false");
   }));
 
+  /* ============ Sélecteur de thèmes de couleur ============ */
+  const THEME_NAMES = {
+    or: "Or & Émeraude", saphir: "Saphir", rubis: "Rubis",
+    amethyste: "Améthyste", emeraude: "Émeraude", platine: "Platine"
+  };
+  const dock = $("#theme-dock");
+  const themeToggle = $("#theme-toggle");
+  const swName = $("#sw-name");
+  const readTheme = () => { try { return localStorage.getItem("cdg-theme"); } catch (e) { return null; } };
+
+  function setTheme(t) {
+    if (!THEME_NAMES[t]) t = "or";
+    document.documentElement.setAttribute("data-theme", t);
+    try { localStorage.setItem("cdg-theme", t); } catch (e) {}
+    $$(".sw").forEach(s => s.classList.toggle("active", s.dataset.set === t));
+    if (swName) swName.textContent = THEME_NAMES[t];
+    window.dispatchEvent(new CustomEvent("cdg:theme"));
+  }
+  themeToggle?.addEventListener("click", () => {
+    const open = dock.classList.toggle("open");
+    themeToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  $$(".sw").forEach(s => s.addEventListener("click", () => setTheme(s.dataset.set)));
+  document.addEventListener("click", (e) => {
+    if (dock && !dock.contains(e.target)) { dock.classList.remove("open"); themeToggle?.setAttribute("aria-expanded", "false"); }
+  });
+  setTheme(readTheme() || "or"); // applique le thème enregistré (défaut : Or & Émeraude)
+
   /* ============ Reveal on scroll ============ */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -191,6 +219,7 @@ ${data.message || "—"}
       const geo = new THREE.BoxGeometry(w, h, w);
       const m = mats[i % mats.length].clone();
       const mesh = new THREE.Mesh(geo, m);
+      mesh.userData.kind = i % mats.length; // 0/2 = verre, 1 = teinte accent
       const ring = 5 + Math.random() * 9;
       const ang = Math.random() * Math.PI * 2;
       mesh.position.set(Math.cos(ang) * ring, h / 2 - 4.5, Math.sin(ang) * ring - 3);
@@ -234,6 +263,30 @@ ${data.message || "—"}
     const pmat = new THREE.PointsMaterial({ color: 0xe8c07d, size: 0.06, transparent: true, opacity: 0.55 });
     const points = new THREE.Points(pgeo, pmat);
     scene.add(points);
+
+    // ----- Couleurs de la scène pilotées par le thème CSS -----
+    const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#ffffff";
+    function applySceneTheme() {
+      const cWarm = new THREE.Color(cssVar("--gold"));
+      const cWarm2 = new THREE.Color(cssVar("--gold-2"));
+      const cCool = new THREE.Color(cssVar("--teal"));
+      // lumières
+      key.color.copy(cWarm2);
+      rim.color.copy(cCool);
+      rim2.color.copy(cWarm);
+      // matériaux « or » (clé + accents) et particules
+      gold.color.copy(cWarm);
+      pmat.color.copy(cWarm);
+      // tours : verre teinté froid, accents en couleur secondaire
+      const coolDeep = cCool.clone().multiplyScalar(0.5);
+      const coolGlow = cCool.clone().multiplyScalar(0.14);
+      towers.children.forEach((m) => {
+        if (m.userData.kind === 1) { m.material.color.copy(coolDeep); m.material.emissive.copy(coolGlow); }
+        else { m.material.emissive.copy(coolGlow); }
+      });
+    }
+    applySceneTheme();
+    window.addEventListener("cdg:theme", applySceneTheme);
 
     // ----- Resize -----
     function resize() {
