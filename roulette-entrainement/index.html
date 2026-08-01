@@ -81,6 +81,14 @@
   th{color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
   .tblWrap{max-height:190px;overflow:auto}
 
+  .chips{display:flex;flex-wrap:wrap;gap:8px;font-size:.88rem;color:var(--muted);align-items:center}
+  .chip-n{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:#fff;font-size:1.05rem;border:2px solid rgba(255,255,255,.15)}
+  .chip-n.center{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,209,102,.35)}
+  .verdict{margin-top:12px;font-weight:700;font-size:1rem;min-height:1.2em}
+  .score{margin-top:6px;color:var(--muted);font-size:.92rem}
+  .note{margin-top:12px;color:var(--muted);font-size:.8rem;line-height:1.45}
+  #predPanel{border-color:#3a4a2f;background:linear-gradient(180deg,#1c2618,#161b22)}
   canvas.chart{width:100%;height:170px;display:block;background:#0f141d;border-radius:12px;border:1px solid var(--line)}
   .chartTitle{font-size:.82rem;color:var(--muted);margin:0 0 6px;display:flex;justify-content:space-between}
   .chartTitle b{color:var(--txt)}
@@ -113,6 +121,7 @@
 
       <div class="ctrls" id="simCtrls">
         <button class="btn primary" id="launch">🎯 Lancer le tirage</button>
+        <button class="btn" id="predictBtn" disabled>🔮 Prédire (6 n°)</button>
         <button class="btn" id="stopBtn" disabled>Arrêter</button>
       </div>
 
@@ -131,6 +140,14 @@
 
     <!-- ===== ANALYSE ===== -->
     <aside>
+      <div class="panel" id="predPanel">
+        <h2>🔮 Prédiction — secteur de 6 numéros <span class="link" id="predReset">réinitialiser le score</span></h2>
+        <div id="predChips" class="chips">Lance un tirage, puis clique <b>🔮&nbsp;Prédire</b> (ou touche&nbsp;P) pendant que la bille tourne encore.</div>
+        <div id="predVerdict" class="verdict"></div>
+        <div id="predScore" class="score"></div>
+        <div class="note">Le secteur = le numéro prédit et ses 5 voisins <b>sur le cylindre</b> (pas dans l'ordre 1-2-3). En jeu réel, prédis sur les <b>derniers tours de bille</b> pour plus de précision&nbsp;: la bille rebondit en tombant (scatter), d'où un secteur plutôt qu'un seul numéro.</div>
+      </div>
+
       <div class="panel">
         <h2>Mesures en direct <span class="link" id="resetBtn">réinitialiser</span></h2>
         <div class="stats">
@@ -191,8 +208,12 @@
   let rotorAngle = 0, ballAngle = 0, ballR = R_track;
   let wRotor = 0, wBall = 0;           // rad/s (rotor +, ball -)
   let phase = "idle";                   // idle | orbit | dropping | settled
-  let running = false, lastFrame = 0, spinStart = 0, resultNum = null;
+  let running = false, lastFrame = 0, spinStart = 0, resultNum = null, resultIdx = null;
   let truthLog = [];                    // ground-truth rotor rpm over time
+
+  // prediction state
+  let predSet = null, predCenter = null;
+  const score = { n:0, h:0 };
 
   function pocketColor(num, i){ return num===0 ? "#1f8a4c" : (RED.has(num) ? "#c0392b" : "#20262e"); }
 
@@ -214,6 +235,22 @@
       ctx.textAlign="center"; ctx.textBaseline="middle";
       ctx.fillStyle="#fff"; ctx.font="700 15px sans-serif";
       ctx.fillText(num, (R_num_out+R_num_in)/2, 0); ctx.restore();
+    }
+    // predicted 6-number sector band
+    if(predSet){
+      const aStart = rotorAngle + (predCenter-2)*ARC, aEnd = rotorAngle + (predCenter+4)*ARC;
+      ctx.beginPath();
+      ctx.arc(cx,cy,R_rim-1,aStart,aEnd);
+      ctx.arc(cx,cy,R_num_out,aEnd,aStart,true); ctx.closePath();
+      ctx.fillStyle="rgba(255,209,102,.32)"; ctx.fill();
+      ctx.lineWidth=3; ctx.strokeStyle="#ffd166"; ctx.stroke();
+    }
+    // actual result pocket outline (after settle)
+    if(phase==="settled" && resultIdx!=null){
+      const a0 = rotorAngle + resultIdx*ARC;
+      ctx.beginPath(); ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R_num_out,a0,a0+ARC); ctx.closePath();
+      ctx.lineWidth=3; ctx.strokeStyle="#fff"; ctx.stroke();
     }
     // inner ring separating numbers from bowl
     ctx.beginPath(); ctx.arc(cx,cy,R_num_in,0,Math.PI*2);
@@ -247,13 +284,14 @@
     ballR = R_track;
     wRotor = 2.4 + Math.random()*1.6;          // ~23–38 tr/min
     wBall  = -(15 + Math.random()*7);          // opposite direction
-    phase = "orbit"; running = true; resultNum = null; truthLog = [];
+    phase = "orbit"; running = true; resultNum = null; resultIdx = null; truthLog = [];
+    predSet = null; predCenter = null; renderPrediction(); $("predVerdict").textContent = "";
     spinStart = now(); lastFrame = spinStart;
-    $("launch").disabled = true; $("stopBtn").disabled = false;
+    $("launch").disabled = true; $("stopBtn").disabled = false; $("predictBtn").disabled = false;
     $("truth").textContent = "";
     requestAnimationFrame(loop);
   }
-  function stopSpin(){ running = false; phase = "idle"; $("launch").disabled=false; $("stopBtn").disabled=true; drawWheel(); }
+  function stopSpin(){ running = false; phase = "idle"; $("launch").disabled=false; $("stopBtn").disabled=true; $("predictBtn").disabled=true; drawWheel(); }
 
   function loop(ts){
     if(!running){ return; }
@@ -277,21 +315,85 @@
       ballR += (R_pocketRing - ballR)*Math.min(1,3*dt);   // spiral inward
       if(ballR <= R_pocketRing+1.5){
         phase="settled";
-        // couple to rotor, snap to nearest pocket
+        // couple to rotor, snap to nearest pocket + realistic bounce (scatter)
         const rel = ((ballAngle - rotorAngle)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
-        const idx = Math.round(rel/ARC)%N;
-        resultNum = SEQ[idx];
-        ballAngle = rotorAngle + idx*ARC + ARC/2;
+        let idx = (Math.round(rel/ARC) + scatterOffset())%N; idx = (idx+N)%N;
+        resultIdx = idx; resultNum = SEQ[idx];
+        ballAngle = rotorAngle + idx*ARC + ARC/2; ballR = R_pocketRing;
+        // freeze so a new spin can be launched
+        running = false;
+        $("launch").disabled = false; $("stopBtn").disabled = true; $("predictBtn").disabled = true;
+        $("truth").innerHTML = `Résultat : <b style="color:${resultNum===0?'#3ddc84':(RED.has(resultNum)?'#ff6b6b':'#c7ccd4')}">${resultNum}</b>`;
+        if(predSet) checkPrediction();
       }
-    } else if(phase==="settled"){
-      ballAngle += wRotor*dt; ballR = R_pocketRing;
-      // keep spinning with rotor; show result
-      $("truth").innerHTML = `Résultat : <b style="color:${resultNum===0?'#3ddc84':(RED.has(resultNum)?'#ff6b6b':'#c7ccd4')}">${resultNum}</b>`;
     }
 
     drawWheel();
-    requestAnimationFrame(loop);
+    if(running) requestAnimationFrame(loop);
   }
+
+  /* ===================== PRÉDICTION ===================== */
+  // Realistic bounce: the ball rarely lands exactly on the ideal pocket.
+  // Weighted integer offset centred on 0 → ~80 % of drops fall in a 6-pocket sector.
+  function scatterOffset(){
+    const table = [-4,-3,-2,-1,-1,0,0,0,1,1,1,2,2,3,4];
+    return table[Math.floor(Math.random()*table.length)];
+  }
+
+  // Fast-forward the exact rotor+ball physics from a given state to the drop,
+  // returning the ideal landing index (no scatter). Deterministic.
+  function simulateLanding(st){
+    let ra=st.rotorAngle, ba=st.ballAngle, wr=st.wRotor, wb=st.wBall, br=st.ballR, ph=st.phase;
+    const dt=1/120; let guard=0;
+    while(ph!=="settled" && guard++<40000){
+      wr = Math.max(0.6, wr - 0.05*dt); ra += wr*dt;
+      if(ph==="orbit"){ wb += 2.3*dt; ba += wb*dt; if(Math.abs(wb)<6) ph="dropping"; }
+      else if(ph==="dropping"){ wb += 1.6*dt; ba += wb*dt; br += (R_pocketRing-br)*Math.min(1,3*dt);
+        if(br<=R_pocketRing+1.5) ph="settled"; }
+    }
+    const rel = ((ba-ra)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+    return (Math.round(rel/ARC)%N+N)%N;
+  }
+
+  function predict(){
+    if(mode!=="sim" || !running || phase==="settled") return;
+    predCenter = simulateLanding({rotorAngle,ballAngle,wRotor,wBall,ballR,phase});
+    predSet = [];
+    for(let k=-2;k<=3;k++) predSet.push(((predCenter+k)%N+N)%N);   // 6 voisins sur le cylindre
+    renderPrediction(); $("predVerdict").textContent = "🎯 Secteur annoncé — on attend la bille…";
+    drawWheel();
+  }
+
+  function renderPrediction(){
+    const box=$("predChips");
+    if(!predSet){ box.innerHTML='Lance un tirage, puis clique <b>🔮&nbsp;Prédire</b> (ou touche&nbsp;P) pendant que la bille tourne encore.'; return; }
+    box.innerHTML="";
+    predSet.forEach(idx=>{
+      const num=SEQ[idx], d=document.createElement("div");
+      d.className="chip-n"+(idx===predCenter?" center":"");
+      d.style.background=pocketColor(num); d.textContent=num; d.title=idx===predCenter?"numéro central prédit":"voisin";
+      box.appendChild(d);
+    });
+  }
+
+  function circDist(idx){ let m=99; predSet.forEach(p=>{ let d=Math.abs(p-idx); d=Math.min(d,N-d); m=Math.min(m,d); }); return m; }
+
+  function checkPrediction(){
+    const hit = predSet.includes(resultIdx);
+    score.n++; if(hit) score.h++; saveScore();
+    const col = resultNum===0?"#3ddc84":(RED.has(resultNum)?"#ff6b6b":"#c7ccd4");
+    $("predVerdict").innerHTML = hit
+      ? `✅ <span style="color:var(--green)">Dans le secteur&nbsp;!</span> La bille est tombée sur <b style="color:${col}">${resultNum}</b>.`
+      : `❌ Raté — tombée sur <b style="color:${col}">${resultNum}</b> (à ${circDist(resultIdx)} case${circDist(resultIdx)>1?"s":""} du secteur).`;
+    updateScore();
+  }
+  function updateScore(){
+    $("predScore").innerHTML = score.n
+      ? `Réussite : <b>${score.h}/${score.n}</b> (${Math.round(100*score.h/score.n)}%)`
+      : "";
+  }
+  function saveScore(){ try{ localStorage.setItem("roulette.score",JSON.stringify(score)); }catch(e){} }
+  function loadScore(){ try{ const s=JSON.parse(localStorage.getItem("roulette.score")); if(s){score.n=s.n||0;score.h=s.h||0;} }catch(e){} }
 
   /* ===================== MESURES (taps) ===================== */
   // Each channel: array of tap timestamps (ms). Lap i uses taps[i-1..i].
@@ -429,6 +531,8 @@
   /* ===================== EVENTS ===================== */
   $("launch").onclick = launch;
   $("stopBtn").onclick = stopSpin;
+  $("predictBtn").onclick = predict;
+  $("predReset").onclick = () => { score.n=0; score.h=0; saveScore(); updateScore(); };
   $("resetBtn").onclick = resetMeasures;
   $("tapWheel").onclick = () => tap("w");
   $("tapBall").onclick  = () => tap("b");
@@ -440,11 +544,12 @@
     const k = e.key.toLowerCase();
     if(k==="f"){ e.preventDefault(); tap("w"); }
     else if(k==="j"){ e.preventDefault(); tap("b"); }
+    else if(k==="p" && mode==="sim"){ e.preventDefault(); predict(); }
     else if(k===" " && mode==="sim"){ e.preventDefault(); if(!running) launch(); else stopSpin(); }
   });
 
   /* init */
-  setMode("sim"); drawWheel(); resetMeasures();
+  loadScore(); setMode("sim"); drawWheel(); resetMeasures(); renderPrediction(); updateScore();
 })();
 </script>
 </body>
