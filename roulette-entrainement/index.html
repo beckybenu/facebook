@@ -131,6 +131,12 @@
         <button class="btn" id="predictBtn" disabled>🔮 Prédire (6 n°)</button>
         <button class="btn" id="stopBtn" disabled>Arrêter</button>
       </div>
+      <div class="ctrls" id="autoBar">
+        <button class="btn" id="autoBtn">🤖 Démo auto</button>
+        <input type="number" id="autoCount" value="10" min="1" style="width:56px;background:#0f141d;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:8px" /> tirages
+        <label style="display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.9rem"><input type="checkbox" id="autoLoop" /> en boucle</label>
+        <button class="btn" id="autoStop" disabled>⏹ Stop</button>
+      </div>
 
       <div class="taps">
         <button class="tap wheel" id="tapWheel">
@@ -181,6 +187,7 @@
         <div id="vpredChips" class="chips" style="margin-top:12px"></div>
         <div id="vpredVerdict" class="verdict"></div>
         <div id="vpredScore" class="score"></div>
+        <div id="vCalib" class="score"></div>
       </div>
 
       <div class="panel">
@@ -252,6 +259,9 @@
   let predSet = null, predCenter = null;
   const score = { n:0, h:0 };
 
+  // auto (fully automatic) mode
+  let autoMode = false, autoLeft = 0, autoPredicted = false, autoDone = 0;
+
   function pocketColor(num, i){ return (num===0||num==="00") ? "#1f8a4c" : (RED.has(num) ? "#c0392b" : "#20262e"); }
 
   function drawWheel(){
@@ -321,7 +331,7 @@
     ballR = R_track;
     wRotor = 2.4 + Math.random()*1.6;          // ~23–38 tr/min
     wBall  = -(15 + Math.random()*7);          // opposite direction
-    phase = "orbit"; running = true; resultNum = null; resultIdx = null; truthLog = [];
+    phase = "orbit"; running = true; resultNum = null; resultIdx = null; truthLog = []; autoPredicted = false;
     predSet = null; predCenter = null; renderPrediction(); $("predVerdict").textContent = "";
     spinStart = now(); lastFrame = spinStart;
     $("launch").disabled = true; $("stopBtn").disabled = false; $("predictBtn").disabled = false;
@@ -329,6 +339,28 @@
     requestAnimationFrame(loop);
   }
   function stopSpin(){ running = false; phase = "idle"; $("launch").disabled=false; $("stopBtn").disabled=true; $("predictBtn").disabled=true; drawWheel(); }
+
+  /* fully-automatic demo: launch → auto-predict → verify → repeat */
+  function startAuto(){
+    if(mode!=="sim") return;
+    autoMode = true; autoDone = 0;
+    autoLeft = $("autoLoop").checked ? Infinity : Math.max(1, parseInt($("autoCount").value,10)||10);
+    $("autoBtn").disabled = true; $("autoStop").disabled = false;
+    $("launch").disabled = true; $("predictBtn").disabled = true;
+    nextAuto();
+  }
+  function nextAuto(){
+    if(!autoMode) return;
+    if(autoDone >= autoLeft){ stopAuto(); return; }
+    launch();
+  }
+  function stopAuto(){
+    autoMode = false;
+    $("autoBtn").disabled = false; $("autoStop").disabled = true;
+    if(!running){ $("launch").disabled = false; }
+    $("predVerdict").insertAdjacentHTML("beforeend",
+      score.n ? ` <span style="color:var(--muted)">— démo terminée (${score.h}/${score.n}).</span>` : "");
+  }
 
   function loop(ts){
     if(!running){ return; }
@@ -362,7 +394,13 @@
         $("launch").disabled = false; $("stopBtn").disabled = true; $("predictBtn").disabled = true;
         $("truth").innerHTML = `Résultat : <b style="color:${resultNum===0?'#3ddc84':(RED.has(resultNum)?'#ff6b6b':'#c7ccd4')}">${resultNum}</b>`;
         if(predSet) checkPrediction();
+        if(autoMode){ autoDone++; setTimeout(nextAuto, 1300); }
       }
+    }
+
+    // auto mode: predict by itself ~2 ball revolutions before the drop
+    if(autoMode && !autoPredicted && running && phase!=="settled" && Math.abs(wBall) < 9){
+      autoPredicted = true; predict();
     }
 
     drawWheel();
@@ -604,7 +642,7 @@
       const advance = dir * (w*dt)/(2*Math.PI) * vN;    // cases parcourues par le rotor pendant Δt
       const center = ((Math.round(idx + advance + offset)%vN)+vN)%vN;
       const set = []; for(let k=-2;k<=3;k++) set.push(((center+k)%vN+vN)%vN);
-      vPred = { refIdx: idx, rotorAdvance: advance, center, set };
+      vPred = { refIdx: idx, rotorAdvance: advance, center, set, tPredict: now() };
       renderVPred();
       $("vpredVerdict").innerHTML = "🎯 Secteur annoncé — clique <b>Résultat</b> à l'arrivée.";
     } else if(vAwait==="result"){
@@ -615,14 +653,20 @@
       $("vpredVerdict").innerHTML = hit
         ? `✅ <span style="color:var(--green)">Dans le secteur&nbsp;!</span> Gagnant : <b style="color:${col}">${num}</b>.`
         : `❌ Raté — gagnant <b style="color:${col}">${num}</b> (à ${vCircDist(idx)} case${vCircDist(idx)>1?"s":""} du secteur).`;
-      // auto-calibrage du décalage : erreur signée entre le réel et (repère + avance rotor)
+      // auto-calibrage : Δt (temps Prédire→Résultat) + décalage (erreur signée)
       if($("vAuto").checked){
+        const measuredDt = (now() - vPred.tPredict)/1000;                 // ≈ délai de chute réel
+        if(measuredDt>0.4 && measuredDt<12){
+          const curDt = parseFloat($("vDt").value)||0;
+          $("vDt").value = (curDt + 0.3*(measuredDt-curDt)).toFixed(2);    // moyenne amortie
+        }
         const predicted = Math.round(vPred.refIdx + vPred.rotorAdvance);
-        let err = ((idx - predicted)%vN+vN)%vN; if(err>vN/2) err -= vN;   // erreur signée
+        let err = ((idx - predicted)%vN+vN)%vN; if(err>vN/2) err -= vN;    // erreur signée
         const cur = parseFloat($("vOffset").value)||0;
-        $("vOffset").value = (cur + 0.5*err).toFixed(1);                  // ajustement amorti
+        $("vOffset").value = (cur + 0.5*err).toFixed(1);                   // ajustement amorti
       }
       updateVScore();
+      $("vCalib").innerHTML = `Calibrage : Δt≈<b>${(parseFloat($("vDt").value)||0).toFixed(1)}s</b> · décalage≈<b>${(parseFloat($("vOffset").value)||0).toFixed(1)}</b> cases · <span style="color:var(--muted)">${vScore.n} tirage${vScore.n>1?"s":""}</span>`;
     }
     $("vGrid").style.display = "none"; vAwait = null;
   }
@@ -648,18 +692,21 @@
     $("mSim").classList.toggle("active", m==="sim");
     $("mVideo").classList.toggle("active", m==="video");
     $("simCtrls").style.display = m==="sim" ? "flex":"none";
+    $("autoBar").style.display = m==="sim" ? "flex":"none";
     $("wheel").style.display = m==="sim" ? "block":"none";
     document.querySelector(".pointer").style.display = m==="sim" ? "block":"none";
     $("videoNote").style.display = m==="video" ? "block":"none";
     $("predPanel").style.display = m==="sim" ? "block":"none";
     $("vpredPanel").style.display = m==="video" ? "block":"none";
-    if(m==="video"){ stopSpin(); }
+    if(m==="video"){ stopAuto(); stopSpin(); }
   }
 
   /* ===================== EVENTS ===================== */
   $("launch").onclick = launch;
   $("stopBtn").onclick = stopSpin;
   $("predictBtn").onclick = predict;
+  $("autoBtn").onclick = startAuto;
+  $("autoStop").onclick = () => { stopAuto(); stopSpin(); };
   $("predReset").onclick = () => { score.n=0; score.h=0; saveScore(); updateScore(); };
   $("vPredictBtn").onclick = vPredict;
   $("vResultBtn").onclick = () => renderGrid("result");

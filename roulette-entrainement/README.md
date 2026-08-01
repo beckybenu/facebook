@@ -39,6 +39,28 @@ vrai), d'où un *secteur* plutôt qu'un seul numéro garanti : on vise ~70-80 % 
 > Astuce : en jeu réel, prédis sur les **derniers tours de bille**, c'est là que
 > l'extrapolation est la plus fiable.
 
+### Mode 🤖 Auto (simulateur, 100 % automatique)
+
+Dans le simulateur, clique **🤖 Démo auto** : l'app enchaîne les tirages toute seule,
+**prédit automatiquement** au bon moment (≈ 2 tours de bille avant la chute), vérifie le
+résultat et **recommence** — tu ne touches à rien. Choisis un nombre de tirages ou coche
+**en boucle**, et regarde la **précision monter en direct** (score cumulé). Idéal pour
+voir la méthode tourner et juger le taux de réussite sur beaucoup de coups.
+
+### Auto-calibrage (mode 🎬, automatique)
+
+En mode vidéo, le **délai de chute Δt** et le **décalage** s'apprennent **tout seuls** à
+partir de tes tirages réels (coche *auto-calibrage*, activée par défaut) :
+
+- **Δt** est mesuré automatiquement comme le temps entre ton clic **Prédire** (la bille
+  décroche) et ton clic **Résultat** (la bille est posée), puis moyenné.
+- Le **décalage** est ajusté à chaque tirage selon l'écart entre le secteur prédit et le
+  numéro réellement sorti.
+
+Une ligne *Calibrage : Δt≈… · décalage≈… · N tirages* montre la convergence. Après une
+dizaine de tirages sur la **même roue/le même croupier**, les constantes se stabilisent
+et les prédictions deviennent plus fiables.
+
 ### Prédiction sur vraie vidéo (mode 🎬)
 
 Le mode **Vidéo externe** ajoute un prédicteur « visual ballistics » utilisable sur de
