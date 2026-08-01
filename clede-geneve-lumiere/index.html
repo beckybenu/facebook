@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trouver un appartement à Genève — Clé de Genève | Recherche de logement au succès</title>
+<meta name="description" content="Vous cherchez à trouver un appartement à Genève ? Clé de Genève négocie directement avec les régies genevoises et vous obtient un logement. Vous ne payez qu'un mois de loyer, uniquement en cas de succès.">
+<meta name="keywords" content="appartement Genève, trouver un appartement à Genève, location Genève, logement Genève, régie Genève, appartement à louer Genève, recherche appartement Champel Eaux-Vives Carouge, chercheur d'appartement Genève">
+<meta name="author" content="Clé de Genève">
+<meta name="robots" content="index, follow">
+<meta name="geo.region" content="CH-GE">
+<meta name="geo.placename" content="Genève">
+<meta name="geo.position" content="46.2044;6.1432">
+<meta name="ICBM" content="46.2044, 6.1432">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CH">
+<meta property="og:site_name" content="Clé de Genève">
+<meta property="og:title" content="Votre appartement à Genève, enfin à portée de clé.">
+<meta property="og:description" content="Nous négocions directement avec les régies genevoises et vous obtenons un logement. Vous ne payez qu'un mois de loyer, uniquement en cas de succès.">
+<meta property="og:url" content="https://clede-geneve.ch/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Votre appartement à Genève, enfin à portée de clé.">
+<meta name="twitter:description" content="Recherche d'appartement à Genève au succès. Commission d'un mois de loyer, uniquement si nous réussissons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivoire:#f7f4ee;
+  --creme:#efe9df;
+  --creme-2:#e7e0d3;
+  --foret:#14332b;
+  --foret-2:#1c443a;
+  --or:#b8894a;
+  --or-clair:#cfa877;
+  --sauge:#8ea391;
+  --sauge-clair:#c4d0c3;
+  --texte:#14332b;
+  --texte-doux:#4c5c53;
+  --filet:rgba(20,51,43,.14);
+  --blanc:#fffdf9;
+  --ombre:0 30px 60px -30px rgba(20,51,43,.28);
+  --ombre-douce:0 18px 40px -24px rgba(20,51,43,.24);
+  --r:18px;
+  --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--ivoire);
+  color:var(--texte);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.serif{font-family:'Fraunces','Playfair Display',Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+img,svg{max-width:100%}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 clamp(20px,5vw,44px)}
+.eyebrow{
+  font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;
+  font-weight:600;color:var(--or);display:inline-flex;align-items:center;gap:.6em;
+}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--or);display:inline-block}
+.section{padding:clamp(72px,10vw,128px) 0;position:relative}
+.section-head{max-width:640px;margin-bottom:clamp(40px,6vw,64px)}
+.section-head h2{font-size:clamp(2rem,4.6vw,3.2rem);margin:.5em 0 .35em}
+.section-head p{color:var(--texte-doux);font-size:1.08rem}
+
+/* ---- Boutons ---- */
+.btn{
+  display:inline-flex;align-items:center;gap:.6em;
+  font-family:'Inter';font-weight:600;font-size:.98rem;
+  padding:.95em 1.6em;border-radius:100px;border:1px solid transparent;
+  cursor:pointer;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,background .3s,color .3s;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--foret);color:var(--ivoire);box-shadow:var(--ombre-douce)}
+.btn-primary:hover{background:var(--foret-2);box-shadow:0 22px 44px -20px rgba(20,51,43,.5)}
+.btn-gold{background:var(--or);color:#fff;box-shadow:0 14px 30px -16px rgba(184,137,74,.7)}
+.btn-gold:hover{background:var(--or-clair)}
+.btn-ghost{background:transparent;color:var(--foret);border-color:var(--filet)}
+.btn-ghost:hover{border-color:var(--foret);background:rgba(20,51,43,.04)}
+.btn-wa{background:#25d366;color:#0b2e19}
+.btn-wa:hover{background:#2ee578}
+
+/* ---- Header ---- */
+header{position:sticky;top:0;z-index:60;transition:background .4s,box-shadow .4s,backdrop-filter .4s}
+header.scrolled{background:rgba(247,244,238,.82);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--filet)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:.6em;font-family:'Fraunces';font-weight:600;font-size:1.3rem;letter-spacing:-.01em}
+.brand .key-ic{width:30px;height:30px;flex:0 0 auto}
+.brand small{display:block;font-family:'Inter';font-weight:500;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--or);line-height:1}
+.brand .txt{line-height:1.05}
+.nav-links{display:flex;align-items:center;gap:2rem;font-size:.94rem;font-weight:500}
+.nav-links a{position:relative;color:var(--texte-doux);transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;height:1.5px;width:0;background:var(--or);transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.nav-links a:hover{color:var(--foret)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{display:flex;align-items:center;gap:.8rem}
+.burger{display:none;background:none;border:0;cursor:pointer;padding:8px;flex-direction:column;gap:5px}
+.burger span{width:24px;height:2px;background:var(--foret);display:block;transition:.3s}
+
+/* ---- Hero ---- */
+.hero{position:relative;padding:clamp(56px,8vw,96px) 0 clamp(72px,9vw,120px);overflow:hidden}
+.orbe{
+  position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;z-index:0;pointer-events:none;
+}
+.orbe-1{width:640px;height:640px;top:-220px;right:-160px;
+  background:radial-gradient(circle at 30% 30%,rgba(142,163,145,.9),rgba(196,208,195,.4) 55%,transparent 72%);}
+.orbe-2{width:460px;height:460px;bottom:-200px;left:-140px;
+  background:radial-gradient(circle at 50% 50%,rgba(207,168,119,.55),rgba(184,137,74,.15) 55%,transparent 72%);}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,72px);align-items:center}
+.hero h1{font-size:clamp(2.6rem,6.2vw,4.6rem);font-weight:600;margin:.55em 0 .4em}
+.hero h1 em{font-style:italic;color:var(--or);font-weight:500}
+.hero .lede{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--texte-doux);max-width:38ch;margin-bottom:2rem}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:2.8rem}
+.stats{display:flex;gap:clamp(20px,4vw,48px);flex-wrap:wrap}
+.stat{position:relative;padding-left:0}
+.stat .num{font-family:'Fraunces';font-size:clamp(2.1rem,4vw,2.9rem);font-weight:600;line-height:1;color:var(--foret);display:block}
+.stat .num b{color:var(--or);font-weight:600}
+.stat .lbl{font-size:.82rem;color:var(--texte-doux);margin-top:.5em;display:block;max-width:14ch}
+
+/* Hero visual card / clé flottante */
+.hero-visual{position:relative;min-height:420px;display:flex;align-items:center;justify-content:center}
+.visual-card{
+  position:relative;width:100%;max-width:400px;aspect-ratio:4/5;border-radius:26px;
+  background:linear-gradient(160deg,var(--foret),var(--foret-2));
+  box-shadow:var(--ombre);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:30px;color:var(--ivoire);
+}
+.visual-card .grain{position:absolute;inset:0;opacity:.5;
+  background:radial-gradient(circle at 70% 20%,rgba(207,168,119,.35),transparent 55%);}
+.visual-card .badge-live{
+  position:absolute;top:22px;left:22px;display:inline-flex;align-items:center;gap:.5em;
+  font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  padding:.5em .9em;border-radius:100px;background:rgba(247,244,238,.12);border:1px solid rgba(247,244,238,.18);
+}
+.visual-card .badge-live .dot{width:7px;height:7px;border-radius:50%;background:#25d366;box-shadow:0 0 0 0 rgba(37,211,102,.6);animation:pulse 2.4s infinite}
+.visual-card h3{font-size:1.5rem;color:var(--ivoire);margin-bottom:.3em}
+.visual-card p{font-size:.9rem;color:rgba(247,244,238,.75)}
+.float-key{position:absolute;z-index:3;top:14%;right:-6%;width:120px;height:120px;
+  filter:drop-shadow(0 20px 30px rgba(20,51,43,.35));animation:floatkey 7s ease-in-out infinite}
+.mini-metrics{position:absolute;left:-6%;bottom:12%;background:var(--blanc);border-radius:16px;padding:14px 18px;
+  box-shadow:var(--ombre-douce);z-index:3;border:1px solid var(--filet);animation:floatkey 9s ease-in-out infinite reverse}
+.mini-metrics .k{font-family:'Fraunces';font-size:1.5rem;color:var(--foret);line-height:1}
+.mini-metrics .v{font-size:.72rem;color:var(--texte-doux)}
+
+@keyframes floatkey{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-16px) rotate(4deg)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.55)}70%{box-shadow:0 0 0 10px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+
+/* ---- Bandeau confiance ---- */
+.trust{background:var(--foret);color:var(--ivoire);padding:20px 0}
+.trust .wrap{display:flex;flex-wrap:wrap;gap:1.4rem 2.6rem;align-items:center;justify-content:center;text-align:center}
+.trust span{font-size:.9rem;letter-spacing:.02em;opacity:.9;display:inline-flex;align-items:center;gap:.6em}
+.trust span svg{color:var(--or-clair)}
+
+/* ---- Problème ---- */
+.probleme{background:var(--creme)}
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,3vw,28px)}
+.prob-card{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--r);padding:34px 30px;position:relative;overflow:hidden}
+.prob-card .big{font-family:'Fraunces';font-size:clamp(2.6rem,5vw,3.4rem);font-weight:600;color:var(--or);line-height:1}
+.prob-card h3{font-size:1.15rem;margin:.7em 0 .4em;color:var(--foret)}
+.prob-card p{font-size:.95rem;color:var(--texte-doux)}
+
+/* ---- Méthode ---- */
+.methode .steps{display:grid;gap:clamp(18px,3vw,28px)}
+.step{
+  display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,44px);align-items:start;
+  padding:clamp(28px,4vw,44px) 0;border-top:1px solid var(--filet);
+}
+.step:first-child{border-top:0}
+.step .idx{font-family:'Fraunces';font-size:clamp(2.6rem,6vw,4.4rem);font-weight:600;color:var(--sauge);line-height:.9}
+.step .idx b{color:var(--or)}
+.step h3{font-size:clamp(1.3rem,2.4vw,1.7rem);margin-bottom:.5em}
+.step p{color:var(--texte-doux);max-width:56ch}
+
+/* ---- Avantages ---- */
+.avantages{background:var(--creme)}
+.adv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.5vw,24px)}
+.adv{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--r);padding:32px 28px;transition:transform .4s,box-shadow .4s}
+.adv:hover{transform:translateY(-5px);box-shadow:var(--ombre-douce)}
+.adv .ic{width:48px;height:48px;border-radius:12px;background:rgba(184,137,74,.12);display:flex;align-items:center;justify-content:center;color:var(--or);margin-bottom:1.2rem}
+.adv h3{font-size:1.18rem;margin-bottom:.4em;color:var(--foret)}
+.adv p{font-size:.94rem;color:var(--texte-doux)}
+
+/* ---- Tarif ---- */
+.tarif-grid{display:grid;grid-template-columns:1fr .9fr;gap:clamp(28px,5vw,60px);align-items:center}
+.tarif-list{list-style:none;margin-top:1.6rem;display:grid;gap:.9rem}
+.tarif-list li{display:flex;gap:.8em;align-items:flex-start;font-size:1.02rem}
+.tarif-list li svg{flex:0 0 auto;margin-top:3px;color:var(--or)}
+.price-card{
+  background:linear-gradient(160deg,var(--foret),var(--foret-2));color:var(--ivoire);
+  border-radius:24px;padding:clamp(32px,4vw,48px);box-shadow:var(--ombre);position:relative;overflow:hidden;text-align:center;
+}
+.price-card .glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(207,168,119,.32),transparent 60%)}
+.price-card>*{position:relative;z-index:2}
+.price-badge{display:inline-flex;align-items:center;gap:.5em;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+  padding:.55em 1.1em;border-radius:100px;background:rgba(207,168,119,.18);color:var(--or-clair);border:1px solid rgba(207,168,119,.35);margin-bottom:1.4rem}
+.price-card .big-price{font-family:'Fraunces';font-size:clamp(2.4rem,5vw,3.2rem);font-weight:600;line-height:1;margin-bottom:.2em}
+.price-card .big-price span{color:var(--or-clair)}
+.price-card .sub{color:rgba(247,244,238,.72);font-size:.95rem;margin-bottom:1.8rem}
+.price-card .btn{width:100%;justify-content:center}
+.price-card .note{margin-top:1rem;font-size:.82rem;color:rgba(247,244,238,.6)}
+
+/* ---- Témoignages ---- */
+.temoignages{background:var(--creme)}
+.tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.5vw,24px)}
+.tm{background:var(--blanc);border:1px solid var(--filet);border-radius:var(--r);padding:32px 30px;display:flex;flex-direction:column;gap:1.2rem}
+.tm .stars{color:var(--or);letter-spacing:.15em;font-size:.95rem}
+.tm blockquote{font-family:'Fraunces';font-size:1.12rem;font-weight:500;color:var(--foret);line-height:1.45}
+.tm .who{display:flex;align-items:center;gap:.8em;margin-top:auto}
+.tm .av{width:42px;height:42px;border-radius:50%;background:var(--sauge-clair);color:var(--foret);display:flex;align-items:center;justify-content:center;font-weight:600;font-family:'Fraunces'}
+.tm .who b{display:block;font-size:.95rem}
+.tm .who span{font-size:.82rem;color:var(--texte-doux)}
+
+/* ---- Zones ---- */
+.zones-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(28px,5vw,60px);align-items:center}
+.zones-list{display:flex;flex-wrap:wrap;gap:.7rem}
+.zones-list .z{
+  padding:.6em 1.1em;border-radius:100px;border:1px solid var(--filet);background:var(--blanc);
+  font-size:.92rem;font-weight:500;color:var(--foret);transition:.3s;cursor:default;
+}
+.zones-list .z:hover{background:var(--foret);color:var(--ivoire);border-color:var(--foret);transform:translateY(-2px)}
+
+/* ---- FAQ ---- */
+.faq{background:var(--creme)}
+.faq-list{max-width:820px;margin:0 auto;display:grid;gap:.9rem}
+details{background:var(--blanc);border:1px solid var(--filet);border-radius:14px;overflow:hidden;transition:box-shadow .3s}
+details[open]{box-shadow:var(--ombre-douce)}
+summary{list-style:none;cursor:pointer;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  font-family:'Fraunces';font-weight:600;font-size:1.08rem;color:var(--foret)}
+summary::-webkit-details-marker{display:none}
+summary .plus{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--filet);position:relative;transition:.3s}
+summary .plus::before,summary .plus::after{content:"";position:absolute;background:var(--or);left:50%;top:50%;transform:translate(-50%,-50%);transition:.3s}
+summary .plus::before{width:11px;height:1.6px}
+summary .plus::after{width:1.6px;height:11px}
+details[open] summary .plus{background:var(--or);border-color:var(--or)}
+details[open] summary .plus::before,details[open] summary .plus::after{background:#fff}
+details[open] summary .plus::after{height:0}
+.faq-body{padding:0 26px 24px;color:var(--texte-doux);font-size:.98rem}
+
+/* ---- Contact ---- */
+.contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,5vw,60px);align-items:start}
+.contact-aside h2{font-size:clamp(2rem,4vw,2.8rem);margin:.4em 0}
+.contact-aside p{color:var(--texte-doux);margin-bottom:1.6rem}
+.contact-shortcuts{display:grid;gap:.9rem;margin-top:1.6rem}
+.cs{display:flex;align-items:center;gap:1rem;padding:16px 20px;border:1px solid var(--filet);border-radius:14px;background:var(--blanc);transition:.3s}
+.cs:hover{transform:translateY(-2px);box-shadow:var(--ombre-douce)}
+.cs .ic{width:44px;height:44px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:rgba(20,51,43,.06);color:var(--foret)}
+.cs.wa .ic{background:rgba(37,211,102,.14);color:#1a9c4d}
+.cs b{display:block;font-size:.98rem}
+.cs span{font-size:.84rem;color:var(--texte-doux)}
+.form-card{background:var(--blanc);border:1px solid var(--filet);border-radius:22px;padding:clamp(26px,4vw,42px);box-shadow:var(--ombre-douce)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field{margin-bottom:1.1rem;display:flex;flex-direction:column}
+.field label{font-size:.82rem;font-weight:600;color:var(--foret);margin-bottom:.4em;letter-spacing:.01em}
+.field input,.field select,.field textarea{
+  font-family:'Inter';font-size:.96rem;padding:.85em 1em;border-radius:11px;border:1px solid var(--filet);
+  background:var(--ivoire);color:var(--texte);transition:.25s;width:100%;
+}
+.field textarea{resize:vertical;min-height:100px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--or);box-shadow:0 0 0 3px rgba(184,137,74,.15);background:var(--blanc)}
+.form-card .btn{width:100%;justify-content:center;margin-top:.4rem}
+.form-note{font-size:.8rem;color:var(--texte-doux);margin-top:1rem;text-align:center}
+
+/* ---- Footer ---- */
+footer{background:var(--foret);color:var(--ivoire);padding:clamp(56px,7vw,80px) 0 32px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:clamp(28px,5vw,48px)}
+footer .brand{color:var(--ivoire)}
+footer .brand small{color:var(--or-clair)}
+.foot-about{color:rgba(247,244,238,.72);font-size:.95rem;margin-top:1.1rem;max-width:34ch}
+.foot-col h4{font-family:'Inter';font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--or-clair);margin-bottom:1.1rem;font-weight:600}
+.foot-col a,.foot-col p{display:block;color:rgba(247,244,238,.78);font-size:.94rem;margin-bottom:.7rem;transition:.3s}
+.foot-col a:hover{color:var(--or-clair)}
+.foot-bottom{border-top:1px solid rgba(247,244,238,.14);margin-top:clamp(40px,6vw,60px);padding-top:26px;
+  display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;justify-content:space-between;font-size:.82rem;color:rgba(247,244,238,.6)}
+
+/* ---- Reveal animations ---- */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}
+.reveal.d2{transition-delay:.16s}
+.reveal.d3{transition-delay:.24s}
+.reveal.d4{transition-delay:.32s}
+
+/* ---- Responsive ---- */
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-visual{order:-1;min-height:340px;max-width:420px;margin:0 auto}
+  .tarif-grid,.zones-wrap,.contact-grid{grid-template-columns:1fr}
+  .prob-grid,.adv-grid,.tm-grid{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  .nav-links,.nav-cta .btn-ghost{display:none}
+  .burger{display:flex}
+  .nav-links.open{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:1.2rem;
+    background:var(--ivoire);padding:26px clamp(20px,5vw,44px);box-shadow:var(--ombre-douce);border-top:1px solid var(--filet)}
+  .step{grid-template-columns:1fr;gap:.6rem}
+  .prob-grid,.adv-grid,.tm-grid,.form-row,.foot-grid{grid-template-columns:1fr}
+  .float-key{width:90px;height:90px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none;transition:none}
+  .btn:hover,.adv:hover,.z:hover,.cs:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header id="header">
+  <div class="wrap nav">
+    <a href="#" class="brand" aria-label="Clé de Genève, accueil">
+      <svg class="key-ic" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" stroke="#b8894a" stroke-width="2.2"/>
+        <circle cx="11" cy="11" r="2.4" fill="#14332b"/>
+        <path d="M15.8 15.8L27 27M23 23l3-1M25 25l2.4-1.2" stroke="#14332b" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <span class="txt">Clé de Genève<small>Recherche de logement</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#methode">Méthode</a>
+      <a href="#avantages">Avantages</a>
+      <a href="#tarif">Tarif</a>
+      <a href="#zones">Zones</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#methode" class="btn btn-ghost">Comment ça marche&nbsp;?</a>
+      <a href="#contact" class="btn btn-primary">Décrire ma recherche</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="orbe orbe-1" data-parallax="0.18"></div>
+  <div class="orbe orbe-2" data-parallax="0.1"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">Recherche d'appartement · Genève</span>
+      <h1 class="reveal d1">Votre appartement à Genève, enfin à <em>portée de clé.</em></h1>
+      <p class="lede reveal d2">Le marché genevois est saturé et les régies filtrent. Nous négocions directement avec les régies genevoises et vous obtenons un logement. Vous ne payez qu'un mois de loyer&nbsp;— uniquement si nous réussissons.</p>
+      <div class="hero-actions reveal d3">
+        <a href="#contact" class="btn btn-primary">Décrire ma recherche</a>
+        <a href="#methode" class="btn btn-ghost">Comment ça marche&nbsp;?</a>
+      </div>
+      <div class="stats reveal d4">
+        <div class="stat">
+          <span class="num">480</span>
+          <span class="lbl">logements obtenus</span>
+        </div>
+        <div class="stat">
+          <span class="num">26<b>&nbsp;j</b></span>
+          <span class="lbl">délai moyen</span>
+        </div>
+        <div class="stat">
+          <span class="num">0<b>&nbsp;CHF</b></span>
+          <span class="lbl">de frais à l'avance</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual reveal d2">
+      <svg class="float-key" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+        <circle cx="42" cy="42" r="26" stroke="#b8894a" stroke-width="6"/>
+        <circle cx="42" cy="42" r="9" fill="#14332b"/>
+        <path d="M60 60L104 104M92 92l10-4M98 98l6-3" stroke="#b8894a" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+      <div class="visual-card">
+        <div class="grain"></div>
+        <span class="badge-live"><span class="dot"></span>Régies actives</span>
+        <h3>Champel · 3 pièces</h3>
+        <p>Bail négocié et signé en 18 jours. Commission réglée uniquement à la signature.</p>
+      </div>
+      <div class="mini-metrics">
+        <div class="k">98%</div>
+        <div class="v">de dossiers acceptés</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BANDEAU CONFIANCE ============ -->
+<div class="trust">
+  <div class="wrap">
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Paiement uniquement au succès</span>
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Relations directes avec les régies genevoises</span>
+    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>100% local · canton de Genève</span>
+  </div>
+</div>
+
+<!-- ============ PROBLÈME ============ -->
+<section class="section probleme">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Le constat</span>
+      <h2>Trouver un logement à Genève relève du parcours du combattant.</h2>
+      <p>Un marché parmi les plus tendus d'Europe, des régies qui filtrent, et des candidats par centaines sur chaque annonce.</p>
+    </div>
+    <div class="prob-grid">
+      <div class="prob-card reveal">
+        <div class="big">0,5%</div>
+        <h3>de logements vacants</h3>
+        <p>Dans le canton de Genève&nbsp;— l'un des taux les plus bas d'Europe. La demande écrase l'offre.</p>
+      </div>
+      <div class="prob-card reveal d1">
+        <div class="big">150+</div>
+        <h3>candidats par annonce</h3>
+        <p>Sur une annonce attractive, votre dossier se noie dans la masse avant même d'être lu.</p>
+      </div>
+      <div class="prob-card reveal d2">
+        <div class="big">∞</div>
+        <h3>de visites et de refus</h3>
+        <p>Des mois passés à enchaîner les visites, les dossiers et les portes qui se ferment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MÉTHODE ============ -->
+<section class="section methode" id="methode">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Notre méthode</span>
+      <h2>Trois étapes, et vous récupérez vos clés.</h2>
+      <p>Un accompagnement structuré, du cadrage de votre recherche jusqu'à la signature du bail.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="idx"><b>01</b></div>
+        <div>
+          <h3>On cadre votre recherche</h3>
+          <p>Budget, quartiers, nombre de pièces, délai&nbsp;: nous définissons ensemble le logement idéal et bâtissons un dossier de candidature irréprochable, prêt à convaincre n'importe quelle régie.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="idx"><b>02</b></div>
+        <div>
+          <h3>On active les régies</h3>
+          <p>Grâce à nos relations directes avec les régies genevoises, nous accédons à des logements avant même leur mise en annonce. Votre dossier passe devant, présenté par un interlocuteur qu'elles connaissent.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="idx"><b>03</b></div>
+        <div>
+          <h3>Vous récupérez vos clés</h3>
+          <p>Visites organisées, bail négocié, entrée sécurisée. La commission n'est réglée qu'à la signature&nbsp;— jamais avant, et jamais si nous échouons.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AVANTAGES ============ -->
+<section class="section avantages" id="avantages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Pourquoi nous</span>
+      <h2>Un service pensé pour un seul résultat&nbsp;: vos clés.</h2>
+      <p>Zéro risque, un accès privilégié aux régies, et un accompagnement humain de bout en bout.</p>
+    </div>
+    <div class="adv-grid">
+      <div class="adv reveal">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l7 4v6c0 4.5-3 7.5-7 8-4-.5-7-3.5-7-8V6l7-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Zéro risque financier</h3>
+        <p>Aucun frais d'avance. La commission équivaut à un mois de loyer et n'est due qu'en cas de succès.</p>
+      </div>
+      <div class="adv reveal d1">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <h3>Accès aux régies</h3>
+        <p>Des biens que le grand public ne voit jamais, ouverts avant leur diffusion publique.</p>
+      </div>
+      <div class="adv reveal d2">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <h3>Rapidité</h3>
+        <p>Des mois de recherche transformés en quelques semaines, grâce à un canal direct.</p>
+      </div>
+      <div class="adv reveal">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 2v6h6M9 14l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Dossier béton</h3>
+        <p>Présentation soignée, garanties et pièces réunies&nbsp;: un dossier qui rassure les régies.</p>
+      </div>
+      <div class="adv reveal d1">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 22s7-5.5 7-12a7 7 0 1 0-14 0c0 6.5 7 12 7 12z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.8"/></svg></div>
+        <h3>100% local Genève</h3>
+        <p>Une connaissance fine des quartiers, des loyers et des attentes de chaque régie du canton.</p>
+      </div>
+      <div class="adv reveal d2">
+        <div class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M5 21c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <h3>Suivi humain</h3>
+        <p>Un interlocuteur unique, joignable, qui vous accompagne à chaque étape.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TARIF ============ -->
+<section class="section tarif" id="tarif">
+  <div class="wrap tarif-grid">
+    <div class="reveal">
+      <span class="eyebrow">Tarif</span>
+      <h2 style="font-size:clamp(2rem,4.4vw,3rem);margin:.4em 0 .3em">Vous payez au résultat. Jamais avant.</h2>
+      <p style="color:var(--texte-doux);font-size:1.08rem">Notre commission équivaut à <strong>un mois de loyer</strong>, facturée uniquement lorsque le logement est obtenu et le bail signé. Aucun engagement financier tant que vous n'avez pas vos clés.</p>
+      <ul class="tarif-list">
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Aucun frais d'inscription</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Aucun abonnement</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Commission due seulement au succès</li>
+        <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Devis clair avant tout engagement</li>
+      </ul>
+    </div>
+    <div class="price-card reveal d1">
+      <div class="glow"></div>
+      <span class="price-badge">Au succès uniquement</span>
+      <div class="big-price">1 mois <span>de loyer</span></div>
+      <p class="sub">Facturé seulement quand le bail est signé et vos clés en main.</p>
+      <a href="#contact" class="btn btn-gold">Lancer ma recherche</a>
+      <p class="note">Estimation gratuite sous 24&nbsp;h.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TÉMOIGNAGES ============ -->
+<section class="section temoignages">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Témoignages</span>
+      <h2>Ils ont récupéré leurs clés.</h2>
+      <p>Des Genevois et nouveaux arrivants qui cherchaient depuis des mois.</p>
+    </div>
+    <div class="tm-grid">
+      <div class="tm reveal">
+        <div class="stars">★★★★★</div>
+        <blockquote>« Trois mois que je cherchais un 3 pièces à Champel. En deux semaines, ils m'ont décroché une visite puis le bail. »</blockquote>
+        <div class="who">
+          <div class="av">SM</div>
+          <div><b>Sarah M.</b><span>Champel · 3 pièces</span></div>
+        </div>
+      </div>
+      <div class="tm reveal d1">
+        <div class="stars">★★★★★</div>
+        <blockquote>« Nouvel arrivant à Genève, je ne connaissais aucune régie. Ils ont tout géré. Payé seulement à la signature. »</blockquote>
+        <div class="who">
+          <div class="av">AD</div>
+          <div><b>Antoine D.</b><span>Eaux-Vives · 2 pièces</span></div>
+        </div>
+      </div>
+      <div class="tm reveal d2">
+        <div class="stars">★★★★★</div>
+        <blockquote>« Enfin quelqu'un qui répond et qui agit. J'ai récupéré mes clés à Carouge. »</blockquote>
+        <div class="who">
+          <div class="av">LM</div>
+          <div><b>Léa &amp; Marc</b><span>Carouge · 4 pièces</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ZONES ============ -->
+<section class="section zones" id="zones">
+  <div class="wrap zones-wrap">
+    <div class="reveal">
+      <span class="eyebrow">Zones couvertes</span>
+      <h2 style="font-size:clamp(2rem,4.4vw,3rem);margin:.4em 0 .3em">Tout le canton, quartier par quartier.</h2>
+      <p style="color:var(--texte-doux);font-size:1.08rem">De la rive gauche à la rive droite, des communes urbaines aux résidentielles&nbsp;: nous couvrons l'ensemble du bassin genevois.</p>
+    </div>
+    <div class="zones-list reveal d1">
+      <span class="z">Eaux-Vives</span><span class="z">Champel</span><span class="z">Plainpalais</span>
+      <span class="z">Servette</span><span class="z">Pâquis</span><span class="z">Cornavin</span>
+      <span class="z">Jonction</span><span class="z">Acacias</span><span class="z">Saint-Jean</span>
+      <span class="z">Charmilles</span><span class="z">Carouge</span><span class="z">Lancy</span>
+      <span class="z">Onex</span><span class="z">Vernier</span><span class="z">Meyrin</span>
+      <span class="z">Grand-Saconnex</span><span class="z">Chêne-Bourg</span><span class="z">Chêne-Bougeries</span>
+      <span class="z">Thônex</span><span class="z">Veyrier</span><span class="z">Cologny</span>
+      <span class="z">Plan-les-Ouates</span><span class="z">Bernex</span><span class="z">Versoix</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section faq" id="faq">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="eyebrow" style="justify-content:center">Questions fréquentes</span>
+      <h2>Tout ce que vous devez savoir.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="reveal">
+        <summary>Combien coûte votre service ?<span class="plus"></span></summary>
+        <div class="faq-body">L'équivalent d'un mois de loyer, dû uniquement en cas de succès&nbsp;— une fois le logement obtenu et le bail signé. Aucun frais d'avance, jamais.</div>
+      </details>
+      <details class="reveal">
+        <summary>Comment obtenez-vous les appartements ?<span class="plus"></span></summary>
+        <div class="faq-body">Grâce à nos relations directes avec les régies genevoises, nous accédons à des logements avant même leur mise en annonce et présentons votre dossier en priorité.</div>
+      </details>
+      <details class="reveal">
+        <summary>Combien de temps cela prend-il ?<span class="plus"></span></summary>
+        <div class="faq-body">Quelques semaines en général, selon vos critères (quartier, budget, nombre de pièces). Le délai moyen constaté est de 26 jours.</div>
+      </details>
+      <details class="reveal">
+        <summary>Dois-je payer si je ne trouve pas ?<span class="plus"></span></summary>
+        <div class="faq-body">Non. Si nous ne vous obtenons pas de logement, vous ne payez rien. Notre rémunération est entièrement conditionnée au succès.</div>
+      </details>
+      <details class="reveal">
+        <summary>Quels types de biens recherchez-vous ?<span class="plus"></span></summary>
+        <div class="faq-body">Des studios jusqu'aux 5 pièces et plus, meublés ou non, sur l'ensemble du canton de Genève.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section contact" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-aside reveal">
+      <span class="eyebrow">Contact</span>
+      <h2>Décrivez votre recherche.</h2>
+      <p>Remplissez le formulaire&nbsp;: nous revenons vers vous sous 24&nbsp;h avec une estimation gratuite. Aucun engagement, aucun frais d'avance.</p>
+      <div class="contact-shortcuts">
+        <a class="cs wa" id="waLink" href="#" target="_blank" rel="noopener">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.9.9-2.8-.2-.3A8 8 0 1 1 12 20zm4.5-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.6 6.6 0 0 1-1.9-1.2 7.3 7.3 0 0 1-1.4-1.7c-.1-.3 0-.4.1-.5l.4-.5.3-.4v-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.8 4.8 0 0 0 1 2.5 11 11 0 0 0 4.2 3.7c2.5 1 2.5.7 3 .6a2.5 2.5 0 0 0 1.6-1.2 2 2 0 0 0 .1-1.2c-.1-.1-.3-.2-.5-.3z"/></svg></span>
+          <div><b>WhatsApp</b><span>Réponse rapide, 7j/7</span></div>
+        </a>
+        <a class="cs" id="telLink" href="tel:+41225010000">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L18 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 6a2 2 0 0 1 0-2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+          <div><b>+41 22 501 00 00</b><span>Du lundi au samedi</span></div>
+        </a>
+      </div>
+    </div>
+    <div class="form-card reveal d1">
+      <form id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
+          </div>
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="vous@exemple.ch" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="tel">Téléphone</label>
+            <input type="tel" id="tel" name="tel" placeholder="+41 …">
+          </div>
+          <div class="field">
+            <label for="type">Type de bien</label>
+            <select id="type" name="type">
+              <option>Studio</option>
+              <option>2 pièces</option>
+              <option selected>3 pièces</option>
+              <option>4 pièces</option>
+              <option>5 pièces et +</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="budget">Budget mensuel (CHF)</label>
+            <input type="text" id="budget" name="budget" placeholder="ex. 2 200">
+          </div>
+          <div class="field">
+            <label for="quartier">Quartier(s) souhaité(s)</label>
+            <input type="text" id="quartier" name="quartier" placeholder="ex. Eaux-Vives, Carouge">
+          </div>
+        </div>
+        <div class="field">
+          <label for="message">Précisions</label>
+          <textarea id="message" name="message" placeholder="Délai, nombre de personnes, animaux, exigences particulières…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          Envoyer ma recherche
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="form-note">Estimation gratuite sous 24&nbsp;h · Aucun frais d'avance.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand">
+          <svg class="key-ic" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="#cfa877" stroke-width="2.2"/>
+            <circle cx="11" cy="11" r="2.4" fill="#f7f4ee"/>
+            <path d="M15.8 15.8L27 27M23 23l3-1M25 25l2.4-1.2" stroke="#f7f4ee" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+          <span class="txt">Clé de Genève<small>Recherche de logement</small></span>
+        </div>
+        <p class="foot-about">Nous négocions directement avec les régies genevoises pour vous obtenir un logement. Vous ne payez qu'au succès.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Navigation</h4>
+        <a href="#methode">Méthode</a>
+        <a href="#avantages">Avantages</a>
+        <a href="#tarif">Tarif</a>
+        <a href="#zones">Zones</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:contact@clede-geneve.ch">contact@clede-geneve.ch</a>
+        <a href="tel:+41225010000">+41 22 501 00 00</a>
+        <a href="#contact">Décrire ma recherche</a>
+        <p>Genève · Canton de Genève, Suisse</p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Clé de Genève — Recherche d'appartement à Genève.</span>
+      <span>Commission d'un mois de loyer, due uniquement en cas de succès.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const CONFIG = { email:"contact@clede-geneve.ch", whatsapp:"41225010000" };
+
+(function(){
+  "use strict";
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- WhatsApp link ----
+  const waLink = document.getElementById('waLink');
+  if(waLink){ waLink.href = "https://wa.me/" + CONFIG.whatsapp; }
+
+  // ---- Header scroll state ----
+  const header = document.getElementById('header');
+  const onScroll = function(){
+    if(window.scrollY > 20){ header.classList.add('scrolled'); }
+    else { header.classList.remove('scrolled'); }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive:true });
+
+  // ---- Mobile menu ----
+  const burger = document.getElementById('burger');
+  const navLinks = document.getElementById('navLinks');
+  if(burger && navLinks){
+    burger.addEventListener('click', function(){
+      const open = navLinks.classList.toggle('open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    navLinks.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        navLinks.classList.remove('open');
+        burger.setAttribute('aria-expanded','false');
+      });
+    });
+  }
+
+  // ---- Scroll reveal ----
+  const reveals = document.querySelectorAll('.reveal');
+  if(reduceMotion || !('IntersectionObserver' in window)){
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    const io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  // ---- Light parallax ----
+  if(!reduceMotion){
+    const layers = document.querySelectorAll('[data-parallax]');
+    let ticking = false;
+    window.addEventListener('scroll', function(){
+      if(ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function(){
+        const y = window.scrollY;
+        layers.forEach(function(l){
+          const s = parseFloat(l.getAttribute('data-parallax')) || 0.1;
+          l.style.transform = 'translateY(' + (y * s) + 'px)';
+        });
+        ticking = false;
+      });
+    }, { passive:true });
+  }
+
+  // ---- Contact form -> mailto ----
+  const form = document.getElementById('contactForm');
+  if(form){
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      const val = function(id){
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      };
+      const nom = val('nom');
+      const email = val('email');
+      const tel = val('tel');
+      const type = val('type');
+      const budget = val('budget');
+      const quartier = val('quartier');
+      const message = val('message');
+
+      const subject = "Recherche d'appartement à Genève — " + (nom || 'Nouvelle demande');
+      const lines = [
+        "Bonjour,",
+        "",
+        "Je souhaite lancer une recherche de logement à Genève.",
+        "",
+        "Nom : " + nom,
+        "E-mail : " + email,
+        "Téléphone : " + tel,
+        "Type de bien : " + type,
+        "Budget mensuel (CHF) : " + budget,
+        "Quartier(s) souhaité(s) : " + quartier,
+        "",
+        "Précisions :",
+        message,
+        "",
+        "Merci de me recontacter."
+      ];
+      const body = lines.join('\r\n');
+      const href = "mailto:" + CONFIG.email
+        + "?subject=" + encodeURIComponent(subject)
+        + "&body=" + encodeURIComponent(body);
+      window.location.href = href;
+    });
+  }
+})();
+</script>
+</body>
+</html>
