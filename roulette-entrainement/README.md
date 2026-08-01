@@ -39,6 +39,27 @@ vrai), d'où un *secteur* plutôt qu'un seul numéro garanti : on vise ~70-80 % 
 > Astuce : en jeu réel, prédis sur les **derniers tours de bille**, c'est là que
 > l'extrapolation est la plus fiable.
 
+### 📷 Caméra live — analyser sa propre roulette
+
+En mode 🎬, le bouton **📷 Caméra live** ouvre la caméra arrière du téléphone et applique le
+suivi automatique **en direct** sur ta vraie roue. L'écran est maintenu allumé pendant la
+mesure (Wake Lock). Rien n'est envoyé : tout est traité sur l'appareil.
+
+**Conditions pour que ça marche :**
+
+- **HTTPS obligatoire** — utilise l'adresse GitHub Pages, la caméra est bloquée sur un
+  fichier ouvert en local (`file://`).
+- **Filme de dessus**, téléphone stable (trépied, pile de livres) : le centre de la roue ne
+  doit pas bouger, sinon la calibration se décale.
+- **Lumière homogène**, éviter les reflets sur le bois : la bille est détectée comme le point
+  le plus brillant, un reflet fixe la ferait dérailler.
+- Le **zéro vert** doit rester visible : c'est lui qui sert de repère pour la vitesse du plateau.
+- La bille est **plus fiable sur ses derniers tours** (elle ralentit) ; à pleine vitesse, une
+  caméra 30 i/s échantillonne trop peu. Filme en **60 i/s** si ton téléphone le permet.
+
+Ensuite : **🎯 Calibrer** (3 clics : centre, piste de la bille, anneau des numéros) puis
+**🤖 Suivi auto**.
+
 ### Mode 🤖 Auto (simulateur, 100 % automatique)
 
 Dans le simulateur, clique **🤖 Démo auto** : l'app enchaîne les tirages toute seule,
