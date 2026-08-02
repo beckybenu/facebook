@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Roulette — test d'aléa</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1b2230; --line:#2a3446;
+    --txt:#e8edf5; --muted:#93a1b5; --a:#4f8cff; --green:#3ddc84; --red:#ff6b6b;
+    --gold:#ffd166; --shadow:0 18px 50px rgba(0,0,0,.45); --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 15% -10%,#1a2740 0%,var(--bg) 55%) fixed;
+    color:var(--txt);min-height:100%;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+  .logo{width:44px;height:44px;border-radius:12px;background:conic-gradient(from 0deg,var(--green),var(--a),var(--gold),var(--green));box-shadow:var(--shadow)}
+  h1{font-size:1.5rem;margin:0}
+  .sub{color:var(--muted);font-size:.9rem;margin-top:2px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+    box-shadow:var(--shadow);margin-bottom:18px}
+  .panel h2{font-size:.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:0 0 12px}
+  textarea{width:100%;min-height:110px;background:#0f141d;border:1px solid var(--line);color:var(--txt);
+    border-radius:12px;padding:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--a)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .btn{border:1px solid var(--line);background:#0f141d;color:var(--txt);border-radius:11px;padding:11px 18px;
+    cursor:pointer;font-weight:700;font-size:.95rem;transition:.15s}
+  .btn:hover{border-color:var(--a);color:#fff}
+  .btn.primary{border:0;color:#fff;background:linear-gradient(135deg,var(--a),#6f6bff);box-shadow:0 8px 20px rgba(79,140,255,.3)}
+  select,input[type=number]{background:#0f141d;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px}
+  .verdict{border-radius:14px;padding:16px;font-size:1rem;line-height:1.5;margin-top:4px}
+  .verdict.ok{background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.4)}
+  .verdict.warn{background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.45)}
+  .verdict.bad{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.45)}
+  .verdict b{font-size:1.05rem}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th,td{text-align:right;padding:9px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  td.k{color:var(--muted)}
+  .tag{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.75rem;font-weight:700}
+  .tag.ok{background:rgba(61,220,132,.18);color:var(--green)}
+  .tag.bad{background:rgba(255,107,107,.18);color:var(--red)}
+  canvas{width:100%;height:190px;display:block;background:#0f141d;border:1px solid var(--line);border-radius:12px}
+  .note{color:var(--muted);font-size:.82rem;line-height:1.5;margin-top:12px}
+  footer{color:var(--muted);text-align:center;font-size:.8rem;margin-top:30px;line-height:1.5}
+  a{color:var(--a)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"></div>
+    <div>
+      <h1>Roulette — test d'aléa</h1>
+      <div class="sub">Ta roulette est-elle prévisible, ou est-ce du pur hasard ? Réponse chiffrée.</div>
+    </div>
+  </header>
+
+  <div class="panel">
+    <h2>Tes résultats</h2>
+    <textarea id="data" placeholder="Colle ici les numéros sortis, séparés par des espaces, virgules ou retours à la ligne.&#10;Exemple : 12, 0, 34, 7, 23, 5, 18 …&#10;&#10;Plus tu en as, plus le test est fiable (300 minimum, 1000 c'est bien)."></textarea>
+    <div class="row">
+      <select id="wheel"><option value="37">Européenne (0-36)</option><option value="38">Américaine (0,00,1-36)</option></select>
+      <button class="btn primary" id="run">📊 Analyser</button>
+      <button class="btn" id="demoR">Exemple aléatoire</button>
+      <button class="btn" id="demoB">Exemple biaisé</button>
+      <button class="btn" id="clear">Effacer</button>
+    </div>
+    <div id="count" class="note"></div>
+  </div>
+
+  <div id="results" style="display:none">
+    <div class="panel">
+      <h2>Verdict</h2>
+      <div id="verdict" class="verdict"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Les tests</h2>
+      <table>
+        <thead><tr><th>Test</th><th>Mesure</th><th>Attendu si hasard</th><th>p</th><th>Résultat</th></tr></thead>
+        <tbody id="tests"></tbody>
+      </table>
+      <div class="note">
+        <b>Uniformité (χ²)</b> — chaque numéro doit sortir aussi souvent. Détecte une roue truquée ou un RNG mal codé.<br>
+        <b>Regroupement par secteur</b> — sur une vraie roue prévisible (ou une simulation physique), deux tirages
+        consécutifs tombent souvent <i>près l'un de l'autre sur le cylindre</i>. C'est LE test qui distingue une
+        physique exploitable d'un tirage purement aléatoire.<br>
+        <b>Corrélation de rang (lag-1)</b> — détecte un générateur à mémoire (chaque résultat dépend du précédent).<br>
+        <b>Taux de répétition</b> — fréquence des doublés immédiats.<br>
+        Un <b>p</b> inférieur à 0,01 signale un écart trop marqué pour être dû au hasard.
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Distribution des numéros</h2>
+      <canvas id="hist" width="1000" height="380"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>Distance entre tirages consécutifs (sur le cylindre)</h2>
+      <canvas id="dist" width="1000" height="380"></canvas>
+      <div class="note">Barres bleues = observé, ligne claire = attendu si le hasard est parfait.
+        Un pic marqué sur les petites distances = <b>secteurs prévisibles</b>.</div>
+    </div>
+  </div>
+
+  <footer>
+    Apps jumelles : <a href="../roulette-entrainement/">analyse de vitesse</a> ·
+    <a href="../roulette-vision/">comparateur de vision</a>.<br>
+    Outil de diagnostic : il mesure si un tirage est prévisible, il ne prédit rien.
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const EU = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+  const US = [0,28,9,26,30,11,7,20,32,17,5,22,34,15,3,24,36,13,1,"00",27,10,25,29,12,8,19,31,18,6,21,33,16,4,23,35,14,2];
+
+  /* ---------- stats ---------- */
+  const erf = x => {                                   // Abramowitz & Stegun 7.1.26
+    const s = x<0?-1:1; x = Math.abs(x);
+    const t = 1/(1+0.3275911*x);
+    const y = 1 - ((((1.061405429*t -1.453152027)*t +1.421413741)*t -0.284496736)*t +0.254829592)*t*Math.exp(-x*x);
+    return s*y;
+  };
+  const normCdf = z => 0.5*(1+erf(z/Math.SQRT2));
+  const pTwoSided = z => 2*(1-normCdf(Math.abs(z)));
+  // p(χ² > x) via Wilson–Hilferty
+  function chiP(x, df){
+    if(df<=0) return 1;
+    const z = (Math.pow(x/df,1/3) - (1 - 2/(9*df))) / Math.sqrt(2/(9*df));
+    return 1 - normCdf(z);
+  }
+  const fmtP = p => p<1e-4 ? "&lt;0,0001" : p.toFixed(4).replace(".",",");
+  const tag = ok => ok ? '<span class="tag ok">conforme</span>' : '<span class="tag bad">écart</span>';
+
+  /* ---------- parsing ---------- */
+  function parseData(txt, N){
+    // "00" doit être reconnu avant les chiffres isolés (roue américaine)
+    const raw = txt.match(/00|\d+/g) || [];
+    const out = [], bad = [];
+    for(const r of raw){
+      if(r==="00"){ if(N===38) out.push("00"); else bad.push(r); continue; }
+      const v = parseInt(r,10);
+      if(v>=0 && v<=36) out.push(v); else bad.push(r);
+    }
+    return { vals:out, bad };
+  }
+
+  /* ---------- analyse ---------- */
+  function analyse(){
+    const N = parseInt($("wheel").value,10);
+    const SEQ = N===38 ? US : EU;
+    const idxOf = {}; SEQ.forEach((v,i)=>idxOf[String(v)]=i);
+    const { vals, bad } = parseData($("data").value, N);
+    const n = vals.length;
+    $("count").innerHTML = `<b>${n}</b> tirage${n>1?"s":""} lu${n>1?"s":""}`
+      + (bad.length?` · <span style="color:var(--gold)">${bad.length} valeur(s) ignorée(s)</span>`:"")
+      + (n<100?` · <span style="color:var(--gold)">peu fiable en dessous de 300</span>`:"");
+    if(n<20){ $("results").style.display="none"; return; }
+    $("results").style.display="block";
+
+    // --- 1. uniformité (chi²) ---
+    const counts = new Array(N).fill(0);
+    vals.forEach(v => counts[idxOf[String(v)]]++);
+    const exp = n/N;
+    let chi2 = 0; counts.forEach(c => chi2 += (c-exp)*(c-exp)/exp);
+    const dfU = N-1, pUni = chiP(chi2, dfU);
+
+    // --- 2. regroupement par secteur (distance entre tirages consécutifs) ---
+    const half = Math.floor(N/2);
+    const dists = [];
+    for(let i=1;i<n;i++){
+      const a = idxOf[String(vals[i-1])], b = idxOf[String(vals[i])];
+      let d = Math.abs(a-b); d = Math.min(d, N-d);
+      dists.push(d);
+    }
+    // espérance et variance exactes pour un tirage uniforme
+    let eD=0, eD2=0;
+    for(let k=0;k<N;k++){ let d=Math.min(k,N-k); eD+=d/N; eD2+=d*d/N; }
+    const varD = eD2-eD*eD;
+    const obsD = dists.reduce((s,v)=>s+v,0)/dists.length;
+    const zD = (obsD-eD)/Math.sqrt(varD/dists.length);
+    const pSect = pTwoSided(zD);
+
+    // --- 3. corrélation de rang lag-1 ---
+    const ranks = vals.map(v=>idxOf[String(v)]);
+    let mR=0; ranks.forEach(r=>mR+=r); mR/=n;
+    let num=0, den=0;
+    for(let i=0;i<n-1;i++) num += (ranks[i]-mR)*(ranks[i+1]-mR);
+    for(let i=0;i<n;i++) den += (ranks[i]-mR)*(ranks[i]-mR);
+    const rho = den? num/den : 0;
+    const zR = rho*Math.sqrt(n-1), pCorr = pTwoSided(zR);
+
+    // --- 4. taux de répétition ---
+    let rep=0; for(let i=1;i<n;i++) if(vals[i]===vals[i-1]) rep++;
+    const expRep = (n-1)/N;
+    const zRep = (rep-expRep)/Math.sqrt(expRep*(1-1/N));
+    const pRep = pTwoSided(zRep);
+
+    /* ---------- tableau ---------- */
+    const okU = pUni>=0.01, okS = pSect>=0.01, okC = pCorr>=0.01, okR = pRep>=0.01;
+    $("tests").innerHTML = `
+      <tr><td>Uniformité (χ², ddl ${dfU})</td><td>${chi2.toFixed(1)}</td><td class="k">≈ ${dfU}</td><td>${fmtP(pUni)}</td><td>${tag(okU)}</td></tr>
+      <tr><td>Regroupement par secteur</td><td>${obsD.toFixed(2)} cases</td><td class="k">${eD.toFixed(2)}</td><td>${fmtP(pSect)}</td><td>${tag(okS)}</td></tr>
+      <tr><td>Corrélation de rang (lag-1)</td><td>${rho.toFixed(3)}</td><td class="k">0,000</td><td>${fmtP(pCorr)}</td><td>${tag(okC)}</td></tr>
+      <tr><td>Taux de répétition</td><td>${rep}</td><td class="k">${expRep.toFixed(1)}</td><td>${fmtP(pRep)}</td><td>${tag(okR)}</td></tr>`;
+
+    /* ---------- verdict ---------- */
+    const v = $("verdict");
+    const clustered = pSect<0.01 && obsD<eD;
+    if(clustered){
+      v.className = "verdict bad";
+      v.innerHTML = `<b>🎯 Tirages regroupés en secteurs — c'est prévisible.</b><br>
+        Deux tirages consécutifs tombent en moyenne à <b>${obsD.toFixed(2)}</b> cases l'un de l'autre,
+        alors que le pur hasard donnerait <b>${eD.toFixed(2)}</b>. Il y a une physique (ou un biais)
+        exploitable : les apps d'analyse de vitesse ont du sens sur cette roue.`;
+    } else if(!okU){
+      v.className = "verdict warn";
+      v.innerHTML = `<b>⚠️ Certains numéros sortent trop (ou pas assez).</b><br>
+        Le χ² vaut ${chi2.toFixed(1)} pour ${dfU} degrés de liberté (p = ${fmtP(pUni)}).
+        La distribution n'est pas uniforme : soit ta roue est biaisée, soit ton générateur est mal réparti.
+        Regarde l'histogramme pour repérer les numéros en cause.`;
+    } else if(!okC || !okR){
+      v.className = "verdict warn";
+      v.innerHTML = `<b>⚠️ Structure détectée dans la suite des tirages.</b><br>
+        La distribution est correcte, mais l'ordre des résultats n'est pas indépendant
+        (corrélation ${rho.toFixed(3)}, p = ${fmtP(pCorr)}). Un générateur à mémoire ou une graine mal gérée
+        peut produire ça — c'est exploitable en connaissant l'algorithme, pas par l'image.`;
+    } else {
+      v.className = "verdict ok";
+      v.innerHTML = `<b>✅ Compatible avec un tirage purement aléatoire.</b><br>
+        Aucun des quatre tests ne décèle de structure. Si c'est ton app Android, elle utilise
+        très probablement un <b>RNG</b> : le numéro est choisi <i>avant</i> l'animation, et la roue
+        à l'écran n'est qu'un décor.<br>
+        <b>Conséquence :</b> aucune analyse d'image ne pourra prédire le résultat — il n'y a pas de physique à mesurer.
+        ${n<300?'<br><br><span style="color:var(--gold)">Attention : avec seulement '+n+' tirages, un biais modéré pourrait passer inaperçu. Vise 300 à 1000.</span>':""}`;
+    }
+
+    drawHist(counts, SEQ, exp);
+    drawDist(dists, N, half);
+  }
+
+  /* ---------- graphiques ---------- */
+  function drawHist(counts, SEQ, exp){
+    const cv=$("hist"), c=cv.getContext("2d"), W=cv.width, H=cv.height;
+    c.clearRect(0,0,W,H);
+    const padL=42,padR=12,padT=14,padB=34, x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    const N=counts.length, max=Math.max(...counts,exp)*1.2||1;
+    const bw=(x1-x0)/N;
+    c.strokeStyle="rgba(255,255,255,.15)"; c.beginPath(); c.moveTo(x0,y1); c.lineTo(x0,y0); c.lineTo(x1,y0); c.stroke();
+    c.font="10px sans-serif"; c.fillStyle="#93a1b5"; c.textAlign="right"; c.textBaseline="middle";
+    for(let k=0;k<=4;k++){ const yy=y1+(y0-y1)*k/4;
+      c.strokeStyle="rgba(255,255,255,.06)"; c.beginPath(); c.moveTo(x0,yy); c.lineTo(x1,yy); c.stroke();
+      c.fillStyle="#93a1b5"; c.fillText(Math.round(max*(1-k/4)), x0-6, yy); }
+    counts.forEach((v,i)=>{
+      const h=(v/max)*(y0-y1), x=x0+i*bw;
+      c.fillStyle = v>exp*1.6 ? "#ff6b6b" : (v<exp*0.4 ? "#5a6577" : "#4f8cff");
+      c.fillRect(x+1, y0-h, bw-2, h);
+      if(N<=38){ c.save(); c.translate(x+bw/2, y0+6); c.rotate(Math.PI/3);
+        c.fillStyle="#93a1b5"; c.textAlign="left"; c.textBaseline="middle";
+        c.fillText(String(SEQ[i]), 0, 0); c.restore(); }
+    });
+    const ye=y0-(exp/max)*(y0-y1);
+    c.strokeStyle="#ffd166"; c.setLineDash([6,4]); c.lineWidth=2;
+    c.beginPath(); c.moveTo(x0,ye); c.lineTo(x1,ye); c.stroke(); c.setLineDash([]);
+    c.fillStyle="#ffd166"; c.textAlign="left"; c.textBaseline="bottom";
+    c.fillText("attendu", x0+4, ye-3);
+  }
+
+  function drawDist(dists, N, half){
+    const cv=$("dist"), c=cv.getContext("2d"), W=cv.width, H=cv.height;
+    c.clearRect(0,0,W,H);
+    const padL=42,padR=12,padT=14,padB=30, x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    const bins=new Array(half+1).fill(0);
+    dists.forEach(d=>bins[d]++);
+    // attendu : d=0 une seule case sur N, sinon deux
+    const n=dists.length;
+    const expBins=bins.map((_,d)=> n * ((d===0 || (N%2===0 && d===N/2)) ? 1/N : 2/N));
+    const max=Math.max(...bins,...expBins)*1.2||1, bw=(x1-x0)/bins.length;
+    c.strokeStyle="rgba(255,255,255,.15)"; c.beginPath(); c.moveTo(x0,y1); c.lineTo(x0,y0); c.lineTo(x1,y0); c.stroke();
+    c.font="10px sans-serif"; c.textAlign="right"; c.textBaseline="middle"; c.fillStyle="#93a1b5";
+    for(let k=0;k<=4;k++){ const yy=y1+(y0-y1)*k/4;
+      c.strokeStyle="rgba(255,255,255,.06)"; c.beginPath(); c.moveTo(x0,yy); c.lineTo(x1,yy); c.stroke();
+      c.fillStyle="#93a1b5"; c.fillText(Math.round(max*(1-k/4)), x0-6, yy); }
+    bins.forEach((v,i)=>{ const h=(v/max)*(y0-y1);
+      c.fillStyle="#4f8cff"; c.fillRect(x0+i*bw+1, y0-h, bw-2, h);
+      if(i%2===0){ c.fillStyle="#93a1b5"; c.textAlign="center"; c.textBaseline="top";
+        c.fillText(String(i), x0+i*bw+bw/2, y0+5); } });
+    c.strokeStyle="#e8edf5"; c.lineWidth=2; c.beginPath();
+    expBins.forEach((v,i)=>{ const X=x0+i*bw+bw/2, Y=y0-(v/max)*(y0-y1); i?c.lineTo(X,Y):c.moveTo(X,Y); });
+    c.stroke();
+  }
+
+  /* ---------- démos ---------- */
+  function demoRandom(){
+    const N=parseInt($("wheel").value,10), SEQ=N===38?US:EU, out=[];
+    for(let i=0;i<600;i++) out.push(SEQ[Math.floor(Math.random()*N)]);
+    $("data").value = out.join(" ");
+    analyse();
+  }
+  function demoBiased(){   // physique exploitable : le tirage suivant reste près du précédent
+    const N=parseInt($("wheel").value,10), SEQ=N===38?US:EU;
+    let idx=Math.floor(Math.random()*N); const out=[];
+    for(let i=0;i<600;i++){
+      const step = Math.round((Math.random()+Math.random()+Math.random()-1.5)*4);  // dérive locale
+      idx = ((idx+step)%N+N)%N;
+      out.push(SEQ[idx]);
+    }
+    $("data").value = out.join(" ");
+    analyse();
+  }
+
+  $("run").onclick = analyse;
+  $("demoR").onclick = demoRandom;
+  $("demoB").onclick = demoBiased;
+  $("clear").onclick = () => { $("data").value=""; $("results").style.display="none"; $("count").textContent=""; };
+  $("wheel").addEventListener("change", () => { if($("data").value.trim()) analyse(); });
+})();
+</script>
+</body>
+</html>
