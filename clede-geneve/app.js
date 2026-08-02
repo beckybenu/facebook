@@ -185,8 +185,38 @@ ${data.message || "—"}
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0a0e1a, 0.024); // brume de profondeur
     const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 100);
     camera.position.set(0, 1.5, 16);
+
+    // ----- Textures générées (fenêtres éclairées + halo) -----
+    function windowTexture() {
+      const c = document.createElement("canvas");
+      c.width = 64; c.height = 128;
+      const g = c.getContext("2d");
+      g.fillStyle = "#000"; g.fillRect(0, 0, 64, 128);
+      for (let y = 6; y < 122; y += 10) {
+        for (let x = 4; x < 60; x += 9) {
+          if (Math.random() < 0.42) {
+            g.fillStyle = "rgba(255,240,210," + (0.3 + Math.random() * 0.7) + ")";
+            g.fillRect(x, y, 5, 6);
+          }
+        }
+      }
+      return new THREE.CanvasTexture(c);
+    }
+    function glowTexture() {
+      const c = document.createElement("canvas");
+      c.width = c.height = 128;
+      const g = c.getContext("2d");
+      const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      grd.addColorStop(0, "rgba(255,255,255,.9)");
+      grd.addColorStop(0.35, "rgba(255,255,255,.28)");
+      grd.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(c);
+    }
+    const winTex = [windowTexture(), windowTexture(), windowTexture(), windowTexture()];
 
     const group = new THREE.Group();
     scene.add(group);
@@ -218,6 +248,8 @@ ${data.message || "—"}
       const h = 1.5 + Math.random() * 6;
       const geo = new THREE.BoxGeometry(w, h, w);
       const m = mats[i % mats.length].clone();
+      m.emissiveMap = winTex[i % winTex.length]; // fenêtres éclairées
+      m.emissiveIntensity = 0.85;
       const mesh = new THREE.Mesh(geo, m);
       mesh.userData.kind = i % mats.length; // 0/2 = verre, 1 = teinte accent
       const ring = 5 + Math.random() * 9;
@@ -246,6 +278,19 @@ ${data.message || "—"}
       tooth.position.set(x, -0.32 - i * 0.03, 0);
       keyGroup.add(tooth);
     });
+    // halo doré + lumière propre à la clé
+    const glowMat = new THREE.SpriteMaterial({
+      map: glowTexture(), color: 0xe8c07d, transparent: true, opacity: 0.75,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const keyGlow = new THREE.Sprite(glowMat);
+    keyGlow.scale.set(8.5, 8.5, 1);
+    keyGlow.position.set(0.2, 0, -0.6);
+    keyGroup.add(keyGlow);
+    const keyLight = new THREE.PointLight(0xe8c07d, 1.4, 14);
+    keyLight.position.set(0, 0.5, 1.5);
+    keyGroup.add(keyLight);
+
     keyGroup.position.set(-1, 2.6, 4);
     keyGroup.scale.setScalar(1.15);
     group.add(keyGroup);
@@ -264,25 +309,48 @@ ${data.message || "—"}
     const points = new THREE.Points(pgeo, pmat);
     scene.add(points);
 
+    // ----- Lucioles (grosses particules lumineuses, fondu additif) -----
+    const fCount = 70;
+    const fgeo = new THREE.BufferGeometry();
+    const fpos = new Float32Array(fCount * 3);
+    for (let i = 0; i < fCount; i++) {
+      fpos[i * 3] = (Math.random() - 0.5) * 34;
+      fpos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      fpos[i * 3 + 2] = (Math.random() - 0.5) * 26 - 2;
+    }
+    fgeo.setAttribute("position", new THREE.BufferAttribute(fpos, 3));
+    const fmat = new THREE.PointsMaterial({
+      map: glowTexture(), color: 0xf4d79b, size: 0.55, transparent: true, opacity: 0.85,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const fireflies = new THREE.Points(fgeo, fmat);
+    scene.add(fireflies);
+
     // ----- Couleurs de la scène pilotées par le thème CSS -----
     const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#ffffff";
     function applySceneTheme() {
       const cWarm = new THREE.Color(cssVar("--gold"));
       const cWarm2 = new THREE.Color(cssVar("--gold-2"));
       const cCool = new THREE.Color(cssVar("--teal"));
+      const cBg = new THREE.Color(cssVar("--bg"));
+      // brume assortie au fond
+      scene.fog.color.copy(cBg);
       // lumières
       key.color.copy(cWarm2);
       rim.color.copy(cCool);
       rim2.color.copy(cWarm);
-      // matériaux « or » (clé + accents) et particules
+      keyLight.color.copy(cWarm);
+      // matériaux « or » (clé + accents), halo et particules
       gold.color.copy(cWarm);
+      glowMat.color.copy(cWarm);
       pmat.color.copy(cWarm);
-      // tours : verre teinté froid, accents en couleur secondaire
+      fmat.color.copy(cWarm2);
+      // tours : verre teinté froid, fenêtres chaudes
       const coolDeep = cCool.clone().multiplyScalar(0.5);
-      const coolGlow = cCool.clone().multiplyScalar(0.14);
+      const winGlow = cWarm.clone().multiplyScalar(0.9);
       towers.children.forEach((m) => {
-        if (m.userData.kind === 1) { m.material.color.copy(coolDeep); m.material.emissive.copy(coolGlow); }
-        else { m.material.emissive.copy(coolGlow); }
+        if (m.userData.kind === 1) m.material.color.copy(coolDeep);
+        m.material.emissive.copy(winGlow);
       });
     }
     applySceneTheme();
@@ -332,7 +400,11 @@ ${data.message || "—"}
       });
 
       points.rotation.y = t * 0.03;
+      fireflies.rotation.y = -t * 0.02;
+      fireflies.position.y = Math.sin(t * 0.6) * 0.5;
+      keyGlow.material.opacity = 0.62 + Math.sin(t * 2.1) * 0.16; // pulsation du halo
 
+      camera.position.z = 16 + Math.sin(t * 0.45) * 0.45; // respiration
       camera.lookAt(0, 0.5, 0);
       renderer.render(scene, camera);
     }

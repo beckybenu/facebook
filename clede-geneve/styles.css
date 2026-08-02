@@ -115,11 +115,18 @@ body::after{ /* grain / vignette */
 /* ---------- Boutons ---------- */
 .btn{
   --pad:12px 22px;
+  position:relative;overflow:hidden;
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   padding:var(--pad);border-radius:100px;font-weight:600;font-size:15px;
   cursor:pointer;border:1px solid transparent;transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s,border-color .3s;
   will-change:transform;font-family:"Space Grotesk";white-space:nowrap;
 }
+.btn-primary::after{ /* reflet lumineux au survol */
+  content:"";position:absolute;top:0;left:-80%;width:55%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.6),transparent);
+  transform:skewX(-20deg);transition:left .65s var(--ease);pointer-events:none;
+}
+.btn-primary:hover::after{left:125%}
 .btn-lg{--pad:16px 30px;font-size:16px}
 .btn-block{width:100%}
 .btn-primary{
@@ -174,7 +181,11 @@ main{position:relative;z-index:1}
   position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
   max-width:var(--maxw);margin:0 auto;padding:120px clamp(18px,5vw,32px) 60px;
 }
-.hero-inner{max-width:860px}
+.hero::before{ /* voile de lisibilité au-dessus de la skyline 3D */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(75% 85% at 22% 55%,rgba(6,9,18,.66),transparent 70%);
+}
+.hero-inner{max-width:860px;position:relative;z-index:1}
 .pill{
   display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:100px;
   background:var(--panel);border:1px solid var(--line-2);font-size:13.5px;color:var(--muted);
@@ -256,7 +267,10 @@ main{position:relative;z-index:1}
 .tarif-list .check{display:grid;place-content:center;width:24px;height:24px;border-radius:50%;background:rgba(79,209,197,.15);color:var(--teal);font-size:13px;flex:none}
 .tarif-right{text-align:center;display:grid;gap:18px;justify-items:center}
 .price-badge{width:100%;padding:30px;border-radius:var(--radius);border:1px solid var(--line-2);
-  background:radial-gradient(120% 120% at 50% 0%,rgba(232,192,125,.16),rgba(255,255,255,.03));display:grid;gap:4px}
+  background:radial-gradient(120% 120% at 50% 0%,rgba(232,192,125,.16),rgba(255,255,255,.03));display:grid;gap:4px;
+  animation:pricePulse 4.5s ease-in-out infinite}
+@keyframes pricePulse{50%{box-shadow:0 0 46px -10px rgba(232,192,125,.5);border-color:rgba(232,192,125,.4)}}
+@media (prefers-reduced-motion:reduce){.price-badge{animation:none}}
 .price-label{text-transform:uppercase;letter-spacing:.2em;font-size:11px;color:var(--muted)}
 .price-value{font-family:"Space Grotesk";font-size:clamp(38px,6vw,60px);font-weight:700;color:var(--gold);line-height:1}
 .price-sub{color:var(--muted);font-size:14px}
