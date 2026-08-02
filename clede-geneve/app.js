@@ -190,22 +190,7 @@ ${data.message || "—"}
     const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 100);
     camera.position.set(0, 1.5, 16);
 
-    // ----- Textures générées (fenêtres éclairées + halo) -----
-    function windowTexture() {
-      const c = document.createElement("canvas");
-      c.width = 64; c.height = 128;
-      const g = c.getContext("2d");
-      g.fillStyle = "#000"; g.fillRect(0, 0, 64, 128);
-      for (let y = 6; y < 122; y += 10) {
-        for (let x = 4; x < 60; x += 9) {
-          if (Math.random() < 0.42) {
-            g.fillStyle = "rgba(255,240,210," + (0.3 + Math.random() * 0.7) + ")";
-            g.fillRect(x, y, 5, 6);
-          }
-        }
-      }
-      return new THREE.CanvasTexture(c);
-    }
+    // ----- Texture générée (halo lumineux) -----
     function glowTexture() {
       const c = document.createElement("canvas");
       c.width = c.height = 128;
@@ -217,8 +202,6 @@ ${data.message || "—"}
       g.fillStyle = grd; g.fillRect(0, 0, 128, 128);
       return new THREE.CanvasTexture(c);
     }
-    const winTex = [windowTexture(), windowTexture(), windowTexture(), windowTexture()];
-
     const group = new THREE.Group();
     scene.add(group);
 
@@ -234,35 +217,43 @@ ${data.message || "—"}
     rim2.position.set(10, -2, 8);
     scene.add(rim2);
 
-    // ----- Skyline stylisée (tours de verre) -----
+    // ----- Matériau or (clé) -----
     const gold = new THREE.MeshStandardMaterial({ color: 0xe8c07d, metalness: .9, roughness: .28 });
-    const glass = new THREE.MeshStandardMaterial({ color: 0x1b2440, metalness: .6, roughness: .15,
-      emissive: 0x14324a, emissiveIntensity: .5 });
-    const teal = new THREE.MeshStandardMaterial({ color: 0x2f6f68, metalness: .7, roughness: .25,
-      emissive: 0x0e2b28, emissiveIntensity: .6 });
-    const mats = [glass, teal, glass];
 
-    const towers = new THREE.Group();
-    const N = 34;
-    for (let i = 0; i < N; i++) {
-      const w = 0.5 + Math.random() * 0.7;
-      const h = 1.5 + Math.random() * 6;
-      const geo = new THREE.BoxGeometry(w, h, w);
-      const m = mats[i % mats.length].clone();
-      m.emissiveMap = winTex[i % winTex.length]; // fenêtres éclairées
-      m.emissiveIntensity = 0.85;
-      const mesh = new THREE.Mesh(geo, m);
-      mesh.userData.kind = i % mats.length; // 0/2 = verre, 1 = teinte accent
-      const ring = 5 + Math.random() * 9;
-      const ang = Math.random() * Math.PI * 2;
-      mesh.position.set(Math.cos(ang) * ring, h / 2 - 4.5, Math.sin(ang) * ring - 3);
-      mesh.rotation.y = Math.random() * Math.PI;
-      mesh.userData.floatSpeed = 0.4 + Math.random() * 0.8;
-      mesh.userData.baseY = mesh.position.y;
-      mesh.userData.phase = Math.random() * Math.PI * 2;
-      towers.add(mesh);
-    }
-    group.add(towers);
+    // ----- Lac Léman : plan d'eau ondulant et réfléchissant -----
+    const WATER_Y = -4.5;
+    const wgeo = new THREE.PlaneGeometry(170, 100, 96, 48);
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: 0x0d1626, metalness: .92, roughness: .18,
+      emissive: 0x0a1420, emissiveIntensity: .55
+    });
+    const water = new THREE.Mesh(wgeo, waterMat);
+    water.rotation.x = -Math.PI / 2;
+    water.position.y = WATER_Y;
+    water.position.z = -8;
+    group.add(water);
+    const wpos = wgeo.attributes.position;           // vagues animées en boucle
+    const wBase = new Float32Array(wpos.array);
+
+    // ----- Montagnes au loin (Salève, Jura) fondues dans la brume -----
+    const mountainMat = new THREE.MeshStandardMaterial({
+      color: 0x101a2e, metalness: .1, roughness: .95, flatShading: true,
+      emissive: 0x0a1220, emissiveIntensity: .4
+    });
+    const mountains = new THREE.Group();
+    const M = [
+      { x: -26, z: -34, r: 16, h: 6.5 }, { x: -8, z: -38, r: 14, h: 5 },
+      { x: 10, z: -36, r: 15, h: 7 },    { x: 27, z: -33, r: 13, h: 5.5 },
+      { x: 40, z: -38, r: 17, h: 6 },    { x: -42, z: -37, r: 18, h: 5.8 },
+    ];
+    M.forEach((m) => {
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(m.r, m.h, 7), mountainMat.clone());
+      cone.position.set(m.x, WATER_Y + m.h / 2 - 0.4, m.z);
+      cone.scale.z = 0.55;
+      cone.rotation.y = Math.random() * Math.PI;
+      mountains.add(cone);
+    });
+    group.add(mountains);
 
     // ----- Clé centrale flottante -----
     const keyGroup = new THREE.Group();
@@ -351,6 +342,22 @@ ${data.message || "—"}
     const jet = new THREE.Points(jgeo, jetMat);
     group.add(jet); // suit la parallaxe de la scène
 
+    // ronds dans l'eau à la base du jet
+    const ripples = [];
+    for (let i = 0; i < 3; i++) {
+      const rGeo = new THREE.RingGeometry(0.85, 1.0, 48);
+      const rMat = new THREE.MeshBasicMaterial({
+        color: 0xdff2ff, transparent: true, opacity: 0.3,
+        blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+      });
+      const ring = new THREE.Mesh(rGeo, rMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(JET.base.x + 0.6, WATER_Y + 0.03, JET.base.z);
+      ring.userData.phase = i / 3;
+      ripples.push(ring);
+      group.add(ring);
+    }
+
     // ----- Couleurs de la scène pilotées par le thème CSS -----
     const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#ffffff";
     function applySceneTheme() {
@@ -370,13 +377,16 @@ ${data.message || "—"}
       glowMat.color.copy(cWarm);
       pmat.color.copy(cWarm);
       fmat.color.copy(cWarm2);
-      jetMat.color.copy(cCool.clone().lerp(new THREE.Color(0xffffff), 0.55)); // eau claire teintée
-      // tours : verre teinté froid, fenêtres chaudes
-      const coolDeep = cCool.clone().multiplyScalar(0.5);
-      const winGlow = cWarm.clone().multiplyScalar(0.9);
-      towers.children.forEach((m) => {
-        if (m.userData.kind === 1) m.material.color.copy(coolDeep);
-        m.material.emissive.copy(winGlow);
+      const cEau = cCool.clone().lerp(new THREE.Color(0xffffff), 0.55); // eau claire teintée
+      jetMat.color.copy(cEau);
+      ripples.forEach((r) => r.material.color.copy(cEau));
+      // lac : miroir sombre teinté de l'accent froid
+      waterMat.color.copy(cBg.clone().lerp(cCool, 0.14));
+      waterMat.emissive.copy(cBg.clone().lerp(cCool, 0.08));
+      // montagnes : silhouettes à peine plus claires que le fond
+      mountains.children.forEach((m) => {
+        m.material.color.copy(cBg.clone().lerp(cCool, 0.10).multiplyScalar(1.5));
+        m.material.emissive.copy(cBg.clone().multiplyScalar(1.2));
       });
     }
     applySceneTheme();
@@ -413,16 +423,27 @@ ${data.message || "—"}
       mx += (tmx - mx) * 0.05;
       my += (tmy - my) * 0.05;
 
-      group.rotation.y = mx * 0.5 + t * 0.05;
-      group.rotation.x = my * 0.25;
+      group.rotation.y = mx * 0.35;               // parallaxe seule (horizon stable)
+      group.rotation.x = my * 0.12;
       group.position.y = -scrollY * 0.0022;
 
       keyGroup.rotation.y = t * 0.9;
       keyGroup.rotation.z = Math.sin(t * 0.7) * 0.12;
       keyGroup.position.y = 2.6 + Math.sin(t * 1.2) * 0.35;
 
-      towers.children.forEach((m) => {
-        m.position.y = m.userData.baseY + Math.sin(t * m.userData.floatSpeed + m.userData.phase) * 0.35;
+      // vagues du Léman
+      for (let i = 0; i < wpos.count; i++) {
+        const x = wBase[i * 3], y = wBase[i * 3 + 1];
+        wpos.array[i * 3 + 2] = Math.sin(x * 0.32 + t * 2.4) * 0.14 + Math.cos(y * 0.26 + t * 1.8) * 0.11;
+      }
+      wpos.needsUpdate = true;
+
+      // ronds dans l'eau
+      ripples.forEach((r) => {
+        const s = (t * 0.55 + r.userData.phase) % 1;
+        const k = 0.6 + s * 4.2;
+        r.scale.set(k, k, 1);
+        r.material.opacity = (1 - s) * 0.3;
       });
 
       points.rotation.y = t * 0.03;
