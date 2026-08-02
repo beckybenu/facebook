@@ -55,7 +55,8 @@
   /* ============ Sélecteur de thèmes de couleur ============ */
   const THEME_NAMES = {
     or: "Or & Émeraude", saphir: "Saphir", rubis: "Rubis",
-    amethyste: "Améthyste", emeraude: "Émeraude", platine: "Platine"
+    amethyste: "Améthyste", emeraude: "Émeraude", platine: "Platine",
+    leman: "Léman", couchant: "Couchant", cuivre: "Cuivre"
   };
   const dock = $("#theme-dock");
   const themeToggle = $("#theme-toggle");
@@ -326,6 +327,30 @@ ${data.message || "—"}
     const fireflies = new THREE.Points(fgeo, fmat);
     scene.add(fireflies);
 
+    // ----- Jet d'eau de Genève (gerbe de particules balistiques) -----
+    const JET = { count: 560, base: new THREE.Vector3(8.5, -4.5, -7), g: 5.2 };
+    const jgeo = new THREE.BufferGeometry();
+    const jpos = new Float32Array(JET.count * 3);
+    const jAge = new Float32Array(JET.count);
+    const jLife = new Float32Array(JET.count);
+    const jVel = [];
+    for (let i = 0; i < JET.count; i++) {
+      jAge[i] = Math.random() * 3.0;                 // départs étalés dans le temps
+      jLife[i] = 2.4 + Math.random() * 0.9;
+      jVel.push(new THREE.Vector3(
+        0.35 + Math.random() * 0.3,                  // légère inclinaison, comme le vrai
+        10.2 + Math.random() * 1.8,
+        (Math.random() - 0.5) * 0.35
+      ));
+    }
+    jgeo.setAttribute("position", new THREE.BufferAttribute(jpos, 3));
+    const jetMat = new THREE.PointsMaterial({
+      map: glowTexture(), color: 0xdff2ff, size: 0.34, transparent: true, opacity: 0.55,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const jet = new THREE.Points(jgeo, jetMat);
+    group.add(jet); // suit la parallaxe de la scène
+
     // ----- Couleurs de la scène pilotées par le thème CSS -----
     const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim() || "#ffffff";
     function applySceneTheme() {
@@ -345,6 +370,7 @@ ${data.message || "—"}
       glowMat.color.copy(cWarm);
       pmat.color.copy(cWarm);
       fmat.color.copy(cWarm2);
+      jetMat.color.copy(cCool.clone().lerp(new THREE.Color(0xffffff), 0.55)); // eau claire teintée
       // tours : verre teinté froid, fenêtres chaudes
       const coolDeep = cCool.clone().multiplyScalar(0.5);
       const winGlow = cWarm.clone().multiplyScalar(0.9);
@@ -403,6 +429,17 @@ ${data.message || "—"}
       fireflies.rotation.y = -t * 0.02;
       fireflies.position.y = Math.sin(t * 0.6) * 0.5;
       keyGlow.material.opacity = 0.62 + Math.sin(t * 2.1) * 0.16; // pulsation du halo
+
+      // jet d'eau : trajectoire balistique + recyclage des gouttes
+      for (let i = 0; i < JET.count; i++) {
+        jAge[i] += 0.016;
+        if (jAge[i] > jLife[i]) jAge[i] = 0;
+        const a = jAge[i], v = jVel[i];
+        jpos[i * 3]     = JET.base.x + v.x * a;
+        jpos[i * 3 + 1] = JET.base.y + v.y * a - 0.5 * JET.g * a * a;
+        jpos[i * 3 + 2] = JET.base.z + v.z * a;
+      }
+      jgeo.attributes.position.needsUpdate = true;
 
       camera.position.z = 16 + Math.sin(t * 0.45) * 0.45; // respiration
       camera.lookAt(0, 0.5, 0);
