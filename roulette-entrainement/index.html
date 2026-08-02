@@ -177,6 +177,9 @@
         <label style="display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.9rem"><input type="checkbox" id="autoLoop" /> en boucle</label>
         <button class="btn" id="autoStop" disabled>⏹ Stop</button>
       </div>
+      <div class="ctrls">
+        <button class="btn" id="hypoBtn">🔬 Historique seul vs observation (300 tirages)</button>
+      </div>
 
       <div class="taps">
         <button class="tap wheel" id="tapWheel">
@@ -198,6 +201,8 @@
         <div id="predChips" class="chips">Lance un tirage, puis clique <b>🔮&nbsp;Prédire</b> (ou touche&nbsp;P) pendant que la bille tourne encore.</div>
         <div id="predVerdict" class="verdict"></div>
         <div id="predScore" class="score"></div>
+        <div id="hypoBox" style="display:none;margin-top:14px;padding:14px;border-radius:12px;
+             background:#0f141d;border:1px solid var(--line);font-size:.9rem;line-height:1.55"></div>
         <div class="note">Le secteur = le numéro prédit et ses 5 voisins <b>sur le cylindre</b> (pas dans l'ordre 1-2-3). En jeu réel, prédis sur les <b>derniers tours de bille</b> pour plus de précision&nbsp;: la bille rebondit en tombant (scatter), d'où un secteur plutôt qu'un seul numéro.</div>
       </div>
 
@@ -511,6 +516,62 @@
   }
   function saveScore(){ try{ localStorage.setItem("roulette.score",JSON.stringify(score)); }catch(e){} }
   function loadScore(){ try{ const s=JSON.parse(localStorage.getItem("roulette.score")); if(s){score.n=s.n||0;score.h=s.h||0;} }catch(e){} }
+
+  /* ---- expérience : l'historique des tours précédents suffit-il à prédire ? ----
+     A : on ne connaît QUE les tours précédents. Avant le lancer, le seul élément
+         observable est la position du rotor au repère ; on y ajoute l'avance
+         moyenne apprise sur tout l'historique. Aucune observation du tour en cours.
+     B : on observe le tour en cours (ce que fait le bouton Prédire).
+     Les deux annoncent un secteur de 6 numéros ; on compare les taux de réussite. */
+  function idxAtRef(rotorAngle){
+    let d = (-Math.PI/2) - rotorAngle;
+    d = ((d % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    return ((Math.round(d/ARC) % N) + N) % N;
+  }
+  function inSector(center, idx){
+    for(let k=-2;k<=3;k++) if(((((center+k)%N)+N)%N) === idx) return true;
+    return false;
+  }
+  function runHypothesis(spins){
+    const adv = [];                       // avances constatées sur les tours passés
+    let aN=0, aH=0, bN=0, bH=0;
+    for(let s=0;s<spins;s++){
+      // mêmes lois de tirage que le vrai lancement : chaque tour a ses propres conditions
+      const st = { rotorAngle: Math.random()*Math.PI*2, ballAngle: Math.random()*Math.PI*2,
+                   wRotor: 2.4+Math.random()*1.6, wBall: -(15+Math.random()*7),
+                   ballR: R_track, phase:"orbit" };
+      const startIdx = idxAtRef(st.rotorAngle);            // connu à l'ouverture des paris
+      const ideal    = simulateLanding(st);                // physique de CE tour
+      const actual   = (((ideal + scatterOffset())%N)+N)%N; // + rebond réel
+
+      if(adv.length>=5){                                   // A : historique seul
+        let sx=0, sy=0;
+        adv.forEach(a=>{ const t=a*ARC; sx+=Math.cos(t); sy+=Math.sin(t); });
+        const meanAdv = Math.round(Math.atan2(sy,sx)/ARC);
+        aN++; if(inSector((((startIdx+meanAdv)%N)+N)%N, actual)) aH++;
+      }
+      bN++; if(inSector(ideal, actual)) bH++;              // B : observation du tour
+      adv.push((((actual-startIdx)%N)+N)%N);
+    }
+    return {aN,aH,bN,bH};
+  }
+  function showHypothesis(){
+    const r = runHypothesis(300);
+    const pA = 100*r.aH/r.aN, pB = 100*r.bH/r.bN, chance = 100*6/N;
+    const box = $("hypoBox"); box.style.display = "block";
+    box.innerHTML = `
+      <b>🔬 300 tirages simulés — secteur de 6 numéros à chaque fois</b><br><br>
+      <b>A · historique seul</b> (tours précédents + rotor au repère, sans voir le tour en cours)<br>
+      → <b style="color:${pA>chance*1.5?'var(--gold)':'#ff8f8f'}">${r.aH}/${r.aN} = ${pA.toFixed(1)} %</b>
+      <span style="color:var(--muted)">— le pur hasard donne ${chance.toFixed(1)} %</span><br><br>
+      <b>B · observation du tour en cours</b> (vitesses mesurées pendant que la bille tourne)<br>
+      → <b style="color:var(--green)">${r.bH}/${r.bN} = ${pB.toFixed(1)} %</b><br><br>
+      <span style="color:var(--muted)">
+      Sur cette roue, la physique est <i>parfaitement</i> connue et pourtant l'historique seul ne bat pas
+      le hasard : chaque tour a sa propre vitesse de lancer, que les tours précédents n'annoncent pas.
+      L'historique sert à <b>calibrer</b> la roue (Δt, décalage), pas à deviner le tour suivant —
+      il faut mesurer <b>le tour en cours</b>. Et c'est précisément ce que la fenêtre de paris interdit.</span>`;
+  }
 
   /* ===================== MESURES (taps) ===================== */
   // Each channel: array of tap timestamps (ms). Lap i uses taps[i-1..i].
@@ -1019,6 +1080,7 @@
   $("stopBtn").onclick = stopSpin;
   $("predictBtn").onclick = predict;
   $("autoBtn").onclick = startAuto;
+  $("hypoBtn").onclick = showHypothesis;
   $("autoStop").onclick = () => { stopAuto(); stopSpin(); };
   $("predReset").onclick = () => { score.n=0; score.h=0; saveScore(); updateScore(); };
   $("vPredictBtn").onclick = vPredict;

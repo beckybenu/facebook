@@ -39,6 +39,29 @@ vrai), d'où un *secteur* plutôt qu'un seul numéro garanti : on vise ~70-80 % 
 > Astuce : en jeu réel, prédis sur les **derniers tours de bille**, c'est là que
 > l'extrapolation est la plus fiable.
 
+### 🔬 Expérience : l'historique suffit-il à prédire ?
+
+Une idée répandue veut qu'en observant une table pendant quelques tours, on puisse ensuite
+prédire les suivants « d'après la rotation ». Le bouton **🔬 Historique seul vs observation**
+tranche la question en simulant 300 tirages et en comparant deux prédicteurs, chacun
+annonçant un secteur de 6 numéros :
+
+- **A · historique seul** — connaît tous les tours précédents et la position du rotor au
+  repère à l'ouverture des paris, mais **ne voit pas le tour en cours**.
+- **B · observation du tour en cours** — mesure les vitesses pendant que la bille tourne.
+
+Résultat typique, sur une roue dont la physique est *parfaitement* connue :
+
+| Prédicteur | Réussite | Référence |
+|---|---|---|
+| A · historique seul | ~14 % | hasard = 16,2 % |
+| B · observation du tour | ~79 % | — |
+
+**Conclusion** : l'historique sert à **calibrer** la roue (Δt, décalage), pas à deviner le tour
+suivant. Chaque tour a sa propre vitesse de lancer, que les précédents n'annoncent pas — il
+faut mesurer *le tour en cours*. C'est justement ce que la fermeture des paris empêche sur
+une table commerciale.
+
 ### 📷 Caméra live — analyser sa propre roulette
 
 En mode 🎬, le bouton **📷 Caméra live** ouvre la caméra arrière du téléphone et applique le
