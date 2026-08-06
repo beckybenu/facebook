@@ -50,17 +50,30 @@ annonçant un secteur de 6 numéros :
   repère à l'ouverture des paris, mais **ne voit pas le tour en cours**.
 - **B · observation du tour en cours** — mesure les vitesses pendant que la bille tourne.
 
-Résultat typique, sur une roue dont la physique est *parfaitement* connue :
+Le simulateur modélise un **lanceur automatique** : la bille part toujours du même point de
+la rampe, seule la phase du rotor au lâcher change. Le balayage fait varier la **répétabilité
+de la machine** (1200 tirages par ligne) :
 
-| Prédicteur | Réussite | Référence |
+| Variabilité du lancer | A · historique seul | B · observation |
 |---|---|---|
-| A · historique seul | ~14 % | hasard = 16,2 % |
-| B · observation du tour | ~79 % | — |
+| 0 % (machine parfaite) | **81,0 %** | 82,2 % |
+| ± 0,2 % | 76,8 % | 80,5 % |
+| ± 0,5 % | 51,5 % | 80,2 % |
+| ± 1,0 % | 29,6 % | 79,2 % |
+| ± 2,0 % | 21,2 % | 80,8 % |
+| ± 5,0 % | 15,6 % | 80,1 % |
+| ± 20 % | 15,3 % | 80,3 % |
 
-**Conclusion** : l'historique sert à **calibrer** la roue (Δt, décalage), pas à deviner le tour
-suivant. Chaque tour a sa propre vitesse de lancer, que les précédents n'annoncent pas — il
-faut mesurer *le tour en cours*. C'est justement ce que la fermeture des paris empêche sur
-une table commerciale.
+*(le pur hasard donne 16,2 %)*
+
+**Conclusion** : si la machine est **parfaitement répétable**, l'historique seul suffit — la
+prédiction par la seule phase du rotor fonctionne. Mais la tolérance est très étroite :
+au-delà de **± 0,5 %** de variation sur la vitesse, la prédiction s'effondre. La bille
+parcourt une quinzaine de tours avant de tomber, donc 1 % d'écart de vitesse déplace le point
+de chute de plusieurs cases.
+
+La colonne B, elle, reste à ~80 % quelle que soit la variabilité : **observer le tour en cours
+marche toujours**. C'est l'accès à cette observation qui est le vrai facteur limitant.
 
 ### 📷 Caméra live — analyser sa propre roulette
 

@@ -532,13 +532,19 @@
     for(let k=-2;k<=3;k++) if(((((center+k)%N)+N)%N) === idx) return true;
     return false;
   }
-  function runHypothesis(spins){
+  const BALL_MEAN = 18.5, ROTOR_MEAN = 3.2;   // vitesses moyennes du simulateur
+  function runHypothesis(spins, ballVar, rotorVar){
     const adv = [];                       // avances constatées sur les tours passés
     let aN=0, aH=0, bN=0, bH=0;
     for(let s=0;s<spins;s++){
-      // mêmes lois de tirage que le vrai lancement : chaque tour a ses propres conditions
-      const st = { rotorAngle: Math.random()*Math.PI*2, ballAngle: Math.random()*Math.PI*2,
-                   wRotor: 2.4+Math.random()*1.6, wBall: -(15+Math.random()*7),
+      // variabilité du lancer : 0 = machine parfaitement répétable
+      const jb = 1 + ballVar *(Math.random()*2-1);
+      const jr = 1 + rotorVar*(Math.random()*2-1);
+      // Lanceur automatique : la bille part TOUJOURS du même point de la rampe.
+      // Seule la phase du rotor au moment du lâcher change d'un tour à l'autre —
+      // et c'est justement elle qui est observable à l'écran.
+      const st = { rotorAngle: Math.random()*Math.PI*2, ballAngle: 0,
+                   wRotor: ROTOR_MEAN*jr, wBall: -(BALL_MEAN*jb),
                    ballR: R_track, phase:"orbit" };
       const startIdx = idxAtRef(st.rotorAngle);            // connu à l'ouverture des paris
       const ideal    = simulateLanding(st);                // physique de CE tour
@@ -556,21 +562,47 @@
     return {aN,aH,bN,bH};
   }
   function showHypothesis(){
-    const r = runHypothesis(300);
-    const pA = 100*r.aH/r.aN, pB = 100*r.bH/r.bN, chance = 100*6/N;
+    const chance = 100*6/N;
+    const LEVELS = [0, 0.002, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20];
+    const rows = LEVELS.map(v => {
+      const r = runHypothesis(1200, v, v);
+      return { v, pA:100*r.aH/r.aN, pB:100*r.bH/r.bN };
+    });
+    // seuil : dernière variabilité où l'historique reste nettement au-dessus du hasard
+    const seuil = rows.filter(r => r.pA > chance*2).pop();
     const box = $("hypoBox"); box.style.display = "block";
     box.innerHTML = `
-      <b>🔬 300 tirages simulés — secteur de 6 numéros à chaque fois</b><br><br>
-      <b>A · historique seul</b> (tours précédents + rotor au repère, sans voir le tour en cours)<br>
-      → <b style="color:${pA>chance*1.5?'var(--gold)':'#ff8f8f'}">${r.aH}/${r.aN} = ${pA.toFixed(1)} %</b>
-      <span style="color:var(--muted)">— le pur hasard donne ${chance.toFixed(1)} %</span><br><br>
-      <b>B · observation du tour en cours</b> (vitesses mesurées pendant que la bille tourne)<br>
-      → <b style="color:var(--green)">${r.bH}/${r.bN} = ${pB.toFixed(1)} %</b><br><br>
-      <span style="color:var(--muted)">
-      Sur cette roue, la physique est <i>parfaitement</i> connue et pourtant l'historique seul ne bat pas
-      le hasard : chaque tour a sa propre vitesse de lancer, que les tours précédents n'annoncent pas.
-      L'historique sert à <b>calibrer</b> la roue (Δt, décalage), pas à deviner le tour suivant —
-      il faut mesurer <b>le tour en cours</b>. Et c'est précisément ce que la fenêtre de paris interdit.</span>`;
+      <b>🔬 À quel point le lancer doit-il être répétable ?</b><br>
+      <span style="color:var(--muted)">1200 tirages simulés par ligne · secteur de 6 numéros ·
+      le pur hasard donne ${chance.toFixed(1)} %</span>
+      <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:.88rem">
+        <tr style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px">
+          <th style="text-align:left;padding:6px 4px">Variabilité du lancer</th>
+          <th style="text-align:right;padding:6px 4px">A · historique seul</th>
+          <th style="text-align:right;padding:6px 4px">B · observation</th></tr>
+        ${rows.map(r=>{
+          const good = r.pA > chance*2;
+          return `<tr style="border-top:1px solid var(--line)">
+            <td style="padding:6px 4px">${r.v===0 ? "<b>0 % (machine parfaite)</b>" : "± "+(r.v*100).toFixed(1).replace(".",",")+" %"}</td>
+            <td style="text-align:right;padding:6px 4px;font-variant-numeric:tabular-nums;
+                       color:${good?'var(--green)':'#ff8f8f'};font-weight:${good?'800':'600'}">${r.pA.toFixed(1)} %</td>
+            <td style="text-align:right;padding:6px 4px;font-variant-numeric:tabular-nums;color:var(--muted)">${r.pB.toFixed(1)} %</td></tr>`;
+        }).join("")}
+      </table>
+      <div style="margin-top:12px;color:var(--muted)">
+        <b style="color:var(--txt)">Tu as raison sur le principe :</b> à variabilité nulle, l'historique seul
+        suffit — la ligne du haut le montre. Ton raisonnement est physiquement correct.<br><br>
+        <b style="color:var(--txt)">Mais la tolérance est minuscule.</b>
+        ${seuil ? `Au-delà de <b style="color:var(--gold)">± ${(seuil.v*100).toFixed(1).replace(".",",")} %</b> de variation sur la vitesse de lancer,
+        la prédiction par historique s'effondre au niveau du hasard.` : "Dès la moindre variation, la prédiction par historique s'effondre."}
+        La bille parcourt une quinzaine de tours avant de tomber&nbsp;: <b>1 % d'écart de vitesse
+        déplace le point de chute de plusieurs cases</b>, et l'erreur grandit avec la durée du trajet.<br><br>
+        La question devient donc <b style="color:var(--txt)">mesurable</b>, et c'est ça qu'il faut tester sur ta table&nbsp;:
+        <b>la vitesse de bille varie-t-elle de moins de 1 % d'un tour à l'autre&nbsp;?</b>
+        Le mode 🎬 mesure justement cette vitesse&nbsp;— relève-la sur 20 tours et regarde la dispersion.
+        La colonne B, elle, reste à ~80 % quoi qu'il arrive&nbsp;: observer le tour en cours marche toujours,
+        c'est l'accès à cette observation qui manque.
+      </div>`;
   }
 
   /* ===================== MESURES (taps) ===================== */
