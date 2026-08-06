@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f6f5" />
+
+  <title>Trouver un appartement à Genève | Clé de Genève, modèle La Rade</title>
+  <meta name="description" content="Nous négocions directement avec les régies genevoises et vous obtenons un logement. Commission d'un mois de loyer, due uniquement après la signature du bail." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://beckybenu.github.io/facebook/clede-geneve-rade/" />
+  <meta name="geo.region" content="CH-GE" />
+  <meta name="geo.placename" content="Genève" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_CH" />
+  <meta property="og:title" content="Votre appartement à Genève, sans la file d'attente" />
+  <meta property="og:description" content="Négociation directe avec les régies. Un mois de loyer, seulement après signature." />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f5561'/%3E%3Ctext x='16' y='22' font-family='Georgia' font-size='17' fill='%23f4f6f5' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": "Clé de Genève",
+    "url": "https://beckybenu.github.io/facebook/clede-geneve-rade/",
+    "areaServed": { "@type": "City", "name": "Genève" },
+    "description": "Recherche d'appartement à Genève par négociation directe avec les régies. Commission d'un mois de loyer, due uniquement après la signature du bail."
+  }
+  </script>
+
+  <style>
+  /* =========================================================
+     Clé de Genève, modèle La Rade.
+     Scène : un matin d'hiver clair sur la rade, eau profonde,
+     ciel pâle, pierre claire des quais. Une seule couleur
+     d'accent, le bleu du lac. CSS natif, aucune librairie.
+     ========================================================= */
+  :root{
+    --paper:#f4f6f5;
+    --paper-2:#eaefed;
+    --ink:#14201d;
+    --muted:#465651;
+    --accent:#0f5561;
+    --accent-deep:#0b4450;
+    --line:#d7dedb;
+    --radius:12px;
+    --ease-out:cubic-bezier(0.16, 1, 0.3, 1);
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;
+    font-family:"Public Sans",system-ui,sans-serif;
+    font-size:1.0625rem;line-height:1.6;
+    background:var(--paper);color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:"Bricolage Grotesque","Public Sans",sans-serif;
+    line-height:1.12;letter-spacing:-0.02em;margin:0;
+    text-wrap:balance;
+  }
+  p{text-wrap:pretty}
+  a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:3px}
+  a:hover{color:var(--accent-deep)}
+  ::selection{background:var(--accent);color:#fff}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:clamp(20px,4vw,44px)}
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:sticky;top:0;z-index:50;height:72px;
+    display:flex;align-items:center;
+    background:color-mix(in oklab, var(--paper) 92%, transparent);
+    border-bottom:1px solid var(--line);
+  }
+  .nav .wrap{display:flex;align-items:center;gap:32px;width:100%}
+  .brand{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.2rem;color:var(--ink);text-decoration:none}
+  .brand span{color:var(--accent)}
+  .nav-links{display:flex;gap:26px;margin-left:auto}
+  .nav-links a{color:var(--muted);text-decoration:none;font-weight:500;font-size:.98rem}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{
+    display:inline-block;border:0;cursor:pointer;
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1rem;
+    background:var(--accent);color:#fff;text-decoration:none;
+    padding:13px 26px;border-radius:999px;
+    transition:background .2s var(--ease-out),transform .15s var(--ease-out);
+  }
+  .btn:hover{background:var(--accent-deep);color:#fff}
+  .btn:active{transform:scale(.97)}
+  .btn:focus-visible{outline:2px solid var(--accent-deep);outline-offset:3px}
+  .btn-quiet{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn-quiet:hover{background:var(--paper-2);color:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{min-height:calc(100dvh - 72px);display:grid;align-content:center;padding-block:48px}
+  .hero h1{
+    font-size:clamp(2.6rem, 6.4vw, 5.4rem);font-weight:800;
+    max-width:14ch;
+  }
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{
+    max-width:46ch;font-size:clamp(1.05rem, 1.5vw, 1.25rem);
+    color:var(--muted);margin:26px 0 34px;
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);max-width:52ch}
+  .hero-note strong{color:var(--ink);font-weight:600}
+
+  /* ---------- Sections ---------- */
+  section{padding-block:clamp(72px, 12vh, 128px)}
+  .sec-head{max-width:30ch;margin-bottom:clamp(36px,6vw,60px)}
+  .sec-head h2{font-size:clamp(1.9rem, 3.6vw, 3rem);font-weight:800}
+  .lead{color:var(--muted);max-width:58ch}
+
+  /* Constat : deux colonnes décalées */
+  .constat{background:var(--paper-2)}
+  .constat-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,6vw,90px);align-items:start}
+  .constat-grid > div:last-child{margin-top:64px}
+  .constat p{margin:0 0 18px}
+  .constat strong{color:var(--accent);font-weight:700}
+
+  /* Méthode : vraie séquence, verbes en étapes */
+  .steps{display:grid;gap:0;border-top:1px solid var(--line)}
+  .step{
+    display:grid;grid-template-columns:minmax(90px,180px) 1fr;gap:clamp(16px,4vw,60px);
+    padding-block:34px;border-bottom:1px solid var(--line);align-items:baseline;
+  }
+  .step h3{font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:800;color:var(--accent)}
+  .step p{margin:0;color:var(--muted);max-width:56ch}
+  .step p strong{color:var(--ink);font-weight:600}
+
+  /* Ce que ça change : zig-zag, pas de cartes */
+  .diff{display:grid;gap:clamp(40px,7vw,72px)}
+  .diff-row{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(20px,5vw,80px);align-items:baseline}
+  .diff-row:nth-child(even){grid-template-columns:1.1fr .9fr}
+  .diff-row:nth-child(even) h3{order:2}
+  .diff-row:nth-child(even) p{order:1;text-align:right;justify-self:end}
+  .diff-row h3{font-size:clamp(1.35rem,2.4vw,1.9rem);font-weight:700}
+  .diff-row p{margin:0;color:var(--muted);max-width:52ch}
+
+  /* Le prix : bloc plein accent */
+  .prix{background:var(--accent);color:#fff}
+  .prix h2{font-size:clamp(2.2rem, 5vw, 4rem);font-weight:800;max-width:16ch}
+  .prix p{color:#cfe2e2;max-width:52ch;font-size:1.15rem;margin:24px 0 32px}
+  .prix .btn{background:#fff;color:var(--accent)}
+  .prix .btn:hover{background:var(--paper-2);color:var(--accent-deep)}
+
+  /* Témoignages : deux voix, asymétriques */
+  .quotes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px)}
+  .quotes blockquote{margin:0;padding:0}
+  .quotes blockquote:last-child{margin-top:56px}
+  .quotes p{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:500;
+    font-size:clamp(1.2rem,2vw,1.5rem);line-height:1.4;margin:0 0 18px;
+  }
+  .quotes footer{color:var(--muted)}
+
+  /* Quartiers : trois listes nommées */
+  .zones{background:var(--paper-2)}
+  .zones-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(28px,4vw,48px)}
+  .zones h3{font-size:1.1rem;font-weight:700;margin-bottom:14px;color:var(--accent)}
+  .zones ul{list-style:none;margin:0;padding:0;color:var(--muted);line-height:2}
+
+  /* FAQ */
+  .faq-list{max-width:760px;border-top:1px solid var(--line)}
+  .faq-list details{border-bottom:1px solid var(--line)}
+  .faq-list summary{
+    cursor:pointer;list-style:none;padding:22px 0;
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.15rem;
+    display:flex;justify-content:space-between;gap:18px;align-items:baseline;
+  }
+  .faq-list summary::-webkit-details-marker{display:none}
+  .faq-list summary::after{content:"+";color:var(--accent);font-weight:500;font-size:1.4rem;line-height:1}
+  .faq-list details[open] summary::after{content:"\2212"}
+  .faq-list details p{margin:0;padding:0 0 22px;color:var(--muted);max-width:60ch}
+
+  /* Contact */
+  .contact-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(32px,6vw,90px)}
+  .contact-side p{color:var(--muted);max-width:38ch}
+  .contact-side .tel{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.3rem;display:inline-block;margin-top:8px}
+  form{display:grid;gap:20px}
+  .f-row{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  label{display:block;font-weight:600;font-size:.95rem;margin-bottom:7px}
+  input,select,textarea{
+    width:100%;font:inherit;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:13px 14px;transition:border-color .15s;
+  }
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .f-err{color:#a3352b;font-size:.92rem;margin-top:6px;display:none}
+  .f-err.on{display:block}
+  .form-ok{color:var(--accent);font-weight:600;display:none}
+  .form-ok.on{display:block}
+
+  /* Footer */
+  footer.site{border-top:1px solid var(--line);padding-block:36px;color:var(--muted);font-size:.95rem}
+  footer.site .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  /* ---------- Révélations au scroll ---------- */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease-out),transform .6s var(--ease-out)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn{transition:none}
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:860px){
+    .nav-links{display:none}
+    .constat-grid,.quotes,.contact-grid,.f-row{grid-template-columns:1fr}
+    .constat-grid > div:last-child,.quotes blockquote:last-child{margin-top:0}
+    .diff-row,.diff-row:nth-child(even){grid-template-columns:1fr}
+    .diff-row:nth-child(even) h3{order:0}
+    .diff-row:nth-child(even) p{order:0;text-align:left;justify-self:start}
+    .step{grid-template-columns:1fr;gap:6px}
+  }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Navigation principale">
+    <div class="wrap">
+      <a class="brand" href="#top">Clé de <span>Genève</span></a>
+      <div class="nav-links">
+        <a href="#methode">La méthode</a>
+        <a href="#prix">Le prix</a>
+        <a href="#quartiers">Quartiers</a>
+        <a href="#faq">Questions</a>
+      </div>
+      <a class="btn" href="#contact">Décrire ma recherche</a>
+    </div>
+  </nav>
+
+  <header class="hero wrap" id="top">
+    <h1 class="reveal">Votre appartement à Genève, <em>sans la file d'attente.</em></h1>
+    <p class="reveal">Nous négocions directement avec les régies genevoises. Vous payez un mois de loyer, uniquement après la signature du bail.</p>
+    <div class="hero-cta reveal">
+      <a class="btn" href="#contact">Décrire ma recherche</a>
+      <a class="btn btn-quiet" href="#methode">Voir la méthode</a>
+    </div>
+    <p class="hero-note reveal">Le canton affiche <strong>0,5 % de logements vacants</strong> et plus de cent dossiers par annonce attractive. Attendre son tour n'est pas une stratégie.</p>
+  </header>
+
+  <section class="constat">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>Le marché ne vous attend pas.</h2></div>
+      <div class="constat-grid">
+        <div class="reveal">
+          <p>À Genève, un bon appartement ne reste pas deux jours sur les portails. Les régies reçoivent des piles de dossiers et tranchent vite, souvent avant même la fin des visites.</p>
+          <p>Répondre aux annonces, c'est arriver après tout le monde. <strong>Ce qui compte, c'est d'être dans la conversation avant la publication.</strong></p>
+        </div>
+        <div class="reveal">
+          <p>C'est notre métier. Nous entretenons des relations directes avec les régies de la place, nous savons quels immeubles se libèrent, et nous présentons votre dossier en premier, correctement monté, correctement défendu.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="methode">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>Trois gestes, un bail.</h2></div>
+      <div class="steps">
+        <div class="step reveal">
+          <h3>Cadrer</h3>
+          <p>Un entretien pour poser budget, quartiers, pièces et délai. Nous montons ensuite un <strong>dossier complet qui rassure une régie</strong> : présentation, garanties, justificatifs.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Négocier</h3>
+          <p>Nous activons nos contacts en régie et présentons votre dossier <strong>avant ou en dehors des annonces publiques</strong>. Vous visitez ce qui correspond, sans bruit inutile.</p>
+        </div>
+        <div class="step reveal">
+          <h3>Signer</h3>
+          <p>Bail relu et négocié, entrée organisée. Notre commission d'un mois de loyer est due <strong>à ce moment précis, pas avant</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="constat" id="difference">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>Ce que ça change pour vous.</h2></div>
+      <div class="diff">
+        <div class="diff-row reveal">
+          <h3>Aucun risque financier</h3>
+          <p>Pas de frais d'inscription, pas d'abonnement, pas d'acompte. Si nous ne trouvons pas, vous ne devez rien.</p>
+        </div>
+        <div class="diff-row reveal">
+          <h3>Des semaines, pas des mois</h3>
+          <p>La plupart de nos clients reçoivent leurs premières propositions en quelques semaines, parce que nous ne partons pas des annonces.</p>
+        </div>
+        <div class="diff-row reveal">
+          <h3>Un seul interlocuteur</h3>
+          <p>La même personne cadre votre recherche, parle aux régies et vous accompagne jusqu'à la remise des clés.</p>
+        </div>
+        <div class="diff-row reveal">
+          <h3>Genève, uniquement</h3>
+          <p>Nous ne travaillons que le canton. Les loyers réels, les immeubles, les pratiques de chaque régie : c'est notre terrain.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="prix" id="prix">
+    <div class="wrap">
+      <h2 class="reveal">Un mois de loyer. Après signature. Rien avant.</h2>
+      <p class="reveal">C'est la totalité de notre tarif. Pas de suppléments, pas de surprises : si vous n'obtenez pas de logement, notre travail ne vous coûte rien.</p>
+      <a class="btn reveal" href="#contact">Lancer ma recherche</a>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>Ils ont leurs clés.</h2></div>
+      <div class="quotes">
+        <blockquote class="reveal">
+          <p>« Trois mois de recherches infructueuses à Champel. Ils ont obtenu une visite en dix jours, le bail a suivi. Je n'ai payé qu'à la signature. »</p>
+          <footer>Camille R., 3 pièces à Champel</footer>
+        </blockquote>
+        <blockquote class="reveal">
+          <p>« Arrivé de Lyon pour un nouveau poste, je ne connaissais aucune régie. Ils ont tout monté, tout négocié. Installé aux Pâquis en un mois. »</p>
+          <footer>Adrien V., 2 pièces aux Pâquis</footer>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="zones" id="quartiers">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>Nous cherchons dans tout le canton.</h2>
+        <p class="lead">De la vieille ville aux communes, chaque recherche est cadrée sur vos quartiers.</p>
+      </div>
+      <div class="zones-grid">
+        <div class="reveal">
+          <h3>Rive gauche</h3>
+          <ul>
+            <li>Eaux-Vives</li><li>Champel</li><li>Plainpalais</li>
+            <li>Jonction</li><li>Acacias</li><li>Carouge</li>
+          </ul>
+        </div>
+        <div class="reveal">
+          <h3>Rive droite</h3>
+          <ul>
+            <li>Pâquis</li><li>Servette</li><li>Saint-Jean</li>
+            <li>Charmilles</li><li>Grottes</li><li>Petit-Saconnex</li>
+          </ul>
+        </div>
+        <div class="reveal">
+          <h3>Communes</h3>
+          <ul>
+            <li>Lancy, Onex, Bernex</li><li>Vernier, Meyrin</li>
+            <li>Grand-Saconnex, Versoix</li><li>Chêne-Bourg, Chêne-Bougeries</li>
+            <li>Thônex, Veyrier</li><li>Plan-les-Ouates</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>Questions directes, réponses directes.</h2></div>
+      <div class="faq-list reveal">
+        <details>
+          <summary>Combien coûte votre service ?</summary>
+          <p>Une commission égale à un mois de loyer, facturée après la signature du bail. Aucun autre frais, à aucun moment.</p>
+        </details>
+        <details>
+          <summary>Comment obtenez-vous les appartements ?</summary>
+          <p>Par relation directe avec les régies genevoises. Beaucoup de logements se relouent avant publication : nous y présentons votre dossier en premier.</p>
+        </details>
+        <details>
+          <summary>Et si vous ne trouvez pas ?</summary>
+          <p>Vous ne payez rien. Notre modèle ne fonctionne que si vous obtenez vos clés, c'est voulu.</p>
+        </details>
+        <details>
+          <summary>Quels types de biens cherchez-vous ?</summary>
+          <p>Du studio au grand appartement familial, meublé ou non, dans toute la ville et les communes du canton.</p>
+        </details>
+        <details>
+          <summary>Combien de temps faut-il ?</summary>
+          <p>Selon budget et critères, comptez de deux à six semaines pour des propositions sérieuses. Le cadrage initial fait gagner l'essentiel du temps.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="constat" id="contact">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div class="contact-side reveal">
+          <h2>Décrivez votre recherche.</h2>
+          <p style="margin-top:18px">Réponse sous un jour ouvré, avec une première lecture honnête de vos chances et délais.</p>
+          <a class="tel" href="tel:+41225010000">+41 22 501 00 00</a><br />
+          <a href="#" id="wa-link">Écrire sur WhatsApp</a>
+        </div>
+        <form id="form" novalidate class="reveal">
+          <div class="f-row">
+            <div>
+              <label for="f-nom">Nom complet</label>
+              <input id="f-nom" name="nom" autocomplete="name" required />
+              <p class="f-err" id="err-nom">Indiquez votre nom.</p>
+            </div>
+            <div>
+              <label for="f-email">Adresse e-mail</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required />
+              <p class="f-err" id="err-email">Indiquez un e-mail valide.</p>
+            </div>
+          </div>
+          <div class="f-row">
+            <div>
+              <label for="f-type">Type de bien</label>
+              <select id="f-type" name="type">
+                <option>Studio</option><option>2 pièces</option><option selected>3 pièces</option>
+                <option>4 pièces</option><option>5 pièces ou plus</option>
+              </select>
+            </div>
+            <div>
+              <label for="f-budget">Budget mensuel (CHF)</label>
+              <input id="f-budget" name="budget" inputmode="numeric" placeholder="2400" />
+            </div>
+          </div>
+          <div>
+            <label for="f-quartiers">Quartiers souhaités</label>
+            <input id="f-quartiers" name="quartiers" placeholder="Eaux-Vives, Champel" />
+          </div>
+          <div>
+            <label for="f-msg">Votre situation en deux lignes</label>
+            <textarea id="f-msg" name="message" rows="3"></textarea>
+          </div>
+          <div>
+            <button type="submit" class="btn">Envoyer ma demande</button>
+            <p class="form-ok" id="form-ok">Votre messagerie s'ouvre avec la demande pré-remplie.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>Clé de Genève. Recherche d'appartement dans le canton.</span>
+      <span>Commission d'un mois de loyer, due uniquement en cas de succès.</span>
+    </div>
+  </footer>
+
+  <script>
+  (function(){
+    "use strict";
+    var CONFIG = { email:"contact@clede-geneve.ch", whatsapp:"41225010000" };
+
+    var wa = document.getElementById("wa-link");
+    if (wa) wa.href = "https://wa.me/" + CONFIG.whatsapp + "?text=" +
+      encodeURIComponent("Bonjour, je cherche un appartement à Genève.");
+
+    /* Révélations au scroll : transform + opacity, ease-out, stagger léger */
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    },{threshold:.15,rootMargin:"0px 0px -6% 0px"});
+    document.querySelectorAll(".reveal").forEach(function(el,i){
+      el.style.transitionDelay = (i % 3) * 60 + "ms";
+      io.observe(el);
+    });
+
+    /* Formulaire : validation au blur, erreurs sous les champs, mailto */
+    var form = document.getElementById("form");
+    var nom = document.getElementById("f-nom");
+    var email = document.getElementById("f-email");
+    function check(field, err, ok){
+      var good = ok(field.value.trim());
+      document.getElementById(err).classList.toggle("on", !good);
+      return good;
+    }
+    var vNom = function(v){ return v.length > 1; };
+    var vMail = function(v){ return /.+@.+\..+/.test(v); };
+    nom.addEventListener("blur", function(){ check(nom,"err-nom",vNom); });
+    email.addEventListener("blur", function(){ check(email,"err-email",vMail); });
+
+    form.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      var okN = check(nom,"err-nom",vNom), okM = check(email,"err-email",vMail);
+      if(!okN || !okM) return;
+      var d = Object.fromEntries(new FormData(form).entries());
+      var body = "Demande de recherche d'appartement à Genève\n\n" +
+        "Nom : " + d.nom + "\nE-mail : " + d.email +
+        "\nType : " + d.type + "\nBudget : " + (d.budget || "à préciser") + " CHF" +
+        "\nQuartiers : " + (d.quartiers || "à préciser") +
+        "\n\nSituation :\n" + (d.message || "");
+      location.href = "mailto:" + CONFIG.email +
+        "?subject=" + encodeURIComponent("Recherche appartement Genève, " + d.nom) +
+        "&body=" + encodeURIComponent(body);
+      document.getElementById("form-ok").classList.add("on");
+    });
+  })();
+  </script>
+</body>
+</html>
