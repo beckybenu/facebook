@@ -69,6 +69,7 @@
       <button class="btn primary" id="run">📊 Analyser</button>
       <button class="btn" id="demoR">Exemple aléatoire</button>
       <button class="btn" id="demoB">Exemple biaisé</button>
+      <button class="btn" id="demoO">Exemple à décalage constant</button>
       <button class="btn" id="clear">Effacer</button>
     </div>
     <div id="count" class="note"></div>
@@ -100,6 +101,20 @@
     <div class="panel">
       <h2>Distribution des numéros</h2>
       <canvas id="hist" width="1000" height="380"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>🎯 Le modèle « numéro précédent + décalage constant »</h2>
+      <div id="offBox" style="font-size:.92rem;line-height:1.6"></div>
+      <canvas id="offc" width="1000" height="330" style="margin-top:12px"></canvas>
+      <div class="note">
+        Si les vitesses sont vraiment constantes, chaque tirage tombe à un <b>nombre fixe de cases</b>
+        du précédent : l'histogramme montrerait un <b>pic net</b> sur un décalage, au lieu d'être plat.<br>
+        Le piège à éviter : en essayant les 37 décalages possibles, on en trouve <i>toujours</i> un qui
+        semble bon sur un petit échantillon. C'est pourquoi le test décisif ci-dessus est en
+        <b>deux moitiés</b> : le décalage est choisi sur la première moitié des données, puis vérifié
+        sur la seconde, qui n'a servi à rien d'autre. Seul ce second chiffre compte.
+      </div>
     </div>
 
     <div class="panel">
@@ -244,8 +259,100 @@
         ${n<300?'<br><br><span style="color:var(--gold)">Attention : avec seulement '+n+' tirages, un biais modéré pourrait passer inaperçu. Vise 300 à 1000.</span>':""}`;
     }
 
+    offsetModel(vals, idxOf, N, SEQ);
     drawHist(counts, SEQ, exp);
     drawDist(dists, N, half);
+  }
+
+  /* ---------- modèle « précédent + décalage constant » ---------- */
+  function offsetModel(vals, idxOf, N, SEQ){
+    const idx = vals.map(v=>idxOf[String(v)]);
+    const offs = [];
+    for(let i=1;i<idx.length;i++) offs.push((((idx[i]-idx[i-1])%N)+N)%N);
+    const m = offs.length;
+    const box = $("offBox");
+    if(m<40){ box.innerHTML = '<span style="color:var(--gold)">Il faut au moins 40 tirages pour tester ce modèle.</span>';
+      drawOff([],N,null); return; }
+
+    // distribution des décalages : uniforme si le tirage est indépendant
+    const oc = new Array(N).fill(0); offs.forEach(o=>oc[o]++);
+    const eo = m/N;
+    let chi2=0; oc.forEach(c=>chi2 += (c-eo)*(c-eo)/eo);
+    const pAll = chiP(chi2, N-1);
+
+    // meilleur décalage, corrigé du fait qu'on en a essayé N
+    let bestK=0, bestC=-1; oc.forEach((c,k)=>{ if(c>bestC){bestC=c; bestK=k;} });
+    const zB = (bestC-eo)/Math.sqrt(eo*(1-1/N));
+    const pAdj = Math.min(1, pTwoSided(zB)*N);
+
+    // validation en deux moitiés : on choisit le décalage sur la 1re, on vérifie sur la 2de
+    const h = Math.floor(m/2);
+    const c1 = new Array(N).fill(0);
+    for(let i=0;i<h;i++) c1[offs[i]]++;
+    let k1=0, m1=-1; c1.forEach((c,k)=>{ if(c>m1){m1=c; k1=k;} });
+    let hit=0, tot=0;
+    for(let i=h;i<m;i++){
+      let d = (((offs[i]-k1)%N)+N)%N; if(d>N/2) d-=N;
+      tot++; if(d>=-2 && d<=3) hit++;                     // secteur de 6 autour du décalage
+    }
+    const pHit = 100*hit/tot, chance = 100*6/N;
+    const zHit = (hit - tot*6/N)/Math.sqrt(tot*(6/N)*(1-6/N));
+    const pVal = pTwoSided(zHit);
+    const works = zHit>2.5;
+
+    const centre = SEQ[(((idx[idx.length-1]+k1)%N)+N)%N];
+    box.innerHTML = `
+      <b>Décalage le plus fréquent :</b> <b style="color:var(--a)">${bestK} cases</b>
+      — vu ${bestC} fois sur ${m} <span style="color:var(--muted)">(attendu ${eo.toFixed(1)})</span><br>
+      <b>Décalages tous confondus :</b> χ² = ${chi2.toFixed(1)} · p = ${fmtP(pAll)}
+      ${pAll<0.01?'<span class="tag bad">structure</span>':'<span class="tag ok">plat</span>'}<br>
+      <span style="color:var(--muted)">p du meilleur décalage, corrigé des ${N} essais : ${fmtP(pAdj)}</span>
+      <div style="margin-top:12px;padding:12px;border-radius:11px;
+        background:${works?'rgba(255,107,107,.12)':'rgba(61,220,132,.10)'};
+        border:1px solid ${works?'rgba(255,107,107,.45)':'rgba(61,220,132,.35)'}">
+        <b>Test en deux moitiés — le seul qui compte</b><br>
+        Décalage appris sur les ${h} premiers tirages : <b>${k1} cases</b>.<br>
+        Vérifié sur les ${tot} suivants (jamais utilisés pour le choisir) :
+        <b style="color:${works?'var(--red)':'var(--green)'}">${hit}/${tot} = ${pHit.toFixed(1)} %</b>
+        dans le secteur de 6 <span style="color:var(--muted)">— le hasard donne ${chance.toFixed(1)} %</span>
+        · p = ${fmtP(pVal)}<br><br>
+        ${works
+          ? `<b style="color:var(--red)">⚠️ Le modèle tient sur ces données.</b> Le décalage appris sur la première
+             moitié fonctionne encore sur la seconde&nbsp;: il y a une vraie structure, pas un artefact de sélection.
+             À confirmer sur un échantillon indépendant plus grand avant d'en conclure quoi que ce soit.`
+          : `<b style="color:var(--green)">✅ Le modèle ne tient pas.</b> Le décalage appris sur la première moitié
+             ne prédit pas mieux que le hasard sur la seconde. Le pic visible dans l'histogramme n'est donc que du
+             bruit&nbsp;: en essayant ${N} décalages, il y en a toujours un qui ressort par chance.`}
+      </div>
+      <div style="margin-top:10px;color:var(--muted);font-size:.86rem">
+        À titre indicatif, si ce décalage était réel, le secteur à partir du dernier numéro sorti
+        (${vals[vals.length-1]}) serait centré sur <b>${centre}</b>.
+      </div>`;
+    drawOff(oc, N, bestK);
+  }
+
+  function drawOff(oc, N, bestK){
+    const cv=$("offc"), c=cv.getContext("2d"), W=cv.width, H=cv.height;
+    c.clearRect(0,0,W,H);
+    const padL=42,padR=12,padT=14,padB=30, x0=padL,x1=W-padR,y0=H-padB,y1=padT;
+    c.strokeStyle="rgba(255,255,255,.15)"; c.beginPath(); c.moveTo(x0,y1); c.lineTo(x0,y0); c.lineTo(x1,y0); c.stroke();
+    c.font="10px sans-serif"; c.fillStyle="#93a1b5";
+    if(!oc.length){ c.textAlign="center"; c.fillText("Pas assez de tirages",(x0+x1)/2,(y0+y1)/2); return; }
+    const n=oc.reduce((s,v)=>s+v,0), exp=n/N, max=Math.max(...oc,exp)*1.25||1, bw=(x1-x0)/N;
+    c.textAlign="right"; c.textBaseline="middle";
+    for(let k=0;k<=4;k++){ const yy=y1+(y0-y1)*k/4;
+      c.strokeStyle="rgba(255,255,255,.06)"; c.beginPath(); c.moveTo(x0,yy); c.lineTo(x1,yy); c.stroke();
+      c.fillStyle="#93a1b5"; c.fillText(Math.round(max*(1-k/4)), x0-6, yy); }
+    oc.forEach((v,k)=>{ const h=(v/max)*(y0-y1);
+      c.fillStyle = k===bestK ? "#ffd166" : "#4f8cff";
+      c.fillRect(x0+k*bw+1, y0-h, bw-2, h);
+      if(k%3===0){ c.fillStyle="#93a1b5"; c.textAlign="center"; c.textBaseline="top";
+        c.fillText(String(k), x0+k*bw+bw/2, y0+5); } });
+    const ye=y0-(exp/max)*(y0-y1);
+    c.strokeStyle="#e8edf5"; c.setLineDash([6,4]); c.lineWidth=2;
+    c.beginPath(); c.moveTo(x0,ye); c.lineTo(x1,ye); c.stroke(); c.setLineDash([]);
+    c.fillStyle="#e8edf5"; c.textAlign="left"; c.textBaseline="bottom";
+    c.fillText("attendu si indépendant", x0+4, ye-3);
   }
 
   /* ---------- graphiques ---------- */
@@ -318,7 +425,21 @@
     analyse();
   }
 
+  // exactement le modèle testé : suivant = précédent + décalage fixe (+ rebond)
+  function demoOffset(){
+    const N=parseInt($("wheel").value,10), SEQ=N===38?US:EU;
+    const K=11, table=[-2,-1,-1,0,0,0,0,1,1,2,3];   // décalage constant + scatter réaliste
+    let i=Math.floor(Math.random()*N); const out=[SEQ[i]];
+    for(let s=0;s<600;s++){
+      i = (((i + K + table[Math.floor(Math.random()*table.length)])%N)+N)%N;
+      out.push(SEQ[i]);
+    }
+    $("data").value = out.join(" ");
+    analyse();
+  }
+
   $("run").onclick = analyse;
+  $("demoO").onclick = demoOffset;
   $("demoR").onclick = demoRandom;
   $("demoB").onclick = demoBiased;
   $("clear").onclick = () => { $("data").value=""; $("results").style.display="none"; $("count").textContent=""; };
