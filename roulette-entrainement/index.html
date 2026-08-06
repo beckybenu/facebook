@@ -575,11 +575,17 @@
       <b>🔬 À quel point le lancer doit-il être répétable ?</b><br>
       <span style="color:var(--muted)">1200 tirages simulés par ligne · secteur de 6 numéros ·
       le pur hasard donne ${chance.toFixed(1)} %</span>
+      <div style="margin-top:8px;padding:9px 11px;border-radius:9px;background:rgba(79,140,255,.10);
+                  border:1px solid rgba(79,140,255,.35);color:var(--muted);font-size:.84rem">
+        <b style="color:var(--txt)">A</b> connaît déjà <b>la phase exacte du rotor à l'instant du lâcher</b>
+        (ce que donne le fait de filmer la table&nbsp;: le rotor tourne à vitesse quasi constante, on la mesure
+        finement et on l'extrapole). A connaît aussi tout l'historique. La <b>seule</b> chose qu'il ignore,
+        c'est la vitesse de bille <i>de ce tour-ci</i>. <b style="color:var(--txt)">B</b> la mesure.</div>
       <table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:.88rem">
         <tr style="color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.5px">
-          <th style="text-align:left;padding:6px 4px">Variabilité du lancer</th>
-          <th style="text-align:right;padding:6px 4px">A · historique seul</th>
-          <th style="text-align:right;padding:6px 4px">B · observation</th></tr>
+          <th style="text-align:left;padding:6px 4px">Variabilité de la vitesse de bille</th>
+          <th style="text-align:right;padding:6px 4px">A · rotor connu</th>
+          <th style="text-align:right;padding:6px 4px">B · bille observée</th></tr>
         ${rows.map(r=>{
           const good = r.pA > chance*2;
           return `<tr style="border-top:1px solid var(--line)">
@@ -597,11 +603,16 @@
         la prédiction par historique s'effondre au niveau du hasard.` : "Dès la moindre variation, la prédiction par historique s'effondre."}
         La bille parcourt une quinzaine de tours avant de tomber&nbsp;: <b>1 % d'écart de vitesse
         déplace le point de chute de plusieurs cases</b>, et l'erreur grandit avec la durée du trajet.<br><br>
-        La question devient donc <b style="color:var(--txt)">mesurable</b>, et c'est ça qu'il faut tester sur ta table&nbsp;:
+        <b style="color:var(--txt)">Le rotor n'est pas le problème</b>&nbsp;: il tourne à vitesse quasi constante,
+        donc filmer la table le donne avec précision — A l'a déjà. Le facteur limitant est <b>la bille</b>,
+        parce que sa vitesse de lâcher est retirée à chaque tour et qu'aucun tour passé ne l'annonce.<br><br>
+        Ordre de grandeur du temps&nbsp;: une case = <b>${(2*Math.PI/N/ROTOR_MEAN*1000).toFixed(0)} ms</b> de rotation du rotor.
+        Pour viser une case près, il faut donc connaître l'instant du lâcher à cette précision-là — et la
+        vitesse de bille à mieux que ~0,5&nbsp;%.<br><br>
+        La question devient donc <b style="color:var(--txt)">mesurable</b>&nbsp;:
         <b>la vitesse de bille varie-t-elle de moins de 1 % d'un tour à l'autre&nbsp;?</b>
         Le mode 🎬 mesure justement cette vitesse&nbsp;— relève-la sur 20 tours et regarde la dispersion.
-        La colonne B, elle, reste à ~80 % quoi qu'il arrive&nbsp;: observer le tour en cours marche toujours,
-        c'est l'accès à cette observation qui manque.
+        La colonne B, elle, reste à ~80 % quoi qu'il arrive.
       </div>`;
   }
 
