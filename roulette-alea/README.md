@@ -23,6 +23,33 @@ Application autonome (HTML/CSS/JS, sans dépendance). Tout est calculé dans le 
 Chaque test donne une **p-value** : en dessous de 0,01, l'écart est trop marqué pour être
 attribué au hasard. Le χ² est converti en p-value par l'approximation de Wilson–Hilferty.
 
+## Le modèle « numéro précédent + décalage constant »
+
+Un panneau dédié teste l'hypothèse la plus courante : *si les vitesses de rotor et de bille
+sont constantes, chaque tirage tombe à un nombre fixe de cases du précédent — il suffit donc
+de miser les 6 voisins du dernier numéro sorti, décalés de ce nombre.*
+
+Ce modèle se teste **sans vidéo ni calibration** : les numéros sortis suffisent. L'app calcule
+le décalage (en cases sur le cylindre) entre chaque tirage et le précédent, puis :
+
+- affiche l'**histogramme des décalages** — un pic net trahirait un décalage constant ;
+- teste l'ensemble par un **χ²** ;
+- corrige le meilleur décalage du fait qu'on en a essayé 37 (**Bonferroni**) ;
+- et surtout, effectue une **validation en deux moitiés** : le décalage est appris sur la
+  première moitié des tirages, puis vérifié sur la seconde, qui n'a servi à rien d'autre.
+
+### Pourquoi la validation en deux moitiés est indispensable
+
+Sur **600 tirages purement aléatoires**, l'outil trouve un décalage sorti 25 fois au lieu des
+16,2 attendues. À première vue, un signal. Après correction : p = 0,98, et la validation sur
+la seconde moitié donne 18,0 % contre 16,2 % attendus (p = 0,40) — **c'était du bruit**.
+En essayant 37 décalages, il s'en trouve toujours un qui semble bon.
+
+Sur une séquence réellement construite avec un décalage fixe de 11 cases, le même test donne
+p < 0,0001 et **300/300 = 100 %** en validation. Le test distingue donc bien les deux cas.
+
+Le bouton **Exemple à décalage constant** génère cette seconde séquence pour comparaison.
+
 ## Utilisation
 
 1. Colle tes résultats (espaces, virgules ou retours à la ligne — le `00` américain est reconnu).
