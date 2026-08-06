@@ -250,12 +250,21 @@
         (corrélation ${rho.toFixed(3)}, p = ${fmtP(pCorr)}). Un générateur à mémoire ou une graine mal gérée
         peut produire ça — c'est exploitable en connaissant l'algorithme, pas par l'image.`;
     } else {
+      // un p entre 0,01 et 0,05 sur l'un des 4 tests n'a rien d'anormal : à signaler
+      const borderline = [["Uniformité",pUni],["Regroupement par secteur",pSect],
+                          ["Corrélation de rang",pCorr],["Taux de répétition",pRep]]
+                         .filter(([,p]) => p<0.05);
       v.className = "verdict ok";
       v.innerHTML = `<b>✅ Compatible avec un tirage purement aléatoire.</b><br>
         Aucun des quatre tests ne décèle de structure. Si c'est ton app Android, elle utilise
         très probablement un <b>RNG</b> : le numéro est choisi <i>avant</i> l'animation, et la roue
         à l'écran n'est qu'un décor.<br>
         <b>Conséquence :</b> aucune analyse d'image ne pourra prédire le résultat — il n'y a pas de physique à mesurer.
+        ${borderline.length? `<br><br><span style="color:var(--muted)">
+          Note : <b>${borderline.map(([t,p])=>t+" (p = "+p.toFixed(3).replace(".",",")+")").join(", ")}</b>
+          passe sous 0,05 sans atteindre 0,01. Ce n'est pas un signal : avec 4 tests lancés, obtenir au moins
+          un p inférieur à 0,05 arrive dans <b>~19 % des cas par pur hasard</b>. Corrigé du nombre de tests,
+          cela donne p ≈ ${Math.min(1, Math.min(...borderline.map(([,p])=>p))*4).toFixed(2).replace(".",",")}.</span>`:""}
         ${n<300?'<br><br><span style="color:var(--gold)">Attention : avec seulement '+n+' tirages, un biais modéré pourrait passer inaperçu. Vise 300 à 1000.</span>':""}`;
     }
 
