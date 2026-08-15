@@ -3,282 +3,301 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#101014" />
+  <meta name="theme-color" content="#f6f5f2" />
   <title>LUXE Repair Genève : choisissez votre design</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2714%27%20fill=%27%23101014%27/%3E%3Ctext%20x=%2732%27%20y=%2744%27%20font-family=%27Georgia,serif%27%20font-size=%2736%27%20font-weight=%27bold%27%20text-anchor=%27middle%27%20fill=%27%23d3b577%27%3EL%3C/text%3E%3C/svg%3E" />
-  <meta name="description" content="Trois propositions de design pour le site LUXE Repair, réparation de smartphones et ordinateurs à Genève. Comparez et choisissez votre préférée." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2064%2064%27%3E%3Crect%20width=%2764%27%20height=%2764%27%20rx=%2714%27%20fill=%27%23f6f5f2%27/%3E%3Ctext%20x=%2732%27%20y=%2744%27%20font-family=%27Georgia,serif%27%20font-size=%2736%27%20font-weight=%27bold%27%20text-anchor=%27middle%27%20fill=%27%23a8843c%27%3EL%3C/text%3E%3C/svg%3E" />
+  <meta name="description" content="Les propositions de design pour le site LUXE Repair, réparation de smartphones et ordinateurs à Genève. Comparez et choisissez votre préférée." />
   <meta name="robots" content="noindex, follow" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #101014;
-      --bg-soft: #17171d;
-      --ink: #f2efe9;
-      --muted: #b9b4ab;
-      --gold: #d3b577;
-      --line: rgba(211, 181, 119, 0.22);
-      --radius: 14px;
+      --bg: #f6f5f2;
+      --panel: #fdfcfa;
+      --ink: #26272b;
+      --muted: #6d6a63;
+      --gold: #a8843c;
+      --line: rgba(38, 39, 43, 0.12);
+      --radius: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       background: var(--bg);
       color: var(--ink);
-      font-family: "Manrope", system-ui, sans-serif;
+      font-family: "Source Sans 3", system-ui, sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
     a { color: inherit; }
     .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
-    header.top {
-      padding: 72px 0 40px;
-      border-bottom: 1px solid var(--line);
-      background:
-        radial-gradient(900px 420px at 80% -10%, rgba(211, 181, 119, 0.10), transparent 65%),
-        var(--bg);
-    }
+    header.top { padding: 68px 0 42px; border-bottom: 1px solid var(--line); }
     .brand {
-      font-family: "Space Grotesk", sans-serif;
+      font-family: "Schibsted Grotesk", sans-serif;
       font-weight: 700;
-      font-size: 1.05rem;
-      letter-spacing: 0.02em;
+      font-size: 1rem;
       color: var(--gold);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
     h1 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      line-height: 1.12;
+      font-family: "Schibsted Grotesk", sans-serif;
+      font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+      line-height: 1.14;
       font-weight: 700;
       text-wrap: balance;
-      max-width: 21ch;
+      max-width: 24ch;
     }
-    .lead {
-      margin-top: 18px;
-      color: var(--muted);
-      max-width: 60ch;
-      font-size: 1.05rem;
-    }
+    .lead { margin-top: 16px; color: var(--muted); max-width: 62ch; font-size: 1.04rem; }
     .lead strong { color: var(--ink); font-weight: 600; }
 
-    main { padding: 56px 0 40px; }
-    .designs { display: grid; gap: 40px; }
+    main { padding: 48px 0 30px; }
+    h2.serie {
+      font-family: "Schibsted Grotesk", sans-serif;
+      font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+      font-weight: 700;
+      margin: 26px 0 6px;
+    }
+    p.serie-note { color: var(--muted); margin-bottom: 26px; max-width: 62ch; }
 
+    .designs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 26px;
+      margin-bottom: 54px;
+    }
     .design {
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       overflow: hidden;
-      background: var(--bg-soft);
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      display: flex;
+      flex-direction: column;
+      transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 200ms ease;
     }
-    .design:nth-child(even) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); }
-    .design:nth-child(even) .preview { order: 2; }
+    .design:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(38, 39, 43, 0.35); }
 
-    .preview {
-      position: relative;
-      background: #0c0c10;
-      min-height: 380px;
-      overflow: hidden;
-    }
+    .preview { position: relative; background: #eceae6; height: 250px; overflow: hidden; }
     .preview iframe {
       width: 1280px;
-      height: 1900px;
+      height: 1400px;
       border: 0;
-      transform: scale(0.36);
+      transform: scale(0.30);
       transform-origin: top left;
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       pointer-events: none;
     }
-    .preview::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, transparent 55%, rgba(12, 12, 16, 0.85));
-      pointer-events: none;
-    }
-    .preview a.cover {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: block;
-      text-indent: -9999px;
-    }
-    .preview a.cover:focus-visible {
-      outline: 2px solid var(--gold);
-      outline-offset: -4px;
-      border-radius: var(--radius);
-    }
+    .preview a.cover { position: absolute; inset: 0; z-index: 2; display: block; text-indent: -9999px; }
+    .preview a.cover:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
 
-    .infos { padding: 34px 32px 30px; display: flex; flex-direction: column; gap: 14px; }
-    .num {
-      font-family: "Space Grotesk", sans-serif;
-      color: var(--gold);
-      font-weight: 600;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-    }
-    .infos h2 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.7rem;
-      line-height: 1.15;
+    .infos { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+    .infos h3 {
+      font-family: "Schibsted Grotesk", sans-serif;
+      font-size: 1.25rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .infos p { color: var(--muted); font-size: 0.98rem; }
-    .swatches { display: flex; gap: 8px; margin-top: 2px; }
-    .swatches span {
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      display: inline-block;
-    }
-    ul.points { list-style: none; display: grid; gap: 7px; margin-top: 2px; }
-    ul.points li { color: var(--muted); font-size: 0.94rem; padding-left: 20px; position: relative; }
-    ul.points li::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 9px;
-      width: 10px; height: 2px;
-      background: var(--gold);
-    }
-    .actions { margin-top: auto; padding-top: 18px; }
-    .btn {
-      display: inline-block;
-      font-family: "Space Grotesk", sans-serif;
+    .swatches { display: inline-flex; gap: 5px; }
+    .swatches span { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(38, 39, 43, 0.18); display: inline-block; }
+    .infos p { color: var(--muted); font-size: 0.95rem; flex: 1; }
+    .infos a.open {
+      font-family: "Schibsted Grotesk", sans-serif;
       font-weight: 600;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
+      color: var(--gold);
       text-decoration: none;
-      color: #14140f;
-      background: var(--gold);
-      padding: 13px 26px;
-      border-radius: 10px;
-      transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), background 180ms ease;
+      border-bottom: 1px solid currentColor;
+      align-self: flex-start;
+      padding-bottom: 1px;
     }
-    .btn:hover { background: #e0c68c; }
-    .btn:active { transform: scale(0.97); }
-    .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+    .infos a.open:hover { color: #8a6b2e; }
+    .infos a.open:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 30px 0 48px;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
+    footer { border-top: 1px solid var(--line); padding: 28px 0 46px; color: var(--muted); font-size: 0.9rem; }
     footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; }
     footer a { color: var(--gold); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
-    @media (max-width: 880px) {
-      .design, .design:nth-child(even) { grid-template-columns: 1fr; }
-      .design:nth-child(even) .preview { order: 0; }
-      .preview { min-height: 300px; }
-      .preview iframe { transform: scale(0.30); }
-      header.top { padding: 52px 0 32px; }
+    @media (max-width: 700px) {
+      header.top { padding: 48px 0 30px; }
+      .preview { height: 210px; }
+      .preview iframe { transform: scale(0.26); }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .btn { transition: none; }
+      .design { transition: none; }
     }
   </style>
 </head>
 <body>
   <header class="top">
     <div class="wrap">
-      <div class="brand">LUXE Repair · Genève</div>
-      <h1>Trois designs, un seul objectif : inspirer confiance dès la première seconde.</h1>
+      <div class="brand">LUXE Repair, Genève</div>
+      <h1>Votre site, en plusieurs visions. Choisissez celle qui vous ressemble.</h1>
       <p class="lead">
-        Voici <strong>trois propositions complètes</strong> pour le site LUXE Repair
-        (réparation, achat et vente de smartphones et ordinateurs à Genève).
-        Chacune est un site fini, en 3D, responsive et prêt à être publié.
-        Parcourez-les, puis dites-nous laquelle vous préférez.
+        Chaque proposition est un <strong>site complet et prêt à publier</strong> :
+        3D au fil du défilement, vraies photos d'appareils, avant/après interactif,
+        formulaire de contact. La nouvelle série reprend ce que vous aimez du
+        template Carbone, en versions <strong>claires, épurées et élégantes</strong>,
+        avec une idée différente à chaque fois.
       </p>
     </div>
   </header>
 
   <main>
-    <div class="wrap designs">
+    <div class="wrap">
+      <h2 class="serie">La série claire</h2>
+      <p class="serie-note">Huit interprétations lumineuses du concept Carbone. Ouvrez-les en plein écran pour vivre la 3D au scroll.</p>
 
-      <article class="design">
-        <div class="preview">
-          <iframe src="design-noir-or/index.html" title="Aperçu du design Or Noir" loading="lazy" tabindex="-1"></iframe>
-          <a class="cover" href="design-noir-or/index.html" aria-label="Ouvrir le design Or Noir">Ouvrir le design Or Noir</a>
-        </div>
-        <div class="infos">
-          <span class="num">Design 1</span>
-          <h2>Or Noir</h2>
-          <div class="swatches" aria-hidden="true">
-            <span style="background:#0d0d10"></span>
-            <span style="background:#d3b577"></span>
-            <span style="background:#f2efe9"></span>
+      <div class="designs">
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-porcelaine/index.html" title="Aperçu du design Porcelaine" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-porcelaine/index.html" aria-label="Ouvrir le design Porcelaine">Ouvrir Porcelaine</a>
           </div>
-          <p>Le luxe nocturne : charbon profond, typographie serif de prestige et lumière dorée. La proposition la plus proche de l'esprit « boutique haut de gamme genevoise ».</p>
-          <ul class="points">
-            <li>Scène 3D : smartphone flottant, composants et particules dorées</li>
-            <li>Cartes en relief avec tilt 3D et boutons magnétiques</li>
-            <li>Idéal pour une image premium et exclusive</li>
-          </ul>
-          <div class="actions"><a class="btn" href="design-noir-or/index.html">Voir le design Or Noir</a></div>
-        </div>
-      </article>
-
-      <article class="design">
-        <div class="preview">
-          <iframe src="design-blanc-suisse/index.html" title="Aperçu du design Blanc Suisse" loading="lazy" tabindex="-1"></iframe>
-          <a class="cover" href="design-blanc-suisse/index.html" aria-label="Ouvrir le design Blanc Suisse">Ouvrir le design Blanc Suisse</a>
-        </div>
-        <div class="infos">
-          <span class="num">Design 2</span>
-          <h2>Blanc Suisse</h2>
-          <div class="swatches" aria-hidden="true">
-            <span style="background:#f6f5f2"></span>
-            <span style="background:#1f2126"></span>
-            <span style="background:#b08d4a"></span>
+          <div class="infos">
+            <h3>Porcelaine <span class="swatches" aria-hidden="true"><span style="background:#f7f5f1"></span><span style="background:#b39764"></span><span style="background:#26272b"></span></span></h3>
+            <p>La galerie de musée : ivoire, serif de caractère, appareils blancs sur socles, vue éclatée en lumière de galerie.</p>
+            <a class="open" href="design-porcelaine/index.html">Voir le site</a>
           </div>
-          <p>La précision horlogère en pleine lumière : fond clair, grille typographique suisse, or bruni en touches discrètes. Sobre, rassurant, très lisible.</p>
-          <ul class="points">
-            <li>Scène 3D claire et aérienne : appareils en verre dépoli, outils de précision</li>
-            <li>Mise en page éditoriale, rythme calme, animations discrètes</li>
-            <li>Idéal pour une image de sérieux et de transparence</li>
-          </ul>
-          <div class="actions"><a class="btn" href="design-blanc-suisse/index.html">Voir le design Blanc Suisse</a></div>
-        </div>
-      </article>
+        </article>
 
-      <article class="design">
-        <div class="preview">
-          <iframe src="design-carbone/index.html" title="Aperçu du design Carbone" loading="lazy" tabindex="-1"></iframe>
-          <a class="cover" href="design-carbone/index.html" aria-label="Ouvrir le design Carbone">Ouvrir le design Carbone</a>
-        </div>
-        <div class="infos">
-          <span class="num">Design 3</span>
-          <h2>Carbone</h2>
-          <div class="swatches" aria-hidden="true">
-            <span style="background:#16181c"></span>
-            <span style="background:#c9a25e"></span>
-            <span style="background:#dfe2e6"></span>
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-aube/index.html" title="Aperçu du design Aube" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-aube/index.html" aria-label="Ouvrir le design Aube">Ouvrir Aube</a>
           </div>
-          <p>L'atelier technique immersif : anthracite, aluminium et lampe ambrée. La 3D raconte la réparation : le téléphone se démonte en vue éclatée au fil du défilement, puis se remonte.</p>
-          <ul class="points">
-            <li>4 thèmes de couleur au choix : ambre, glacier, émeraude, argent</li>
-            <li>Vraies photos d'appareils : iPhone, Samsung, MacBook, avant/après</li>
-            <li>Scène 3D narrative : vue éclatée du smartphone pilotée par le scroll</li>
-          </ul>
-          <div class="actions"><a class="btn" href="design-carbone/index.html">Voir le design Carbone</a></div>
-        </div>
-      </article>
+          <div class="infos">
+            <h3>Aube <span class="swatches" aria-hidden="true"><span style="background:#f7f3ec"></span><span style="background:#b3805a"></span><span style="background:#2a2723"></span></span></h3>
+            <p>L'héritier direct du Carbone en clair : l'atelier au lever du jour, crème et or rosé, split-screen et vue éclatée au scroll.</p>
+            <a class="open" href="design-aube/index.html">Voir le site</a>
+          </div>
+        </article>
 
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-journal/index.html" title="Aperçu du design Journal" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-journal/index.html" aria-label="Ouvrir le design Journal">Ouvrir Journal</a>
+          </div>
+          <div class="infos">
+            <h3>Journal <span class="swatches" aria-hidden="true"><span style="background:#f8f7f4"></span><span style="background:#1c1d21"></span><span style="background:#a94a40"></span></span></h3>
+            <p>L'édition suisse : papier et encre, serif éditoriale, colonnes et filets, la réparation racontée comme une une de journal.</p>
+            <a class="open" href="design-journal/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-studio/index.html" title="Aperçu du design Studio" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-studio/index.html" aria-label="Ouvrir le design Studio">Ouvrir Studio</a>
+          </div>
+          <div class="infos">
+            <h3>Studio <span class="swatches" aria-hidden="true"><span style="background:#f4f4f5"></span><span style="background:#3f5c7a"></span><span style="background:#202227"></span></span></h3>
+            <p>Le plateau de shooting produit : cyclorama blanc, appareils stars aux écrans lumineux, podium 3D tournant.</p>
+            <a class="open" href="design-studio/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-esquisse/index.html" title="Aperçu du design Esquisse" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-esquisse/index.html" aria-label="Ouvrir le design Esquisse">Ouvrir Esquisse</a>
+          </div>
+          <div class="infos">
+            <h3>Esquisse <span class="swatches" aria-hidden="true"><span style="background:#f6f5f1"></span><span style="background:#46719c"></span><span style="background:#2b2d31"></span></span></h3>
+            <p>Le plan d'ingénieur : papier technique, annotations mono, schéma éclaté légendé, la 3D passe du fil de fer au solide.</p>
+            <a class="open" href="design-esquisse/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-vitrine/index.html" title="Aperçu du design Vitrine" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-vitrine/index.html" aria-label="Ouvrir le design Vitrine">Ouvrir Vitrine</a>
+          </div>
+          <div class="infos">
+            <h3>Vitrine <span class="swatches" aria-hidden="true"><span style="background:#faf8f4"></span><span style="background:#a8843c"></span><span style="background:#2b2620"></span></span></h3>
+            <p>La haute horlogerie : blanc chaud et or bruni, appareils présentés comme des montres, smartphone 3D en lévitation.</p>
+            <a class="open" href="design-vitrine/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-helvetia/index.html" title="Aperçu du design Helvetia" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-helvetia/index.html" aria-label="Ouvrir le design Helvetia">Ouvrir Helvetia</a>
+          </div>
+          <div class="infos">
+            <h3>Helvetia <span class="swatches" aria-hidden="true"><span style="background:#f9f9f8"></span><span style="background:#1a1b1e"></span><span style="background:#b23a35"></span></span></h3>
+            <p>Le style international suisse : typographie massive, grille au cordeau, rouge en signal, téléphone 3D qui se construit par blocs.</p>
+            <a class="open" href="design-helvetia/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-brume/index.html" title="Aperçu du design Brume" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-brume/index.html" aria-label="Ouvrir le design Brume">Ouvrir Brume</a>
+          </div>
+          <div class="infos">
+            <h3>Brume <span class="swatches" aria-hidden="true"><span style="background:#eef1f5"></span><span style="background:#5d7f9d"></span><span style="background:#23303c"></span></span></h3>
+            <p>L'aube sur le Léman : dégradés feutrés, appareils en apesanteur dans une brume de particules, tout en douceur.</p>
+            <a class="open" href="design-brume/index.html">Voir le site</a>
+          </div>
+        </article>
+      </div>
+
+      <h2 class="serie">Les premières propositions</h2>
+      <p class="serie-note">Les trois pistes initiales, dont le Carbone qui a inspiré la série claire.</p>
+
+      <div class="designs">
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-carbone/index.html" title="Aperçu du design Carbone" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-carbone/index.html" aria-label="Ouvrir le design Carbone">Ouvrir Carbone</a>
+          </div>
+          <div class="infos">
+            <h3>Carbone <span class="swatches" aria-hidden="true"><span style="background:#16181c"></span><span style="background:#c9a25e"></span><span style="background:#e7e5e0"></span></span></h3>
+            <p>L'atelier technique de nuit : vue éclatée au scroll, vraies photos, 4 thèmes de couleur au choix dans la navigation.</p>
+            <a class="open" href="design-carbone/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-noir-or/index.html" title="Aperçu du design Or Noir" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-noir-or/index.html" aria-label="Ouvrir le design Or Noir">Ouvrir Or Noir</a>
+          </div>
+          <div class="infos">
+            <h3>Or Noir <span class="swatches" aria-hidden="true"><span style="background:#0d0d10"></span><span style="background:#d3b577"></span><span style="background:#f2efe9"></span></span></h3>
+            <p>Le luxe nocturne : charbon, serif de prestige et lumière dorée, smartphone 3D flottant.</p>
+            <a class="open" href="design-noir-or/index.html">Voir le site</a>
+          </div>
+        </article>
+
+        <article class="design">
+          <div class="preview">
+            <iframe src="design-blanc-suisse/index.html" title="Aperçu du design Blanc Suisse" loading="lazy" tabindex="-1"></iframe>
+            <a class="cover" href="design-blanc-suisse/index.html" aria-label="Ouvrir le design Blanc Suisse">Ouvrir Blanc Suisse</a>
+          </div>
+          <div class="infos">
+            <h3>Blanc Suisse <span class="swatches" aria-hidden="true"><span style="background:#f6f5f2"></span><span style="background:#1f2126"></span><span style="background:#b08d4a"></span></span></h3>
+            <p>La première piste claire : grille suisse, scène 3D aérienne, or bruni discret.</p>
+            <a class="open" href="design-blanc-suisse/index.html">Voir le site</a>
+          </div>
+        </article>
+      </div>
     </div>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>LUXE Repair (anciennement RSG Genève) · Genève, Suisse</span>
-      <span><a href="tel:+41767573458">+41 76 757 34 58</a> · <a href="mailto:contact@luxerepair.ch">contact@luxerepair.ch</a></span>
+      <span>LUXE Repair (anciennement RSG Genève), Genève, Suisse</span>
+      <span><a href="tel:+41767573458">+41 76 757 34 58</a> / <a href="mailto:contact@luxerepair.ch">contact@luxerepair.ch</a></span>
     </div>
   </footer>
 </body>
