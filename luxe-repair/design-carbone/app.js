@@ -103,6 +103,28 @@
     });
   }
 
+  /* ============ Thèmes de couleur ============ */
+  var THEME_ACCENTS = { ambre: 0xc9a25e, glacier: 0x8fb6d9, emeraude: 0x7cbc97, argent: 0xbfc6cf };
+  var applySceneAccent = null;
+  var currentTheme = "ambre";
+  try {
+    var savedTheme = window.localStorage.getItem("luxe-theme");
+    if (savedTheme && THEME_ACCENTS[savedTheme] !== undefined) currentTheme = savedTheme;
+  } catch (err) {}
+  function setTheme(name) {
+    currentTheme = name;
+    document.documentElement.setAttribute("data-theme", name);
+    try { window.localStorage.setItem("luxe-theme", name); } catch (err) {}
+    $$(".theme-dot").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.setTheme === name ? "true" : "false");
+    });
+    if (applySceneAccent) applySceneAccent(THEME_ACCENTS[name]);
+  }
+  $$(".theme-dot").forEach(function (b) {
+    b.addEventListener("click", function () { setTheme(b.dataset.setTheme); });
+  });
+  setTheme(currentTheme);
+
   /* ============ Services : synchronisation colonne sticky ============ */
   var svcName = $("#svc-current-name");
   var svcNote = $("#svc-current-note");
@@ -111,6 +133,12 @@
   if (svcItems.length && svcName && svcNote && "IntersectionObserver" in window) {
     var setCurrent = function (item) {
       svcItems.forEach(function (el) { el.classList.toggle("current", el === item); });
+      var svcDevice = $("#svc-device");
+      var svcDeviceImg = $("#svc-device-img");
+      if (svcDevice && svcDeviceImg && item.dataset.img && item.dataset.device) {
+        svcDevice.className = "device device-" + item.dataset.device;
+        svcDeviceImg.src = item.dataset.img;
+      }
       if (svcName.textContent === item.dataset.name) return;
       if (reduceMotion || !svcCurrent) {
         svcName.textContent = item.dataset.name;
@@ -331,6 +359,19 @@
       color: 0xc9a25e, size: 0.045, transparent: true, opacity: 0.4, depthWrite: false
     }));
     scene.add(dust);
+
+    /* Le thème choisi reteinte la lampe, les puces, l'écran et la poussière. */
+    applySceneAccent = function (hex) {
+      var c = new THREE.Color(hex);
+      lamp.color.copy(c).lerp(new THREE.Color(0xffffff), 0.35);
+      warmBack.color.copy(c);
+      matGlass.emissive.copy(c).multiplyScalar(0.7);
+      matChip.color.copy(c);
+      matChip.emissive.copy(c).multiplyScalar(0.45);
+      display.material.emissive.copy(c);
+      dust.material.color.copy(c);
+    };
+    applySceneAccent(THEME_ACCENTS[currentTheme]);
 
     /* ----- Redimensionnement ----- */
     var baseScale = 1;
