@@ -12,7 +12,8 @@
   --ink:#e7e5e0;
   --muted:#a9a49b;
   --accent:#c9a25e;
-  --accent-soft:rgba(201,162,94,.14);
+  --accent-rgb:201,162,94;
+  --accent-soft:rgba(var(--accent-rgb),.14);
   --accent-ink:#1c1408;
   --radius:14px;
   --radius-sm:8px;
@@ -65,7 +66,7 @@ img,svg{display:block;max-width:100%}
 .bg-atelier{
   position:fixed;inset:0;z-index:-3;
   background:
-    radial-gradient(52% 42% at 72% 12%, rgba(201,162,94,.13), transparent 62%),
+    radial-gradient(52% 42% at 72% 12%, rgba(var(--accent-rgb),.13), transparent 62%),
     radial-gradient(46% 40% at 12% 78%, rgba(120,140,158,.07), transparent 60%),
     var(--carbon),
     linear-gradient(180deg,var(--bg),var(--bg-deep));
@@ -84,7 +85,7 @@ body::after{ /* halo lampe + vignette */
 .scroll-progress{
   position:fixed;top:0;left:0;height:2px;width:0;z-index:120;
   background:var(--accent);
-  box-shadow:0 0 12px rgba(201,162,94,.55);
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
 }
 
 /* ---------- Boutons ---------- */
@@ -103,9 +104,9 @@ body::after{ /* halo lampe + vignette */
 .btn-block{width:100%}
 .btn-primary{
   background:var(--accent);color:var(--accent-ink);
-  box-shadow:0 10px 26px -12px rgba(201,162,94,.55), inset 0 1px 0 rgba(255,250,240,.28);
+  box-shadow:0 10px 26px -12px rgba(var(--accent-rgb),.55), inset 0 1px 0 rgba(255,250,240,.28);
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px -12px rgba(201,162,94,.6)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px -12px rgba(var(--accent-rgb),.6)}
 .btn-ghost{
   background:var(--panel);border-color:var(--line-2);color:var(--ink);
 }
@@ -282,7 +283,7 @@ main{position:relative;z-index:1}
 .ba-portrait{aspect-ratio:4/5}
 .ba-landscape{aspect-ratio:16/9}
 .ba-layer{position:absolute;inset:0;display:grid;place-items:center;padding:clamp(18px,3vw,30px)}
-.ba-layer svg{height:100%;width:auto;max-width:100%;filter:drop-shadow(0 18px 30px rgba(8,9,12,.55))}
+.ba-layer .device{height:100%;filter:drop-shadow(0 18px 30px rgba(8,9,12,.55))}
 .ba-before{
   clip-path:inset(0 calc(100% - var(--pos,50%)) 0 0);
   will-change:clip-path;
@@ -290,7 +291,7 @@ main{position:relative;z-index:1}
 .ba-handle{
   position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;
   background:var(--accent);transform:translateX(-1px);
-  box-shadow:0 0 14px rgba(201,162,94,.5);
+  box-shadow:0 0 14px rgba(var(--accent-rgb),.5);
 }
 .ba-grip{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -310,7 +311,7 @@ main{position:relative;z-index:1}
   background:rgba(18,20,24,.78);border:1px solid var(--line-2);color:var(--ink);
 }
 .ba-tag-before{left:14px}
-.ba-tag-after{right:14px;color:var(--accent);border-color:rgba(201,162,94,.4)}
+.ba-tag-after{right:14px;color:var(--accent);border-color:rgba(var(--accent-rgb),.4)}
 .ba-range{
   position:absolute;inset:0;width:100%;height:100%;margin:0;
   opacity:0;cursor:ew-resize;touch-action:pan-y;
@@ -365,7 +366,7 @@ a.quick:hover{border-color:var(--accent);transform:translateX(4px)}
 .field input:focus,.field select:focus,.field textarea:focus{
   outline:none;border-color:var(--accent);
   background-color:rgba(26,28,33,.75);
-  box-shadow:0 0 0 3px rgba(201,162,94,.16);
+  box-shadow:0 0 0 3px rgba(var(--accent-rgb),.16);
 }
 .form-note{font-size:.8rem;color:var(--muted);text-align:center;margin:0}
 .form-note.ok{color:var(--accent)}
@@ -454,3 +455,79 @@ a.quick:hover{border-color:var(--accent);transform:translateX(4px)}
   .spec-list > div{flex-direction:column;gap:2px}
   .spec-list dd{text-align:left}
 }
+
+/* ===========================================================
+   Thèmes de couleur (sélecteur dans la navigation)
+   =========================================================== */
+:root[data-theme="glacier"]{--accent:#8fb6d9;--accent-rgb:143,182,217;--accent-soft:rgba(143,182,217,.14);--accent-ink:#0c1218}
+:root[data-theme="emeraude"]{--accent:#7cbc97;--accent-rgb:124,188,151;--accent-soft:rgba(124,188,151,.14);--accent-ink:#0b130e}
+:root[data-theme="argent"]{--accent:#bfc6cf;--accent-rgb:191,198,207;--accent-soft:rgba(191,198,207,.15);--accent-ink:#13161a}
+
+.theme-picker{display:flex;align-items:center;gap:9px;margin:0 4px}
+.theme-dot{
+  width:21px;height:21px;border-radius:50%;padding:0;cursor:pointer;
+  background:var(--dot);border:2px solid rgba(231,229,224,.28);
+  transition:transform .16s var(--ease),border-color .16s var(--ease),box-shadow .16s var(--ease);
+}
+.theme-dot:hover{transform:scale(1.12)}
+.theme-dot:active{transform:scale(.95)}
+.theme-dot[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.28)}
+@media (max-width:640px){.theme-picker{gap:7px}.theme-dot{width:18px;height:18px}}
+
+/* ===========================================================
+   Appareils réels (rendus photo, licence MIT html5-device-mockups)
+   L'écran transparent du PNG laisse voir la couche .device-screen.
+   =========================================================== */
+.device{position:relative;flex:none}
+.device>img{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.device-screen{
+  position:absolute;z-index:2;overflow:hidden;border-radius:3px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.device-iphone{aspect-ratio:1000/2031}
+.device-iphone .device-screen{top:12.0%;left:6.21%;width:87.36%;height:76.06%}
+.device-samsung{aspect-ratio:1000/1940}
+.device-samsung .device-screen{top:9.81%;left:6.1%;width:87.8%;height:80.47%}
+.device-macbook{aspect-ratio:10000/5795}
+.device-macbook .device-screen{top:6.71%;left:11.84%;width:76.41%;height:82.43%}
+.device-surface{aspect-ratio:10000/6238}
+.device-surface .device-screen{top:11.07%;left:6.78%;width:86.38%;height:77.77%}
+.device-hand{aspect-ratio:10000/15839}
+.device-hand .device-screen{top:7.9%;left:41.3%;width:42.1%;height:47.1%;border-radius:6px}
+
+.scr-after{background:
+  radial-gradient(130% 95% at 30% 0%,rgba(var(--accent-rgb),.55) 0%,rgba(var(--accent-rgb),0) 58%),
+  linear-gradient(180deg,#242b34 0%,#141920 58%,#0e1116 100%);
+}
+.scr-before{background:linear-gradient(160deg,#0c0e12 0%,#08090c 70%)}
+.scr-crack{position:absolute;inset:0;width:100%;height:100%}
+.scr-time{margin-top:24%;font-size:clamp(1.15rem,3vw,1.8rem);color:var(--ink);opacity:.92;letter-spacing:.02em}
+.scr-date{font-size:.66rem;color:var(--ink);opacity:.55}
+.device-macbook .scr-time,.device-surface .scr-time{margin-top:11%;font-size:clamp(.95rem,2.2vw,1.4rem)}
+.device-hand .scr-time{margin-top:30%;font-size:1.05rem}
+.scr-brand{
+  position:absolute;bottom:8%;left:0;right:0;text-align:center;
+  font-family:var(--font-display);font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink);opacity:.6;
+}
+
+/* À propos : iPhone en main, écran rhabillé aux couleurs du thème */
+.apropos-visual{
+  margin:0;position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;justify-content:center;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:radial-gradient(130% 100% at 50% 0%,rgba(var(--accent-rgb),.12),transparent 72%),var(--panel);
+}
+.apropos-visual .device{width:min(74%,280px);transform:translateY(5%)}
+.apropos-grid{grid-template-columns:minmax(0,.85fr) minmax(0,1.25fr) minmax(0,.85fr)}
+@media (max-width:960px){
+  .apropos-grid{grid-template-columns:1fr}
+  .apropos-visual{order:3;max-height:400px;padding-top:26px}
+  .apropos-visual .device{width:min(58%,240px)}
+}
+
+/* Services : l'appareil du service courant dans le panneau sticky */
+.svc-device{margin-top:26px;width:min(100%,230px);transition:opacity .22s var(--ease)}
+.svc-device .device{width:100%}
+.svc-device .device-macbook,.svc-device .device-surface{width:100%}
+@media (max-width:960px){.svc-device{display:none}}
