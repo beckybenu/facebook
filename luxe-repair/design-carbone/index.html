@@ -99,6 +99,12 @@
       <a href="#portfolio">Avant / Après</a>
       <a href="#contact">Contact</a>
     </nav>
+    <div class="theme-picker" role="group" aria-label="Choisir la couleur du site">
+      <button type="button" class="theme-dot" data-set-theme="ambre" style="--dot:#c9a25e" aria-label="Thème ambre" aria-pressed="true"></button>
+      <button type="button" class="theme-dot" data-set-theme="glacier" style="--dot:#8fb6d9" aria-label="Thème glacier" aria-pressed="false"></button>
+      <button type="button" class="theme-dot" data-set-theme="emeraude" style="--dot:#7cbc97" aria-label="Thème émeraude" aria-pressed="false"></button>
+      <button type="button" class="theme-dot" data-set-theme="argent" style="--dot:#bfc6cf" aria-label="Thème argent" aria-pressed="false"></button>
+    </div>
     <a href="#contact" class="btn btn-primary nav-cta magnetic">Obtenir un devis</a>
     <button class="nav-burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-links">
       <span></span><span></span>
@@ -131,8 +137,17 @@
     </section>
 
     <!-- ===================== À PROPOS ===================== -->
-    <section class="section apropos" id="apropos" data-scene-x="-2.4" data-scene-o="0.5">
+    <section class="section apropos" id="apropos" data-scene-x="-2.4" data-scene-o="0.32">
       <div class="apropos-grid">
+        <figure class="apropos-visual reveal" data-reveal aria-hidden="true">
+          <div class="device device-hand">
+            <div class="device-screen scr-after">
+              <span class="scr-time mono">09:41</span>
+              <span class="scr-brand">LUXE Repair</span>
+            </div>
+            <img src="assets/iphone-main.png" alt="" loading="lazy" />
+          </div>
+        </figure>
         <div class="apropos-text reveal" data-reveal>
           <h2>Un atelier genevois qui vient à vous.</h2>
           <p>
@@ -173,12 +188,21 @@
               <span class="svc-current-name" id="svc-current-name">Réparation iPhone</span>
               <span class="svc-current-note mono" id="svc-current-note">écran, batterie, caméra, connecteur</span>
             </div>
+            <div class="svc-device" aria-hidden="true">
+              <div class="device device-iphone" id="svc-device">
+                <div class="device-screen scr-after">
+                  <span class="scr-time mono">09:41</span>
+                  <span class="scr-brand">LUXE Repair</span>
+                </div>
+                <img id="svc-device-img" src="assets/iphone-noir.png" alt="" loading="lazy" />
+              </div>
+            </div>
             <a href="#contact" class="btn btn-ghost svc-btn magnetic reveal" data-reveal>Demander un devis</a>
           </div>
         </div>
 
         <div class="svc-right">
-          <article class="svc-item reveal" data-reveal data-name="Réparation iPhone" data-note="écran, batterie, caméra, connecteur">
+          <article class="svc-item reveal" data-reveal data-name="Réparation iPhone" data-note="écran, batterie, caméra, connecteur" data-device="iphone" data-img="assets/iphone-noir.png">
             <h3>Réparation iPhone</h3>
             <p>
               Écran fissuré, batterie fatiguée, caméra floue ou connecteur de charge
@@ -191,7 +215,7 @@
             <p class="svc-note mono">diagnostic gratuit, réparation rapide</p>
           </article>
 
-          <article class="svc-item reveal" data-reveal data-name="Réparation Samsung" data-note="écran, batterie, caméra, connecteur">
+          <article class="svc-item reveal" data-reveal data-name="Réparation Samsung" data-note="écran, batterie, caméra, connecteur" data-device="samsung" data-img="assets/samsung-noir.png">
             <h3>Réparation Samsung</h3>
             <p>
               Galaxy S, Note, A ou Z : nous remplaçons les dalles AMOLED, les batteries,
@@ -204,7 +228,7 @@
             <p class="svc-note mono">diagnostic gratuit, réparation rapide</p>
           </article>
 
-          <article class="svc-item reveal" data-reveal data-name="Réparation Mac" data-note="écran, batterie, SSD, nettoyage">
+          <article class="svc-item reveal" data-reveal data-name="Réparation Mac" data-note="écran, batterie, SSD, nettoyage" data-device="macbook" data-img="assets/macbook-pro.png">
             <h3>Réparation Mac</h3>
             <p>
               MacBook ou iMac qui ralentit, chauffe ou ne s'allume plus : nous remplaçons
@@ -217,7 +241,7 @@
             <p class="svc-note mono">MacBook et iMac, diagnostic gratuit</p>
           </article>
 
-          <article class="svc-item reveal" data-reveal data-name="Réparation PC Windows" data-note="écran, batterie, SSD, nettoyage">
+          <article class="svc-item reveal" data-reveal data-name="Réparation PC Windows" data-note="écran, batterie, SSD, nettoyage" data-device="surface" data-img="assets/surface-pc.png">
             <h3>Réparation PC Windows</h3>
             <p>
               Portables et fixes, toutes marques : écran, batterie, disque SSD,
@@ -229,7 +253,7 @@
             <p class="svc-note mono">toutes marques, diagnostic gratuit</p>
           </article>
 
-          <article class="svc-item reveal" data-reveal data-name="Rachat d'appareils" data-note="estimation gratuite, meilleure offre">
+          <article class="svc-item reveal" data-reveal data-name="Rachat d'appareils" data-note="estimation gratuite, meilleure offre" data-device="hand" data-img="assets/iphone-main.png">
             <h3>Rachat</h3>
             <p>
               Nous rachetons vos smartphones et ordinateurs, même abîmés. Estimation
@@ -242,7 +266,7 @@
             <p class="svc-note mono">paiement à la remise de l'appareil</p>
           </article>
 
-          <article class="svc-item reveal" data-reveal data-name="Vente reconditionnée" data-note="appareils testés et garantis">
+          <article class="svc-item reveal" data-reveal data-name="Vente reconditionnée" data-note="appareils testés et garantis" data-device="samsung" data-img="assets/samsung-noir.png">
             <h3>Vente</h3>
             <p>
               Des appareils reconditionnés dans notre atelier, contrôlés point par point
@@ -306,36 +330,21 @@
         <figure class="ba reveal" data-reveal data-ba style="--pos:50%">
           <div class="ba-stage ba-portrait">
             <div class="ba-layer ba-after" aria-hidden="true">
-              <svg viewBox="0 0 240 480" role="img" aria-hidden="true">
-                <defs>
-                  <linearGradient id="ip-on" x1="0" y1="0" x2="0.4" y2="1">
-                    <stop offset="0" stop-color="#343a44"/>
-                    <stop offset="0.55" stop-color="#22262d"/>
-                    <stop offset="1" stop-color="#181b20"/>
-                  </linearGradient>
-                  <linearGradient id="ip-sheen" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0.32" stop-color="#e7e5e0" stop-opacity="0"/>
-                    <stop offset="0.5" stop-color="#e7e5e0" stop-opacity="0.07"/>
-                    <stop offset="0.68" stop-color="#e7e5e0" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <rect x="4" y="4" width="232" height="472" rx="38" fill="#23262c" stroke="#41454d" stroke-width="2"/>
-                <rect x="14" y="14" width="212" height="452" rx="30" fill="url(#ip-on)"/>
-                <text x="120" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="44" fill="#e7e5e0" opacity="0.92">09:41</text>
-                <text x="120" y="148" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#e7e5e0" opacity="0.6">lundi 12 mai</text>
-                <rect x="88" y="24" width="64" height="20" rx="10" fill="#101216"/>
-                <rect x="90" y="446" width="60" height="4" rx="2" fill="#e7e5e0" opacity="0.55"/>
-                <rect x="14" y="14" width="212" height="452" rx="30" fill="url(#ip-sheen)"/>
-              </svg>
+              <div class="device device-iphone">
+                <div class="device-screen scr-after">
+                  <span class="scr-time mono">09:41</span>
+                  <span class="scr-date mono">lundi 12 mai</span>
+                </div>
+                <img src="assets/iphone-noir.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-layer ba-before" aria-hidden="true">
-              <svg viewBox="0 0 240 480" role="img" aria-hidden="true">
-                <rect x="4" y="4" width="232" height="472" rx="38" fill="#23262c" stroke="#41454d" stroke-width="2"/>
-                <rect x="14" y="14" width="212" height="452" rx="30" fill="#0d0f13"/>
-                <path d="M14 260 q60 -30 108 -6 q58 28 104 -12 v210 a30 30 0 0 1 -30 30 h-152 a30 30 0 0 1 -30 -30 z" fill="#07080b" opacity="0.85"/>
-                <use href="#crack-p" x="14" y="14" width="212" height="452"/>
-                <rect x="88" y="24" width="64" height="20" rx="10" fill="#101216"/>
-              </svg>
+              <div class="device device-iphone">
+                <div class="device-screen scr-before">
+                  <svg class="scr-crack" viewBox="0 0 212 452" preserveAspectRatio="none" aria-hidden="true"><use href="#crack-p"/></svg>
+                </div>
+                <img src="assets/iphone-noir.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
             <span class="ba-tag mono ba-tag-before" aria-hidden="true">avant</span>
@@ -353,36 +362,21 @@
         <figure class="ba reveal" data-reveal data-ba style="--pos:50%">
           <div class="ba-stage ba-portrait">
             <div class="ba-layer ba-after" aria-hidden="true">
-              <svg viewBox="0 0 240 480" role="img" aria-hidden="true">
-                <defs>
-                  <linearGradient id="sg-on" x1="0.1" y1="0" x2="0.6" y2="1">
-                    <stop offset="0" stop-color="#2e343e"/>
-                    <stop offset="0.6" stop-color="#1f242b"/>
-                    <stop offset="1" stop-color="#15181d"/>
-                  </linearGradient>
-                  <linearGradient id="sg-sheen" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0.3" stop-color="#e7e5e0" stop-opacity="0"/>
-                    <stop offset="0.5" stop-color="#e7e5e0" stop-opacity="0.06"/>
-                    <stop offset="0.7" stop-color="#e7e5e0" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <rect x="6" y="4" width="228" height="472" rx="26" fill="#22252b" stroke="#41454d" stroke-width="2"/>
-                <rect x="13" y="11" width="214" height="458" rx="20" fill="url(#sg-on)"/>
-                <circle cx="120" cy="26" r="7" fill="#101216"/>
-                <text x="120" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="42" fill="#e7e5e0" opacity="0.92">14:07</text>
-                <text x="120" y="154" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#e7e5e0" opacity="0.6">lun. 12 mai</text>
-                <rect x="92" y="452" width="56" height="4" rx="2" fill="#e7e5e0" opacity="0.5"/>
-                <rect x="13" y="11" width="214" height="458" rx="20" fill="url(#sg-sheen)"/>
-              </svg>
+              <div class="device device-samsung">
+                <div class="device-screen scr-after">
+                  <span class="scr-time mono">14:07</span>
+                  <span class="scr-date mono">lun. 12 mai</span>
+                </div>
+                <img src="assets/samsung-noir.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-layer ba-before" aria-hidden="true">
-              <svg viewBox="0 0 240 480" role="img" aria-hidden="true">
-                <rect x="6" y="4" width="228" height="472" rx="26" fill="#22252b" stroke="#41454d" stroke-width="2"/>
-                <rect x="13" y="11" width="214" height="458" rx="20" fill="#0d0f13"/>
-                <path d="M13 96 q70 40 110 10 q54 -38 104 8 v-88 a20 20 0 0 0 -20 -20 h-174 a20 20 0 0 0 -20 20 z" fill="#07080b" opacity="0.8"/>
-                <use href="#crack-p2" x="13" y="11" width="214" height="458"/>
-                <circle cx="120" cy="26" r="7" fill="#101216"/>
-              </svg>
+              <div class="device device-samsung">
+                <div class="device-screen scr-before">
+                  <svg class="scr-crack" viewBox="0 0 212 452" preserveAspectRatio="none" aria-hidden="true"><use href="#crack-p2"/></svg>
+                </div>
+                <img src="assets/samsung-noir.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
             <span class="ba-tag mono ba-tag-before" aria-hidden="true">avant</span>
@@ -400,42 +394,21 @@
         <figure class="ba reveal" data-reveal data-ba style="--pos:50%">
           <div class="ba-stage ba-landscape">
             <div class="ba-layer ba-after" aria-hidden="true">
-              <svg viewBox="0 0 520 330" role="img" aria-hidden="true">
-                <defs>
-                  <linearGradient id="mb-on" x1="0" y1="0" x2="0.5" y2="1">
-                    <stop offset="0" stop-color="#333a45"/>
-                    <stop offset="0.6" stop-color="#20252c"/>
-                    <stop offset="1" stop-color="#171a1f"/>
-                  </linearGradient>
-                  <linearGradient id="mb-alu" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#3d4249"/>
-                    <stop offset="1" stop-color="#26292f"/>
-                  </linearGradient>
-                </defs>
-                <rect x="70" y="10" width="380" height="252" rx="14" fill="#22252b" stroke="#41454d" stroke-width="2"/>
-                <rect x="82" y="22" width="356" height="228" rx="8" fill="url(#mb-on)"/>
-                <rect x="82" y="22" width="356" height="16" rx="8" fill="#14171b" opacity="0.85"/>
-                <text x="260" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="34" fill="#e7e5e0" opacity="0.9">09:41</text>
-                <text x="260" y="174" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#e7e5e0" opacity="0.55">macOS, prêt à travailler</text>
-                <path d="M30 262 h460 l14 34 a8 8 0 0 1 -8 9 h-472 a8 8 0 0 1 -8 -9 z" fill="url(#mb-alu)" stroke="#41454d" stroke-width="1.5"/>
-                <rect x="222" y="262" width="76" height="10" rx="5" fill="#1b1e23"/>
-              </svg>
+              <div class="device device-macbook">
+                <div class="device-screen scr-after">
+                  <span class="scr-time mono">09:41</span>
+                  <span class="scr-date mono">macOS, prêt à travailler</span>
+                </div>
+                <img src="assets/macbook-pro.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-layer ba-before" aria-hidden="true">
-              <svg viewBox="0 0 520 330" role="img" aria-hidden="true">
-                <defs>
-                  <linearGradient id="mb-alu2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#3d4249"/>
-                    <stop offset="1" stop-color="#26292f"/>
-                  </linearGradient>
-                </defs>
-                <rect x="70" y="10" width="380" height="252" rx="14" fill="#22252b" stroke="#41454d" stroke-width="2"/>
-                <rect x="82" y="22" width="356" height="228" rx="8" fill="#0d0f13"/>
-                <path d="M438 22 v120 q-60 26 -120 6 q-70 -24 -128 10 l-108 -18 v-96 a8 8 0 0 1 8 -8 z" fill="#07080b" opacity="0.8"/>
-                <use href="#crack-l" x="82" y="22" width="356" height="228"/>
-                <path d="M30 262 h460 l14 34 a8 8 0 0 1 -8 9 h-472 a8 8 0 0 1 -8 -9 z" fill="url(#mb-alu2)" stroke="#41454d" stroke-width="1.5"/>
-                <rect x="222" y="262" width="76" height="10" rx="5" fill="#1b1e23"/>
-              </svg>
+              <div class="device device-macbook">
+                <div class="device-screen scr-before">
+                  <svg class="scr-crack" viewBox="0 0 356 228" preserveAspectRatio="none" aria-hidden="true"><use href="#crack-l"/></svg>
+                </div>
+                <img src="assets/macbook-pro.png" alt="" loading="lazy" />
+              </div>
             </div>
             <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
             <span class="ba-tag mono ba-tag-before" aria-hidden="true">avant</span>
