@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#100e0c" />
+
+  <title>Réparation iPhone et Smartphone à Genève | LUXE Repair</title>
+  <meta name="description" content="LUXE Repair (anciennement RSG Genève) : réparation iPhone Genève, réparation smartphone Genève, réparation MacBook Genève, rachat smartphone Genève. Intervention à domicile ou au bureau, devis gratuit, réparation rapide." />
+  <meta name="keywords" content="réparation iPhone Genève, réparation smartphone Genève, réparation MacBook Genève, rachat smartphone Genève, réparation Samsung Genève, réparation PC Genève, réparation écran Genève" />
+  <meta name="author" content="LUXE Repair" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://luxerepair.ch/" />
+  <meta name="geo.region" content="CH-GE" />
+  <meta name="geo.placename" content="Genève" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_CH" />
+  <meta property="og:site_name" content="LUXE Repair" />
+  <meta property="og:title" content="Réparation Smartphone &amp; Ordinateur à Genève | LUXE Repair" />
+  <meta property="og:description" content="Réparation iPhone, Samsung, MacBook et PC à Genève. Rapide, professionnel et à domicile. Devis gratuit." />
+  <meta property="og:url" content="https://luxerepair.ch/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Réparation Smartphone &amp; Ordinateur à Genève | LUXE Repair" />
+  <meta name="twitter:description" content="Réparation iPhone, Samsung, MacBook et PC à Genève. Intervention à domicile ou au bureau. Devis gratuit, réponse rapide." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ElectronicsStore",
+    "name": "LUXE Repair",
+    "alternateName": "RSG Genève",
+    "description": "Réparation, achat et vente d'appareils électroniques à Genève : iPhone, Samsung, MacBook, iMac et PC Windows. Service rapide, professionnel et haut de gamme, avec intervention à domicile ou sur le lieu de travail.",
+    "url": "https://luxerepair.ch/",
+    "telephone": "+41767573458",
+    "email": "contact@luxerepair.ch",
+    "priceRange": "CHF",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Genève",
+      "addressRegion": "GE",
+      "addressCountry": "CH"
+    },
+    "geo": { "@type": "GeoCoordinates", "latitude": 46.2044, "longitude": 6.1432 },
+    "areaServed": { "@type": "City", "name": "Genève" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Réparation de smartphones et d'ordinateurs à Genève",
+    "provider": { "@type": "LocalBusiness", "name": "LUXE Repair", "telephone": "+41767573458", "email": "contact@luxerepair.ch" },
+    "areaServed": "Genève, Suisse",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Services LUXE Repair",
+      "itemListElement": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation iPhone à Genève" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation Samsung à Genève" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation MacBook et iMac à Genève" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Réparation PC Windows à Genève" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Rachat de smartphones et d'ordinateurs à Genève" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Vente d'appareils reconditionnés à Genève" } }
+      ]
+    }
+  }
+  </script>
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Fond dégradé (fallback) + canvas 3D -->
+  <div class="bg-base" aria-hidden="true"></div>
+  <canvas id="scene" class="scene" aria-hidden="true"></canvas>
+
+  <!-- ===================== Navigation ===================== -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#accueil" aria-label="LUXE Repair, retour à l'accueil">
+      <span class="brand-mark" aria-hidden="true">L</span>
+      <span class="brand-name">LUXE <em>Repair</em></span>
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Navigation principale">
+      <a href="#apropos">À propos</a>
+      <a href="#services">Services</a>
+      <a href="#pourquoi">Pourquoi nous</a>
+      <a href="#portfolio">Avant / Après</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="btn btn-gold magnetic nav-cta">Obtenir un devis</a>
+    <button class="nav-burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span></button>
+  </header>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="accueil">
+      <div class="hero-inner">
+        <p class="hero-kicker reveal" data-reveal>LUXE Repair, Genève. Anciennement RSG Genève.</p>
+        <h1 class="hero-title reveal" data-reveal>Réparation Smartphone <span class="amp">&amp;</span> Ordinateur à <span class="gold-serif">Genève</span></h1>
+        <p class="hero-sub reveal" data-reveal>Rapide, professionnel et à domicile.</p>
+        <div class="hero-cta reveal" data-reveal>
+          <a href="#contact" class="btn btn-gold btn-lg magnetic">Obtenir un devis</a>
+          <a href="tel:+41767573458" class="btn btn-line btn-lg magnetic">Nous contacter</a>
+        </div>
+        <p class="hero-note reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="17" height="17" aria-hidden="true"><use href="#ico-pin"/></svg>
+          Nous nous déplaçons chez vous ou sur votre lieu de travail, dans tout le canton.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== À PROPOS ===================== -->
+    <section class="section apropos" id="apropos">
+      <div class="apropos-grid">
+        <div class="apropos-lead reveal" data-reveal>
+          <h2>Une maison genevoise au service de vos appareils.</h2>
+        </div>
+        <div class="apropos-body reveal" data-reveal>
+          <p>
+            LUXE Repair, anciennement <strong>RSG Genève</strong>, est une entreprise genevoise
+            spécialisée dans la <strong>réparation, l'achat et la vente d'appareils électroniques</strong>.
+            Écran fissuré, batterie fatiguée, ordinateur qui ralentit : nous remettons vos
+            appareils en état avec des pièces de qualité et un travail soigné.
+          </p>
+          <p>
+            Notre particularité, c'est la proximité : nous intervenons directement
+            <strong>à votre domicile ou à votre bureau</strong>, partout à Genève. Vous gardez votre
+            journée, votre natel retrouve une seconde vie, souvent le jour même.
+          </p>
+          <ul class="apropos-marks" role="list">
+            <li>Réparations fiables et garanties</li>
+            <li>Service de proximité, partout à Genève</li>
+            <li>Diagnostic et devis gratuits</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SERVICES ===================== -->
+    <section class="section services" id="services">
+      <div class="section-head reveal" data-reveal>
+        <p class="kicker-serif">Nos services</p>
+        <h2>Réparer, racheter, revendre.</h2>
+        <p class="section-lead">Six savoir-faire, un même niveau d'exigence.</p>
+      </div>
+
+      <div class="svc-grid">
+        <!-- Carte majeure -->
+        <article class="svc svc-major reveal" data-reveal data-tilt>
+          <div class="svc-major-text">
+            <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-iphone"/></svg></span>
+            <h3>Réparation iPhone</h3>
+            <p>Le cœur de notre métier. Diagnostic gratuit, réparation rapide, le plus souvent en moins d'une heure.</p>
+          </div>
+          <ul class="svc-list" role="list">
+            <li>Remplacement d'écran</li>
+            <li>Changement de batterie</li>
+            <li>Réparation caméra</li>
+            <li>Connecteur de charge</li>
+            <li>Diagnostic gratuit</li>
+            <li>Réparation rapide</li>
+          </ul>
+        </article>
+
+        <article class="svc reveal" data-reveal data-tilt>
+          <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-samsung"/></svg></span>
+          <h3>Réparation Samsung</h3>
+          <p>Galaxy S, Note, A et pliables : écran, batterie, caméra, connecteur de charge. Diagnostic gratuit et réparation rapide.</p>
+        </article>
+
+        <article class="svc reveal" data-reveal data-tilt>
+          <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-laptop"/></svg></span>
+          <h3>Réparation Mac</h3>
+          <p>MacBook et iMac : écran, batterie, remplacement SSD, nettoyage complet. Diagnostic gratuit avant toute intervention.</p>
+        </article>
+
+        <article class="svc reveal" data-reveal data-tilt>
+          <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-desktop"/></svg></span>
+          <h3>Réparation PC Windows</h3>
+          <p>Portables et tours : écran, batterie, SSD, nettoyage et optimisation. Diagnostic gratuit, retour rapide de votre machine.</p>
+        </article>
+
+        <article class="svc reveal" data-reveal data-tilt>
+          <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-swap"/></svg></span>
+          <h3>Rachat</h3>
+          <p>Nous rachetons vos smartphones et ordinateurs, même abîmés. Estimation gratuite et meilleure offre, paiement immédiat.</p>
+        </article>
+
+        <article class="svc svc-wide reveal" data-reveal data-tilt>
+          <div>
+            <span class="svc-ico" aria-hidden="true"><svg viewBox="0 0 48 48" width="26" height="26"><use href="#ico-tag"/></svg></span>
+            <h3>Vente</h3>
+            <p>Appareils reconditionnés, testés et garantis : une sélection d'iPhone, de Samsung et d'ordinateurs prêts à l'emploi.</p>
+          </div>
+          <span class="svc-soon">Boutique en ligne bientôt disponible</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== POURQUOI NOUS ===================== -->
+    <section class="section pourquoi" id="pourquoi">
+      <div class="section-head reveal" data-reveal>
+        <h2>Pourquoi nous choisir</h2>
+        <p class="section-lead">Ce que nos clients genevois apprécient, réparation après réparation.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-home"/></svg>
+          <div><h3>Déplacement chez vous</h3><p>À domicile ou au bureau, nous venons à vous, dans tout le canton de Genève.</p></div>
+        </div>
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-doc"/></svg>
+          <div><h3>Devis gratuit</h3><p>Diagnostic et devis offerts, sans engagement. Vous décidez en toute connaissance de cause.</p></div>
+        </div>
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-bolt"/></svg>
+          <div><h3>Réparation rapide</h3><p>La plupart des interventions courantes sont réalisées le jour même, souvent en moins d'une heure.</p></div>
+        </div>
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-scale"/></svg>
+          <div><h3>Prix transparents</h3><p>Un tarif annoncé avant l'intervention, respecté à la lettre. Aucune surprise sur la facture.</p></div>
+        </div>
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-shield"/></svg>
+          <div><h3>Service professionnel</h3><p>Pièces de qualité, gestes précis, appareils rendus propres et testés devant vous.</p></div>
+        </div>
+        <div class="why reveal" data-reveal>
+          <svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><use href="#ico-cpu"/></svg>
+          <div><h3>Expertise multi-marques</h3><p>iPhone, Samsung, Mac et PC Windows : une seule adresse pour tous vos appareils.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PORTFOLIO AVANT / APRÈS ===================== -->
+    <section class="section portfolio" id="portfolio">
+      <div class="section-head reveal" data-reveal>
+        <p class="kicker-serif">Avant / Après</p>
+        <h2>Le résultat, sans retouche.</h2>
+        <p class="section-lead">Faites glisser le curseur pour comparer l'appareil à son arrivée et à sa sortie d'atelier.</p>
+      </div>
+
+      <div class="portfolio-grid">
+        <!-- iPhone -->
+        <figure class="ba reveal" data-reveal data-ba>
+          <div class="ba-stage">
+            <div class="ba-layer ba-before" aria-hidden="true">
+              <svg viewBox="0 0 220 440"><use href="#dev-iphone"/><use href="#crack-iphone"/></svg>
+            </div>
+            <div class="ba-layer ba-after" aria-hidden="true">
+              <svg viewBox="0 0 220 440"><use href="#dev-iphone"/><use href="#sheen-tall"/></svg>
+            </div>
+            <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
+            <span class="ba-tag ba-tag-b" aria-hidden="true">Avant</span>
+            <span class="ba-tag ba-tag-a" aria-hidden="true">Après</span>
+            <input type="range" class="ba-range" min="0" max="100" value="50" step="1"
+              aria-label="Comparer avant et après : iPhone, remplacement d'écran" />
+          </div>
+          <figcaption><b>iPhone</b><span>Remplacement d'écran, Eaux-Vives</span></figcaption>
+        </figure>
+
+        <!-- Samsung -->
+        <figure class="ba reveal" data-reveal data-ba>
+          <div class="ba-stage">
+            <div class="ba-layer ba-before" aria-hidden="true">
+              <svg viewBox="0 0 220 440"><use href="#dev-samsung"/><use href="#crack-samsung"/></svg>
+            </div>
+            <div class="ba-layer ba-after" aria-hidden="true">
+              <svg viewBox="0 0 220 440"><use href="#dev-samsung"/><use href="#sheen-tall"/></svg>
+            </div>
+            <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
+            <span class="ba-tag ba-tag-b" aria-hidden="true">Avant</span>
+            <span class="ba-tag ba-tag-a" aria-hidden="true">Après</span>
+            <input type="range" class="ba-range" min="0" max="100" value="50" step="1"
+              aria-label="Comparer avant et après : Samsung, batterie et écran" />
+          </div>
+          <figcaption><b>Samsung Galaxy</b><span>Batterie et écran, Carouge</span></figcaption>
+        </figure>
+
+        <!-- MacBook -->
+        <figure class="ba ba-wide reveal" data-reveal data-ba>
+          <div class="ba-stage ba-stage-wide">
+            <div class="ba-layer ba-before" aria-hidden="true">
+              <svg viewBox="0 0 480 320"><use href="#dev-macbook"/><use href="#crack-macbook"/></svg>
+            </div>
+            <div class="ba-layer ba-after" aria-hidden="true">
+              <svg viewBox="0 0 480 320"><use href="#dev-macbook"/><use href="#sheen-wide"/></svg>
+            </div>
+            <div class="ba-handle" aria-hidden="true"><span class="ba-grip"></span></div>
+            <span class="ba-tag ba-tag-b" aria-hidden="true">Avant</span>
+            <span class="ba-tag ba-tag-a" aria-hidden="true">Après</span>
+            <input type="range" class="ba-range" min="0" max="100" value="50" step="1"
+              aria-label="Comparer avant et après : MacBook, écran et clavier" />
+          </div>
+          <figcaption><b>MacBook</b><span>Écran et clavier, Champel</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section contact" id="contact">
+      <div class="contact-card reveal" data-reveal>
+        <div class="contact-intro">
+          <h2>Parlez-nous de votre appareil.</h2>
+          <p>Décrivez la panne en quelques mots : nous revenons vers vous rapidement avec un devis gratuit.</p>
+          <div class="contact-quick">
+            <a class="quick" href="tel:+41767573458">
+              <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><use href="#ico-phone"/></svg>
+              <span><b>Téléphone</b>+41 76 757 34 58</span>
+            </a>
+            <a class="quick" id="whatsapp-link" href="https://wa.me/41767573458" target="_blank" rel="noopener">
+              <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><use href="#ico-chat"/></svg>
+              <span><b>WhatsApp</b>Réponse rapide, 7j/7</span>
+            </a>
+            <a class="quick" href="mailto:contact@luxerepair.ch">
+              <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><use href="#ico-mail"/></svg>
+              <span><b>E-mail</b>contact@luxerepair.ch</span>
+            </a>
+            <p class="quick quick-static">
+              <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><use href="#ico-pin"/></svg>
+              <span><b>Localisation</b>Genève, Suisse. Déplacement à domicile ou au bureau.</span>
+            </p>
+          </div>
+        </div>
+
+        <form class="contact-form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="f-nom">Nom complet</label>
+            <input type="text" id="f-nom" name="nom" required autocomplete="name" />
+          </div>
+          <div class="frow">
+            <div class="field">
+              <label for="f-email">E-mail</label>
+              <input type="email" id="f-email" name="email" required autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="f-tel">Téléphone</label>
+              <input type="tel" id="f-tel" name="tel" autocomplete="tel" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-appareil">Appareil concerné</label>
+            <select id="f-appareil" name="appareil" required>
+              <option value="" selected disabled>Choisir un appareil</option>
+              <option>iPhone</option>
+              <option>Samsung</option>
+              <option>Autre smartphone</option>
+              <option>MacBook / iMac</option>
+              <option>PC Windows</option>
+              <option>Rachat d'un appareil</option>
+              <option>Achat d'un appareil reconditionné</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-panne">Description de la panne</label>
+            <textarea id="f-panne" name="panne" rows="4" placeholder="Exemple : écran fissuré après une chute, l'appareil fonctionne encore."></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold btn-lg btn-block magnetic">Demander mon devis gratuit</button>
+          <p class="form-note" id="form-note">Devis gratuit, réponse rapide. L'envoi ouvre votre messagerie avec votre demande pré-remplie.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="#accueil" aria-label="LUXE Repair, retour à l'accueil">
+          <span class="brand-mark" aria-hidden="true">L</span>
+          <span class="brand-name">LUXE <em>Repair</em></span>
+        </a>
+        <p>Réparation, achat et vente d'appareils électroniques à Genève. Anciennement RSG Genève. Intervention à domicile ou sur votre lieu de travail.</p>
+      </div>
+      <nav class="footer-col" aria-label="Plan du site">
+        <h4>Le site</h4>
+        <a href="#apropos">À propos</a>
+        <a href="#services">Nos services</a>
+        <a href="#pourquoi">Pourquoi nous choisir</a>
+        <a href="#portfolio">Avant / Après</a>
+      </nav>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <a href="#services">Réparation iPhone à Genève</a>
+        <a href="#services">Réparation Samsung</a>
+        <a href="#services">Réparation Mac et PC</a>
+        <a href="#services">Rachat et vente d'appareils</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="tel:+41767573458">+41 76 757 34 58</a>
+        <a href="https://wa.me/41767573458" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:contact@luxerepair.ch">contact@luxerepair.ch</a>
+        <a href="#contact">Genève, Suisse</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> LUXE Repair, Genève. Tous droits réservés.</span>
+      <span class="footer-fine">Devis gratuit, réponse rapide.</span>
+    </div>
+  </footer>
+
+  <!-- ===================== Sprites SVG ===================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- Dégradés partagés -->
+      <linearGradient id="g-screen" x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0" stop-color="#211e26"/>
+        <stop offset="0.55" stop-color="#141218"/>
+        <stop offset="1" stop-color="#0b0a0d"/>
+      </linearGradient>
+      <linearGradient id="g-metal" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#26232a"/>
+        <stop offset="1" stop-color="#131116"/>
+      </linearGradient>
+      <linearGradient id="g-sheen" x1="0" y1="0" x2="1" y2="0.3">
+        <stop offset="0" stop-color="#d3b577" stop-opacity="0.16"/>
+        <stop offset="0.6" stop-color="#d3b577" stop-opacity="0.03"/>
+        <stop offset="1" stop-color="#d3b577" stop-opacity="0"/>
+      </linearGradient>
+      <pattern id="p-keys" width="26" height="18" patternUnits="userSpaceOnUse">
+        <rect x="2" y="2" width="21" height="13" rx="3" fill="#211e25"/>
+      </pattern>
+
+      <!-- iPhone : cadre + écran -->
+      <symbol id="dev-iphone" viewBox="0 0 220 440">
+        <rect x="6" y="6" width="208" height="428" rx="32" fill="url(#g-metal)" stroke="#3a352e" stroke-width="1.5"/>
+        <rect x="7.5" y="7.5" width="205" height="425" rx="30.5" fill="none" stroke="#d3b577" stroke-opacity="0.35" stroke-width="1"/>
+        <rect x="17" y="17" width="186" height="406" rx="24" fill="url(#g-screen)"/>
+        <rect x="84" y="27" width="52" height="15" rx="7.5" fill="#0a090b" stroke="#2c2830" stroke-width="1"/>
+        <circle cx="126" cy="34.5" r="2.6" fill="#1d1a20"/>
+        <rect x="213" y="120" width="3" height="46" rx="1.5" fill="#2c2830"/>
+        <rect x="4" y="104" width="3" height="26" rx="1.5" fill="#2c2830"/>
+        <rect x="4" y="140" width="3" height="26" rx="1.5" fill="#2c2830"/>
+      </symbol>
+
+      <!-- iPhone : fissures + zone LCD morte -->
+      <symbol id="crack-iphone" viewBox="0 0 220 440">
+        <path d="M60 330 q18 -10 34 4 q10 16 -6 24 q-22 6 -30 -8 q-6 -12 2 -20 Z" fill="#07070a" opacity="0.55"/>
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.72" stroke-width="1.2" stroke-linecap="round">
+          <path d="M148 150 L122 104 L114 66 L120 34"/>
+          <path d="M148 150 L180 118 L192 78 L186 44"/>
+          <path d="M148 150 L196 168 L206 200"/>
+          <path d="M148 150 L170 214 L186 274 L176 336 L184 396"/>
+          <path d="M148 150 L112 186 L74 202 L46 244 L50 300"/>
+          <path d="M148 150 L134 236 L126 306 L138 372"/>
+          <path d="M148 150 L98 138 L52 118 L26 126"/>
+        </g>
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.42" stroke-width="0.6" stroke-linecap="round">
+          <path d="M126 118 Q150 108 172 122"/>
+          <path d="M108 158 Q146 196 190 176"/>
+          <path d="M122 104 L104 92"/>
+          <path d="M180 118 L198 112"/>
+          <path d="M170 214 L192 228"/>
+          <path d="M112 186 L118 212"/>
+          <path d="M134 236 L112 250"/>
+        </g>
+        <circle cx="148" cy="150" r="8" fill="none" stroke="#eceef4" stroke-opacity="0.5" stroke-width="0.8"/>
+        <circle cx="148" cy="150" r="3.2" fill="#f0f2f7" opacity="0.85"/>
+      </symbol>
+
+      <!-- Samsung : cadre + écran (caméra perforée) -->
+      <symbol id="dev-samsung" viewBox="0 0 220 440">
+        <rect x="8" y="6" width="204" height="428" rx="24" fill="url(#g-metal)" stroke="#3a352e" stroke-width="1.5"/>
+        <rect x="9.5" y="7.5" width="201" height="425" rx="22.5" fill="none" stroke="#d3b577" stroke-opacity="0.35" stroke-width="1"/>
+        <rect x="16" y="14" width="188" height="412" rx="16" fill="url(#g-screen)"/>
+        <circle cx="110" cy="30" r="5.5" fill="#0a090b" stroke="#2c2830" stroke-width="1"/>
+        <circle cx="110" cy="30" r="2.2" fill="#1d1a20"/>
+        <rect x="212" y="110" width="3" height="40" rx="1.5" fill="#2c2830"/>
+        <rect x="212" y="160" width="3" height="24" rx="1.5" fill="#2c2830"/>
+      </symbol>
+
+      <!-- Samsung : fissures -->
+      <symbol id="crack-samsung" viewBox="0 0 220 440">
+        <path d="M158 96 q16 -8 28 4 q8 14 -8 20 q-18 4 -26 -6 q-4 -12 6 -18 Z" fill="#07070a" opacity="0.5"/>
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.72" stroke-width="1.2" stroke-linecap="round">
+          <path d="M74 306 L104 258 L112 208 L104 160 L116 108"/>
+          <path d="M74 306 L128 300 L176 284 L202 288"/>
+          <path d="M74 306 L60 250 L44 208 L48 152"/>
+          <path d="M74 306 L96 356 L92 404"/>
+          <path d="M74 306 L40 330 L26 368"/>
+          <path d="M74 306 L134 330 L182 356 L194 396"/>
+        </g>
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.42" stroke-width="0.6" stroke-linecap="round">
+          <path d="M58 272 Q84 262 106 276"/>
+          <path d="M60 330 Q92 344 120 332"/>
+          <path d="M104 258 L124 248"/>
+          <path d="M128 300 L138 318"/>
+          <path d="M96 356 L118 366"/>
+        </g>
+        <circle cx="74" cy="306" r="8" fill="none" stroke="#eceef4" stroke-opacity="0.5" stroke-width="0.8"/>
+        <circle cx="74" cy="306" r="3.2" fill="#f0f2f7" opacity="0.85"/>
+      </symbol>
+
+      <!-- MacBook : écran + base clavier -->
+      <symbol id="dev-macbook" viewBox="0 0 480 320">
+        <rect x="70" y="16" width="340" height="222" rx="14" fill="url(#g-metal)" stroke="#3a352e" stroke-width="1.5"/>
+        <rect x="71.5" y="17.5" width="337" height="219" rx="12.5" fill="none" stroke="#d3b577" stroke-opacity="0.35" stroke-width="1"/>
+        <rect x="82" y="28" width="316" height="198" rx="6" fill="url(#g-screen)"/>
+        <circle cx="240" cy="22.5" r="2" fill="#1d1a20"/>
+        <polygon points="50,244 430,244 458,300 22,300" fill="#1c1a1f" stroke="#3a352e" stroke-width="1.5"/>
+        <polygon points="88,250 392,250 408,286 72,286" fill="url(#p-keys)"/>
+        <rect x="208" y="244" width="64" height="7" rx="3.5" fill="#0d0c0f"/>
+        <polygon points="22,300 458,300 452,306 28,306" fill="#0f0e11"/>
+      </symbol>
+
+      <!-- MacBook : fissures écran + touches manquantes -->
+      <symbol id="crack-macbook" viewBox="0 0 480 320">
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.72" stroke-width="1.2" stroke-linecap="round">
+          <path d="M168 96 L128 64 L98 42"/>
+          <path d="M168 96 L214 70 L266 56 L318 60"/>
+          <path d="M168 96 L226 112 L288 124 L352 118"/>
+          <path d="M168 96 L152 148 L120 190 L98 214"/>
+          <path d="M168 96 L206 158 L232 204"/>
+          <path d="M168 96 L120 108 L94 128"/>
+        </g>
+        <g fill="none" stroke="#eceef4" stroke-opacity="0.42" stroke-width="0.6" stroke-linecap="round">
+          <path d="M142 78 Q168 70 196 82"/>
+          <path d="M136 122 Q170 138 208 128"/>
+          <path d="M214 70 L228 56"/>
+          <path d="M226 112 L238 132"/>
+          <path d="M152 148 L172 162"/>
+        </g>
+        <circle cx="168" cy="96" r="8" fill="none" stroke="#eceef4" stroke-opacity="0.5" stroke-width="0.8"/>
+        <circle cx="168" cy="96" r="3.2" fill="#f0f2f7" opacity="0.85"/>
+        <path d="M300 170 q20 -10 36 2 q10 14 -8 22 q-24 6 -34 -6 q-6 -10 6 -18 Z" fill="#07070a" opacity="0.5"/>
+        <rect x="152" y="252" width="21" height="13" rx="3" fill="#0b0a0d"/>
+        <rect x="282" y="252" width="21" height="13" rx="3" fill="#0b0a0d"/>
+      </symbol>
+
+      <!-- Reflets "après" -->
+      <symbol id="sheen-tall" viewBox="0 0 220 440">
+        <path d="M42 17 L96 17 L54 423 L17 423 L17 300 Z" fill="url(#g-sheen)"/>
+        <path d="M120 17 L142 17 L96 423 L74 423 Z" fill="#f2ede3" opacity="0.03"/>
+      </symbol>
+      <symbol id="sheen-wide" viewBox="0 0 480 320">
+        <path d="M110 28 L200 28 L140 226 L82 226 L82 120 Z" fill="url(#g-sheen)"/>
+        <path d="M230 28 L262 28 L196 226 L164 226 Z" fill="#f2ede3" opacity="0.03"/>
+      </symbol>
+
+      <!-- Icônes -->
+      <symbol id="ico-iphone" viewBox="0 0 48 48"><rect x="13" y="5" width="22" height="38" rx="5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M20 9h8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M22 37h4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+      <symbol id="ico-samsung" viewBox="0 0 48 48"><rect x="13" y="5" width="22" height="38" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="24" cy="10" r="1.6" fill="currentColor"/><path d="M20 38h8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+      <symbol id="ico-laptop" viewBox="0 0 48 48"><rect x="10" y="9" width="28" height="20" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M6 35h36l-3 5H9Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-desktop" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M20 36h8M17 41h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M24 30v6" stroke="currentColor" stroke-width="2.4"/></symbol>
+      <symbol id="ico-swap" viewBox="0 0 48 48"><path d="M10 17h24l-6 -7M38 31H14l6 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-tag" viewBox="0 0 48 48"><path d="M6 22V8h14l20 20-14 14L6 22Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><circle cx="15" cy="17" r="3" fill="currentColor"/></symbol>
+      <symbol id="ico-home" viewBox="0 0 48 48"><path d="M8 22 24 8l16 14v18H28V28h-8v12H8V22Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-doc" viewBox="0 0 48 48"><path d="M12 6h16l8 8v28H12V6Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M18 22h12M18 29h12M18 36h7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+      <symbol id="ico-bolt" viewBox="0 0 48 48"><path d="M26 5 11 27h10l-3 16 15-22H23l3-16Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-scale" viewBox="0 0 48 48"><path d="M24 8v32M14 40h20M10 14h28" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M10 14 5 26a5 5 0 0 0 10 0L10 14ZM38 14l-5 12a5 5 0 0 0 10 0l-5-12Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-shield" viewBox="0 0 48 48"><path d="M24 5 9 11v11c0 9.5 6.5 16 15 21 8.5-5 15-11.5 15-21V11L24 5Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="m17 24 5 5 9-10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="ico-cpu" viewBox="0 0 48 48"><rect x="12" y="12" width="24" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="2.6"/><rect x="20" y="20" width="8" height="8" fill="currentColor"/><path d="M18 5v7M30 5v7M18 36v7M30 36v7M5 18h7M5 30h7M36 18h7M36 30h7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+      <symbol id="ico-pin" viewBox="0 0 48 48"><path d="M24 5A14 14 0 0 0 10 19c0 10 14 24 14 24s14-14 14-24A14 14 0 0 0 24 5Z" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="24" cy="19" r="4.5" fill="currentColor"/></symbol>
+      <symbol id="ico-phone" viewBox="0 0 48 48"><path d="M14 6c-2 0-8 1-8 8 0 16 12 28 28 28 7 0 8-6 8-8 0-1-.6-2-1.6-2.4l-7-3c-1-.4-2 0-2.6.8L28.4 32c-4-2-7.4-5.4-9.4-9.4l3-2.4c.8-.6 1.2-1.6.8-2.6l-3-7C19.4 9.6 18.4 9 17.4 9L14 6Z" fill="currentColor"/></symbol>
+      <symbol id="ico-chat" viewBox="0 0 48 48"><path d="M24 6C13 6 4 13.6 4 23c0 5 2.6 9.4 6.7 12.4L9 44l9.3-4.5c1.8.4 3.7.6 5.7.6 11 0 20-7.6 20-17S35 6 24 6Z" fill="currentColor"/></symbol>
+      <symbol id="ico-mail" viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="m8 14 16 12 16-12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
