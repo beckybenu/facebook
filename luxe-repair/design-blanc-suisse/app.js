@@ -160,8 +160,8 @@
     var pScreen = new THREE.Mesh(new THREE.PlaneGeometry(1.32, 2.92), glassScreen);
     pScreen.position.z = 0.075;
     phone.add(pScreen);
-    phone.position.set(-3.1, 0.5, 0.5);
-    phone.rotation.set(-0.12, 0.5, 0.06);
+    phone.position.set(5.1, 1.1, -0.2);
+    phone.rotation.set(-0.12, -0.35, 0.06);
     group.add(phone);
 
     /* ----- Laptop entrouvert ----- */
@@ -196,7 +196,7 @@
     var axis = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.26, 14), gold);
     axis.rotation.x = Math.PI / 2;
     gear.add(axis);
-    gear.position.set(0.6, 2.1, -1.4);
+    gear.position.set(6.4, 2.7, -1.6);
     group.add(gear);
 
     /* ----- Tournevis de précision (abstraits) ----- */
@@ -217,11 +217,11 @@
       return g;
     }
     var sd1 = screwdriver();
-    sd1.position.set(-1.2, -1.5, 0.8);
+    sd1.position.set(4.1, -2.2, 0.6);
     sd1.rotation.set(0.2, 0.1, 1.05);
     group.add(sd1);
     var sd2 = screwdriver();
-    sd2.position.set(4.4, 1.6, -1.8);
+    sd2.position.set(6.9, 0.1, -1.2);
     sd2.rotation.set(-0.3, 0.2, -0.7);
     sd2.scale.setScalar(0.8);
     group.add(sd2);
@@ -247,6 +247,11 @@
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      /* Sur écran étroit, la composition se replie sur le bord droit
+         pour ne jamais passer sous le titre. */
+      var narrow = camera.aspect < 0.9;
+      group.scale.setScalar(narrow ? 0.5 : 1);
+      group.position.x = narrow ? 1.4 : 0;
     }
     resize();
     window.addEventListener("resize", resize);
@@ -279,14 +284,14 @@
       group.rotation.x = my * 0.14;
       group.position.y = -scrollY * 0.0016;
 
-      phone.position.y = 0.5 + Math.sin(t * 1.1) * 0.16;
-      phone.rotation.y = 0.5 + Math.sin(t * 0.5) * 0.1;
+      phone.position.y = 1.1 + Math.sin(t * 1.1) * 0.16;
+      phone.rotation.y = -0.35 + Math.sin(t * 0.5) * 0.1;
       laptop.position.y = -1.1 + Math.sin(t * 0.9 + 1.4) * 0.13;
       gear.rotation.z = t * 0.5;
-      gear.position.y = 2.1 + Math.sin(t * 0.8 + 0.6) * 0.1;
+      gear.position.y = 2.7 + Math.sin(t * 0.8 + 0.6) * 0.1;
       sd1.rotation.z = 1.05 + Math.sin(t * 0.7) * 0.06;
-      sd1.position.y = -1.5 + Math.sin(t * 1.0 + 2.1) * 0.1;
-      sd2.position.y = 1.6 + Math.sin(t * 0.85 + 3.2) * 0.12;
+      sd1.position.y = -2.2 + Math.sin(t * 1.0 + 2.1) * 0.1;
+      sd2.position.y = 0.1 + Math.sin(t * 0.85 + 3.2) * 0.12;
       points.rotation.y = t * 0.02;
 
       camera.lookAt(0, 0.1, 0);

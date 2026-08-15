@@ -355,6 +355,12 @@
       world.rotation.x = my * 0.06;
       world.position.y = -scrollPos * 0.0016;
 
+      /* Le décor 3D s'estompe une fois le hero quitté, pour laisser
+         les sections lisibles (les particules restent en toile de fond). */
+      var vh = window.innerHeight || 1;
+      var fade = 1 - Math.min(Math.max((scrollPos - vh * 0.45) / (vh * 0.75), 0), 1);
+      canvas.style.opacity = (0.22 + fade * 0.78).toFixed(3);
+
       camera.lookAt(anchor.position.x * 0.5, 0.1, 0);
       renderer.render(scene, camera);
     }
