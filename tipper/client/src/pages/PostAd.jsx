@@ -50,7 +50,17 @@ export function PostAd() {
     setBusy(true);
     try {
       let lat, lng;
-      if (useGeo) { try { const u = await captureLocation(); lat = u.lat; lng = u.lng; setUser(u); } catch { /* ignore */ } }
+      // On ne fait pas attendre la publication après le GPS : au-delà de 3 s
+      // on publie sans coordonnées précises plutôt que de bloquer l'écran.
+      if (useGeo) {
+        try {
+          const u = await Promise.race([
+            captureLocation(),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000)),
+          ]);
+          if (u) { lat = u.lat; lng = u.lng; setUser(u); }
+        } catch { /* on publie quand même */ }
+      }
       const form = new FormData();
       form.append('category', category);
       form.append('title', title);

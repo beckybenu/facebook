@@ -104,12 +104,12 @@ export function Home() {
               <div className="tile" onClick={() => navigate('/profile')}>
                 <div className="t-ic" style={{ background: 'rgba(255,122,69,0.16)' }}>🙋</div>
                 <div className="t-t">{t('ux.home.mine')}</div>
-                <div className="t-s">{openMine > 0 ? `${openMine} ${t('ux.home.mine.d').toLowerCase()}` : t('ux.none')}</div>
+                <div className="t-s">{openMine > 0 ? `${openMine} ${t('ux.home.ongoing')}` : t('ux.none')}</div>
               </div>
               <div className="tile" onClick={() => navigate('/profile')}>
                 <div className="t-ic" style={{ background: 'rgba(54,224,160,0.14)' }}>🤝</div>
                 <div className="t-t">{t('ux.home.myoffers')}</div>
-                <div className="t-s">{openProps > 0 ? `${openProps} ${t('ux.home.myoffers.d').toLowerCase()}` : t('ux.none')}</div>
+                <div className="t-s">{openProps > 0 ? `${openProps} ${t('ux.home.ongoing')}` : t('ux.none')}</div>
               </div>
             </div>
           </>
