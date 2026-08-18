@@ -601,6 +601,9 @@ a.ligne-contact:hover{color:var(--or-texte);transform:translateX(3px)}
   .nav-links.ouvert a{min-height:48px;font-size:1.04rem}
   .nav-links.ouvert a::after{bottom:12px}
   .hero{min-height:auto;padding-top:118px}
+  /* Sur petit ecran, socle et ombre portee restent dans la fenetre */
+  .socle-large{width:100%}
+  .socle::after{left:-4%;right:-4%}
   .apropos-visuel{flex-direction:column;align-items:stretch}
   .apropos-visuel .device{width:min(58%,210px);align-self:center}
   .pq-grille{grid-template-columns:1fr}
