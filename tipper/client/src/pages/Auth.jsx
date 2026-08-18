@@ -24,6 +24,19 @@ function Logo() {
   );
 }
 
+// La valeur de Tipper en trois lignes : ce que c'est, et les deux façons
+// de s'en servir. Court volontairement — ce n'est pas une page de vente.
+function ValueProp() {
+  const { t } = useApp();
+  return (
+    <div className="valueprop">
+      <div className="vp-h">{t('ux.login.h1')}</div>
+      <div className="vp-l"><span>🙋</span>{t('ux.login.l1')}</div>
+      <div className="vp-l"><span>🤝</span>{t('ux.login.l2')}</div>
+    </div>
+  );
+}
+
 export function Login() {
   const { login, showToast, t } = useApp();
   const navigate = useNavigate();
@@ -43,6 +56,7 @@ export function Login() {
     <div className="auth">
       <LangSwitch />
       <Logo />
+      <ValueProp />
       <form className="auth-card" onSubmit={submit}>
         <div className="h-page" style={{ marginBottom: 16 }}>{t('auth.welcome')}</div>
         <div className="field">
@@ -57,7 +71,7 @@ export function Login() {
         <div className="auth-switch" onClick={() => navigate('/signup')}>{t('auth.new')} <b>{t('auth.create')}</b></div>
       </form>
       <div className="center muted" style={{ fontSize: 12, marginTop: 18 }}>
-        Démo : <b>sophie@tipper.app</b> · password <b>password</b>
+        {t('ux.login.demo')} · <b>sophie@tipper.app</b> · <b>password</b>
       </div>
     </div>
   );
