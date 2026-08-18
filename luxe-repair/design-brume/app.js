@@ -373,7 +373,8 @@
     /* ----- Redimensionnement ----- */
     var baseScale = 1;
     function resize() {
-      var w = window.innerWidth, h = window.innerHeight;
+      var w = document.documentElement.clientWidth || window.innerWidth;
+      var h = window.innerHeight;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();

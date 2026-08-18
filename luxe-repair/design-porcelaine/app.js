@@ -317,7 +317,10 @@
     /* ----- Dimensions ----- */
     var echelle = 1;
     function resize() {
-      var w = window.innerWidth, h = window.innerHeight;
+      /* clientWidth exclut la barre de defilement : le canvas ne peut pas
+         creer de debordement horizontal. */
+      var w = document.documentElement.clientWidth || window.innerWidth;
+      var h = window.innerHeight;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -343,17 +346,33 @@
     }
 
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", function () {
+      resize();
+      cibleX = borner(cibleBrute);
+    });
 
     /* ----- Cibles pilotées par la salle visible ----- */
-    var cibleX = 2.7;
+    /* Demi largeur visible au plan de l'objet : la piece reste dans le cadre
+       et, sur le hero centre, se tient a l'ecart du titre. */
+    function demiLargeur() {
+      var demiHauteur = Math.tan((camera.fov * Math.PI / 180) / 2) * camera.position.z;
+      return demiHauteur * camera.aspect;
+    }
+    function borner(x) {
+      var marge = demiLargeur() - 2.1 * echelle;
+      if (marge < 0.4) marge = 0.4;
+      return Math.max(-marge, Math.min(marge, x));
+    }
+    var cibleBrute = 5.6;
+    var cibleX = borner(cibleBrute);
     var cibleOpacite = 1;
     var salles = $$("[data-scene-x]");
     if ("IntersectionObserver" in window && salles.length) {
       var salleIO = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (e.isIntersecting) {
-            cibleX = parseFloat(e.target.dataset.sceneX || "0");
+            cibleBrute = parseFloat(e.target.dataset.sceneX || "0");
+            cibleX = borner(cibleBrute);
             cibleOpacite = parseFloat(e.target.dataset.sceneO || "1");
           }
         });

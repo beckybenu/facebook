@@ -208,10 +208,13 @@
 
     /* ----- Matériaux : boîtier clair, chants dorés, écran lumineux ----- */
     var matBody = new THREE.MeshStandardMaterial({ color: 0xf1ebdf, metalness: 0.25, roughness: 0.42 });
-    var matGold = new THREE.MeshStandardMaterial({ color: 0xa8843c, metalness: 0.95, roughness: 0.26 });
+    var matGold = new THREE.MeshStandardMaterial({
+      color: 0xd7b475, metalness: 0.38, roughness: 0.3,
+      emissive: 0x6b4f1e, emissiveIntensity: 0.3
+    });
     var matGlass = new THREE.MeshStandardMaterial({
-      color: 0xece1c9, metalness: 0.3, roughness: 0.16,
-      emissive: 0xf3e3c0, emissiveIntensity: 0.32
+      color: 0xf6efe0, metalness: 0.15, roughness: 0.1,
+      emissive: 0xfbf3e2, emissiveIntensity: 0.62
     });
     var matBattery = new THREE.MeshStandardMaterial({ color: 0xe6dece, metalness: 0.2, roughness: 0.6 });
     var matBoard = new THREE.MeshStandardMaterial({ color: 0xded5c2, metalness: 0.25, roughness: 0.55 });
@@ -319,7 +322,7 @@
     shade.rotation.x = -Math.PI / 2;
     shade.position.y = 0.26;
     stand.add(shade);
-    stand.position.y = -4.2;
+    stand.position.y = -3.7;
 
     /* ----- Éclats discrets en suspension ----- */
     var pCount = 110;
