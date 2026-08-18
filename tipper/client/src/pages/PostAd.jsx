@@ -5,7 +5,8 @@ import { Confetti } from '../components/fx.jsx';
 import { feedback } from '../sound.js';
 import { useApp } from '../context/AppContext.jsx';
 import { api } from '../api.js';
-import { catLabel, catIcon, catTint, coin, TIP_SUGGESTION, priceMode } from '../constants.js';
+import { catIcon, catTint, coin, TIP_SUGGESTION, priceMode } from '../constants.js';
+import { PayExplainer } from '../components/Explain.jsx';
 
 export function PostAd() {
   const { category } = useParams();
@@ -25,6 +26,7 @@ export function PostAd() {
   const [scheduled, setScheduled] = useState('');
   const [useGeo, setUseGeo] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [recap, setRecap] = useState(false); // écran « Voici votre demande »
 
   function pickPhoto(e) {
     const f = e.target.files[0];
@@ -32,11 +34,19 @@ export function PostAd() {
     setPhoto(f); setPreview(URL.createObjectURL(f));
   }
 
-  async function submit(e) {
+  // Étape 1 : on valide et on montre le récapitulatif. Rien n'est publié ici.
+  function review(e) {
     e.preventDefault();
     if (!title.trim()) return showToast(t('post.errTitle'), 'error');
     if (!tip || Number(tip) <= 0) return showToast(t('post.errTip'), 'error');
     if (Number(tip) > user.available) return showToast(t('post.errBalance'), 'error');
+    setRecap(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Étape 2 : publication réelle, après confirmation du récapitulatif.
+  async function submit(e) {
+    if (e) e.preventDefault();
     setBusy(true);
     try {
       let lat, lng;
@@ -58,10 +68,64 @@ export function PostAd() {
     finally { setBusy(false); }
   }
 
+  // ── Récapitulatif : ce qui sera publié, avant de s'engager ──
+  if (recap) {
+    return (
+      <Screen nav={false}>
+        <AppBar title={t('ux.rec.title')} back={false} />
+        <div className="content">
+          <div className="eyebrow">{t('ux.rec.title')}</div>
+          <p className="sub" style={{ margin: '6px 0 16px' }}>{t('ux.rec.d')}</p>
+
+          <div className="recap">
+            <div className="recap-row">
+              <span className="r-k">{t('ux.rec.what')}</span>
+              <span className="r-v">{title}</span>
+            </div>
+            {description && (
+              <div className="recap-row">
+                <span className="r-k">{t('post.descLabel')}</span>
+                <span className="r-v" style={{ fontWeight: 400 }}>{description}</span>
+              </div>
+            )}
+            <div className="recap-row">
+              <span className="r-k">{t('ux.rec.when')}</span>
+              <span className="r-v">{scheduled ? new Date(scheduled).toLocaleString() : t('ux.rec.asap')}</span>
+            </div>
+            <div className="recap-row">
+              <span className="r-k">{t('ux.rec.where')}</span>
+              <span className="r-v">{useGeo ? (user.city || '📍') : (user.city || t('ux.rec.noloc'))}</span>
+            </div>
+            {isQuest && price && (
+              <div className="recap-row">
+                <span className="r-k">{t('post.priceQuest')}</span>
+                <span className="r-v">{coin(Number(price))}</span>
+              </div>
+            )}
+            <div className="recap-row">
+              <span className="r-k">{t('ux.rec.reward')}</span>
+              <span className="r-v big">{coin(Number(tip))}</span>
+            </div>
+          </div>
+
+          {/* Ce qui va arriver à l'argent, dit avant de publier */}
+          <PayExplainer role="poster" />
+
+          <button className="btn coral" disabled={busy} onClick={submit}>
+            {busy ? t('post.publishing') : t('ux.rec.publish')}
+          </button>
+          <div className="spacer" />
+          <button className="btn ghost" disabled={busy} onClick={() => setRecap(false)}>{t('ux.rec.edit')}</button>
+          <div className="spacer" />
+        </div>
+      </Screen>
+    );
+  }
+
   return (
     <Screen nav={false}>
-      <AppBar title={catLabel(category)} back="/categories" />
-      <form className="content" onSubmit={submit}>
+      <AppBar title={t(`cat.${category}`)} back="/categories" />
+      <form className="content" onSubmit={review}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <div className="qa-ic" style={{ background: catTint(category) + '22', color: catTint(category), fontSize: 24, width: 50, height: 50 }}>{catIcon(category)}</div>
           <div>
@@ -125,7 +189,7 @@ export function PostAd() {
           <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)} />
         </div>
 
-        <button className="btn coral" disabled={busy}>{busy ? t('post.publishing') : t('post.publish')}</button>
+        <button className="btn coral">{t('post.review')}</button>
         <div className="spacer" />
       </form>
     </Screen>

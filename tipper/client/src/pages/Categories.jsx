@@ -1,16 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { Screen, AppBar } from '../components/Layout.jsx';
+import { useApp } from '../context/AppContext.jsx';
 import { CATEGORIES } from '../constants.js';
 
 export function Categories() {
   const navigate = useNavigate();
+  const { t } = useApp();
   return (
     <Screen>
-      <AppBar title="Publier une demande" back="/" />
+      <AppBar title={t('ux.cat.title')} back="/" />
       <div className="content">
-        <div className="eyebrow">Étape 1 / 2</div>
-        <h1 className="h-page" style={{ margin: '6px 0 6px' }}>Quelle catégorie ?</h1>
-        <p className="sub" style={{ marginBottom: 18 }}>Choisissez le type de service que vous recherchez.</p>
+        <div className="eyebrow">{t('ux.cat.step')}</div>
+        <h1 className="h-page" style={{ margin: '6px 0 6px' }}>{t('ux.cat.q')}</h1>
+        <p className="sub" style={{ marginBottom: 18 }}>{t('ux.cat.d')}</p>
         <div className="qa-grid">
           {CATEGORIES.map((c) => (
             <div key={c.key} className="qa" onClick={() => navigate(`/post/${c.key}`)}>

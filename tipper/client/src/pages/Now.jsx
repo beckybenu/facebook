@@ -91,7 +91,7 @@ export function Now() {
           <div className="ai-draft fade-in" style={{ marginTop: 18 }}>
             <div className="badge-row">
               <span className={`kind-badge ${draft.kind}`}>{KIND_META[draft.kind].emoji} {KIND_META[draft.kind].label}</span>
-              <span className="tag cat">{catIcon(draft.category)} {catLabel(draft.category)}</span>
+              <span className="tag cat">{catIcon(draft.category)} {t(`cat.${draft.category}`)}</span>
               {draft.urgent && <span className="tag urgent">{t('ad.urgent')}</span>}
             </div>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>{draft.title}</div>
