@@ -493,7 +493,7 @@
       /* Sur mobile l'appareil rapetisse et ses trajectoires se resserrent
          vers les bords, pour ne jamais stationner sous un bloc de texte. */
       baseScale = isSmall ? 0.52 : (w < 1100 ? 0.78 : 1);
-      edgePush = isSmall ? 1.2 : 1;
+      edgePush = isSmall ? 2.15 : 1;
       computeKeyframeProgress();
     }
     resize();
@@ -595,7 +595,9 @@
 
       /* L'appareil ne bascule en matériau transparent que le temps de
          son retrait au loin : pas de recompilation à chaque image. */
-      var op = k.opacity;
+      /* En portrait le texte occupe toute la largeur : l'appareil s'efface
+         partiellement pour rester un decor, jamais un obstacle. */
+      var op = k.opacity * (isSmall ? 0.42 : 1);
       var wantFade = op < 0.995;
       if (wantFade !== fading) {
         fading = wantFade;
