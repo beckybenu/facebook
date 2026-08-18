@@ -3,11 +3,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Screen, AppBar, Spinner, Avatar, Stars, Sheet } from '../components/Layout.jsx';
 import { api } from '../api.js';
 import { useApp } from '../context/AppContext.jsx';
-import { PayExplainer, Journey, journeyStep } from '../components/Explain.jsx';
-import { coin, catIcon, catTint, dateShort, priceMode } from '../constants.js';
+import { coin, chf, catLabel, catIcon, catTint, dateShort, priceMode } from '../constants.js';
 
 const CHATTABLE = ['accepted', 'delivered', 'completed'];
 
+const STEPS = [
+  { key: 'open', cap: 'Ouverte', i: 0 },
+  { key: 'in_progress', cap: 'Acceptée', i: 1 },
+  { key: 'delivered', cap: 'Livrée', i: 2 },
+  { key: 'completed', cap: 'Terminée', i: 3 },
+];
+const stepIndex = { open: 0, in_progress: 1, delivered: 2, completed: 3, cancelled: 0 };
 
 // Distance approx (km) entre deux points — pour le badge « le plus proche »
 function distKm(lat1, lng1, lat2, lng2) {
@@ -16,6 +22,21 @@ function distKm(lat1, lng1, lat2, lng2) {
   const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function Stepper({ status, t }) {
+  const cur = stepIndex[status] ?? 0;
+  return (
+    <div className="stepper">
+      {STEPS.map((s) => (
+        <div key={s.key} className={`st ${s.i < cur ? 'done' : s.i === cur ? 'active' : ''}`}>
+          <div className="bar" />
+          <div className="ring">{s.i < cur ? '✓' : s.i + 1}</div>
+          <div className="cap">{t(`step.${s.key}`)}</div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function RatingSheet({ onClose, onSubmit, title, t }) {
@@ -128,7 +149,7 @@ export function AdDetail() {
 
   return (
     <Screen nav={false}>
-      <AppBar title={t(`cat.${ad.category}`)} back="/explore"
+      <AppBar title={catLabel(ad.category)} back="/explore"
         right={<button className="iconbtn" onClick={async () => { await api.toggleSave(id); load(); }}>{ad.is_saved ? '♥' : '♡'}</button>} />
       <div className="content">
         {ad.photo
@@ -136,14 +157,13 @@ export function AdDetail() {
           : <div style={{ height: 150, borderRadius: 'var(--r-md)', marginBottom: 14, display: 'grid', placeItems: 'center', fontSize: 56, background: catTint(ad.category) + '22', color: catTint(ad.category) }}>{catIcon(ad.category)}</div>}
 
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 8 }}>
-          <span className="tag cat">{t(`cat.${ad.category}`)}</span>
+          <span className="tag cat">{catLabel(ad.category)}</span>
           {ad.urgent && <span className="tag urgent">{t('ad.urgent')}</span>}
           <span className={`status ${ad.status}`} style={{ marginLeft: 'auto' }}>{t(`status.${ad.status}`)}</span>
         </div>
         <h1 className="h-page" style={{ marginBottom: 12 }}>{ad.title}</h1>
 
-        {/* Où en est la demande — les six étapes réelles du parcours */}
-        {ad.status !== 'cancelled' && <div className="card"><Journey step={journeyStep(ad)} /></div>}
+        {ad.status !== 'cancelled' && <div className="card"><Stepper status={ad.status} t={t} /></div>}
 
         <div className="card">
           <div className="tx" style={{ borderBottom: '1px solid var(--line-soft)' }}>
@@ -201,8 +221,6 @@ export function AdDetail() {
               : isQuest
                 ? <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.reward')} : {coin(ad.tip_amount)}</div>
                 : <div className="suggest" style={{ marginBottom: 10 }}>{t('ad.totalLabel')} : {coin((parseFloat(offerPrice) || 0) + ad.tip_amount)} ({t('ad.item')} {offerPrice > 0 ? coin(parseFloat(offerPrice)) : t('ad.offered')} + {coin(ad.tip_amount)})</div>}
-            {/* Ce que l'aidant touchera réellement, commission déduite */}
-            <PayExplainer role="helper" amount={ad.tip_amount} commission={user.pro ? 0.05 : 0.1} />
             <button className="btn coral" disabled={busy} onClick={apply}>{t('ad.apply')}</button>
             <div className="suggest" style={{ marginTop: 10 }}>{t('ad.applyHint')}</div>
           </div>
@@ -216,21 +234,15 @@ export function AdDetail() {
         {/* Gestion par l'auteur */}
         {mine && (
           <>
-            {/* Rappel au demandeur de ce qui arrive à son argent */}
-            {!closed && <PayExplainer role="poster" />}
             <div className="h-sec" style={{ marginTop: 8 }}>{t('ad.candidatures')} ({ad.applications?.length || 0})</div>
             {(!ad.applications || ad.applications.length === 0) && <div className="card center muted">{t('ad.noCand')}</div>}
             {ad.applications?.map((a) => (
               <div key={a.id} className="card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }} onClick={() => navigate(`/u/${a.applicant.id}`)}>
                   <Avatar user={a.applicant} size="m" />
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 800 }}>{a.applicant.full_name} {a.applicant.verified && '✅'}</div>
                     <Stars value={a.applicant.rating} count={a.applicant.rating_count} />
-                    {/* Distance : affichée seulement si les deux positions sont connues */}
-                    {isFinite(appDist(a)) && (
-                      <div className="sub" style={{ fontSize: 12, marginTop: 2 }}>📍 {appDist(a) < 1 ? '< 1' : Math.round(appDist(a))} km</div>
-                    )}
                   </div>
                   <span className={`status ${a.status}`}>{t(`status.${a.status}`)}</span>
                 </div>

@@ -85,9 +85,8 @@ export default function App() {
       <RouterShell>
         <Router />
         <Toast />
-        {/* dans le Router : la dernière étape oriente vers demander / aider */}
-        <Onboarding />
       </RouterShell>
+      <Onboarding />
     </AppProvider>
   );
 }

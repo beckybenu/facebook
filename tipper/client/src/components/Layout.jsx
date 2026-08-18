@@ -54,8 +54,7 @@ export function Nav() {
       <button ref={(e) => (refs.current.explore = e)} className={`n ${activeKey === 'explore' ? 'active' : ''}`} onClick={() => go('/explore')}>
         <span className="ic">🧭</span><span>{t('nav.explore')}</span>
       </button>
-      {/* Le « + » fait ce qu'on attend d'un « + » : publier une demande */}
-      <button className="fab" onClick={() => { feedback('tap'); navigate('/categories'); }} aria-label={t('ux.need.t')}>＋</button>
+      <button className="fab" onClick={() => { feedback('tap'); navigate('/now'); }} aria-label="Tipper Now">＋</button>
       <button ref={(e) => (refs.current.boite = e)} className={`n ${activeKey === 'boite' ? 'active' : ''}`} onClick={() => go('/messages')}>
         {(unreadMsg + unreadNotif) > 0 && <span className="nb">{Math.min(9, unreadMsg + unreadNotif)}</span>}
         <span className="ic">💬</span><span>{t('nav.inbox')}</span>
@@ -71,17 +70,15 @@ export function HeaderMenu() {
   const navigate = useNavigate();
   const { user, t, openOnboarding } = useApp();
   const [open, setOpen] = useState(false);
-  // Les deux actions principales en tête, puis le reste — chaque entrée
-  // dit ce qu'elle fait plutôt que le nom interne de la fonctionnalité.
   const items = [
-    { ic: '🙋', label: t('ux.need.t'), to: '/categories' },
-    { ic: '🤝', label: t('ux.help.t'), to: '/explore' },
-    { ic: '⚡', label: t('ux.f.now'), to: '/now' },
-    { ic: '🗺️', label: t('ux.f.map'), to: '/map' },
-    { ic: '👛', label: t('ux.wallet.title'), to: '/wallet' },
+    { ic: '⚡', label: t('menu.now'), to: '/now' },
+    { ic: '📣', label: t('home.publish'), to: '/categories' },
+    { ic: '🧭', label: t('nav.explore'), to: '/explore' },
+    { ic: '🗺️', label: t('home.map'), to: '/map' },
+    { ic: '👛', label: t('menu.wallet'), to: '/wallet' },
+    { ic: '🏆', label: t('home.rank'), to: '/leaderboard' },
     { ic: '💬', label: t('nav.inbox'), to: '/messages' },
-    { ic: user.verified ? '✅' : '🪪', label: t('ux.f.verify'), to: '/verify' },
-    { ic: '🏆', label: t('ux.f.rank'), to: '/leaderboard' },
+    { ic: user.verified ? '✅' : '🪪', label: t('menu.verify'), to: '/verify' },
     { ic: '👤', label: t('nav.profile'), to: '/profile' },
   ];
   if (user.is_admin) items.push({ ic: '🛠️', label: t('menu.admin'), to: '/admin' });
