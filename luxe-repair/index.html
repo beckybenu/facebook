@@ -67,6 +67,8 @@
       gap: 26px;
       margin-bottom: 54px;
     }
+    /* Une carte seule ne doit pas s'étirer sur toute la largeur */
+    .designs.solo { grid-template-columns: minmax(0, 420px); }
     .design {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -153,7 +155,7 @@
       <h2 class="serie">Le film 3D</h2>
       <p class="serie-note">Une proposition à part : l'appareil est chorégraphié au défilement comme dans un film. Il traverse l'écran, tourne sur lui-même, explose en pièces, se réassemble et revient réparé.</p>
 
-      <div class="designs">
+      <div class="designs solo">
         <article class="design">
           <div class="preview">
             <iframe src="design-orbite/index.html" title="Aperçu du design Orbite" loading="lazy" tabindex="-1"></iframe>
