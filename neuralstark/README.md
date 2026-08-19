@@ -31,6 +31,17 @@ vos fichiers.
   **⚙️ LLM**, avec n'importe quelle API compatible OpenAI (OpenAI, DeepSeek, Groq,
   Ollama, LM Studio, vLLM…) — la clé reste stockée localement dans le navigateur.
 
+## 🖥️ Deux pages
+
+| Page | Rôle |
+|------|------|
+| `index.html` | **Site vitrine 3D** : présentation commerciale de NeuralStark. Cerveau WebGL (three.js) dont les 130 points sont les agents réels du catalogue, démonstration en direct du routeur, catalogue des 12 domaines. |
+| `app.html` | **L'application** : les 130 agents, le chat, le RAG et la base de connaissances. |
+
+La vitrine n'a aucune dépendance réseau : `three.js` est embarqué dans `vendor/`.
+Sans WebGL, la page bascule sur un fond statique et reste entièrement lisible ;
+`prefers-reduced-motion` coupe rotation et pulsations.
+
 ## 🚀 Démarrage rapide
 
 Comme c'est un site **statique**, il suffit de servir le dossier avec n'importe quel
@@ -38,7 +49,8 @@ serveur HTTP :
 
 ```bash
 cd neuralstark
-python3 -m http.server 5178      # → http://localhost:5178
+python3 -m http.server 5178      # → http://localhost:5178  (vitrine)
+                                 #   http://localhost:5178/app.html  (application)
 # ou : npx serve .   ·   ou : npm start  (serveur Node natif optionnel, + API REST)
 ```
 
@@ -46,7 +58,7 @@ Node.js ≥ 18 pour les scripts/tests. Zéro dépendance npm. Deux documents de
 démonstration (profil SwissPaints + un devis) sont chargés au premier lancement, donc
 le RAG marche immédiatement.
 
-> ⚠️ Ouvrir `index.html` via `file://` ne marche pas (les modules ES et `fetch`
+> ⚠️ Ouvrir les pages via `file://` ne marche pas (les modules ES et `fetch`
 > exigent `http://`). Passez par un serveur HTTP local ou GitHub Pages.
 
 ### Activer un vrai LLM (optionnel)
@@ -70,8 +82,10 @@ https://<user>.github.io/<repo>/neuralstark/
 
 ```
 neuralstark/
-├── index.html · styles.css · app.js   # site statique (0 build), point d'entrée
-├── .nojekyll                           # sert le dossier tel quel sur GitHub Pages
+├── index.html · site.css · site.js · brain.js   # site vitrine 3D (page d'entrée)
+├── app.html · styles.css · app.js               # l'application (130 agents + RAG)
+├── vendor/three.min.js                          # three.js embarqué, aucun CDN
+├── .nojekyll                                    # sert le dossier tel quel sur GitHub Pages
 ├── lib/                                # cœur applicatif côté navigateur (ES modules)
 │   ├── rag.js       # moteur RAG (chunk, TF-IDF, cosinus, localStorage, seed)
 │   ├── router.js    # routeur d'agents (cœur du Cerveau Central orchestrateur)

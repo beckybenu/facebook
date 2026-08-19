@@ -112,6 +112,12 @@ prévisualiser ou piloter d'autres intégrations.
 - **Frontend** : HTML/CSS/JS vanilla, chemins **relatifs** → **site statique** déployable
   tel quel sur **GitHub Pages** (`.nojekyll` inclus), sans backend.
   URL type : `https://<user>.github.io/<repo>/neuralstark/`.
+- **Site vitrine** (`index.html`, `site.css`, `site.js`, `brain.js`) : page de présentation
+  commerciale. La scène 3D (three.js embarqué dans `vendor/`, aucun CDN) affiche les 130
+  agents réels lus depuis `data/agents.json`, et la section « orchestration » exécute
+  `lib/router.js`, le routeur de production, directement dans la page. L'application est
+  accessible depuis la vitrine sous `app.html`. Dégradations prévues : sans WebGL, fond
+  statique ; `prefers-reduced-motion`, rotation et pulsations coupées.
 - **Serveur Node optionnel** (`server/`) : HTTP natif, sert les mêmes fichiers et ajoute
   une API REST (base de connaissances partagée côté serveur). Node.js ≥ 18, 0 dépendance.
 - **LLM** : mode démo hors-ligne, ou toute API compatible OpenAI `/chat/completions`
