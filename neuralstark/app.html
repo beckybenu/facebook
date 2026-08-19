@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a12" />
+  <title>NeuralStark — Le cerveau IA de votre entreprise</title>
+  <meta name="description" content="130 agents IA spécialisés + RAG local. Le cerveau d'entreprise qui apprend de vos documents." />
+  <link rel="icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Barre latérale : catalogue d'agents -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">◆</div>
+        <div class="brand-text">
+          <strong>NeuralStark</strong>
+          <span>L'intelligence sans limite</span>
+        </div>
+      </div>
+
+      <div class="sector">
+        <label class="sector-label" for="sector-select">Domaine d'activité</label>
+        <select id="sector-select" aria-label="Choisir votre domaine d'activité"></select>
+        <p id="sector-desc" class="sector-desc"></p>
+      </div>
+
+      <div class="search">
+        <input id="agent-search" type="search" placeholder="Découvrir votre équipe d'agents…" autocomplete="off" />
+      </div>
+
+      <div class="sidebar-meta">
+        <span id="agent-count-badge" class="badge">130 agents</span>
+        <span id="provider-badge" class="badge badge-muted">…</span>
+      </div>
+
+      <nav id="agent-list" class="agent-list" aria-label="Catalogue des agents"></nav>
+    </aside>
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Zone de conversation -->
+    <main class="chat">
+      <header class="chat-header" id="chat-header">
+        <button id="menu-btn" class="menu-btn" aria-label="Ouvrir le menu des agents" title="Agents">☰</button>
+        <div class="chat-agent">
+          <div class="chat-agent-icon" id="active-icon" style="--c:#e08b4c">🧠</div>
+          <div>
+            <h1 id="active-name">Choisissez un agent</h1>
+            <p id="active-desc">Sélectionnez l'un des 130 agents dans le panneau de gauche pour commencer.</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="view-tabs" role="tablist">
+            <button id="tab-chat" class="view-tab active" role="tab">💬 Assistant</button>
+            <button id="tab-cockpit" class="view-tab" role="tab">📊 Cockpit</button>
+            <button id="tab-autom" class="view-tab" role="tab">⚡ Automations</button>
+          </div>
+          <a href="index.html" class="ghost-btn" title="Revenir à la présentation de NeuralStark">← Le site</a>
+          <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
+          <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
+        </div>
+      </header>
+
+      <section id="messages" class="messages">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-orb">◆</div>
+          <h2>Bienvenue dans NeuralStark</h2>
+          <p>Un seul assistant, 130 agents spécialisés en coulisses.<br />
+             Décrivez simplement votre besoin — il s'occupe du reste.</p>
+        </div>
+      </section>
+
+      <!-- Cockpit : l'IA pilote l'entreprise -->
+      <section id="cockpit" class="cockpit" hidden>
+        <div class="cockpit-head">
+          <div>
+            <h2>Cockpit d'entreprise</h2>
+            <p>Votre IA surveille l'activité et vous propose les actions du jour.</p>
+          </div>
+          <input id="company-name" type="text" placeholder="Nom de votre entreprise…" maxlength="80" />
+        </div>
+
+        <div id="kpi-row" class="kpi-row"></div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>📋 Briefing du jour</h3>
+            <button id="refresh-briefing" class="ghost-btn">Actualiser</button>
+          </div>
+          <div id="briefing" class="briefing"></div>
+        </div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>✅ Plan d'actions — je m'en occupe</h3>
+          </div>
+          <div id="action-list" class="action-list"></div>
+        </div>
+      </section>
+
+      <!-- Automations : les agents travaillent en autonomie -->
+      <section id="autom" class="autom" hidden>
+        <div class="autom-head">
+          <div>
+            <h2>⚡ Neural Automation Engine</h2>
+            <p>Vos agents exécutent ces tâches <strong>automatiquement</strong>, sans intervention.
+               <span id="engine-status" class="engine-status">● moteur actif</span></p>
+          </div>
+          <button id="new-autom-btn" class="primary-btn">+ Nouvelle automation</button>
+        </div>
+
+        <form id="autom-form" class="autom-form" hidden>
+          <input id="af-name" type="text" placeholder="Nom (ex : Rapport client du lundi)" maxlength="60" required />
+          <div class="autom-form-row">
+            <select id="af-trigger"></select>
+            <select id="af-agent"></select>
+          </div>
+          <textarea id="af-task" rows="2" placeholder="Instruction pour l'agent (ex : Prépare le récapitulatif des chantiers terminés…)" required></textarea>
+          <div class="autom-form-row">
+            <button type="button" id="af-cancel" class="ghost-btn">Annuler</button>
+            <button type="submit" class="primary-btn">Créer l'automation</button>
+          </div>
+        </form>
+
+        <div id="workflow-list" class="workflow-list"></div>
+
+        <div class="cockpit-card">
+          <div class="cockpit-card-head">
+            <h3>🗞️ Journal d'activité — ce que vos agents ont fait</h3>
+          </div>
+          <div id="journal" class="journal"></div>
+        </div>
+      </section>
+
+      <form id="composer" class="composer" autocomplete="off">
+        <textarea id="composer-input" rows="1" placeholder="Écrivez votre message…" title="Entrée pour envoyer · Maj+Entrée pour un saut de ligne" disabled></textarea>
+        <button id="send-btn" type="submit" disabled>Envoyer</button>
+      </form>
+    </main>
+
+    <!-- Base de connaissances (RAG) -->
+    <aside class="knowledge">
+      <div class="knowledge-head">
+        <h2>Base de connaissances</h2>
+        <span id="rag-stats" class="badge badge-muted">0 doc</span>
+      </div>
+      <p class="knowledge-hint">Les agents répondent à partir de ces documents (RAG).</p>
+
+      <form id="doc-form" class="doc-form">
+        <input id="doc-name" type="text" placeholder="Nom du document (ex : Devis-2026.txt)" />
+        <textarea id="doc-content" rows="5" placeholder="Collez ici le contenu d'un document interne…"></textarea>
+        <div class="doc-actions">
+          <label class="file-btn">
+            Importer un fichier
+            <input id="doc-file" type="file" accept=".txt,.md,.csv,.json,.log" hidden />
+          </label>
+          <button type="submit" class="primary-btn">Ajouter à la base</button>
+        </div>
+      </form>
+
+      <div id="doc-list" class="doc-list"></div>
+    </aside>
+  </div>
+
+  <!-- Réglages LLM -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-card">
+      <h2>Connecter un modèle LLM</h2>
+      <p class="modal-hint">
+        Sans clé, NeuralStark fonctionne en <strong>mode démo</strong> (réponses extraites de vos
+        documents), 100 % dans le navigateur. Choisissez un fournisseur, collez votre clé, et les
+        réponses deviennent génératives. La clé reste stockée <strong>localement</strong> dans votre
+        navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
+      </p>
+      <label class="modal-label">Fournisseur
+        <select id="cfg-provider">
+          <option value="groq" selected>Groq — gratuit, recommandé</option>
+          <option value="openrouter">OpenRouter — modèles gratuits</option>
+          <option value="ollama">Ollama — local, sans clé</option>
+          <option value="lmstudio">LM Studio — local, sans clé</option>
+          <option value="openai">OpenAI — ⚠️ bloqué en navigateur</option>
+          <option value="custom">Autre (personnalisé)</option>
+        </select>
+      </label>
+      <p id="cfg-provider-hint" class="modal-hint modal-key-hint">
+        🔑 Obtenez votre clé <strong>gratuite</strong> sur
+        <a id="cfg-key-link" href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>,
+        puis collez-la ci-dessous.
+      </p>
+      <p class="modal-hint modal-warn" id="cfg-cors-warn" hidden>
+        ⚠️ Ce site étant <strong>100 % navigateur</strong> (sans serveur), <strong>OpenAI et
+        DeepSeek bloquent les appels</strong> (CORS) → « Failed to fetch ». Choisissez plutôt
+        <strong>Groq</strong> ou <strong>OpenRouter</strong>, ou lancez le serveur Node optionnel
+        (<code>npm start</code>).
+      </p>
+      <label class="modal-label">Clé API
+        <input id="cfg-key" type="password" placeholder="gsk-…  (laisser vide = mode démo)" autocomplete="off" />
+      </label>
+      <label class="modal-label">URL de base
+        <input id="cfg-base" type="text" placeholder="https://api.groq.com/openai/v1" />
+      </label>
+      <label class="modal-label">Modèle
+        <input id="cfg-model" type="text" placeholder="llama-3.3-70b-versatile" />
+      </label>
+      <div class="modal-actions">
+        <button id="cfg-clear" class="ghost-btn">Réinitialiser</button>
+        <span style="flex:1"></span>
+        <button id="cfg-cancel" class="ghost-btn">Annuler</button>
+        <button id="cfg-save" class="primary-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation mobile (type application native) -->
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Navigation principale">
+    <button class="bn-item active" data-view="chat"><span class="bn-icon">💬</span>Assistant</button>
+    <button class="bn-item" data-view="cockpit"><span class="bn-icon">📊</span>Entreprise</button>
+    <button class="bn-item" data-view="autom"><span class="bn-icon">⚡</span>Auto</button>
+    <button class="bn-item" data-view="docs"><span class="bn-icon">📁</span>Docs</button>
+    <button class="bn-item" data-view="team"><span class="bn-icon">👥</span>Équipe</button>
+  </nav>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

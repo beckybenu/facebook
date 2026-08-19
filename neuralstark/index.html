@@ -2,225 +2,274 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a12" />
-  <title>NeuralStark — Le cerveau IA de votre entreprise</title>
-  <meta name="description" content="130 agents IA spécialisés + RAG local. Le cerveau d'entreprise qui apprend de vos documents." />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuralStark, le cerveau IA de votre entreprise</title>
+  <meta name="description" content="NeuralStark lit vos devis, rapports et procédures, puis répond à vos questions en citant les sources. 130 agents spécialisés, un seul point d'entrée, vos données restent chez vous." />
+  <meta name="theme-color" content="#0b0e12" />
   <link rel="icon" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="NeuralStark, le cerveau IA de votre entreprise" />
+  <meta property="og:description" content="130 agents spécialisés branchés sur vos documents. Réponses sourcées, données maîtrisées." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
 </head>
 <body>
-  <div id="app">
-    <!-- Barre latérale : catalogue d'agents -->
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">◆</div>
-        <div class="brand-text">
-          <strong>NeuralStark</strong>
-          <span>L'intelligence sans limite</span>
-        </div>
-      </div>
+  <a class="skip" href="#contenu">Aller au contenu</a>
 
-      <div class="sector">
-        <label class="sector-label" for="sector-select">Domaine d'activité</label>
-        <select id="sector-select" aria-label="Choisir votre domaine d'activité"></select>
-        <p id="sector-desc" class="sector-desc"></p>
-      </div>
-
-      <div class="search">
-        <input id="agent-search" type="search" placeholder="Découvrir votre équipe d'agents…" autocomplete="off" />
-      </div>
-
-      <div class="sidebar-meta">
-        <span id="agent-count-badge" class="badge">130 agents</span>
-        <span id="provider-badge" class="badge badge-muted">…</span>
-      </div>
-
-      <nav id="agent-list" class="agent-list" aria-label="Catalogue des agents"></nav>
-    </aside>
-    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
-
-    <!-- Zone de conversation -->
-    <main class="chat">
-      <header class="chat-header" id="chat-header">
-        <button id="menu-btn" class="menu-btn" aria-label="Ouvrir le menu des agents" title="Agents">☰</button>
-        <div class="chat-agent">
-          <div class="chat-agent-icon" id="active-icon" style="--c:#7c3aed">🧠</div>
-          <div>
-            <h1 id="active-name">Choisissez un agent</h1>
-            <p id="active-desc">Sélectionnez l'un des 130 agents dans le panneau de gauche pour commencer.</p>
-          </div>
-        </div>
-        <div class="header-actions">
-          <div class="view-tabs" role="tablist">
-            <button id="tab-chat" class="view-tab active" role="tab">💬 Assistant</button>
-            <button id="tab-cockpit" class="view-tab" role="tab">📊 Cockpit</button>
-            <button id="tab-autom" class="view-tab" role="tab">⚡ Automations</button>
-          </div>
-          <button id="settings-btn" class="ghost-btn" title="Connecter un modèle LLM">⚙️ LLM</button>
-          <button id="clear-chat" class="ghost-btn" title="Effacer la conversation">Effacer</button>
-        </div>
-      </header>
-
-      <section id="messages" class="messages">
-        <div class="empty-state" id="empty-state">
-          <div class="empty-orb">◆</div>
-          <h2>Bienvenue dans NeuralStark</h2>
-          <p>Un seul assistant, 130 agents spécialisés en coulisses.<br />
-             Décrivez simplement votre besoin — il s'occupe du reste.</p>
-        </div>
-      </section>
-
-      <!-- Cockpit : l'IA pilote l'entreprise -->
-      <section id="cockpit" class="cockpit" hidden>
-        <div class="cockpit-head">
-          <div>
-            <h2>Cockpit d'entreprise</h2>
-            <p>Votre IA surveille l'activité et vous propose les actions du jour.</p>
-          </div>
-          <input id="company-name" type="text" placeholder="Nom de votre entreprise…" maxlength="80" />
-        </div>
-
-        <div id="kpi-row" class="kpi-row"></div>
-
-        <div class="cockpit-card">
-          <div class="cockpit-card-head">
-            <h3>📋 Briefing du jour</h3>
-            <button id="refresh-briefing" class="ghost-btn">Actualiser</button>
-          </div>
-          <div id="briefing" class="briefing"></div>
-        </div>
-
-        <div class="cockpit-card">
-          <div class="cockpit-card-head">
-            <h3>✅ Plan d'actions — je m'en occupe</h3>
-          </div>
-          <div id="action-list" class="action-list"></div>
-        </div>
-      </section>
-
-      <!-- Automations : les agents travaillent en autonomie -->
-      <section id="autom" class="autom" hidden>
-        <div class="autom-head">
-          <div>
-            <h2>⚡ Neural Automation Engine</h2>
-            <p>Vos agents exécutent ces tâches <strong>automatiquement</strong>, sans intervention.
-               <span id="engine-status" class="engine-status">● moteur actif</span></p>
-          </div>
-          <button id="new-autom-btn" class="primary-btn">+ Nouvelle automation</button>
-        </div>
-
-        <form id="autom-form" class="autom-form" hidden>
-          <input id="af-name" type="text" placeholder="Nom (ex : Rapport client du lundi)" maxlength="60" required />
-          <div class="autom-form-row">
-            <select id="af-trigger"></select>
-            <select id="af-agent"></select>
-          </div>
-          <textarea id="af-task" rows="2" placeholder="Instruction pour l'agent (ex : Prépare le récapitulatif des chantiers terminés…)" required></textarea>
-          <div class="autom-form-row">
-            <button type="button" id="af-cancel" class="ghost-btn">Annuler</button>
-            <button type="submit" class="primary-btn">Créer l'automation</button>
-          </div>
-        </form>
-
-        <div id="workflow-list" class="workflow-list"></div>
-
-        <div class="cockpit-card">
-          <div class="cockpit-card-head">
-            <h3>🗞️ Journal d'activité — ce que vos agents ont fait</h3>
-          </div>
-          <div id="journal" class="journal"></div>
-        </div>
-      </section>
-
-      <form id="composer" class="composer" autocomplete="off">
-        <textarea id="composer-input" rows="1" placeholder="Écrivez votre message…" title="Entrée pour envoyer · Maj+Entrée pour un saut de ligne" disabled></textarea>
-        <button id="send-btn" type="submit" disabled>Envoyer</button>
-      </form>
-    </main>
-
-    <!-- Base de connaissances (RAG) -->
-    <aside class="knowledge">
-      <div class="knowledge-head">
-        <h2>Base de connaissances</h2>
-        <span id="rag-stats" class="badge badge-muted">0 doc</span>
-      </div>
-      <p class="knowledge-hint">Les agents répondent à partir de ces documents (RAG).</p>
-
-      <form id="doc-form" class="doc-form">
-        <input id="doc-name" type="text" placeholder="Nom du document (ex : Devis-2026.txt)" />
-        <textarea id="doc-content" rows="5" placeholder="Collez ici le contenu d'un document interne…"></textarea>
-        <div class="doc-actions">
-          <label class="file-btn">
-            Importer un fichier
-            <input id="doc-file" type="file" accept=".txt,.md,.csv,.json,.log" hidden />
-          </label>
-          <button type="submit" class="primary-btn">Ajouter à la base</button>
-        </div>
-      </form>
-
-      <div id="doc-list" class="doc-list"></div>
-    </aside>
+  <!-- Décor 3D : le cerveau. Piloté par brain.js, purement décoratif pour les lecteurs d'écran. -->
+  <div id="stage" aria-hidden="true">
+    <canvas id="brain-canvas"></canvas>
+    <div id="node-tip" class="node-tip" hidden></div>
   </div>
 
-  <!-- Réglages LLM -->
-  <div id="settings-modal" class="modal">
-    <div class="modal-card">
-      <h2>Connecter un modèle LLM</h2>
-      <p class="modal-hint">
-        Sans clé, NeuralStark fonctionne en <strong>mode démo</strong> (réponses extraites de vos
-        documents), 100 % dans le navigateur. Choisissez un fournisseur, collez votre clé, et les
-        réponses deviennent génératives. La clé reste stockée <strong>localement</strong> dans votre
-        navigateur et n'est jamais envoyée ailleurs qu'au fournisseur choisi.
-      </p>
-      <label class="modal-label">Fournisseur
-        <select id="cfg-provider">
-          <option value="groq" selected>Groq — gratuit, recommandé</option>
-          <option value="openrouter">OpenRouter — modèles gratuits</option>
-          <option value="ollama">Ollama — local, sans clé</option>
-          <option value="lmstudio">LM Studio — local, sans clé</option>
-          <option value="openai">OpenAI — ⚠️ bloqué en navigateur</option>
-          <option value="custom">Autre (personnalisé)</option>
-        </select>
-      </label>
-      <p id="cfg-provider-hint" class="modal-hint modal-key-hint">
-        🔑 Obtenez votre clé <strong>gratuite</strong> sur
-        <a id="cfg-key-link" href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>,
-        puis collez-la ci-dessous.
-      </p>
-      <p class="modal-hint modal-warn" id="cfg-cors-warn" hidden>
-        ⚠️ Ce site étant <strong>100 % navigateur</strong> (sans serveur), <strong>OpenAI et
-        DeepSeek bloquent les appels</strong> (CORS) → « Failed to fetch ». Choisissez plutôt
-        <strong>Groq</strong> ou <strong>OpenRouter</strong>, ou lancez le serveur Node optionnel
-        (<code>npm start</code>).
-      </p>
-      <label class="modal-label">Clé API
-        <input id="cfg-key" type="password" placeholder="gsk-…  (laisser vide = mode démo)" autocomplete="off" />
-      </label>
-      <label class="modal-label">URL de base
-        <input id="cfg-base" type="text" placeholder="https://api.groq.com/openai/v1" />
-      </label>
-      <label class="modal-label">Modèle
-        <input id="cfg-model" type="text" placeholder="llama-3.3-70b-versatile" />
-      </label>
-      <div class="modal-actions">
-        <button id="cfg-clear" class="ghost-btn">Réinitialiser</button>
-        <span style="flex:1"></span>
-        <button id="cfg-cancel" class="ghost-btn">Annuler</button>
-        <button id="cfg-save" class="primary-btn">Enregistrer</button>
+  <header class="nav" id="nav">
+    <a class="nav-brand" href="#top">
+      <svg class="nav-mark" viewBox="0 0 64 64" width="26" height="26" aria-hidden="true" focusable="false">
+        <path d="M32 8 L54 32 L32 56 L10 32 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="32" cy="32" r="7" fill="currentColor"/>
+      </svg>
+      <span>NeuralStark</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections du site">
+      <a href="#probleme">Le constat</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#orchestration">Orchestration</a>
+      <a href="#agents">Agents</a>
+      <a href="#securite">Sécurité</a>
+      <a href="#demarrer">Démarrer</a>
+    </nav>
+    <a class="btn btn-ghost nav-cta" href="app.html">Ouvrir la démo</a>
+  </header>
+
+  <main id="contenu">
+    <!-- ————— Hero ————— -->
+    <section class="hero" id="top" data-scene="hero">
+      <div class="hero-inner">
+        <h1>Toute votre entreprise<br />dans un seul cerveau.</h1>
+        <p class="lede">NeuralStark lit vos devis, vos rapports et vos procédures, puis répond à vos questions en citant les sources.</p>
+        <div class="cta-row">
+          <a class="btn btn-solid" href="app.html">Ouvrir la démo</a>
+          <a class="btn btn-line" href="#demarrer">Voir comment on démarre</a>
+        </div>
       </div>
-    </div>
-  </div>
+      <p class="hero-note" id="hero-note">Chaque point est l'un des 130 agents. Survolez-en un pour voir son nom.</p>
+    </section>
 
-  <!-- Navigation mobile (type application native) -->
-  <nav id="bottom-nav" class="bottom-nav" aria-label="Navigation principale">
-    <button class="bn-item active" data-view="chat"><span class="bn-icon">💬</span>Assistant</button>
-    <button class="bn-item" data-view="cockpit"><span class="bn-icon">📊</span>Entreprise</button>
-    <button class="bn-item" data-view="autom"><span class="bn-icon">⚡</span>Auto</button>
-    <button class="bn-item" data-view="docs"><span class="bn-icon">📁</span>Docs</button>
-    <button class="bn-item" data-view="team"><span class="bn-icon">👥</span>Équipe</button>
-  </nav>
+    <!-- ————— Le constat ————— -->
+    <section class="band" id="probleme" data-scene="scatter">
+      <div class="split">
+        <div class="split-main">
+          <h2>Votre savoir-faire est éparpillé</h2>
+          <p>Un devis dans une boîte mail, une procédure dans un classeur partagé, le reste dans la tête de la personne qui partira en retraite dans six mois. Chaque question simple coûte vingt minutes à quelqu'un.</p>
+          <p class="dim">Ce n'est pas un problème d'outils. C'est un problème de mémoire.</p>
+        </div>
+        <ul class="scatter-list" aria-label="Où vit l'information aujourd'hui">
+          <li>Boîtes mail</li>
+          <li>Dossiers partagés</li>
+          <li>PDF scannés</li>
+          <li>Carnets de chantier</li>
+          <li>Tableurs de suivi</li>
+          <li>Mémoire des équipes</li>
+        </ul>
+      </div>
+    </section>
 
-  <script type="module" src="app.js"></script>
+    <!-- ————— Fonctionnement ————— -->
+    <section class="band" id="fonctionnement" data-scene="ingest">
+      <div class="band-head"><h2>Trois gestes, et la connaissance devient utilisable</h2></div>
+      <ol class="flow">
+        <li>
+          <h3>Déposez vos documents</h3>
+          <p>Devis, factures, comptes rendus, contrats, procédures. Ils sont découpés en passages et indexés, dans votre navigateur ou sur votre serveur.</p>
+        </li>
+        <li>
+          <h3>Posez votre question</h3>
+          <p>En français, comme à un collègue. Aucune syntaxe à apprendre, aucun mot-clé à deviner.</p>
+        </li>
+        <li>
+          <h3>Vérifiez les sources</h3>
+          <p>Chaque réponse affiche les passages exacts dont elle vient. Si l'information n'existe pas, le système le dit au lieu d'inventer.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ————— Orchestration : démo réelle du routeur ————— -->
+    <section class="band" id="orchestration" data-scene="route">
+      <div class="split split-wide">
+        <div class="split-main">
+          <h2>Le Cerveau Central choisit les bons spécialistes</h2>
+          <p>Vous ne choisissez pas parmi 130 agents. Vous décrivez votre besoin, l'orchestrateur classe les agents pertinents, leur délègue, puis assemble une réponse unique.</p>
+          <p class="dim">Le champ ci-contre exécute le vrai moteur de routage du produit, dans votre navigateur. Rien n'est envoyé sur un serveur.</p>
+        </div>
+
+        <div class="router-demo">
+          <form id="router-form" autocomplete="off">
+            <label for="router-input">Décrivez un besoin</label>
+            <div class="router-field">
+              <input id="router-input" name="q" type="text" placeholder="Relancer les devis sans réponse depuis 30 jours" />
+              <button class="btn btn-solid btn-sm" type="submit">Router</button>
+            </div>
+          </form>
+          <div class="chips" id="router-samples">
+            <button type="button" class="chip">Préparer un devis de peinture pour 220 m2 de façade</button>
+            <button type="button" class="chip">Vérifier la trésorerie avant d'embaucher</button>
+            <button type="button" class="chip">Rédiger une annonce pour un poste de chef d'équipe</button>
+          </div>
+          <div class="router-out" id="router-out" aria-live="polite">
+            <p class="router-hint">Le résultat s'affiche ici, et les agents retenus s'allument dans le cerveau.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ————— Catalogue d'agents ————— -->
+    <section class="band" id="agents" data-scene="clusters">
+      <div class="band-head">
+        <h2>130 agents, 12 domaines</h2>
+        <p>Survolez un domaine pour le repérer dans le cerveau. Ouvrez-le pour voir les agents qu'il contient.</p>
+      </div>
+      <div class="cat-grid" id="cat-grid">
+        <p class="loading">Chargement du catalogue…</p>
+      </div>
+      <div class="cat-detail" id="cat-detail" hidden></div>
+    </section>
+
+    <!-- ————— Sécurité ————— -->
+    <section class="band" id="securite" data-scene="vault">
+      <div class="split">
+        <div class="split-main">
+          <h2>Vos données ne sortent pas par défaut</h2>
+          <p>La recherche documentaire tourne en local. Sans modèle distant configuré, aucune donnée ne quitte votre poste ou votre serveur. Avec un modèle distant, seuls la question et les passages utiles sont transmis au fournisseur que vous avez choisi.</p>
+        </div>
+        <ul class="facts">
+          <li><b>Moteur local</b><span>Découpage, index et recherche par similarité exécutés côté client.</span></li>
+          <li><b>Modèle au choix</b><span>OpenAI, DeepSeek, Groq, ou un modèle Ollama qui tourne dans vos murs.</span></li>
+          <li><b>Clés jamais stockées côté serveur</b><span>Elles restent dans le navigateur de l'utilisateur.</span></li>
+          <li><b>Installation chez vous</b><span>Le produit se déploie sur votre infrastructure, sans dépendance externe.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ————— Scénarios ————— -->
+    <section class="band" id="scenarios" data-scene="drift">
+      <div class="band-head"><h2>Ce que ça change un mardi matin</h2></div>
+      <div class="cases">
+        <article class="case">
+          <p class="case-who">Entreprise de peinture, 14 personnes</p>
+          <p class="case-q">« Quel prix au m2 avions-nous appliqué sur le chantier de la rue des Alpes ? »</p>
+          <p class="case-a">Le devis de 2024 remonte avec le passage exact, sans ouvrir le classeur.</p>
+        </article>
+        <article class="case">
+          <p class="case-who">Bureau d'études, 40 personnes</p>
+          <p class="case-q">« Résume les trois rapports du site B et liste les actions en retard. »</p>
+          <p class="case-a">Une synthèse en une minute, chaque point rattaché à son rapport d'origine.</p>
+        </article>
+        <article class="case">
+          <p class="case-who">Distributeur de matériel, 8 personnes</p>
+          <p class="case-q">« Réécris cette fiche produit pour le site, ton commercial, 120 mots. »</p>
+          <p class="case-a">Le texte reprend votre vocabulaire, pas celui d'un modèle générique.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ————— Comparaison ————— -->
+    <section class="band band-narrow" id="comparaison" data-scene="calm">
+      <h2 class="band-title">Pourquoi pas simplement un assistant grand public</h2>
+      <div class="table-wrap">
+      <table class="compare">
+        <thead>
+          <tr><th scope="col"><span class="sr-only">Critère</span></th><th scope="col">Assistant grand public</th><th scope="col">NeuralStark</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Connaît vos documents</th><td>Non, sauf copier-coller manuel</td><td>Oui, indexés en continu</td></tr>
+          <tr><th scope="row">Cite ses sources</th><td>Rarement, et sans lien vers vos fichiers</td><td>Chaque réponse renvoie au passage exact</td></tr>
+          <tr><th scope="row">Où vont vos données</th><td>Chez l'éditeur, selon ses conditions</td><td>Chez vous, sauf modèle distant que vous choisissez</td></tr>
+          <tr><th scope="row">Spécialisation métier</th><td>Un assistant unique et généraliste</td><td>130 agents cadrés, routés automatiquement</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <!-- ————— Démarrer ————— -->
+    <section class="band" id="demarrer" data-scene="drift">
+      <div class="band-head">
+        <h2>Comment on démarre</h2>
+        <p>Pas de grand projet. On branche le cerveau sur un premier périmètre utile, puis on élargit.</p>
+      </div>
+      <div class="phases">
+        <article class="phase">
+          <p class="phase-when">Une demi-journée</p>
+          <h3>Cadrage</h3>
+          <p>On identifie les questions qui coûtent le plus de temps et les documents qui contiennent les réponses.</p>
+        </article>
+        <article class="phase">
+          <p class="phase-when">Une à deux semaines</p>
+          <h3>Mise en service</h3>
+          <p>Ingestion de vos documents, choix du modèle, réglage des agents utiles à votre métier, accès pour l'équipe.</p>
+        </article>
+        <article class="phase">
+          <p class="phase-when">En continu</p>
+          <h3>Accompagnement</h3>
+          <p>Nouveaux documents, nouveaux agents, mesure de ce qui sert vraiment. Le cerveau apprend au rythme de l'entreprise.</p>
+        </article>
+      </div>
+      <p class="price-note">Tarification selon le nombre d'utilisateurs et le volume de documents. Devis sous 48 heures après le cadrage.</p>
+    </section>
+
+    <!-- ————— FAQ ————— -->
+    <section class="band band-narrow" id="faq" data-scene="calm">
+      <h2 class="band-title">Questions fréquentes</h2>
+      <div class="faq">
+        <details>
+          <summary>Faut-il envoyer nos documents dans le cloud ?</summary>
+          <p>Non. L'indexation et la recherche tournent en local. Vous n'ouvrez une connexion vers un fournisseur de modèle que si vous en configurez un, et dans ce cas seuls la question et les passages retenus sont envoyés.</p>
+        </details>
+        <details>
+          <summary>Combien de documents peut-on charger ?</summary>
+          <p>La démo publique fonctionne avec quelques dizaines de documents dans le navigateur. Pour une base d'entreprise, l'installation serveur prend en charge des volumes bien supérieurs et une base partagée entre collaborateurs.</p>
+        </details>
+        <details>
+          <summary>Quel modèle d'intelligence artificielle est utilisé ?</summary>
+          <p>Celui que vous voulez. Toute interface compatible OpenAI fonctionne, y compris un modèle qui tourne sur votre propre machine avec Ollama ou LM Studio. Sans clé, le produit répond en mode extractif à partir de vos documents.</p>
+        </details>
+        <details>
+          <summary>Que se passe-t-il si la réponse n'est pas dans nos documents ?</summary>
+          <p>Les agents sont cadrés pour le dire. Une réponse sans source est signalée comme telle, ce qui évite les affirmations inventées que personne ne peut vérifier.</p>
+        </details>
+        <details>
+          <summary>Nos équipes vont-elles s'en servir ?</summary>
+          <p>C'est un champ de texte et une réponse sourcée. La démo est ouverte, testez-la avec vos propres questions avant de décider quoi que ce soit.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ————— CTA final ————— -->
+    <section class="band final" id="contact" data-scene="final">
+      <h2>Essayez avec vos propres questions</h2>
+      <p>La démo tourne dans votre navigateur, avec deux documents d'exemple déjà chargés. Ajoutez les vôtres et jugez sur pièce.</p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="app.html">Ouvrir la démo</a>
+        <!-- Remplacez cette adresse par votre adresse de contact réelle. -->
+        <a class="btn btn-line" href="mailto:contact@neuralstark.ch?subject=Démonstration%20NeuralStark">Demander une démonstration</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="foot-brand">NeuralStark</p>
+    <p class="foot-line">Le cerveau IA de votre entreprise. 130 agents, un moteur documentaire local.</p>
+    <nav class="foot-links" aria-label="Liens de bas de page">
+      <a href="app.html">Démo</a>
+      <a href="#agents">Les 130 agents</a>
+      <a href="#securite">Sécurité</a>
+      <a href="mailto:contact@neuralstark.ch">Contact</a>
+    </nav>
+  </footer>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="brain.js"></script>
+  <script type="module" src="site.js"></script>
 </body>
 </html>
