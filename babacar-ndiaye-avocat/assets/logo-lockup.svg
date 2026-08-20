@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1100" role="img" aria-labelledby="bn-lockup-title">
+  <title id="bn-lockup-title">Babacar Ndiaye, avocat. Le droit. La vision. L'impact.</title>
+  <defs>
+    <!-- Stries verticales : le tissage de lumiere, motif signature de l'identite -->
+    <pattern id="bn-stries" width="10" height="12" patternUnits="userSpaceOnUse">
+      <rect width="4" height="12" fill="#B08A3E" />
+    </pattern>
+    <!-- Losange tisse : rappel des nattes, utilise en cloture -->
+    <pattern id="bn-tissage" width="14" height="14" patternUnits="userSpaceOnUse">
+      <path d="M-2 2 L2 -2 M0 14 L14 0 M12 16 L16 12" stroke="#B08A3E" stroke-width="1.8" fill="none" />
+      <path d="M-2 12 L2 16 M0 0 L14 14 M12 -2 L16 2" stroke="#B08A3E" stroke-width="1.8" fill="none" />
+    </pattern>
+    <linearGradient id="bn-or" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C9A75A" />
+      <stop offset="0.48" stop-color="#B08A3E" />
+      <stop offset="1" stop-color="#8A6420" />
+    </linearGradient>
+    <style>
+      .bn-didone { font-family: "Bodoni Moda", "Bodoni MT", Didot, "Playfair Display", Georgia, serif; }
+      .bn-sans { font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; }
+      .bn-humaniste { font-family: "Instrument Sans", "Segoe UI", system-ui, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Monogramme : continent strie, arc d'or, B encre et N or -->
+  <g transform="translate(-77 62) scale(1.18)" fill="url(#bn-stries)">
+    <path d="M321.0 300.0 L370.3 314.1 L377.1 316.5 L387.3 335.7 L392.4 352.7 L402.6 359.5 L423.0 360.2 L407.7 382.6 L395.8 396.9 L394.1 403.7 L397.5 425.1 L377.9 448.8 L373.7 458.1 L345.5 469.5 L341.7 467.6 L331.7 440.4 L325.4 422.7 L327.8 408.6 L325.4 401.5 L318.6 387.4 L319.3 377.9 L309.1 377.2 L298.1 373.1 L295.5 374.3 L285.3 374.8 L268.3 372.4 L261.2 364.9 L253.0 352.7 L255.6 344.9 L260.5 330.6 L271.5 315.6 L276.5 308.0 L281.1 302.9 L303.0 300.5 Z" />
+    <ellipse cx="411.8" cy="432.3" rx="6" ry="16.5" transform="rotate(-12 411.8 432.3)" />
+  </g>
+
+  <path d="M203 548 C 255 418, 413 398, 491 472" fill="none" stroke="url(#bn-or)" stroke-width="9" stroke-linecap="round" />
+
+  <text class="bn-didone" x="309" y="430" font-size="330" font-weight="600" fill="#101A26">B</text>
+  <text class="bn-didone" x="433" y="505" font-size="370" font-weight="500" fill="url(#bn-or)">N</text>
+
+  <!-- Nom -->
+  <text class="bn-didone" x="500" y="700" font-size="64" font-weight="500" letter-spacing="15" text-anchor="middle" fill="#101A26">BABACAR NDIAYE</text>
+
+  <!-- Qualite -->
+  <g>
+    <line x1="228" y1="758" x2="392" y2="758" stroke="#B08A3E" stroke-width="1.6" />
+    <text class="bn-sans" x="500" y="770" font-size="30" letter-spacing="16" text-anchor="middle" fill="#8A6420">AVOCAT</text>
+    <line x1="608" y1="758" x2="772" y2="758" stroke="#B08A3E" stroke-width="1.6" />
+  </g>
+
+  <!-- Balance -->
+  <g stroke="#B08A3E" fill="none" stroke-width="3" stroke-linecap="round">
+    <line x1="270" y1="852" x2="418" y2="852" />
+    <line x1="582" y1="852" x2="730" y2="852" />
+    <line x1="500" y1="812" x2="500" y2="886" />
+    <line x1="474" y1="886" x2="526" y2="886" />
+    <line x1="452" y1="826" x2="548" y2="826" />
+    <line x1="452" y1="826" x2="452" y2="840" />
+    <line x1="548" y1="826" x2="548" y2="840" />
+    <path d="M432 840 Q 452 872 472 840" />
+    <path d="M528 840 Q 548 872 568 840" />
+    <circle cx="500" cy="812" r="5" fill="#B08A3E" stroke="none" />
+  </g>
+
+  <!-- Signature -->
+  <text class="bn-humaniste" x="500" y="970" font-size="42" text-anchor="middle" fill="#101A26">Le droit. La vision. <tspan fill="#8A6420">L'impact.</tspan></text>
+
+  <!-- Tissage de cloture -->
+  <g>
+    <line x1="215" y1="1042" x2="452" y2="1042" stroke="#B08A3E" stroke-width="1.4" />
+    <line x1="548" y1="1042" x2="785" y2="1042" stroke="#B08A3E" stroke-width="1.4" />
+    <path d="M500 1012 L534 1042 L500 1072 L466 1042 Z" fill="url(#bn-tissage)" />
+  </g>
+</svg>

@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f5f2ec" />
+
+  <title>Identité BN et trois directions de site | Babacar Ndiaye, avocat</title>
+  <meta name="description" content="Charte de marque de Maître Babacar Ndiaye, avocat à Dakar : logo, signature, couleurs, typographies, motifs, et trois directions de site 3D à comparer." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/BodoniModa-normal-500-latin.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Archivo-normal-400-latin.woff2" crossorigin />
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  <link rel="stylesheet" href="assets/brand.css" />
+
+  <style>
+    :root {
+      --fond: var(--bn-ivoire);
+      --fond-2: #efeadf;
+      --encre: var(--bn-encre);
+      --encre-douce: var(--bn-brume-2);
+      --or: var(--bn-or-profond);
+      --or-vif: var(--bn-or);
+      --trait: rgba(16, 26, 38, 0.14);
+      --largeur: 1180px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--fond);
+      color: var(--encre);
+      font-family: var(--bn-humaniste);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    :focus-visible { outline: 2px solid var(--or-vif); outline-offset: 3px; }
+
+    .enveloppe { max-width: var(--largeur); margin: 0 auto; padding: 0 28px; }
+
+    /* --- Ouverture --------------------------------------------------------- */
+
+    .ouverture {
+      padding: var(--bn-e-6) 0 var(--bn-e-5);
+      background:
+        radial-gradient(70% 60% at 78% 0%, rgba(216, 184, 107, 0.2), transparent 68%),
+        var(--fond);
+      border-bottom: 1px solid var(--trait);
+    }
+
+    .ouverture__grille {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+      gap: var(--bn-e-5);
+      align-items: center;
+    }
+
+    .surtitre {
+      font-family: var(--bn-grotesk);
+      font-size: var(--bn-t-xs);
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: var(--bn-e-3);
+    }
+
+    h1 {
+      font-family: var(--bn-didone);
+      font-weight: 500;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+      max-width: 15ch;
+    }
+
+    .ouverture p {
+      margin-top: var(--bn-e-3);
+      max-width: 52ch;
+      color: var(--encre-douce);
+    }
+
+    .logo-cadre {
+      background: #fffdf9;
+      border: 1px solid var(--trait);
+      border-radius: var(--bn-r-l);
+      padding: var(--bn-e-3);
+    }
+
+    /* --- Sections ------------------------------------------------------------ */
+
+    section { padding: var(--bn-e-6) 0; }
+
+    h2 {
+      font-family: var(--bn-didone);
+      font-weight: 500;
+      font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      max-width: 20ch;
+    }
+
+    .intro {
+      margin-top: var(--bn-e-2);
+      max-width: 58ch;
+      color: var(--encre-douce);
+    }
+
+    /* --- Signature ------------------------------------------------------------ */
+
+    .signature {
+      margin-top: var(--bn-e-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--bn-e-3);
+    }
+
+    .signature__bloc {
+      border: 1px solid var(--trait);
+      border-radius: var(--bn-r-l);
+      padding: var(--bn-e-3);
+      background: #fffdf9;
+    }
+
+    .signature__bloc--sombre { background: var(--bn-nuit); border-color: rgba(216, 184, 107, 0.28); }
+
+    .signature__phrase {
+      font-family: var(--bn-didone);
+      font-size: var(--bn-t-l);
+      line-height: 1.2;
+    }
+
+    .signature__phrase span { color: var(--or); font-style: italic; }
+    .signature__bloc--sombre .signature__phrase { color: var(--bn-ivoire); }
+    .signature__bloc--sombre .signature__phrase span { color: var(--bn-or-clair); }
+
+    .signature__note {
+      margin-top: 12px;
+      font-family: var(--bn-grotesk);
+      font-size: 0.8125rem;
+      color: var(--encre-douce);
+    }
+
+    .signature__bloc--sombre .signature__note { color: #9aa4b0; }
+
+    /* --- Palette ---------------------------------------------------------------- */
+
+    .palette {
+      margin-top: var(--bn-e-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+    }
+
+    .teinte {
+      border: 1px solid var(--trait);
+      border-radius: var(--bn-r-m);
+      overflow: hidden;
+    }
+
+    .teinte__aplat { height: 92px; }
+    .teinte__texte { padding: 12px 14px; }
+
+    .teinte__nom {
+      font-family: var(--bn-grotesk);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .teinte__code {
+      font-family: var(--bn-grotesk);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--encre-douce);
+    }
+
+    /* --- Typographies ------------------------------------------------------------- */
+
+    .fontes {
+      margin-top: var(--bn-e-4);
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--trait);
+    }
+
+    .fonte {
+      display: grid;
+      grid-template-columns: 190px minmax(0, 1fr);
+      gap: var(--bn-e-3);
+      align-items: baseline;
+      padding: var(--bn-e-3) 0;
+      border-bottom: 1px solid var(--trait);
+    }
+
+    .fonte__role {
+      font-family: var(--bn-grotesk);
+      font-size: 0.8125rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--or);
+    }
+
+    .fonte__exemple { font-size: 1.75rem; line-height: 1.2; }
+    .fonte__exemple small { display: block; font-size: 0.8125rem; color: var(--encre-douce); margin-top: 6px; font-family: var(--bn-grotesk); }
+
+    .ex-didone { font-family: var(--bn-didone); font-weight: 500; }
+    .ex-titre { font-family: var(--bn-titre); }
+    .ex-syne { font-family: "Syne", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; }
+    .ex-grotesk { font-family: var(--bn-grotesk); }
+
+    /* --- Motifs --------------------------------------------------------------------- */
+
+    .motifs {
+      margin-top: var(--bn-e-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .motif {
+      border: 1px solid var(--trait);
+      border-radius: var(--bn-r-l);
+      overflow: hidden;
+      background: #fffdf9;
+    }
+
+    .motif__vue {
+      height: 140px;
+      position: relative;
+      color: var(--or-vif);
+      display: grid;
+      place-items: center;
+      background: var(--fond-2);
+    }
+
+    .motif__vue .bn-stries,
+    .motif__vue .bn-tissage { position: absolute; inset: 0; }
+
+    .motif__arc { width: 120px; height: auto; }
+
+    .motif__texte { padding: 14px 16px; }
+    .motif__titre { font-family: var(--bn-didone); font-size: var(--bn-t-m); }
+    .motif__note { font-size: 0.875rem; color: var(--encre-douce); margin-top: 4px; }
+
+    /* --- Directions ------------------------------------------------------------------ */
+
+    .directions { display: grid; gap: var(--bn-e-4); margin-top: var(--bn-e-4); }
+
+    .direction {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: var(--bn-e-4);
+      align-items: center;
+      padding: var(--bn-e-3);
+      border: 1px solid var(--trait);
+      border-radius: var(--bn-r-l);
+      background: #fffdf9;
+    }
+
+    .direction:nth-child(even) .direction__vue { order: -1; }
+
+    .direction__vue {
+      border-radius: var(--bn-r-m);
+      overflow: hidden;
+      border: 1px solid var(--trait);
+      aspect-ratio: 16 / 10;
+    }
+
+    .direction__vue img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+
+    .direction__nom {
+      font-family: var(--bn-didone);
+      font-weight: 500;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      line-height: 1.1;
+    }
+
+    .direction__pour {
+      font-family: var(--bn-grotesk);
+      font-size: 0.8125rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--or);
+      margin-bottom: 10px;
+    }
+
+    .direction p { color: var(--encre-douce); margin-top: 12px; max-width: 52ch; }
+
+    .direction ul {
+      list-style: none;
+      margin-top: 16px;
+      display: grid;
+      gap: 8px;
+      font-size: 0.9375rem;
+    }
+
+    .direction li { display: flex; gap: 10px; align-items: baseline; color: var(--encre-douce); }
+    .direction li::before { content: ""; flex: 0 0 16px; height: 1px; background: var(--or-vif); transform: translateY(-4px); }
+
+    .bouton {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: var(--bn-e-3);
+      padding: 13px 22px;
+      border-radius: var(--bn-r-m);
+      background: var(--encre);
+      color: var(--bn-ivoire);
+      font-family: var(--bn-grotesk);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: transform var(--bn-t-court) var(--bn-sortie), background-color var(--bn-t-moyen) linear;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .bouton:hover { background: #1d2c3c; }
+    }
+
+    .bouton:active { transform: scale(0.975); }
+
+    /* --- Socle commun ---------------------------------------------------------------- */
+
+    .socle {
+      margin-top: var(--bn-e-4);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--trait);
+    }
+
+    .socle > div {
+      padding: var(--bn-e-3) var(--bn-e-3) var(--bn-e-3) 0;
+      border-bottom: 1px solid var(--trait);
+    }
+
+    .socle h3 {
+      font-family: var(--bn-didone);
+      font-weight: 500;
+      font-size: var(--bn-t-m);
+      margin-bottom: 6px;
+    }
+
+    .socle p { font-size: 0.9375rem; color: var(--encre-douce); }
+
+    /* --- Pied ------------------------------------------------------------------------- */
+
+    footer {
+      padding: var(--bn-e-5) 0 var(--bn-e-4);
+      border-top: 1px solid var(--trait);
+      color: var(--encre-douce);
+      font-size: 0.875rem;
+    }
+
+    footer p + p { margin-top: 8px; }
+
+    /* --- Adaptatif --------------------------------------------------------------------- */
+
+    @media (max-width: 900px) {
+      .ouverture__grille,
+      .direction { grid-template-columns: 1fr; }
+      .direction:nth-child(even) .direction__vue { order: 0; }
+      .fonte { grid-template-columns: 1fr; gap: 6px; }
+      .socle > div { padding-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="bn-saut" href="#directions">Aller aux trois directions</a>
+
+  <header class="ouverture">
+    <div class="enveloppe ouverture__grille">
+      <div>
+        <p class="surtitre">Identité et directions de site</p>
+        <h1>Une marque, trois façons de la mettre en mouvement.</h1>
+        <p>
+          Le logo, la signature et le système visuel sont communs aux trois propositions.
+          Seul change le registre : la lumière du jour, la nuit d'une salle d'archives, ou le
+          mouvement continu d'un nuage de points.
+        </p>
+        <a class="bouton" href="#directions">Voir les trois directions</a>
+      </div>
+
+      <div class="logo-cadre">
+        <img src="assets/logo-lockup.svg" width="520" height="572" alt="Logo complet : monogramme BN, nom Babacar Ndiaye, mention avocat, balance et signature Le droit. La vision. L'impact." />
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="enveloppe" id="signature">
+      <h2>La signature</h2>
+      <p class="intro">
+        Trois mots, trois temps : ce que dit le droit, ce que vous voulez atteindre, ce que
+        l'affaire produit réellement. Elle se pose entière sous le logo, ou seule dans un pied de
+        page.
+      </p>
+
+      <div class="signature">
+        <div class="signature__bloc">
+          <p class="signature__phrase">Le droit. La vision. <span>L'impact.</span></p>
+          <p class="signature__note">Version complète, sur fond ivoire. Le troisième mot passe en or.</p>
+        </div>
+        <div class="signature__bloc signature__bloc--sombre">
+          <p class="signature__phrase">Le droit. La vision. <span>L'impact.</span></p>
+          <p class="signature__note">Sur fond nuit, l'or s'éclaircit pour rester lisible.</p>
+        </div>
+        <div class="signature__bloc">
+          <p class="signature__phrase">Avocat au Barreau du Sénégal</p>
+          <p class="signature__note">Mention d'exercice, toujours associée au nom dans les usages officiels.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="enveloppe" id="couleurs">
+      <h2>Les couleurs</h2>
+      <p class="intro">
+        Relevées directement sur le logo. L'encre porte le texte, l'or ne sert qu'aux accents, et
+        l'ivoire reste la surface de repos.
+      </p>
+
+      <div class="palette">
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #101a26"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Encre de nuit</p>
+            <p class="teinte__code">#101A26</p>
+          </div>
+        </div>
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #080d14"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Nuit profonde</p>
+            <p class="teinte__code">#080D14</p>
+          </div>
+        </div>
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #b08a3e"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Or</p>
+            <p class="teinte__code">#B08A3E</p>
+          </div>
+        </div>
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #8a6420"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Or profond</p>
+            <p class="teinte__code">#8A6420</p>
+          </div>
+        </div>
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #d8b86b"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Or clair</p>
+            <p class="teinte__code">#D8B86B</p>
+          </div>
+        </div>
+        <div class="teinte">
+          <div class="teinte__aplat" style="background: #f5f2ec; border-bottom: 1px solid rgba(16,26,38,.14)"></div>
+          <div class="teinte__texte">
+            <p class="teinte__nom">Ivoire</p>
+            <p class="teinte__code">#F5F2EC</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="enveloppe" id="typographies">
+      <h2>Les typographies</h2>
+      <p class="intro">
+        Un caractère didone pour le nom et les titres, un caractère de labeur pour les textes
+        longs. Chaque direction ajoute son propre caractère de titrage, jamais plus.
+      </p>
+
+      <div class="fontes">
+        <div class="fonte">
+          <p class="fonte__role">Nom et titres</p>
+          <p class="fonte__exemple ex-didone">
+            Babacar Ndiaye
+            <small>Bodoni Moda, présent dans les trois directions et dans le logo</small>
+          </p>
+        </div>
+        <div class="fonte">
+          <p class="fonte__role">Textes</p>
+          <p class="fonte__exemple ex-grotesk">
+            Conseil et défense des entreprises
+            <small>Archivo pour les libellés, Instrument Sans et DM Sans pour les paragraphes</small>
+          </p>
+        </div>
+        <div class="fonte">
+          <p class="fonte__role">Titrage Chambre</p>
+          <p class="fonte__exemple ex-titre">
+            Quatre temps, dans cet ordre
+            <small>Marcellus, lettres romaines, registre classique</small>
+          </p>
+        </div>
+        <div class="fonte">
+          <p class="fonte__role">Titrage Signal</p>
+          <p class="fonte__exemple ex-syne">
+            Le droit. La vision.
+            <small>Syne en graisse 800, registre contemporain</small>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="enveloppe" id="motifs">
+      <h2>Les trois motifs</h2>
+      <p class="intro">
+        Ils viennent tous du logo et reviennent dans chaque direction, en 2D comme en 3D. C'est
+        ce qui fait tenir l'ensemble.
+      </p>
+
+      <div class="motifs">
+        <div class="motif">
+          <div class="motif__vue">
+            <svg class="motif__arc" viewBox="0 0 120 60" aria-hidden="true">
+              <path d="M6 50 C 26 12, 88 8, 114 40" fill="none" stroke="#b08a3e" stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="motif__texte">
+            <p class="motif__titre">L'arc</p>
+            <p class="motif__note">
+              La courbe du logo. Elle devient fil d'or en 3D sur Sillage, cadre de lumière sur
+              Chambre, trajectoire de particules sur Signal.
+            </p>
+          </div>
+        </div>
+
+        <div class="motif">
+          <div class="motif__vue"><span class="bn-stries" aria-hidden="true"></span></div>
+          <div class="motif__texte">
+            <p class="motif__titre">Les stries</p>
+            <p class="motif__note">
+              Le remplissage du continent dans le logo. Sert de texture d'angle, de marge de
+              document et de trame sur les surfaces sombres.
+            </p>
+          </div>
+        </div>
+
+        <div class="motif">
+          <div class="motif__vue"><span class="bn-tissage" aria-hidden="true"></span></div>
+          <div class="motif__texte">
+            <p class="motif__titre">Le tissage</p>
+            <p class="motif__note">
+              Le losange qui ferme le logo. Utilisé en fin de page et en séparateur, jamais en
+              fond plein.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="enveloppe" id="directions">
+      <h2>Les trois directions</h2>
+      <p class="intro">
+        Même contenu, même identité, même socle technique. Trois ambiances, trois façons de
+        raconter le cabinet. Chaque site est complet et fonctionne dès maintenant.
+      </p>
+
+      <div class="directions">
+        <article class="direction">
+          <div>
+            <p class="direction__pour">Direction 1</p>
+            <h3 class="direction__nom">Sillage</h3>
+            <p>
+              L'ivoire du logo devient la surface entière. Une feuille suspendue, striée d'or,
+              ondule au fil du scroll et se retire quand le texte prend la parole. Registre
+              éditorial, lecture calme, autorité tranquille.
+            </p>
+            <ul>
+              <li>Feuille 3D en nuance de papier, animée par un shader dédié</li>
+              <li>Index dépliant des domaines, piste horizontale des secteurs</li>
+              <li>Le registre le plus sobre des trois, idéal pour une clientèle institutionnelle</li>
+            </ul>
+            <a class="bouton" href="design-sillage/index.html">Ouvrir Sillage</a>
+          </div>
+          <div class="direction__vue">
+            <img src="assets/apercus/sillage.jpg" width="1360" height="850" loading="lazy" alt="Aperçu du site Sillage : titre Le droit. La vision. L'impact. sur fond ivoire, document 3D à droite." />
+          </div>
+        </article>
+
+        <article class="direction">
+          <div>
+            <p class="direction__pour">Direction 2</p>
+            <h3 class="direction__nom">Chambre</h3>
+            <p>
+              Une salle d'archives dans la nuit. Des dalles cerclées d'or flottent dans la brume et
+              la caméra avance entre elles à mesure que la page défile. La méthode se lit en
+              travelling horizontal.
+            </p>
+            <ul>
+              <li>Scène 3D volumétrique, brouillard, poussière et lumière mobile</li>
+              <li>Rideau d'ouverture, titre révélé lettre par lettre</li>
+              <li>Le registre le plus cinématographique, fort effet de mémoire</li>
+            </ul>
+            <a class="bouton" href="design-chambre/index.html">Ouvrir Chambre</a>
+          </div>
+          <div class="direction__vue">
+            <img src="assets/apercus/chambre.jpg" width="1360" height="850" loading="lazy" alt="Aperçu du site Chambre : titre centré sur fond nuit, dalles suspendues cerclées d'or." />
+          </div>
+        </article>
+
+        <article class="direction">
+          <div>
+            <p class="direction__pour">Direction 3</p>
+            <h3 class="direction__nom">Signal</h3>
+            <p>
+              Typographie monumentale et nuage de points qui prend tour à tour la forme du
+              monogramme, du continent, de l'arc et du mot qui clôt la signature. Le pointeur
+              écarte les particules sur son passage.
+            </p>
+            <ul>
+              <li>Six mille points pilotés par un shader, formes échantillonnées depuis le logo</li>
+              <li>Manifeste qui s'allume mot à mot, chemin de méthode tracé au scroll</li>
+              <li>Le registre le plus contemporain, le plus mémorable sur écran</li>
+            </ul>
+            <a class="bouton" href="design-signal/index.html">Ouvrir Signal</a>
+          </div>
+          <div class="direction__vue">
+            <img src="assets/apercus/signal.jpg" width="1360" height="850" loading="lazy" alt="Aperçu du site Signal : titre en très grandes capitales, nuage de particules formant le monogramme." />
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="enveloppe" id="socle">
+      <h2>Ce qui est commun aux trois</h2>
+
+      <div class="socle">
+        <div>
+          <h3>Le même contenu</h3>
+          <p>
+            Cabinet, sept domaines d'intervention, méthode en quatre temps, cadre d'honoraires,
+            questions fréquentes, formulaire de prise de contact.
+          </p>
+        </div>
+        <div>
+          <h3>Les mêmes coordonnées</h3>
+          <p>
+            Rue Sandinieri, Dakar. Téléphone +221 33 821 97 67, lien d'itinéraire et formulaire
+            relié à la messagerie tant qu'aucun serveur n'est branché.
+          </p>
+        </div>
+        <div>
+          <h3>Accessibilité</h3>
+          <p>
+            Navigation au clavier, contrastes vérifiés, lien d'évitement, et respect complet du
+            réglage « animations réduites » du système.
+          </p>
+        </div>
+        <div>
+          <h3>Performance</h3>
+          <p>
+            Aucun cadre de développement, aucune dépendance externe : polices auto-hébergées,
+            une seule librairie 3D, un seul rendu par image.
+          </p>
+        </div>
+        <div>
+          <h3>Référencement</h3>
+          <p>
+            Titres et descriptions propres à Dakar, données structurées Attorney, partage social
+            préparé.
+          </p>
+        </div>
+        <div>
+          <h3>Déontologie</h3>
+          <p>
+            Aucune promesse de résultat, aucun témoignage, aucun chiffre invérifiable. Mention du
+            secret professionnel et des règles de la profession.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="enveloppe">
+    <p>Babacar Ndiaye, avocat au Barreau du Sénégal. Rue Sandinieri, Dakar.</p>
+    <p>
+      Page de comparaison interne. L'adresse électronique utilisée dans les formulaires est un
+      exemple : elle doit être remplacée par l'adresse réelle du cabinet avant mise en ligne.
+    </p>
+  </footer>
+</body>
+</html>
