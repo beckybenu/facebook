@@ -17,6 +17,26 @@
   var COLD = [0.36, 0.50, 0.63];   // acier
   var HOT  = [0.88, 0.545, 0.30];  // cuivre
 
+  // "#e08b4c" ou "224,139,76" → [r, v, b] normalisés
+  function toRGB(value, fallback) {
+    if (!value) return fallback.slice();
+    var v = String(value).trim();
+    var m = v.match(/^#?([0-9a-f]{6})$/i);
+    if (m) {
+      var n = parseInt(m[1], 16);
+      return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+    }
+    var parts = v.replace(/[^0-9.,]/g, "").split(",").map(parseFloat);
+    if (parts.length >= 3 && parts.every(function (x) { return !isNaN(x); })) {
+      return [parts[0] / 255, parts[1] / 255, parts[2] / 255];
+    }
+    return fallback.slice();
+  }
+
+  function toHex(rgb) {
+    return (Math.round(rgb[0] * 255) << 16) + (Math.round(rgb[1] * 255) << 8) + Math.round(rgb[2] * 255);
+  }
+
   var STATES = {
     hero:     { layout: "sphere",   dist: 7.6, offX: 1.35, offY: 0.15, spin: 0.055, docs: 0.0, shell: 0.0, opacity: 1.00, core: 1.0 },
     scatter:  { layout: "scatter",  dist: 9.0, offX: 0.60, offY: -1.10, spin: 0.020, docs: 1.0, shell: 0.0, opacity: 0.85, core: 0.5 },
@@ -38,14 +58,15 @@
     };
   }
 
-  function glowTexture() {
+  function glowTexture(rgb) {
     var c = document.createElement("canvas");
     c.width = c.height = 128;
     var g = c.getContext("2d");
+    var base = Math.round(rgb[0] * 255) + "," + Math.round(rgb[1] * 255) + "," + Math.round(rgb[2] * 255);
     var grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, "rgba(224,139,76,0.55)");
-    grad.addColorStop(0.35, "rgba(224,139,76,0.16)");
-    grad.addColorStop(1, "rgba(224,139,76,0)");
+    grad.addColorStop(0, "rgba(" + base + ",0.55)");
+    grad.addColorStop(0.35, "rgba(" + base + ",0.16)");
+    grad.addColorStop(1, "rgba(" + base + ",0)");
     g.fillStyle = grad;
     g.fillRect(0, 0, 128, 128);
     var t = new THREE.CanvasTexture(c);
@@ -87,13 +108,14 @@
     "uniform vec3 uCold;",
     "uniform vec3 uHot;",
     "uniform float uOpacity;",
+    "uniform float uHalo;",
     "varying float vGlow;",
     "void main() {",
     "  vec2 d = gl_PointCoord - vec2(0.5);",
     "  float r = length(d);",
     "  if (r > 0.5) discard;",
     "  float core = smoothstep(0.5, 0.08, r);",
-    "  float halo = smoothstep(0.5, 0.0, r) * 0.3;",
+    "  float halo = smoothstep(0.5, 0.0, r) * uHalo;",
     "  float g = clamp(vGlow, 0.0, 1.0);",
     "  vec3 col = mix(uCold, uHot, g);",
     "  float a = (core * 0.9 + halo) * uOpacity * (0.55 + 0.45 * g);",
@@ -127,6 +149,14 @@
     this.count = opts.count || 130;
     this.reduced = !!opts.reducedMotion;
     this.canvas = canvas;
+    this.cold = toRGB(opts.cold, COLD);
+    this.hot = toRGB(opts.hot, HOT);
+    // Fond clair : la fusion additive délave tout, on repasse en alpha classique.
+    this.additive = opts.additive === undefined ? true : !!opts.additive;
+    this.distScale = opts.distScale || 1;
+    // Canevas encadré : le cerveau reste centré dans son cadre.
+    this.offsetScale = opts.offsetScale === undefined ? 1 : opts.offsetScale;
+    this.lineBoost = opts.lineBoost || 1;
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: canvas, antialias: true, alpha: true, powerPreference: "high-performance"
@@ -274,14 +304,15 @@
         uPix: { value: this.pix },
         uScale: { value: 26 },
         uOpacity: { value: 1 },
-        uCold: { value: new THREE.Vector3(COLD[0], COLD[1], COLD[2]) },
-        uHot: { value: new THREE.Vector3(HOT[0], HOT[1], HOT[2]) }
+        uHalo: { value: this.additive ? 0.3 : 0.06 },
+        uCold: { value: new THREE.Vector3(this.cold[0], this.cold[1], this.cold[2]) },
+        uHot: { value: new THREE.Vector3(this.hot[0], this.hot[1], this.hot[2]) }
       },
       vertexShader: NODE_VS,
       fragmentShader: NODE_FS,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending
+      blending: this.additive ? THREE.AdditiveBlending : THREE.NormalBlending
     });
 
     this.nodes = new THREE.Points(geo, this.nodeMat);
@@ -330,14 +361,14 @@
     this.edgeMat = new THREE.ShaderMaterial({
       uniforms: {
         uOpacity: { value: 1 },
-        uCold: { value: new THREE.Vector3(COLD[0], COLD[1], COLD[2]) },
-        uHot: { value: new THREE.Vector3(HOT[0], HOT[1], HOT[2]) }
+        uCold: { value: new THREE.Vector3(this.cold[0], this.cold[1], this.cold[2]) },
+        uHot: { value: new THREE.Vector3(this.hot[0], this.hot[1], this.hot[2]) }
       },
       vertexShader: LINE_VS,
       fragmentShader: LINE_FS,
       transparent: true,
       depthWrite: false,
-      blending: THREE.AdditiveBlending
+      blending: this.additive ? THREE.AdditiveBlending : THREE.NormalBlending
     });
     this.lines = new THREE.LineSegments(geo, this.edgeMat);
     this.lines.frustumCulled = false;
@@ -349,17 +380,18 @@
 
     var inner = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.5, 1),
-      new THREE.MeshBasicMaterial({ color: 0xe08b4c, wireframe: true, transparent: true, opacity: 0.5 })
+      new THREE.MeshBasicMaterial({ color: toHex(this.hot), wireframe: true, transparent: true, opacity: 0.5 })
     );
     var outer = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.92, 0),
-      new THREE.MeshBasicMaterial({ color: 0x7d98b3, wireframe: true, transparent: true, opacity: 0.16 })
+      new THREE.MeshBasicMaterial({ color: toHex(this.cold), wireframe: true, transparent: true, opacity: 0.16 })
     );
     this.coreInner = inner;
     this.coreOuter = outer;
 
     var halo = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glowTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.9
+      map: glowTexture(this.hot), transparent: true, depthWrite: false,
+      blending: this.additive ? THREE.AdditiveBlending : THREE.NormalBlending, opacity: 0.9
     }));
     halo.scale.set(4.2, 4.2, 1);
     this.halo = halo;
@@ -421,7 +453,7 @@
   NeuralBrain.prototype._buildShell = function () {
     this.shell = new THREE.Mesh(
       new THREE.IcosahedronGeometry(2.35, 1),
-      new THREE.MeshBasicMaterial({ color: 0x9aa6b2, wireframe: true, transparent: true, opacity: 0 })
+      new THREE.MeshBasicMaterial({ color: toHex(this.cold), wireframe: true, transparent: true, opacity: 0 })
     );
     this.shell.visible = false;
     this.group.add(this.shell);
@@ -471,6 +503,24 @@
   NeuralBrain.prototype.clearHighlight = function () {
     for (var i = 0; i < this.count; i++) this.glowTarget[i] = 0.16;
     this.glowTarget[0] = 0.55;
+  };
+
+  // Change de palette sans reconstruire la scène.
+  NeuralBrain.prototype.setColors = function (cold, hot) {
+    this.cold = toRGB(cold, this.cold);
+    this.hot = toRGB(hot, this.hot);
+    var mats = [this.nodeMat, this.edgeMat, this.pulseMat];
+    for (var i = 0; i < mats.length; i++) {
+      if (!mats[i]) continue;
+      mats[i].uniforms.uCold.value.set(this.cold[0], this.cold[1], this.cold[2]);
+      mats[i].uniforms.uHot.value.set(this.hot[0], this.hot[1], this.hot[2]);
+    }
+    this.coreInner.material.color.setHex(toHex(this.hot));
+    this.coreOuter.material.color.setHex(toHex(this.cold));
+    this.shell.material.color.setHex(toHex(this.cold));
+    if (this.halo.material.map) this.halo.material.map.dispose();
+    this.halo.material.map = glowTexture(this.hot);
+    this.halo.material.needsUpdate = true;
   };
 
   NeuralBrain.prototype.setPointer = function (nx, ny) {
@@ -539,9 +589,9 @@
 
     // amortissement des transitions d'état
     var k = this.reduced ? 1 : 1 - Math.pow(0.001, dt);
-    this.dist = lerp(this.dist, st.dist, k * 0.9);
-    this.offX = lerp(this.offX, this.narrow ? 0 : st.offX, k * 0.9);
-    this.offY = lerp(this.offY, this.narrow ? Math.min(0, st.offY) * 0.4 : st.offY, k * 0.9);
+    this.dist = lerp(this.dist, st.dist * this.distScale, k * 0.9);
+    this.offX = lerp(this.offX, (this.narrow ? 0 : st.offX) * this.offsetScale, k * 0.9);
+    this.offY = lerp(this.offY, (this.narrow ? Math.min(0, st.offY) * 0.4 : st.offY) * this.offsetScale, k * 0.9);
     this.opacity = lerp(this.opacity, st.opacity, k);
     this.docsAmt = lerp(this.docsAmt, st.docs, k);
     this.shellAmt = lerp(this.shellAmt, st.shell, k);
@@ -601,7 +651,7 @@
     }
     this.edgeGeo.attributes.position.needsUpdate = true;
     this.edgeGeo.attributes.aGlow.needsUpdate = true;
-    this.edgeMat.uniforms.uOpacity.value = this.opacity * (this.state.layout === "scatter" ? 0.25 : 1);
+    this.edgeMat.uniforms.uOpacity.value = this.opacity * this.lineBoost * (this.state.layout === "scatter" ? 0.25 : 1);
 
     // influx nerveux le long des arêtes
     if (this.pulseCount) {
