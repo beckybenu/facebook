@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuralStark — Modèle Cinéma</title>
+  <meta name="description" content="130 agents IA branchés sur vos documents. Réponses sourcées, données maîtrisées." />
+  <meta name="theme-color" content="#07090c" />
+  <link rel="icon" href="../../assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+
+  <div id="stage" aria-hidden="true">
+    <canvas id="brain-canvas"></canvas>
+    <div id="node-tip" class="node-tip" hidden></div>
+  </div>
+
+  <header class="nav">
+    <a class="nav-brand" href="#top">
+      <svg viewBox="0 0 64 64" width="22" height="22" aria-hidden="true" focusable="false">
+        <path d="M32 8 L54 32 L32 56 L10 32 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+        <circle cx="32" cy="32" r="7" fill="currentColor"/>
+      </svg>
+      <span>NeuralStark</span>
+    </a>
+    <div class="palette" role="group" aria-label="Couleur du site">
+      <button type="button" class="swatch" data-palette="glacier" aria-pressed="true"><span></span>Glacier</button>
+      <button type="button" class="swatch" data-palette="violet" aria-pressed="false"><span></span>Violet</button>
+      <button type="button" class="swatch" data-palette="or" aria-pressed="false"><span></span>Or</button>
+      <button type="button" class="swatch" data-palette="blanc" aria-pressed="false"><span></span>Blanc</button>
+    </div>
+    <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+  </header>
+
+  <nav class="rail" aria-label="Chapitres">
+    <a href="#top"><i></i><b>Ouverture</b></a>
+    <a href="#probleme"><i></i><b>Le constat</b></a>
+    <a href="#fonctionnement"><i></i><b>Fonctionnement</b></a>
+    <a href="#orchestration"><i></i><b>Orchestration</b></a>
+    <a href="#agents"><i></i><b>Agents</b></a>
+    <a href="#securite"><i></i><b>Sécurité</b></a>
+    <a href="#demarrer"><i></i><b>Démarrer</b></a>
+    <a href="#contact"><i></i><b>Essayer</b></a>
+  </nav>
+
+  <main id="contenu">
+    <section class="plan ouverture" id="top" data-scene="hero">
+      <div class="plan-inner">
+        <h1>Un seul cerveau<br />pour toute l'entreprise.</h1>
+        <p class="lede">130 agents spécialisés, branchés sur vos documents. Vous posez la question, ils répondent avec vos sources.</p>
+        <div class="cta-row">
+          <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+          <a class="btn btn-line" href="#fonctionnement">Voir comment ça marche</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan" id="probleme" data-scene="scatter">
+      <div class="plan-inner">
+        <p class="compteur reveal">20 minutes</p>
+        <h2 class="reveal">C'est ce que coûte aujourd'hui une question simple.</h2>
+        <p class="dit reveal">Un devis dans une boîte mail, une procédure dans un classeur, le reste dans la tête de la personne qui partira en retraite dans six mois.</p>
+      </div>
+    </section>
+
+    <section class="plan" id="fonctionnement" data-scene="ingest">
+      <div class="plan-inner large">
+        <h2 class="reveal">Vos documents deviennent de la mémoire</h2>
+        <ol class="etapes">
+          <li class="reveal"><b>Déposez</b><span>Devis, factures, comptes rendus, procédures. Découpés et indexés chez vous.</span></li>
+          <li class="reveal"><b>Demandez</b><span>En français, comme à un collègue. Aucune syntaxe à apprendre.</span></li>
+          <li class="reveal"><b>Vérifiez</b><span>Chaque réponse cite le passage exact dont elle vient.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="plan" id="orchestration" data-scene="route">
+      <div class="plan-inner large">
+        <h2 class="reveal">Décrivez le besoin. Le cerveau choisit les spécialistes.</h2>
+        <div class="router-demo reveal">
+          <form id="router-form" autocomplete="off">
+            <label for="router-input">Votre besoin</label>
+            <div class="router-field">
+              <input id="router-input" name="q" type="text" placeholder="Relancer les devis sans réponse depuis 30 jours" />
+              <button class="btn btn-solid btn-sm" type="submit">Router</button>
+            </div>
+          </form>
+          <div class="chips" id="router-samples">
+            <button type="button" class="chip">Préparer un devis de peinture pour 220 m2 de façade</button>
+            <button type="button" class="chip">Vérifier la trésorerie avant d'embaucher</button>
+            <button type="button" class="chip">Rédiger une annonce pour un poste de chef d'équipe</button>
+          </div>
+          <div class="router-out" id="router-out" aria-live="polite">
+            <p class="router-hint">Le vrai moteur de routage du produit tourne ici, dans votre navigateur.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan" id="agents" data-scene="clusters">
+      <div class="plan-inner large">
+        <div class="plan-head">
+          <h2 class="reveal">130 agents, 12 domaines</h2>
+          <p class="reveal">Survolez un domaine pour le repérer dans le cerveau.</p>
+        </div>
+        <div class="cat-grid reveal" id="cat-grid"><p class="loading">Chargement du catalogue…</p></div>
+        <div class="cat-detail" id="cat-detail" hidden></div>
+      </div>
+    </section>
+
+    <section class="plan" id="securite" data-scene="vault">
+      <div class="plan-inner">
+        <h2 class="reveal">Rien ne sort sans votre accord</h2>
+        <p class="dit reveal">La recherche documentaire tourne en local. Sans modèle distant configuré, aucune donnée ne quitte votre poste ou votre serveur.</p>
+        <ul class="faits">
+          <li class="reveal"><b>Moteur local</b><span>Index et recherche exécutés côté client.</span></li>
+          <li class="reveal"><b>Modèle au choix</b><span>OpenAI, DeepSeek, Groq, ou Ollama dans vos murs.</span></li>
+          <li class="reveal"><b>Installation chez vous</b><span>Sur votre infrastructure, sans dépendance externe.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="plan" id="demarrer" data-scene="drift">
+      <div class="plan-inner large">
+        <h2 class="reveal">Trois étapes, et le cerveau travaille</h2>
+        <div class="phases">
+          <article class="phase reveal">
+            <p class="phase-when">Une demi-journée</p>
+            <h3>Cadrage</h3>
+            <p>Les questions qui coûtent le plus de temps, et les documents qui contiennent les réponses.</p>
+          </article>
+          <article class="phase reveal">
+            <p class="phase-when">Une à deux semaines</p>
+            <h3>Mise en service</h3>
+            <p>Ingestion, choix du modèle, réglage des agents utiles à votre métier, accès pour l'équipe.</p>
+          </article>
+          <article class="phase reveal">
+            <p class="phase-when">En continu</p>
+            <h3>Accompagnement</h3>
+            <p>Nouveaux documents, nouveaux agents, mesure de ce qui sert vraiment.</p>
+          </article>
+        </div>
+        <p class="price-note reveal">Tarification selon le nombre d'utilisateurs et le volume de documents. Devis sous 48 heures après le cadrage.</p>
+      </div>
+    </section>
+
+    <section class="plan final" id="contact" data-scene="final">
+      <div class="plan-inner">
+        <h2 class="reveal">Essayez avec vos propres questions</h2>
+        <p class="dit reveal">La démo tourne dans votre navigateur, avec deux documents d'exemple déjà chargés.</p>
+        <div class="cta-row reveal">
+          <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+          <a class="btn btn-line" href="mailto:contact@neuralstark.ch?subject=Démonstration%20NeuralStark">Demander une démonstration</a>
+        </div>
+        <p class="foot-line reveal">NeuralStark, le cerveau IA de votre entreprise. <a href="../../modeles.html">Les trois modèles</a></p>
+      </div>
+    </section>
+  </main>
+
+  <p class="modele-bandeau">Modèle <b>Cinéma</b>. <a href="../../modeles.html">Comparer les trois modèles</a></p>
+
+  <script src="../../vendor/three.min.js"></script>
+  <script src="../../brain.js"></script>
+  <script type="module" src="boot.js"></script>
+</body>
+</html>

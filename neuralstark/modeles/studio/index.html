@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuralStark — Modèle Studio</title>
+  <meta name="description" content="NeuralStark lit vos devis, rapports et procédures, puis répond en citant les sources. 130 agents spécialisés, un seul point d'entrée." />
+  <meta name="theme-color" content="#f6f4f1" />
+  <link rel="icon" href="../../assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+
+  <header class="nav">
+    <a class="nav-brand" href="#top">
+      <svg viewBox="0 0 64 64" width="24" height="24" aria-hidden="true" focusable="false">
+        <path d="M32 8 L54 32 L32 56 L10 32 Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+        <circle cx="32" cy="32" r="7" fill="currentColor"/>
+      </svg>
+      <span>NeuralStark</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections du site">
+      <a href="#probleme">Le constat</a>
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#orchestration">Orchestration</a>
+      <a href="#agents">Agents</a>
+      <a href="#securite">Sécurité</a>
+    </nav>
+    <div class="palette" role="group" aria-label="Couleur du site">
+      <button type="button" class="swatch" data-palette="rouge" aria-pressed="true"><span></span>Rouge</button>
+      <button type="button" class="swatch" data-palette="foret" aria-pressed="false"><span></span>Forêt</button>
+      <button type="button" class="swatch" data-palette="encre" aria-pressed="false"><span></span>Encre</button>
+      <button type="button" class="swatch" data-palette="ocre" aria-pressed="false"><span></span>Ocre</button>
+    </div>
+    <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+  </header>
+
+  <main id="contenu">
+    <!-- Colonne de texte à gauche, figure 3D tenue à droite pendant tout le défilement -->
+    <div class="shell">
+      <div class="col-text">
+        <section class="hero" id="top" data-scene="hero">
+          <h1>Le cerveau de votre entreprise, entraîné sur vos documents.</h1>
+          <p class="lede">NeuralStark lit vos devis, vos rapports et vos procédures, puis répond à vos questions en citant les sources.</p>
+          <div class="cta-row">
+            <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+            <a class="btn btn-line" href="#demarrer">Voir comment on démarre</a>
+          </div>
+        </section>
+
+        <section class="chapitre" id="probleme" data-scene="scatter">
+          <h2 class="reveal">Votre savoir-faire est éparpillé</h2>
+          <p class="reveal">Un devis dans une boîte mail, une procédure dans un classeur partagé, le reste dans la tête de la personne qui partira en retraite dans six mois. Chaque question simple coûte vingt minutes à quelqu'un.</p>
+          <ul class="liste reveal">
+            <li>Boîtes mail</li>
+            <li>Dossiers partagés</li>
+            <li>PDF scannés</li>
+            <li>Carnets de chantier</li>
+            <li>Tableurs de suivi</li>
+            <li>Mémoire des équipes</li>
+          </ul>
+          <p class="note reveal">Ce n'est pas un problème d'outils. C'est un problème de mémoire.</p>
+        </section>
+
+        <section class="chapitre" id="fonctionnement" data-scene="ingest">
+          <h2 class="reveal">Trois gestes, et la connaissance devient utilisable</h2>
+          <ol class="etapes">
+            <li class="reveal">
+              <h3>Déposez vos documents</h3>
+              <p>Devis, factures, comptes rendus, contrats, procédures. Ils sont découpés en passages et indexés, dans votre navigateur ou sur votre serveur.</p>
+            </li>
+            <li class="reveal">
+              <h3>Posez votre question</h3>
+              <p>En français, comme à un collègue. Aucune syntaxe à apprendre, aucun mot-clé à deviner.</p>
+            </li>
+            <li class="reveal">
+              <h3>Vérifiez les sources</h3>
+              <p>Chaque réponse affiche les passages exacts dont elle vient. Si l'information n'existe pas, le système le dit au lieu d'inventer.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section class="chapitre" id="orchestration" data-scene="route">
+          <h2 class="reveal">Le Cerveau Central choisit les bons spécialistes</h2>
+          <p class="reveal">Vous ne choisissez pas parmi 130 agents. Vous décrivez votre besoin, l'orchestrateur classe les agents pertinents, leur délègue, puis assemble une réponse unique.</p>
+
+          <div class="router-demo reveal">
+            <form id="router-form" autocomplete="off">
+              <label for="router-input">Décrivez un besoin</label>
+              <div class="router-field">
+                <input id="router-input" name="q" type="text" placeholder="Relancer les devis sans réponse depuis 30 jours" />
+                <button class="btn btn-solid btn-sm" type="submit">Router</button>
+              </div>
+            </form>
+            <div class="chips" id="router-samples">
+              <button type="button" class="chip">Préparer un devis de peinture pour 220 m2 de façade</button>
+              <button type="button" class="chip">Vérifier la trésorerie avant d'embaucher</button>
+              <button type="button" class="chip">Rédiger une annonce pour un poste de chef d'équipe</button>
+            </div>
+            <div class="router-out" id="router-out" aria-live="polite">
+              <p class="router-hint">Le résultat s'affiche ici, et les agents retenus s'allument dans la figure.</p>
+            </div>
+          </div>
+          <p class="note reveal">Ce champ exécute le vrai moteur de routage du produit, dans votre navigateur. Rien n'est envoyé sur un serveur.</p>
+        </section>
+
+        <section class="chapitre" id="securite" data-scene="vault">
+          <h2 class="reveal">Vos données ne sortent pas par défaut</h2>
+          <p class="reveal">La recherche documentaire tourne en local. Sans modèle distant configuré, aucune donnée ne quitte votre poste ou votre serveur. Avec un modèle distant, seuls la question et les passages utiles sont transmis au fournisseur que vous avez choisi.</p>
+          <dl class="faits">
+            <div class="reveal"><dt>Moteur local</dt><dd>Découpage, index et recherche par similarité exécutés côté client.</dd></div>
+            <div class="reveal"><dt>Modèle au choix</dt><dd>OpenAI, DeepSeek, Groq, ou un modèle Ollama qui tourne dans vos murs.</dd></div>
+            <div class="reveal"><dt>Clés jamais stockées côté serveur</dt><dd>Elles restent dans le navigateur de l'utilisateur.</dd></div>
+            <div class="reveal"><dt>Installation chez vous</dt><dd>Le produit se déploie sur votre infrastructure, sans dépendance externe.</dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <div class="col-figure">
+        <figure class="figure">
+          <div class="figure-frame">
+            <canvas id="brain-canvas"></canvas>
+            <div id="node-tip" class="node-tip" hidden></div>
+          </div>
+          <figcaption>Les 130 agents du catalogue, reliés au Cerveau Central. La figure suit la lecture.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Bandes pleine largeur -->
+    <section class="bande" id="agents" data-scene="clusters">
+      <div class="bande-inner">
+        <div class="bande-head">
+          <h2 class="reveal">130 agents, 12 domaines</h2>
+          <p class="reveal">Survolez un domaine pour le repérer dans la figure. Ouvrez-le pour voir les agents qu'il contient.</p>
+        </div>
+        <div class="cat-grid reveal" id="cat-grid"><p class="loading">Chargement du catalogue…</p></div>
+        <div class="cat-detail" id="cat-detail" hidden></div>
+      </div>
+    </section>
+
+    <section class="bande claire" id="scenarios" data-scene="drift">
+      <div class="bande-inner">
+        <h2 class="bande-titre reveal">Ce que ça change un mardi matin</h2>
+        <div class="cases">
+          <article class="case reveal">
+            <p class="case-who">Entreprise de peinture, 14 personnes</p>
+            <p class="case-q">« Quel prix au m2 avions-nous appliqué sur le chantier de la rue des Alpes ? »</p>
+            <p class="case-a">Le devis de 2024 remonte avec le passage exact, sans ouvrir le classeur.</p>
+          </article>
+          <article class="case reveal">
+            <p class="case-who">Bureau d'études, 40 personnes</p>
+            <p class="case-q">« Résume les trois rapports du site B et liste les actions en retard. »</p>
+            <p class="case-a">Une synthèse en une minute, chaque point rattaché à son rapport d'origine.</p>
+          </article>
+          <article class="case reveal">
+            <p class="case-who">Distributeur de matériel, 8 personnes</p>
+            <p class="case-q">« Réécris cette fiche produit pour le site, ton commercial, 120 mots. »</p>
+            <p class="case-a">Le texte reprend votre vocabulaire, pas celui d'un modèle générique.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="bande" id="comparaison" data-scene="calm">
+      <div class="bande-inner etroit">
+        <h2 class="bande-titre reveal">Pourquoi pas simplement un assistant grand public</h2>
+        <div class="table-wrap reveal">
+          <table class="compare">
+            <thead>
+              <tr><th scope="col"><span class="sr-only">Critère</span></th><th scope="col">Assistant grand public</th><th scope="col">NeuralStark</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Connaît vos documents</th><td>Non, sauf copier-coller manuel</td><td>Oui, indexés en continu</td></tr>
+              <tr><th scope="row">Cite ses sources</th><td>Rarement, et sans lien vers vos fichiers</td><td>Chaque réponse renvoie au passage exact</td></tr>
+              <tr><th scope="row">Où vont vos données</th><td>Chez l'éditeur, selon ses conditions</td><td>Chez vous, sauf modèle distant que vous choisissez</td></tr>
+              <tr><th scope="row">Spécialisation métier</th><td>Un assistant unique et généraliste</td><td>130 agents cadrés, routés automatiquement</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="bande claire" id="demarrer" data-scene="drift">
+      <div class="bande-inner">
+        <div class="bande-head">
+          <h2 class="reveal">Comment on démarre</h2>
+          <p class="reveal">Pas de grand projet. On branche le cerveau sur un premier périmètre utile, puis on élargit.</p>
+        </div>
+        <div class="phases">
+          <article class="phase reveal">
+            <p class="phase-when">Une demi-journée</p>
+            <h3>Cadrage</h3>
+            <p>On identifie les questions qui coûtent le plus de temps et les documents qui contiennent les réponses.</p>
+          </article>
+          <article class="phase reveal">
+            <p class="phase-when">Une à deux semaines</p>
+            <h3>Mise en service</h3>
+            <p>Ingestion de vos documents, choix du modèle, réglage des agents utiles à votre métier, accès pour l'équipe.</p>
+          </article>
+          <article class="phase reveal">
+            <p class="phase-when">En continu</p>
+            <h3>Accompagnement</h3>
+            <p>Nouveaux documents, nouveaux agents, mesure de ce qui sert vraiment. Le cerveau apprend au rythme de l'entreprise.</p>
+          </article>
+        </div>
+        <p class="price-note reveal">Tarification selon le nombre d'utilisateurs et le volume de documents. Devis sous 48 heures après le cadrage.</p>
+      </div>
+    </section>
+
+    <section class="bande" id="faq" data-scene="calm">
+      <div class="bande-inner etroit">
+        <h2 class="bande-titre reveal">Questions fréquentes</h2>
+        <div class="faq reveal">
+          <details>
+            <summary>Faut-il envoyer nos documents dans le cloud ?</summary>
+            <p>Non. L'indexation et la recherche tournent en local. Vous n'ouvrez une connexion vers un fournisseur de modèle que si vous en configurez un, et dans ce cas seuls la question et les passages retenus sont envoyés.</p>
+          </details>
+          <details>
+            <summary>Combien de documents peut-on charger ?</summary>
+            <p>La démo publique fonctionne avec quelques dizaines de documents dans le navigateur. Pour une base d'entreprise, l'installation serveur prend en charge des volumes bien supérieurs et une base partagée entre collaborateurs.</p>
+          </details>
+          <details>
+            <summary>Quel modèle d'intelligence artificielle est utilisé ?</summary>
+            <p>Celui que vous voulez. Toute interface compatible OpenAI fonctionne, y compris un modèle qui tourne sur votre propre machine avec Ollama ou LM Studio. Sans clé, le produit répond en mode extractif à partir de vos documents.</p>
+          </details>
+          <details>
+            <summary>Que se passe-t-il si la réponse n'est pas dans nos documents ?</summary>
+            <p>Les agents sont cadrés pour le dire. Une réponse sans source est signalée comme telle, ce qui évite les affirmations inventées que personne ne peut vérifier.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="bande final" id="contact" data-scene="final">
+      <div class="bande-inner etroit">
+        <h2 class="reveal">Essayez avec vos propres questions</h2>
+        <p class="reveal">La démo tourne dans votre navigateur, avec deux documents d'exemple déjà chargés. Ajoutez les vôtres et jugez sur pièce.</p>
+        <div class="cta-row reveal">
+          <a class="btn btn-solid" href="../../app.html">Ouvrir la démo</a>
+          <a class="btn btn-line" href="mailto:contact@neuralstark.ch?subject=Démonstration%20NeuralStark">Demander une démonstration</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="bande-inner">
+      <p class="foot-brand">NeuralStark</p>
+      <p class="foot-line">Le cerveau IA de votre entreprise. 130 agents, un moteur documentaire local.</p>
+      <nav class="foot-links" aria-label="Liens de bas de page">
+        <a href="../../app.html">Démo</a>
+        <a href="#agents">Les 130 agents</a>
+        <a href="mailto:contact@neuralstark.ch">Contact</a>
+        <a href="../../modeles.html">Les trois modèles</a>
+      </nav>
+    </div>
+  </footer>
+
+  <p class="modele-bandeau">Modèle <b>Studio</b>. <a href="../../modeles.html">Comparer les trois modèles</a></p>
+
+  <script src="../../vendor/three.min.js"></script>
+  <script src="../../brain.js"></script>
+  <script type="module" src="boot.js"></script>
+</body>
+</html>

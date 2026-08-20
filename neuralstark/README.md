@@ -37,6 +37,7 @@ vos fichiers.
 |------|------|
 | `index.html` | **Site vitrine 3D** : présentation commerciale de NeuralStark. Cerveau WebGL (three.js) dont les 130 points sont les agents réels du catalogue, démonstration en direct du routeur, catalogue des 12 domaines. |
 | `app.html` | **L'application** : les 130 agents, le chat, le RAG et la base de connaissances. |
+| `modeles.html` | **Trois modèles de vitrine** à comparer avant de trancher : `modeles/atelier/` (sombre, scène plein écran), `modeles/studio/` (clair, figure encadrée, typographie éditoriale), `modeles/cinema/` (plans plein écran). Chacun se décline en quatre couleurs, mémorisées dans le navigateur. |
 
 La vitrine n'a aucune dépendance réseau : `three.js` est embarqué dans `vendor/`.
 Sans WebGL, la page bascule sur un fond statique et reste entièrement lisible ;
@@ -83,6 +84,7 @@ https://<user>.github.io/<repo>/neuralstark/
 ```
 neuralstark/
 ├── index.html · site.css · site.js · brain.js   # site vitrine 3D (page d'entrée)
+├── modeles.html · modeles/                      # trois modèles au choix + moteur commun
 ├── app.html · styles.css · app.js               # l'application (130 agents + RAG)
 ├── vendor/three.min.js                          # three.js embarqué, aucun CDN
 ├── .nojekyll                                    # sert le dossier tel quel sur GitHub Pages
