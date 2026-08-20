@@ -1,0 +1,109 @@
+/* Modèle Atelier — variantes de couleur.
+   La structure vient de ../../site.css ; ce fichier ne fait que déplacer la
+   lumière chaude de la scène et de l'interface. */
+
+:root,
+:root[data-palette="cuivre"] {
+  --copper: #e08b4c;
+  --copper-hi: #f2a967;
+  --copper-dim: rgba(224, 139, 76, .16);
+  --ink: #150d05;
+  --brain-hot: #e08b4c;
+  --brain-cold: #7d98b3;
+}
+
+:root[data-palette="emeraude"] {
+  --copper: #35c48c;
+  --copper-hi: #5bd9a6;
+  --copper-dim: rgba(53, 196, 140, .16);
+  --ink: #04160f;
+  --brain-hot: #35c48c;
+  --brain-cold: #6f8fa8;
+}
+
+:root[data-palette="azur"] {
+  --copper: #55a0f2;
+  --copper-hi: #7ab7f8;
+  --copper-dim: rgba(85, 160, 242, .16);
+  --ink: #04101f;
+  --brain-hot: #55a0f2;
+  --brain-cold: #7c8b9c;
+}
+
+:root[data-palette="brique"] {
+  --copper: #ef6a50;
+  --copper-hi: #f78a73;
+  --copper-dim: rgba(239, 106, 80, .16);
+  --ink: #1a0704;
+  --brain-hot: #ef6a50;
+  --brain-cold: #8a93a0;
+}
+
+/* ————— sélecteur de couleur ————— */
+
+.palette {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-left: auto;
+}
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .35rem .7rem .35rem .5rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--muted);
+  font: inherit;
+  font-size: .78rem;
+  cursor: pointer;
+  transition: border-color 160ms var(--ease), color 160ms var(--ease);
+}
+.swatch span {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--dot);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+.swatch[data-palette="cuivre"] { --dot: #e08b4c; }
+.swatch[data-palette="emeraude"] { --dot: #35c48c; }
+.swatch[data-palette="azur"] { --dot: #55a0f2; }
+.swatch[data-palette="brique"] { --dot: #ef6a50; }
+.swatch[aria-pressed="true"] { color: var(--text); border-color: var(--copper); }
+@media (hover: hover) and (pointer: fine) {
+  .swatch:hover { color: var(--text); }
+}
+
+/* la barre de nav accueille maintenant le sélecteur */
+.nav-links { margin-right: 0; }
+
+/* ————— bandeau d'essai ————— */
+
+.modele-bandeau {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  z-index: 30;
+  margin: 0;
+  padding: .5rem 1rem;
+  background: rgba(10, 13, 17, .92);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill);
+  font-size: .82rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.modele-bandeau b { color: var(--text); font-weight: 600; }
+.modele-bandeau a { color: var(--copper); text-decoration: none; border-bottom: 1px solid transparent; }
+.modele-bandeau a:hover { border-bottom-color: var(--copper); }
+.hero-note { bottom: 4.6rem; }
+
+@media (max-width: 1080px) {
+  .swatch { font-size: 0; gap: 0; padding: .4rem; }
+  .swatch span { width: 14px; height: 14px; }
+}
+@media (max-width: 640px) {
+  .modele-bandeau { font-size: .74rem; padding: .45rem .8rem; }
+}
