@@ -62,6 +62,38 @@
 }
 
 /* --------------------------------------------------------------------------
+   Pastille d'ouverture : petite etiquette bordee, marquee de l'arc du logo.
+   Elle annonce la qualite d'exercice au-dessus du titre.
+   -------------------------------------------------------------------------- */
+
+.bn-pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--bn-grotesk);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.bn-pastille svg {
+  width: 22px;
+  height: 12px;
+  overflow: visible;
+}
+
+.bn-pastille path {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* --------------------------------------------------------------------------
    Motifs signature : l'arc, les stries, le tissage.
    Ils viennent tous du logo et reviennent dans les trois designs.
    -------------------------------------------------------------------------- */

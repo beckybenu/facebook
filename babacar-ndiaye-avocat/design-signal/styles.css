@@ -172,7 +172,11 @@ a { color: inherit; }
     color var(--bn-t-moyen) linear;
 }
 
-.bouton--plein { background: var(--noir); color: var(--papier); }
+.bouton--plein {
+  background: var(--noir);
+  color: var(--papier);
+  box-shadow: 0 12px 30px rgba(17, 16, 14, 0.22);
+}
 .bouton--nu { background: transparent; color: var(--noir); }
 
 @media (hover: hover) and (pointer: fine) {
@@ -276,13 +280,12 @@ p { text-wrap: pretty; }
   padding-bottom: var(--bn-e-5);
 }
 
-.hero__situation {
+.hero__pastille { color: var(--or); }
+
+.hero__pastille .bn-pastille {
+  background: rgba(255, 253, 249, 0.6);
   font-family: "Syne", var(--bn-grotesk);
   font-weight: 600;
-  font-size: var(--bn-t-xs);
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--or);
 }
 
 .hero__titre {
@@ -297,6 +300,16 @@ p { text-wrap: pretty; }
 .hero__titre .ligne { display: block; overflow: hidden; }
 .hero__titre .ligne > span { display: block; transform: translateY(104%); }
 .hero__titre .ligne--or { color: var(--or); }
+
+/* Le mot qui porte la promesse passe en degrade d'or. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__titre .ligne--or > span {
+    background-image: linear-gradient(100deg, #6f4f16 0%, #c9a75a 42%, #8a6420 78%, #5f430f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
 
 .hero__pied {
   display: flex;

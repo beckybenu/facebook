@@ -370,7 +370,7 @@
       opacity: 0.74
     });
 
-    var matiereFilet = new THREE.LineBasicMaterial({ color: 0xd8b86b, transparent: true, opacity: 0.72 });
+    var matiereFilet = new THREE.LineBasicMaterial({ color: 0xe8cf95, transparent: true, opacity: 0.88 });
     var geoDalle = new THREE.BoxGeometry(2.4, 3.3, 0.05);
     var geoFilet = new THREE.EdgesGeometry(geoDalle);
 
@@ -392,6 +392,34 @@
       groupe.userData.phase = i * 0.83;
       dalles.add(groupe);
     }
+
+    // Halo : la source de lumiere au fond du couloir, vers laquelle on avance.
+    var halo = new THREE.Mesh(
+      new THREE.PlaneGeometry(26, 20),
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        uniforms: { uCouleur: { value: new THREE.Color(0xd8b86b) } },
+        vertexShader: [
+          "varying vec2 vUv;",
+          "void main() {",
+          "  vUv = uv;",
+          "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+          "}"
+        ].join("\n"),
+        fragmentShader: [
+          "uniform vec3 uCouleur;",
+          "varying vec2 vUv;",
+          "void main() {",
+          "  float d = length((vUv - 0.5) * vec2(1.0, 1.25));",
+          "  float halo = smoothstep(0.5, 0.02, d);",
+          "  gl_FragColor = vec4(uCouleur, halo * 0.22);",
+          "}"
+        ].join("\n")
+      })
+    );
+    scene.add(halo);
 
     // Poussiere en suspension : la lumiere devient visible.
     var nbGrains = 900;
@@ -450,6 +478,9 @@
           1.4,
           profondeur - 4
         );
+
+        // Le halo reste devant la camera, au fond du couloir.
+        halo.position.set(Math.sin(temps * 0.12) * 1.6, 0.4, profondeur - 34);
 
         for (var i = 0; i < dalles.children.length; i++) {
           var d = dalles.children[i];

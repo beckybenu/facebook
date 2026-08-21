@@ -187,6 +187,7 @@ a { color: inherit; }
 .bouton--plein {
   background: var(--encre);
   color: var(--bn-ivoire);
+  box-shadow: 0 10px 28px rgba(16, 26, 38, 0.18);
 }
 
 .bouton--nu {
@@ -304,21 +305,22 @@ p { text-wrap: pretty; }
 
 .hero__inner { max-width: 640px; }
 
-.hero__situation {
-  font-family: var(--bn-grotesk);
-  font-size: var(--bn-t-xs);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--or);
+.hero__pastille {
   margin-bottom: var(--bn-e-3);
+  color: var(--or);
+}
+
+.hero__pastille .bn-pastille {
+  background: rgba(255, 253, 249, 0.7);
+  box-shadow: 0 8px 26px rgba(176, 138, 62, 0.12);
 }
 
 .hero__titre {
   font-family: var(--bn-didone);
   font-weight: 500;
-  font-size: clamp(3rem, 8.2vw, 5.6rem);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  font-size: clamp(3.1rem, 9vw, 6.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
 }
 
 .hero__titre .ligne {
@@ -332,6 +334,16 @@ p { text-wrap: pretty; }
 }
 
 .hero__titre .ligne--or { color: var(--or); font-style: italic; }
+
+/* Le dernier mot de la signature prend la lumiere. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__titre .ligne--or > span {
+    background-image: linear-gradient(96deg, #7a5718 4%, #c9a75a 44%, #8a6420 88%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
 
 .hero__accroche {
   margin-top: var(--bn-e-3);
