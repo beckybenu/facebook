@@ -1,0 +1,218 @@
+/* ==========================================================================
+   Identite BN : Babacar Ndiaye, avocat
+   Socle commun aux trois directions artistiques (Sillage, Chambre, Signal).
+   Tout ce qui est ici est invariant de marque : couleurs, echelle typographique,
+   courbes de mouvement, motifs graphiques issus du logo.
+   ========================================================================== */
+
+:root {
+  /* --- Couleurs de marque (relevees sur le logo) --------------------------- */
+  --bn-encre: #101a26;          /* le B du monogramme, texte principal */
+  --bn-encre-2: #16232f;
+  --bn-nuit: #080d14;           /* fond nocturne */
+  --bn-or: #b08a3e;             /* or du N et de l'arc */
+  --bn-or-clair: #d8b86b;       /* or en lumiere, reserve aux surfaces sombres */
+  --bn-or-profond: #8a6420;     /* or lisible sur ivoire (AA) */
+  --bn-ivoire: #f5f2ec;         /* fond du logo */
+  --bn-ivoire-2: #eae4d8;
+  --bn-brume: #6b7583;          /* gris teinte vers le bleu d'encre */
+  --bn-brume-2: #46505c;
+
+  /* --- Typographie -------------------------------------------------------- */
+  --bn-didone: "Bodoni Moda", "Bodoni MT", Didot, Georgia, serif;
+  --bn-titre: "Marcellus", "Bodoni MT", Georgia, serif;
+  --bn-grotesk: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --bn-humaniste: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+
+  /* Echelle 1.28 : 12 / 15 / 19 / 25 / 32 / 41 / 52 */
+  --bn-t-xs: 0.75rem;
+  --bn-t-s: 0.9375rem;
+  --bn-t-m: 1.1875rem;
+  --bn-t-l: 1.5625rem;
+  --bn-t-xl: 2rem;
+
+  /* --- Espacement (base 8) ------------------------------------------------ */
+  --bn-e-1: 8px;
+  --bn-e-2: 16px;
+  --bn-e-3: 24px;
+  --bn-e-4: 40px;
+  --bn-e-5: 64px;
+  --bn-e-6: 104px;
+  --bn-e-7: 152px;
+
+  /* --- Rayons : un seul systeme, cartes plafonnees a 14px ------------------ */
+  --bn-r-s: 3px;
+  --bn-r-m: 8px;
+  --bn-r-l: 14px;
+
+  /* --- Mouvement ---------------------------------------------------------- */
+  --bn-sortie: cubic-bezier(0.23, 1, 0.32, 1);      /* entrees et sorties d'UI */
+  --bn-douce: cubic-bezier(0.65, 0, 0.35, 1);       /* transitions de scene */
+  --bn-elastique: cubic-bezier(0.34, 1.42, 0.64, 1);
+  --bn-t-court: 160ms;
+  --bn-t-moyen: 240ms;
+  --bn-t-long: 460ms;
+
+  /* --- Profondeur --------------------------------------------------------- */
+  --bn-z-fond: 0;
+  --bn-z-contenu: 10;
+  --bn-z-entete: 40;
+  --bn-z-voile: 60;
+  --bn-z-modale: 70;
+}
+
+/* --------------------------------------------------------------------------
+   Pastille d'ouverture : petite etiquette bordee, marquee de l'arc du logo.
+   Elle annonce la qualite d'exercice au-dessus du titre.
+   -------------------------------------------------------------------------- */
+
+.bn-pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--bn-grotesk);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.bn-pastille svg {
+  width: 22px;
+  height: 12px;
+  overflow: visible;
+}
+
+.bn-pastille path {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* --------------------------------------------------------------------------
+   Motifs signature : l'arc, les stries, le tissage.
+   Ils viennent tous du logo et reviennent dans les trois designs.
+   -------------------------------------------------------------------------- */
+
+.bn-stries {
+  background-image: repeating-linear-gradient(
+    90deg,
+    currentColor 0 1px,
+    transparent 1px 7px
+  );
+  opacity: 0.5;
+}
+
+.bn-tissage {
+  background-image:
+    repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(-45deg, currentColor 0 1px, transparent 1px 9px);
+  opacity: 0.35;
+}
+
+.bn-filet {
+  border: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.28;
+}
+
+/* Le monogramme inline : herite de la fonte de la page, donc du Bodoni charge. */
+.bn-marque {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.bn-marque svg {
+  display: block;
+  height: 34px;
+  width: auto;
+  overflow: visible;
+}
+
+.bn-marque .bn-b,
+.bn-marque .bn-n {
+  font-family: var(--bn-didone);
+}
+
+.bn-marque .bn-arc {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 0;
+}
+
+.bn-marque__texte {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.bn-marque__nom {
+  font-family: var(--bn-didone);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+.bn-marque__role {
+  font-family: var(--bn-grotesk);
+  font-size: 0.5625rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibilite commune
+   -------------------------------------------------------------------------- */
+
+[hidden] {
+  display: none !important;
+}
+
+.bn-hors-ecran {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.bn-saut {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: var(--bn-z-modale);
+  padding: 10px 16px;
+  border-radius: var(--bn-r-m);
+  background: var(--bn-encre);
+  color: var(--bn-ivoire);
+  font-family: var(--bn-grotesk);
+  font-size: var(--bn-t-xs);
+  text-decoration: none;
+  transition: top var(--bn-t-court) var(--bn-sortie);
+}
+
+.bn-saut:focus-visible {
+  top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

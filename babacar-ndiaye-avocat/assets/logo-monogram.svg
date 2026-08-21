@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 56" role="img" aria-label="Babacar Ndiaye, avocat">
+  <defs>
+    <style>.bn-m { font-family: "Bodoni Moda", "Bodoni MT", Didot, "Playfair Display", Georgia, serif; }</style>
+  </defs>
+  <path d="M3 30 C 11 15, 33 13, 43 24" fill="none" stroke="#B08A3E" stroke-width="2.4" stroke-linecap="round" />
+  <text class="bn-m" x="10" y="44" font-size="44" font-weight="600" fill="#101A26">B</text>
+  <text class="bn-m" x="32" y="50" font-size="48" font-weight="500" fill="#B08A3E">N</text>
+</svg>
