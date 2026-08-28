@@ -33,6 +33,7 @@ export function initVitrine(config = {}) {
   const opts = {
     modele: "vitrine",
     defaultPalette: null,
+    dataUrl: "../../data/agents.json",
     brain: {},
     tooltipScenes: ["hero", "clusters"],
     ...config,
@@ -96,7 +97,7 @@ export function initVitrine(config = {}) {
 
   /* ————— plans liés aux sections ————— */
 
-  const navLinks = $$(".nav-links a, .rail a");
+  const navLinks = $$(".nav-links a, .nav-liens a, .rail a");
   let currentScene = "hero";
 
   function markNav(id) {
@@ -329,7 +330,7 @@ export function initVitrine(config = {}) {
 
   (async function load() {
     try {
-      const data = await fetch("../../data/agents.json").then((r) => r.json());
+      const data = await fetch(opts.dataUrl).then((r) => r.json());
       buildCatalogue(data);
       router = new AgentRouter(agents);
     } catch (err) {

@@ -35,9 +35,10 @@ vos fichiers.
 
 | Page | Rôle |
 |------|------|
-| `index.html` | **Site vitrine 3D** : présentation commerciale de NeuralStark. Cerveau WebGL (three.js) dont les 130 points sont les agents réels du catalogue, démonstration en direct du routeur, catalogue des 12 domaines. |
+| `index.html` | **Site vitrine 3D** : modèle Cinéma en violet, retenu parmi les trois propositions. Plans plein écran, cerveau WebGL dont les 130 points sont les agents réels du catalogue, démonstration en direct du routeur, catalogue des 12 domaines. |
 | `app.html` | **L'application** : les 130 agents, le chat, le RAG et la base de connaissances. |
-| `modeles.html` | **Trois modèles de vitrine** à comparer avant de trancher : `modeles/atelier/` (sombre, scène plein écran), `modeles/studio/` (clair, figure encadrée, typographie éditoriale), `modeles/cinema/` (plans plein écran). Chacun se décline en quatre couleurs, mémorisées dans le navigateur. |
+| `neuralstark-explique.pdf` | **Présentation en six pages**, sans jargon, pour expliquer le projet à des personnes qui ne sont pas du métier. Téléchargeable depuis le bas du site. |
+| `modeles.html` | **Trois modèles de vitrine** proposés au choix (le modèle Cinéma a été retenu) : `modeles/atelier/` (sombre, scène plein écran), `modeles/studio/` (clair, figure encadrée, typographie éditoriale), `modeles/cinema/` (plans plein écran). Chacun se décline en quatre couleurs, mémorisées dans le navigateur. |
 
 La vitrine n'a aucune dépendance réseau : `three.js` est embarqué dans `vendor/`.
 Sans WebGL, la page bascule sur un fond statique et reste entièrement lisible ;
@@ -83,8 +84,9 @@ https://<user>.github.io/<repo>/neuralstark/
 
 ```
 neuralstark/
-├── index.html · site.css · site.js · brain.js   # site vitrine 3D (page d'entrée)
-├── modeles.html · modeles/                      # trois modèles au choix + moteur commun
+├── index.html · cinema.css · accueil.js · brain.js   # site vitrine 3D (page d'entrée)
+├── neuralstark-explique.pdf                     # présentation simple, six pages
+├── modeles.html · modeles/ · site.css           # les trois modèles proposés + moteur commun
 ├── app.html · styles.css · app.js               # l'application (130 agents + RAG)
 ├── vendor/three.min.js                          # three.js embarqué, aucun CDN
 ├── .nojekyll                                    # sert le dossier tel quel sur GitHub Pages
