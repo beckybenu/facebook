@@ -38,6 +38,7 @@ vos fichiers.
 | `index.html` | **Site vitrine 3D** : modèle Cinéma en violet, retenu parmi les trois propositions. Plans plein écran, cerveau WebGL dont les 130 points sont les agents réels du catalogue, démonstration en direct du routeur, catalogue des 12 domaines. |
 | `app.html` | **L'application** : les 130 agents, le chat, le RAG et la base de connaissances. |
 | `neuralstark-explique.pdf` | **Présentation en six pages**, sans jargon, pour expliquer le projet à des personnes qui ne sont pas du métier. Téléchargeable depuis le bas du site. |
+| `neuralstark-film.mp4` | **Film explicatif de 90 secondes**, muet et sous-titré en français : parcours du site, routage en direct, puis une vraie question posée à la démonstration. Enregistré sur le site réel, pas une animation. |
 | `modeles.html` | **Trois modèles de vitrine** proposés au choix (le modèle Cinéma a été retenu) : `modeles/atelier/` (sombre, scène plein écran), `modeles/studio/` (clair, figure encadrée, typographie éditoriale), `modeles/cinema/` (plans plein écran). Chacun se décline en quatre couleurs, mémorisées dans le navigateur. |
 
 La vitrine n'a aucune dépendance réseau : `three.js` est embarqué dans `vendor/`.
@@ -86,6 +87,7 @@ https://<user>.github.io/<repo>/neuralstark/
 neuralstark/
 ├── index.html · cinema.css · accueil.js · brain.js   # site vitrine 3D (page d'entrée)
 ├── neuralstark-explique.pdf                     # présentation simple, six pages
+├── neuralstark-film.mp4                         # film sous-titré de 90 secondes
 ├── modeles.html · modeles/ · site.css           # les trois modèles proposés + moteur commun
 ├── app.html · styles.css · app.js               # l'application (130 agents + RAG)
 ├── vendor/three.min.js                          # three.js embarqué, aucun CDN
