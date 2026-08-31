@@ -6,7 +6,8 @@ import type { Devis, DevisItem, DevisUnit, DevisStatus } from '../types'
 import { COMPANY, DEFAULT_INTRO, DEFAULT_REMARQUES } from '../lib/company'
 import { UNIT_LABELS, formatCHF, lineAmount, devisTotals } from '../lib/utils'
 import { useAuth } from '../context/AuthContext'
-import { aiDevis, aiStatus } from '../data/remote'
+import { aiStatus } from '../data/remote'
+import { aiGenerateDevis, llmConfigured } from '../lib/llm'
 
 interface AiDevisResult {
   titre?: string
@@ -33,7 +34,8 @@ export default function DevisEdit() {
   const [aiError, setAiError] = useState('')
 
   useEffect(() => {
-    if (cloud) aiStatus().then(setAiOn)
+    if (llmConfigured()) setAiOn(true)
+    else if (cloud) aiStatus().then(setAiOn)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cloud])
 
@@ -41,7 +43,7 @@ export default function DevisEdit() {
     if (!aiPrompt.trim()) return
     setAiBusy(true)
     setAiError('')
-    const res = await aiDevis(aiPrompt.trim())
+    const res = await aiGenerateDevis(aiPrompt.trim())
     setAiBusy(false)
     if (!res.ok) {
       setAiError(res.error || 'Erreur IA.')

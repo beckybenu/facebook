@@ -16,6 +16,7 @@ import TaskDetail from './pages/TaskDetail'
 import Documents from './pages/Documents'
 import ServerSettings from './pages/ServerSettings'
 import AIAssistant from './pages/AIAssistant'
+import LlmSettings from './pages/LlmSettings'
 import DevisList from './pages/DevisList'
 import DevisEdit from './pages/DevisEdit'
 import DevisView from './pages/DevisView'
@@ -104,6 +105,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ouvrier', 'admin']}>
             <AIAssistant />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ia-config"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <LlmSettings />
           </ProtectedRoute>
         }
       />

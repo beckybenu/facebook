@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
-import { aiChat, aiStatus, type ChatMessage } from '../data/remote'
+import { aiStatus } from '../data/remote'
+import { aiAsk, llmConfigured, type ChatMessage } from '../lib/llm'
 
 // Reconnaissance vocale du navigateur (dictée)
 type SpeechRecognitionCtor = new () => {
@@ -42,7 +43,12 @@ export default function AIAssistant() {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (cloud) aiStatus().then(setAvailable)
+    // Disponible si un LLM navigateur est connecté, sinon si le serveur a une clé.
+    if (llmConfigured()) {
+      setAvailable(true)
+      return
+    }
+    if (cloud) aiStatus().then((ok) => setAvailable(ok))
     else setAvailable(false)
   }, [cloud])
 
@@ -65,7 +71,7 @@ export default function AIAssistant() {
     setMessages(next)
     setInput('')
     setBusy(true)
-    const res = await aiChat(next)
+    const res = await aiAsk(next)
     setBusy(false)
     if (res.ok && res.reply) {
       setMessages([...next, { role: 'assistant', content: res.reply }])
@@ -100,28 +106,22 @@ export default function AIAssistant() {
     rec.start()
   }
 
-  // États bloquants : pas de serveur, ou IA non configurée
-  if (!cloud) {
-    return (
-      <Layout title="Assistant IA">
-        <div className="info-msg">
-          L'assistant IA nécessite un serveur connecté. Va dans <b>Profil → Connexion serveur</b>
-          pour activer le mode Cloud.
-        </div>
-        <button className="btn btn-primary" onClick={() => navigate('/parametres')}>
-          Connexion serveur
-        </button>
-      </Layout>
-    )
-  }
+  // État bloquant : aucune IA connectée (ni clé navigateur, ni serveur)
   if (available === false) {
     return (
       <Layout title="Assistant IA">
         <div className="info-msg">
-          L'assistant IA n'est pas encore activé sur ton serveur. Ajoute la clé{' '}
-          <code>ANTHROPIC_API_KEY</code> dans les variables d'environnement du serveur (voir le
-          README du backend), puis redémarre-le.
+          Pour activer l'assistant, connecte un fournisseur IA. Le plus simple : une clé{' '}
+          <b>Groq gratuite</b> — la clé reste sur ton téléphone, aucun serveur requis.
         </div>
+        <button className="btn btn-primary" onClick={() => navigate('/ia-config')}>
+          ✨ Connecter l'IA
+        </button>
+        {cloud && (
+          <div className="muted" style={{ fontSize: 13, marginTop: 12, textAlign: 'center' }}>
+            (ou ajoute <code>ANTHROPIC_API_KEY</code> sur ton serveur)
+          </div>
+        )}
       </Layout>
     )
   }
@@ -133,6 +133,9 @@ export default function AIAssistant() {
           ‹
         </button>
         <h1>Assistant IA ✨</h1>
+        <button className="icon-btn" onClick={() => navigate('/ia-config')} aria-label="Réglages IA">
+          ⚙️
+        </button>
         <button
           className="icon-btn"
           onClick={() => setSpeak((s) => !s)}

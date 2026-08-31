@@ -119,6 +119,14 @@ export default function Profile() {
         {cloud ? '☁️ Serveur connecté' : '📱 Connexion serveur'}
       </button>
 
+      <button
+        className="btn btn-outline"
+        style={{ marginTop: 12 }}
+        onClick={() => navigate('/ia-config')}
+      >
+        ✨ Connexion IA
+      </button>
+
       <button className="btn btn-outline" style={{ marginTop: 12 }} onClick={handleLogout}>
         🚪 Se déconnecter
       </button>
