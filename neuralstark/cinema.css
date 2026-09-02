@@ -1,12 +1,27 @@
-/* NeuralStark — page d'accueil : modèle Cinéma, palette violette.
-   Plans plein écran, la scène 3D porte le récit, une affirmation par plan. */
+/* NeuralStark — page d'accueil : modèle Cinéma.
+   Plans plein écran, la scène 3D porte le récit, une affirmation par plan.
+
+   La teinte dérive avec la lecture : violet au premier plan, bleu au dernier.
+   Les paires *-debut / *-fin ci-dessous sont les deux bornes ; teinte.js
+   interpole entre elles et réécrit --accent, --accent-hi, --accent-ink,
+   --brain-hot et --brain-cold sur <html>. Sans JavaScript, les valeurs de
+   départ tiennent la page telle quelle. */
 
 :root {
-  --accent: #9b8cf7;
-  --accent-hi: #b3a7fa;
-  --accent-ink: #0d0722;
-  --brain-hot: #9b8cf7;
-  --brain-cold: #737f9c;
+  --accent-debut: #9b8cf7;
+  --accent-fin: #4b9ff5;
+  --accent-hi-debut: #b3a7fa;
+  --accent-hi-fin: #7dbdfb;
+  --accent-ink-debut: #0d0722;
+  --accent-ink-fin: #04121f;
+  --brain-cold-debut: #737f9c;
+  --brain-cold-fin: #6a87ab;
+
+  --accent: var(--accent-debut);
+  --accent-hi: var(--accent-hi-debut);
+  --accent-ink: var(--accent-ink-debut);
+  --brain-hot: var(--accent-debut);
+  --brain-cold: var(--brain-cold-debut);
 
   --bg: #07090c;
   --bg-2: #0d1116;
