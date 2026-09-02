@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import AiFab from './components/AiFab'
 
 // Auth
 import Welcome from './pages/Welcome'
@@ -37,6 +38,7 @@ export default function App() {
   if (loading) return <div className="loading-screen">Chargement…</div>
 
   return (
+    <>
     <Routes>
       {/* Écrans publics (auth) */}
       <Route path="/" element={user ? <Navigate to="/home" replace /> : <Welcome />} />
@@ -227,5 +229,7 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    <AiFab />
+    </>
   )
 }

@@ -21,7 +21,10 @@ export default function Chantiers() {
 
   useEffect(() => {
     if (!user) return
-    setTasks(isAdmin ? tasksDb.all() : tasksDb.forUser(user.id))
+    const load = () => setTasks(isAdmin ? tasksDb.all() : tasksDb.forUser(user.id))
+    load()
+    window.addEventListener('sp:refresh', load)
+    return () => window.removeEventListener('sp:refresh', load)
   }, [user, isAdmin])
 
   const filtered = tasks.filter((t) =>

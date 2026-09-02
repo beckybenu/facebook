@@ -18,10 +18,12 @@ import {
 export interface AgentCtx {
   role: UserRole
   userId: string
+  screen?: string // écran courant (contexte), ex : "Devis"
 }
 export interface AgentResult {
   reply: string
   navigate?: string
+  changed?: boolean // des données ont été créées/modifiées
 }
 
 const noAccents = (s: string) =>
@@ -197,8 +199,16 @@ async function execTool(
   name: string,
   args: Record<string, unknown>,
   ctx: AgentCtx,
-  effects: { navigate?: string },
+  effects: { navigate?: string; changed?: boolean },
 ): Promise<string> {
+  // Marque les actions qui modifient des données (pour rafraîchir l'écran)
+  if (
+    ['creer_devis', 'changer_statut_devis', 'creer_chantier', 'modifier_chantier', 'creer_ouvrier'].includes(
+      name,
+    )
+  ) {
+    effects.changed = true
+  }
   const s = (v: unknown) => (typeof v === 'string' ? v : v == null ? '' : String(v))
 
   switch (name) {
@@ -375,11 +385,12 @@ Règles :
 // ---------- Boucle agent ----------
 export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<AgentResult> {
   const tools = toolset(ctx.role)
+  const sys = ctx.screen ? `${AGENT_SYSTEM}\nL'utilisateur est actuellement sur l'écran "${ctx.screen}".` : AGENT_SYSTEM
   const messages: RawMessage[] = [
-    { role: 'system', content: AGENT_SYSTEM },
+    { role: 'system', content: sys },
     ...history.map((m) => ({ role: m.role, content: m.content })),
   ]
-  const effects: { navigate?: string } = {}
+  const effects: { navigate?: string; changed?: boolean } = {}
 
   for (let step = 0; step < 5; step++) {
     let res
@@ -389,7 +400,7 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
       return { reply: `⚠️ ${(e as Error).message}` }
     }
     if (!res.toolCalls.length) {
-      return { reply: res.content || '(pas de réponse)', navigate: effects.navigate }
+      return { reply: res.content || '(pas de réponse)', navigate: effects.navigate, changed: effects.changed }
     }
     // Rejoue le tour assistant (avec ses appels d'outils) puis les résultats
     messages.push({ role: 'assistant', content: res.content || '', tool_calls: res.toolCalls })
@@ -407,8 +418,8 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
   // Sécurité : trop d'étapes → demande une réponse finale sans outils
   try {
     const final = await chatRaw(messages)
-    return { reply: final.content || 'Terminé.', navigate: effects.navigate }
+    return { reply: final.content || 'Terminé.', navigate: effects.navigate, changed: effects.changed }
   } catch {
-    return { reply: 'Action effectuée.', navigate: effects.navigate }
+    return { reply: 'Action effectuée.', navigate: effects.navigate, changed: effects.changed }
   }
 }

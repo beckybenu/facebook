@@ -17,7 +17,10 @@ export default function DevisList() {
   const [devis, setDevis] = useState<Devis[]>([])
 
   useEffect(() => {
-    setDevis(devisDb.all())
+    const load = () => setDevis(devisDb.all())
+    load()
+    window.addEventListener('sp:refresh', load)
+    return () => window.removeEventListener('sp:refresh', load)
   }, [])
 
   return (

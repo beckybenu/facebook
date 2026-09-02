@@ -870,3 +870,91 @@ body {
     margin: 12mm;
   }
 }
+
+/* ============ Assistant flottant (présent sur tous les écrans) ============ */
+.ai-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--sp-red);
+  color: #fff;
+  font-size: 24px;
+  border: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  z-index: 60;
+  cursor: pointer;
+}
+.ai-fab:active {
+  transform: scale(0.95);
+}
+.ai-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 70;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.ai-sheet {
+  width: 100%;
+  max-width: var(--maxw);
+  height: 72vh;
+  background: var(--sp-bg);
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+}
+.ai-sheet-head {
+  background: var(--sp-red);
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ai-sheet-head .icon-btn {
+  color: #fff;
+}
+.ai-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+.ai-bubble {
+  max-width: 84%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  white-space: pre-wrap;
+  font-size: 14px;
+  box-shadow: var(--shadow);
+}
+.ai-bubble.user {
+  background: var(--sp-red);
+  color: #fff;
+}
+.ai-bubble.assistant {
+  background: #fff;
+  color: var(--sp-black);
+}
+.ai-sheet-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--sp-border);
+  background: #fff;
+}
+.ai-sheet-input input {
+  flex: 1;
+  border: 1.5px solid var(--sp-border);
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
