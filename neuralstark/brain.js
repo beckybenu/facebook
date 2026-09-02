@@ -518,9 +518,15 @@
     this.coreInner.material.color.setHex(toHex(this.hot));
     this.coreOuter.material.color.setHex(toHex(this.cold));
     this.shell.material.color.setHex(toHex(this.cold));
-    if (this.halo.material.map) this.halo.material.map.dispose();
-    this.halo.material.map = glowTexture(this.hot);
-    this.halo.material.needsUpdate = true;
+    // Le halo est une texture redessinée : on ne la refait que si la teinte a
+    // bougé pour de bon, sinon un dégradé continu la reconstruirait à chaque image.
+    var h = this.haloRGB;
+    if (!h || Math.abs(h[0] - this.hot[0]) + Math.abs(h[1] - this.hot[1]) + Math.abs(h[2] - this.hot[2]) > 0.02) {
+      if (this.halo.material.map) this.halo.material.map.dispose();
+      this.halo.material.map = glowTexture(this.hot);
+      this.halo.material.needsUpdate = true;
+      this.haloRGB = this.hot.slice();
+    }
   };
 
   NeuralBrain.prototype.setPointer = function (nx, ny) {
