@@ -4,6 +4,7 @@ import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
 import { aiStatus } from '../data/remote'
 import { aiAsk, llmConfigured, type ChatMessage } from '../lib/llm'
+import { runAgent } from '../lib/aiAgent'
 
 // Reconnaissance vocale du navigateur (dictée)
 type SpeechRecognitionCtor = new () => {
@@ -25,14 +26,14 @@ function getRecognition(): SpeechRecognitionCtor | null {
 }
 
 export default function AIAssistant() {
-  const { cloud } = useAuth()
+  const { cloud, user } = useAuth()
   const navigate = useNavigate()
   const [available, setAvailable] = useState<boolean | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       content:
-        "Bonjour 👋 Je suis l'assistant SwissPaints. Je peux vous aider à rédiger un devis, résumer un chantier, écrire un email client, ou répondre à vos questions. Que puis-je faire ?",
+        "Bonjour 👋 Je suis l'assistant SwissPaints. Je peux AGIR pour vous : créer un devis, créer/assigner un chantier, changer un statut, ajouter un ouvrier, résumer les heures, ouvrir un écran… Dites-moi simplement ce que vous voulez.\n\nEx : « Crée un devis pour repeindre un 3.5 pièces de 80 m² à Meyrin » ou « Résume mes heures de la semaine ».",
     },
   ])
   const [input, setInput] = useState('')
@@ -71,13 +72,22 @@ export default function AIAssistant() {
     setMessages(next)
     setInput('')
     setBusy(true)
-    const res = await aiAsk(next)
-    setBusy(false)
-    if (res.ok && res.reply) {
-      setMessages([...next, { role: 'assistant', content: res.reply }])
-      speakText(res.reply)
+    // Agent (actions) si un LLM navigateur est connecté, sinon assistant serveur (chat simple).
+    if (llmConfigured() && user) {
+      const r = await runAgent(next, { role: user.role, userId: user.id })
+      setBusy(false)
+      setMessages([...next, { role: 'assistant', content: r.reply }])
+      speakText(r.reply)
+      if (r.navigate) setTimeout(() => navigate(r.navigate as string), 1000)
     } else {
-      setMessages([...next, { role: 'assistant', content: `⚠️ ${res.error || 'Erreur.'}` }])
+      const res = await aiAsk(next)
+      setBusy(false)
+      if (res.ok && res.reply) {
+        setMessages([...next, { role: 'assistant', content: res.reply }])
+        speakText(res.reply)
+      } else {
+        setMessages([...next, { role: 'assistant', content: `⚠️ ${res.error || 'Erreur.'}` }])
+      }
     }
   }
 

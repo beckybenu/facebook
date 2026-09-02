@@ -88,6 +88,54 @@ export interface ChatMessage {
   content: string
 }
 
+// ---------- Appel bas niveau avec outils (function calling) ----------
+export interface ToolCall {
+  id: string
+  type: 'function'
+  function: { name: string; arguments: string }
+}
+export interface RawMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool'
+  content?: string | null
+  tool_calls?: ToolCall[]
+  tool_call_id?: string
+  name?: string
+}
+export interface ToolDef {
+  type: 'function'
+  function: { name: string; description: string; parameters: unknown }
+}
+
+export async function chatRaw(
+  messages: RawMessage[],
+  tools?: ToolDef[],
+): Promise<{ content: string; toolCalls: ToolCall[] }> {
+  const cfg = getLlm()
+  if (!cfg) throw new Error('IA non configurée')
+  const body: Record<string, unknown> = { model: cfg.model, messages, temperature: 0.2 }
+  if (tools && tools.length) {
+    body.tools = tools
+    body.tool_choice = 'auto'
+  }
+  const r = await fetch(`${cfg.baseUrl.replace(/\/+$/, '')}/chat/completions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${cfg.apiKey}` },
+    body: JSON.stringify(body),
+  })
+  if (!r.ok) {
+    const t = await r.text().catch(() => '')
+    throw new Error(`Fournisseur IA : ${r.status} ${t.slice(0, 160)}`)
+  }
+  const j = await r.json()
+  const msg = j.choices?.[0]?.message ?? {}
+  return { content: msg.content ?? '', toolCalls: msg.tool_calls ?? [] }
+}
+
+export function llmSupportsToolsHint(): boolean {
+  // La plupart des modèles Groq llama-3.x / gpt-oss supportent les outils.
+  return llmConfigured()
+}
+
 // ---------- API unifiée : LLM navigateur si configuré, sinon backend ----------
 
 export function aiAvailable(cloud: boolean): boolean {
