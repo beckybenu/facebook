@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
-import { getLlm, setLlm, clearLlm, testLlm, LLM_PRESETS, type LlmConfig } from '../lib/llm'
+import { getLlm, setLlm, clearLlm, testLlm, listModels, LLM_PRESETS, type LlmConfig } from '../lib/llm'
 
 export default function LlmSettings() {
   const navigate = useNavigate()
@@ -12,6 +12,8 @@ export default function LlmSettings() {
   const [model, setModel] = useState(existing?.model || LLM_PRESETS.groq.model)
   const [status, setStatus] = useState<'idle' | 'testing' | 'ok' | 'ko'>('idle')
   const [error, setError] = useState('')
+  const [models, setModels] = useState<string[]>([])
+  const [loadingModels, setLoadingModels] = useState(false)
 
   function pickProvider(p: string) {
     setProvider(p)
@@ -25,6 +27,20 @@ export default function LlmSettings() {
 
   const cfg: LlmConfig = { provider, apiKey: apiKey.trim(), baseUrl: baseUrl.trim(), model: model.trim() }
   const keysUrl = LLM_PRESETS[provider]?.keysUrl
+
+  async function loadModels() {
+    setError('')
+    setLoadingModels(true)
+    try {
+      const list = await listModels(cfg)
+      setModels(list)
+      // Si le modèle actuel n'est pas dans la liste, on prend le premier disponible
+      if (list.length && !list.includes(model)) setModel(list[0])
+    } catch (e) {
+      setError('Impossible de charger les modèles : ' + (e as Error).message)
+    }
+    setLoadingModels(false)
+  }
 
   async function save() {
     setError('')
@@ -92,10 +108,27 @@ export default function LlmSettings() {
           <label>URL de base</label>
           <input value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} autoCapitalize="none" />
         </div>
-        <div className="field" style={{ marginBottom: 0 }}>
+        <div className="field" style={{ marginBottom: 6 }}>
           <label>Modèle</label>
-          <input value={model} onChange={(e) => setModel(e.target.value)} autoCapitalize="none" />
+          {models.length > 0 ? (
+            <select value={model} onChange={(e) => setModel(e.target.value)}>
+              {(models.includes(model) ? models : [model, ...models]).map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input value={model} onChange={(e) => setModel(e.target.value)} autoCapitalize="none" />
+          )}
         </div>
+        <button
+          className="btn btn-ghost btn-sm"
+          onClick={loadModels}
+          disabled={!apiKey || !baseUrl || loadingModels}
+        >
+          {loadingModels ? 'Chargement…' : '🔄 Charger les modèles disponibles'}
+        </button>
 
         {status === 'ok' && <div className="success-msg" style={{ marginTop: 12 }}>✓ Connecté !</div>}
         {status === 'ko' && <div className="error-msg" style={{ marginTop: 12 }}>✗ {error}</div>}

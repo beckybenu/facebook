@@ -17,7 +17,7 @@ export const LLM_PRESETS: Record<string, { label: string; baseUrl: string; model
   groq: {
     label: 'Groq — gratuit, recommandé',
     baseUrl: 'https://api.groq.com/openai/v1',
-    model: 'llama-3.3-70b-versatile',
+    model: 'llama-3.1-8b-instant',
     keysUrl: 'https://console.groq.com/keys',
   },
   openai: {
@@ -131,6 +131,23 @@ export async function aiGenerateDevis(
     }
   }
   return remote.aiDevis(prompt)
+}
+
+// Liste les modèles disponibles chez le fournisseur (endpoint compatible OpenAI)
+export async function listModels(cfg: LlmConfig): Promise<string[]> {
+  const r = await fetch(`${cfg.baseUrl.replace(/\/+$/, '')}/models`, {
+    headers: { Authorization: `Bearer ${cfg.apiKey}` },
+  })
+  if (!r.ok) {
+    const t = await r.text().catch(() => '')
+    throw new Error(`${r.status} ${t.slice(0, 120)}`)
+  }
+  const j = await r.json()
+  const ids: string[] = (j.data || []).map((m: { id: string }) => m.id)
+  // Modèles de conversation en premier (on écarte whisper/tts/guard)
+  return ids
+    .filter((id) => !/whisper|tts|guard|embed/i.test(id))
+    .sort()
 }
 
 // Test de connexion (petit ping)
