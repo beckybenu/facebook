@@ -1,0 +1,4 @@
+node_modules
+wd-files
+*.log
+.env

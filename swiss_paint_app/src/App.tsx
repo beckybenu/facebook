@@ -18,6 +18,7 @@ import Documents from './pages/Documents'
 import ServerSettings from './pages/ServerSettings'
 import AIAssistant from './pages/AIAssistant'
 import LlmSettings from './pages/LlmSettings'
+import ConnectorSettings from './pages/ConnectorSettings'
 import DevisList from './pages/DevisList'
 import DevisEdit from './pages/DevisEdit'
 import DevisView from './pages/DevisView'
@@ -115,6 +116,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ouvrier', 'admin']}>
             <LlmSettings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/connecteur"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'admin']}>
+            <ConnectorSettings />
           </ProtectedRoute>
         }
       />

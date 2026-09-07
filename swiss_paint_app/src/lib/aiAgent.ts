@@ -5,6 +5,7 @@ import { tasksDb, devisDb, usersDb, timeDb, uid } from '../data/db'
 import type { Devis, DevisItem, Task, User, UserRole } from '../types'
 import { COMPANY, DEFAULT_INTRO, DEFAULT_REMARQUES } from './company'
 import { searchWdItems, getWdItems, type WdItem } from './wd'
+import { connectorConfigured, connList, connSearch, connRead } from './connector'
 import {
   lineAmount,
   devisTotals,
@@ -158,6 +159,33 @@ function toolset(role: UserRole): ToolDef[] {
       },
     },
   )
+
+  // Lecture réelle du contenu des fichiers (si le connecteur WD est configuré)
+  if (connectorConfigured()) {
+    tools.push(
+      {
+        type: 'function',
+        function: {
+          name: 'parcourir_wd',
+          description: 'Parcourir un dossier réel du serveur WD (via le connecteur).',
+          parameters: { type: 'object', properties: { chemin: { type: 'string' } } },
+        },
+      },
+      {
+        type: 'function',
+        function: {
+          name: 'lire_fichier_wd',
+          description:
+            "Lire le CONTENU d'un fichier du WD (PDF, Word, Excel, texte) pour le résumer ou répondre à des questions dessus.",
+          parameters: {
+            type: 'object',
+            properties: { nom: { type: 'string', description: 'Nom (ou chemin) du fichier à lire.' } },
+            required: ['nom'],
+          },
+        },
+      },
+    )
+  }
 
   if (role === 'admin') {
     tools.push(
@@ -372,6 +400,23 @@ async function execTool(
       if (!item) return `Fichier "${s(args.nom)}" introuvable dans le catalogue WD.`
       effects.openUrl = item.lien
       return `Ouverture de "${item.nom}"…`
+    }
+
+    // ----- Connecteur WD (contenu réel des fichiers) -----
+    case 'parcourir_wd': {
+      const r = await connList(s(args.chemin))
+      if (!r) return 'Connecteur WD injoignable (vérifie qu\'il est allumé et connecté).'
+      if (!r.entries.length) return `Dossier "${r.path || '/'}" vide.`
+      return r.entries.map((e) => `${e.type === 'dir' ? '📁' : '📄'} ${e.path}`).join('\n')
+    }
+    case 'lire_fichier_wd': {
+      const results = await connSearch(s(args.nom))
+      const file = results.find((x) => x.type === 'file')
+      if (!file) return `Aucun fichier "${s(args.nom)}" trouvé sur le WD.`
+      const doc = await connRead(file.path)
+      if (!doc) return 'Lecture impossible (connecteur injoignable).'
+      if (doc.unsupported || !doc.text) return `Le fichier "${doc.name}" n'est pas lisible en texte.`
+      return `Contenu de ${doc.name}${doc.truncated ? ' (extrait)' : ''} :\n\n${doc.text}`
     }
 
     // ----- Admin -----

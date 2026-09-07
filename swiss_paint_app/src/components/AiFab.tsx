@@ -22,7 +22,7 @@ function getRec(): RecCtor | null {
 }
 
 // Écrans où l'on masque le bouton (auth + écran assistant dédié)
-const HIDDEN = ['/', '/login', '/inscription', '/assistant', '/ia-config', '/parametres']
+const HIDDEN = ['/', '/login', '/inscription', '/assistant', '/ia-config', '/parametres', '/connecteur']
 
 const SCREEN_NAMES: { match: RegExp; name: string }[] = [
   { match: /^\/devis/, name: 'Devis' },

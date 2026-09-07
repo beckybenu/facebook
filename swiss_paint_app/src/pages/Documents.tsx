@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
+import { connectorConfigured } from '../lib/connector'
 import { docsDb } from '../data/db'
 import type { Document } from '../types'
 import { formatDate } from '../lib/utils'
@@ -16,6 +18,7 @@ import {
 
 export default function Documents() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [docs, setDocs] = useState<Document[]>([])
   const [tab, setTab] = useState<'public' | 'prive'>('public')
   const [wdUrl, setWdUrlState] = useState(getWdUrl())
@@ -129,6 +132,13 @@ export default function Documents() {
               </button>
             </div>
           )}
+          <button
+            className="btn btn-ghost btn-sm"
+            style={{ marginTop: 8 }}
+            onClick={() => navigate('/connecteur')}
+          >
+            🤖 Connecteur IA {connectorConfigured() ? '· connecté ✓' : '· pour lire les fichiers'}
+          </button>
         </div>
       )}
 

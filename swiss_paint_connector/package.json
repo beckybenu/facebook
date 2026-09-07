@@ -1,0 +1,18 @@
+{
+  "name": "swiss-paint-connector",
+  "version": "1.0.0",
+  "description": "Connecteur local : donne à l'IA SwissPaints un accès en lecture aux fichiers du WD My Cloud (PDF, Word, Excel, texte).",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mammoth": "^1.8.0",
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5"
+  }
+}
