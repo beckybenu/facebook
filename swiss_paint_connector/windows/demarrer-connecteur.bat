@@ -7,9 +7,10 @@ REM ============================================================
 REM   A MODIFIER UNE SEULE FOIS (les 2 lignes ci-dessous)
 REM ============================================================
 
-REM 1) Chemin du WD (la ou sont tes fichiers).
-REM    Exemples :  \\WDMYCLOUD\Public   ou   W:\   ou   \\WDMYCLOUD\NomDuPartage
-set "WD_ROOT=\\WDMYCLOUD\Public"
+REM 1) Dossiers du WD (la ou sont tes fichiers). Separe-les par un point-virgule ;
+REM    Exemple SwissPaints :
+REM      \\CLOUD\Administration;\\CLOUD\Comptable;\\CLOUD\Medias;\\CLOUD\Public
+set "WD_ROOTS=\\CLOUD\Administration;\\CLOUD\Comptable;\\CLOUD\Medias;\\CLOUD\Public"
 
 REM 2) Jeton secret : invente une longue chaine SANS espaces.
 REM    Tu colleras EXACTEMENT la meme dans l'application.
@@ -57,24 +58,31 @@ for /f "delims=" %%v in ('node -v') do set "NODEV=%%v"
 echo [OK] Node.js %NODEV%
 echo [OK] Node.js %NODEV% >> "%LOG%"
 
-REM --- 2) Le dossier WD est-il accessible ? -----------------
-if not exist "%WD_ROOT%\" (
-  echo [ERREUR] Le dossier WD n'est pas accessible :
-  echo          %WD_ROOT%
+REM --- 2) Au moins un dossier WD est-il accessible ? --------
+set "WD_OK=0"
+for %%R in ("%WD_ROOTS:;=" "%") do (
+  if exist "%%~R\" (
+    echo [OK] Dossier WD accessible : %%~R
+    echo [OK] WD ok : %%~R >> "%LOG%"
+    set "WD_OK=1"
+  ) else (
+    echo [!] Dossier WD introuvable : %%~R
+    echo [!] WD introuvable : %%~R >> "%LOG%"
+  )
+)
+if "%WD_OK%"=="0" (
   echo.
+  echo [ERREUR] Aucun dossier WD n'est accessible.
   echo   Verifie que :
   echo    - le PC est bien connecte au reseau du WD,
-  echo    - le chemin est correct ^(Explorateur -^> Reseau -^> WDMYCLOUD^),
+  echo    - les chemins sont corrects ^(Explorateur -^> Reseau -^> CLOUD^),
   echo    - tu as bien garde les deux barres obliques \\ au debut.
   echo   Astuce : ouvre l'Explorateur, va dans le dossier, clique dans la
   echo   barre d'adresse et recopie EXACTEMENT ce qui est affiche.
-  echo [ERREUR] WD_ROOT inaccessible : %WD_ROOT% >> "%LOG%"
   echo.
   pause
   exit /b
 )
-echo [OK] Dossier WD accessible : %WD_ROOT%
-echo [OK] WD_ROOT ok : %WD_ROOT% >> "%LOG%"
 
 REM --- 3) Composants installes ? ----------------------------
 if not exist node_modules (
@@ -99,7 +107,7 @@ REM --- 4) Demarrage -----------------------------------------
 echo.
 echo ============================================================
 echo   Connecteur DEMARRE. Laisse cette fenetre OUVERTE.
-echo   Dossier WD : %WD_ROOT%
+echo   Dossiers WD : %WD_ROOTS%
 echo   Test sur ce PC : http://localhost:%PORT%/api/health
 echo   (Ferme la fenetre pour arreter le connecteur.)
 echo ============================================================

@@ -167,8 +167,17 @@ function toolset(role: UserRole): ToolDef[] {
         type: 'function',
         function: {
           name: 'parcourir_wd',
-          description: 'Parcourir un dossier réel du serveur WD (via le connecteur).',
-          parameters: { type: 'object', properties: { chemin: { type: 'string' } } },
+          description:
+            "Parcourir les fichiers réels du serveur WD (via le connecteur). Laisse 'chemin' VIDE pour voir les dossiers principaux (ex : Administration, Comptable, Médias, Public), puis rappelle avec le chemin d'un sous-dossier pour l'ouvrir (ex : 'Administration/1. Projets et Travaux - 2026').",
+          parameters: {
+            type: 'object',
+            properties: {
+              chemin: {
+                type: 'string',
+                description: "Chemin du dossier à ouvrir. Vide = liste des dossiers principaux du WD.",
+              },
+            },
+          },
         },
       },
       {

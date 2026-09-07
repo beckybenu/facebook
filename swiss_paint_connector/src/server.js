@@ -1,6 +1,10 @@
 // Connecteur local SwissPaints — accès EN LECTURE SEULE aux fichiers du WD.
-// Sécurité : jeton d'accès obligatoire, chemins confinés au dossier racine,
+// Sécurité : jeton d'accès obligatoire, chemins confinés aux dossiers racines,
 // aucune écriture. À exposer en HTTPS via Cloudflare Tunnel.
+//
+// Plusieurs dossiers : définis WD_ROOTS avec des chemins séparés par « ; »
+//   ex :  set WD_ROOTS=\\CLOUD\Administration;\\CLOUD\Comptable;\\CLOUD\Médias;\\CLOUD\Public
+// (WD_ROOT — un seul dossier — reste accepté pour compatibilité.)
 import express from 'express'
 import cors from 'cors'
 import fs from 'node:fs'
@@ -8,17 +12,36 @@ import fsp from 'node:fs/promises'
 import path from 'node:path'
 
 const PORT = process.env.PORT || 8787
-// Dossier racine = point de montage de ton partage WD (ex : /mnt/wd)
-const WD_ROOT = process.env.WD_ROOT || path.resolve('./wd-files')
 const TOKEN = process.env.CONNECTOR_TOKEN || '' // jeton d'accès (obligatoire en prod)
 const MAX_BYTES = 20 * 1024 * 1024 // 20 Mo max par fichier
 const MAX_TEXT = 20000 // caractères max renvoyés à l'IA
 
-let ROOT_REAL = WD_ROOT
-try {
-  ROOT_REAL = fs.realpathSync(WD_ROOT)
-} catch {
-  console.warn(`⚠️  Dossier racine introuvable : ${WD_ROOT} — vérifie le montage du WD.`)
+// --- Dossiers racines (un ou plusieurs) -------------------------------------
+const rawRoots = (process.env.WD_ROOTS || process.env.WD_ROOT || path.resolve('./wd-files'))
+  .split(';')
+  .map((s) => s.trim())
+  .filter(Boolean)
+
+function labelFor(p) {
+  const cleaned = p.replace(/[\\/]+$/, '')
+  const seg = cleaned.split(/[\\/]/).filter(Boolean).pop()
+  return seg || cleaned
+}
+
+// ROOTS : liste de { label (nom affiché), real (chemin réel résolu) }
+const ROOTS = []
+for (const r of rawRoots) {
+  let real = r
+  try {
+    real = fs.realpathSync(r)
+  } catch {
+    console.warn(`⚠️  Dossier introuvable : ${r} — vérifie le montage du WD.`)
+  }
+  let label = labelFor(r)
+  let uniq = label
+  let n = 2
+  while (ROOTS.some((x) => x.label.toLowerCase() === uniq.toLowerCase())) uniq = `${label} (${n++})`
+  ROOTS.push({ label: uniq, real })
 }
 
 const app = express()
@@ -33,30 +56,50 @@ app.use((req, res, next) => {
   return res.status(401).json({ error: 'Jeton invalide.' })
 })
 
-// --- Confinement des chemins (anti path-traversal) ---
-function safeResolve(rel) {
-  const target = path.resolve(ROOT_REAL, '.' + path.sep + (rel || ''))
-  const real = fs.existsSync(target) ? fs.realpathSync(target) : target
-  if (real !== ROOT_REAL && !real.startsWith(ROOT_REAL + path.sep)) {
-    throw new Error('Chemin hors du dossier autorisé.')
-  }
-  return real
-}
-const rel = (abs) => path.relative(ROOT_REAL, abs).split(path.sep).join('/')
-
 const HIDDEN = /(^|\/)\.|node_modules|\$RECYCLE|System Volume/i
 
-app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'swisspaints-connector', root: ROOT_REAL }))
+// --- Résolution + confinement des chemins (anti path-traversal) -------------
+// Un chemin client ressemble à « Administration/Sous-dossier/fichier.xlsx ».
+// Le 1er segment désigne le dossier racine ; le reste est relatif à celui-ci.
+function resolvePath(rel) {
+  const parts = String(rel || '')
+    .split(/[\\/]+/)
+    .filter((p) => p && p !== '.')
+  if (parts.length === 0) return { virtual: true } // racine = liste des dossiers
+  const root = ROOTS.find((r) => r.label.toLowerCase() === parts[0].toLowerCase())
+  if (!root) throw new Error(`Dossier inconnu : ${parts[0]}`)
+  const sub = parts.slice(1).join(path.sep)
+  const target = path.resolve(root.real, '.' + path.sep + sub)
+  const real = fs.existsSync(target) ? fs.realpathSync(target) : target
+  if (real !== root.real && !real.startsWith(root.real + path.sep)) {
+    throw new Error('Chemin hors du dossier autorisé.')
+  }
+  return { virtual: false, real, root }
+}
 
-// Lister un dossier
+// Chemin client (avec préfixe du dossier racine) à partir d'un chemin absolu
+function relOf(root, abs) {
+  const inner = path.relative(root.real, abs).split(path.sep).join('/')
+  return inner ? `${root.label}/${inner}` : root.label
+}
+
+app.get('/api/health', (_req, res) =>
+  res.json({ ok: true, service: 'swisspaints-connector', roots: ROOTS.map((r) => r.label) })
+)
+
+// Lister un dossier (ou la liste des dossiers racines si path vide)
 app.get('/api/list', async (req, res) => {
   try {
-    const dir = safeResolve(req.query.path || '')
-    const entries = await fsp.readdir(dir, { withFileTypes: true })
+    const r = resolvePath(req.query.path || '')
+    if (r.virtual) {
+      const entries = ROOTS.map((root) => ({ name: root.label, path: root.label, type: 'dir', size: 0, mtime: null }))
+      return res.json({ path: '', entries })
+    }
+    const entries = await fsp.readdir(r.real, { withFileTypes: true })
     const out = []
     for (const e of entries) {
       if (HIDDEN.test(e.name)) continue
-      const abs = path.join(dir, e.name)
+      const abs = path.join(r.real, e.name)
       let size = 0
       let mtime = null
       try {
@@ -66,22 +109,22 @@ app.get('/api/list', async (req, res) => {
       } catch {
         /* ignore */
       }
-      out.push({ name: e.name, path: rel(abs), type: e.isDirectory() ? 'dir' : 'file', size, mtime })
+      out.push({ name: e.name, path: relOf(r.root, abs), type: e.isDirectory() ? 'dir' : 'file', size, mtime })
     }
     out.sort((a, b) => (a.type === b.type ? a.name.localeCompare(b.name) : a.type === 'dir' ? -1 : 1))
-    res.json({ path: rel(dir), entries: out })
+    res.json({ path: relOf(r.root, r.real), entries: out })
   } catch (e) {
     res.status(400).json({ error: e.message })
   }
 })
 
-// Rechercher un fichier par nom (récursif, borné)
+// Rechercher un fichier par nom dans TOUS les dossiers racines (récursif, borné)
 app.get('/api/search', async (req, res) => {
   const q = String(req.query.q || '').toLowerCase().trim()
   if (!q) return res.json({ results: [] })
   const results = []
   let scanned = 0
-  async function walk(dir, depth) {
+  async function walk(root, dir, depth) {
     if (depth > 6 || scanned > 5000 || results.length >= 50) return
     let entries = []
     try {
@@ -94,20 +137,24 @@ app.get('/api/search', async (req, res) => {
       scanned++
       const abs = path.join(dir, e.name)
       if (e.name.toLowerCase().includes(q)) {
-        results.push({ name: e.name, path: rel(abs), type: e.isDirectory() ? 'dir' : 'file' })
+        results.push({ name: e.name, path: relOf(root, abs), type: e.isDirectory() ? 'dir' : 'file' })
         if (results.length >= 50) return
       }
-      if (e.isDirectory()) await walk(abs, depth + 1)
+      if (e.isDirectory()) await walk(root, abs, depth + 1)
     }
   }
-  await walk(ROOT_REAL, 0)
+  for (const root of ROOTS) {
+    if (root.real) await walk(root, root.real, 0)
+  }
   res.json({ results })
 })
 
 // Extraire le texte d'un fichier (PDF, Word, Excel, texte)
 app.get('/api/read', async (req, res) => {
   try {
-    const abs = safeResolve(req.query.path || '')
+    const r = resolvePath(req.query.path || '')
+    if (r.virtual) return res.status(400).json({ error: 'Précise un fichier à lire.' })
+    const abs = r.real
     const st = await fsp.stat(abs)
     if (st.isDirectory()) return res.status(400).json({ error: "C'est un dossier, pas un fichier." })
     if (st.size > MAX_BYTES) return res.status(413).json({ error: 'Fichier trop volumineux (>20 Mo).' })
@@ -117,7 +164,6 @@ app.get('/api/read', async (req, res) => {
     if (['.txt', '.md', '.csv', '.log', '.json', '.xml', '.html'].includes(ext)) {
       text = await fsp.readFile(abs, 'utf-8')
     } else if (ext === '.pdf') {
-      // import du fichier lib pour éviter le code de test de pdf-parse
       const { default: pdfParse } = await import('pdf-parse/lib/pdf-parse.js')
       text = (await pdfParse(await fsp.readFile(abs))).text
     } else if (ext === '.docx') {
@@ -128,16 +174,11 @@ app.get('/api/read', async (req, res) => {
       const wb = XLSX.readFile(abs)
       text = wb.SheetNames.map((n) => `# ${n}\n` + XLSX.utils.sheet_to_csv(wb.Sheets[n])).join('\n\n')
     } else {
-      return res.json({ name: path.basename(abs), path: rel(abs), text: '', unsupported: true })
+      return res.json({ name: path.basename(abs), path: relOf(r.root, abs), text: '', unsupported: true })
     }
 
     const truncated = text.length > MAX_TEXT
-    res.json({
-      name: path.basename(abs),
-      path: rel(abs),
-      text: text.slice(0, MAX_TEXT),
-      truncated,
-    })
+    res.json({ name: path.basename(abs), path: relOf(r.root, abs), text: text.slice(0, MAX_TEXT), truncated })
   } catch (e) {
     res.status(400).json({ error: e.message })
   }
@@ -145,6 +186,6 @@ app.get('/api/read', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Connecteur SwissPaints en écoute sur le port ${PORT}`)
-  console.log(`Dossier WD : ${ROOT_REAL}`)
+  console.log(`Dossiers WD (${ROOTS.length}) : ${ROOTS.map((r) => r.label).join(', ')}`)
   if (!TOKEN) console.warn('⚠️  Aucun CONNECTOR_TOKEN défini — ajoute-en un en production.')
 })
