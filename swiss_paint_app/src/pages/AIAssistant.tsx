@@ -78,6 +78,7 @@ export default function AIAssistant() {
       setBusy(false)
       setMessages([...next, { role: 'assistant', content: r.reply }])
       speakText(r.reply)
+      if (r.openUrl) window.open(r.openUrl, '_blank', 'noopener')
       if (r.navigate) setTimeout(() => navigate(r.navigate as string), 1000)
     } else {
       const res = await aiAsk(next)

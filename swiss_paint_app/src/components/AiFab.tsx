@@ -81,6 +81,7 @@ export default function AiFab() {
       setBusy(false)
       setMessages([...next, { role: 'assistant', content: r.reply }])
       if (r.changed) window.dispatchEvent(new Event('sp:refresh'))
+      if (r.openUrl) window.open(r.openUrl, '_blank', 'noopener')
       if (r.navigate) {
         setOpen(false)
         setTimeout(() => navigate(r.navigate as string), 300)

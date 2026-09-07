@@ -4,7 +4,15 @@ import { useAuth } from '../context/AuthContext'
 import { docsDb } from '../data/db'
 import type { Document } from '../types'
 import { formatDate } from '../lib/utils'
-import { getWdUrl, setWdUrl, WD_DEFAULT } from '../lib/wd'
+import {
+  getWdUrl,
+  setWdUrl,
+  WD_DEFAULT,
+  getWdItems,
+  addWdItem,
+  removeWdItem,
+  type WdItem,
+} from '../lib/wd'
 
 export default function Documents() {
   const { user } = useAuth()
@@ -12,6 +20,25 @@ export default function Documents() {
   const [tab, setTab] = useState<'public' | 'prive'>('public')
   const [wdUrl, setWdUrlState] = useState(getWdUrl())
   const [editWd, setEditWd] = useState(false)
+  // Catalogue WD
+  const [items, setItems] = useState<WdItem[]>([])
+  const [showAdd, setShowAdd] = useState(false)
+  const [f, setF] = useState({ nom: '', dossier: '', lien: '', description: '' })
+
+  useEffect(() => setItems(getWdItems()), [])
+
+  const isAdmin = user?.role === 'admin'
+  function saveItem() {
+    if (!f.nom.trim() || !f.lien.trim()) return
+    addWdItem({ nom: f.nom.trim(), lien: f.lien.trim(), dossier: f.dossier.trim(), description: f.description.trim() })
+    setItems(getWdItems())
+    setF({ nom: '', dossier: '', lien: '', description: '' })
+    setShowAdd(false)
+  }
+  function delItem(id: string) {
+    removeWdItem(id)
+    setItems(getWdItems())
+  }
 
   useEffect(() => {
     if (!user) return
@@ -101,6 +128,70 @@ export default function Documents() {
                 Lien
               </button>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Catalogue WD : fichiers référencés, interrogeables par l'IA */}
+      {isEmploye && (
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="card-title">🗂️ Catalogue WD (recherchable par l'IA)</div>
+            {isAdmin && (
+              <button className="link" onClick={() => setShowAdd((v) => !v)}>
+                {showAdd ? 'Fermer' : '＋ Ajouter'}
+              </button>
+            )}
+          </div>
+          <div className="card-sub" style={{ marginBottom: items.length || showAdd ? 10 : 0 }}>
+            Range ici tes fichiers WD (nom + lien de partage). L'assistant IA pourra les retrouver et
+            les ouvrir.
+          </div>
+
+          {showAdd && isAdmin && (
+            <div style={{ marginBottom: 10 }}>
+              <div className="field" style={{ marginBottom: 8 }}>
+                <label>Nom du fichier / dossier</label>
+                <input value={f.nom} onChange={(e) => setF({ ...f, nom: e.target.value })} placeholder="Contrat Villa Cologny" />
+              </div>
+              <div className="field" style={{ marginBottom: 8 }}>
+                <label>Dossier (optionnel)</label>
+                <input value={f.dossier} onChange={(e) => setF({ ...f, dossier: e.target.value })} placeholder="Contrats" />
+              </div>
+              <div className="field" style={{ marginBottom: 8 }}>
+                <label>Lien de partage WD</label>
+                <input value={f.lien} onChange={(e) => setF({ ...f, lien: e.target.value })} placeholder="https://…" autoCapitalize="none" />
+              </div>
+              <div className="field" style={{ marginBottom: 8 }}>
+                <label>Description (aide l'IA à répondre)</label>
+                <input value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} placeholder="Contrat signé 2024, 12 000 CHF" />
+              </div>
+              <button className="btn btn-primary btn-sm" onClick={saveItem} disabled={!f.nom || !f.lien}>
+                Ajouter au catalogue
+              </button>
+            </div>
+          )}
+
+          {items.length === 0 ? (
+            <div className="muted" style={{ fontSize: 13 }}>Catalogue vide.</div>
+          ) : (
+            items.map((it) => (
+              <div key={it.id} className="list-row" style={{ marginBottom: 6 }}>
+                <span className="row-bar" />
+                <div className="row-main" onClick={() => window.open(it.lien, '_blank', 'noopener')}>
+                  <div className="row-title">{it.nom}</div>
+                  <div className="row-sub">
+                    {it.dossier ? `${it.dossier} · ` : ''}
+                    {it.description || 'Fichier WD'}
+                  </div>
+                </div>
+                {isAdmin && (
+                  <button className="icon-btn" style={{ color: 'var(--sp-red)' }} onClick={() => delItem(it.id)} aria-label="Supprimer">
+                    🗑️
+                  </button>
+                )}
+              </div>
+            ))
           )}
         </div>
       )}

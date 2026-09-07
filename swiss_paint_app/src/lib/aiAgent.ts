@@ -4,6 +4,7 @@ import { chatRaw, aiGenerateDevis, type ToolDef, type RawMessage, type ChatMessa
 import { tasksDb, devisDb, usersDb, timeDb, uid } from '../data/db'
 import type { Devis, DevisItem, Task, User, UserRole } from '../types'
 import { COMPANY, DEFAULT_INTRO, DEFAULT_REMARQUES } from './company'
+import { searchWdItems, getWdItems, type WdItem } from './wd'
 import {
   lineAmount,
   devisTotals,
@@ -24,6 +25,7 @@ export interface AgentResult {
   reply: string
   navigate?: string
   changed?: boolean // des données ont été créées/modifiées
+  openUrl?: string // ouvrir un lien externe (ex : fichier WD)
 }
 
 const noAccents = (s: string) =>
@@ -117,6 +119,46 @@ function toolset(role: UserRole): ToolDef[] {
     },
   ]
 
+  // Accès au catalogue de fichiers du serveur WD (recherche / info / ouverture)
+  tools.push(
+    {
+      type: 'function',
+      function: {
+        name: 'chercher_wd',
+        description:
+          "Chercher des fichiers/dossiers de l'entreprise dans le catalogue WD (par nom, dossier ou description). Utilise-le pour répondre aux questions sur les documents de l'entreprise.",
+        parameters: {
+          type: 'object',
+          properties: { requete: { type: 'string', description: 'Mots-clés à rechercher.' } },
+          required: ['requete'],
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'lister_wd',
+        description: 'Lister les fichiers du catalogue WD (éventuellement filtrés par dossier).',
+        parameters: {
+          type: 'object',
+          properties: { dossier: { type: 'string' } },
+        },
+      },
+    },
+    {
+      type: 'function',
+      function: {
+        name: 'ouvrir_wd',
+        description: "Ouvrir un fichier/dossier du catalogue WD (par nom).",
+        parameters: {
+          type: 'object',
+          properties: { nom: { type: 'string' } },
+          required: ['nom'],
+        },
+      },
+    },
+  )
+
   if (role === 'admin') {
     tools.push(
       {
@@ -199,7 +241,7 @@ async function execTool(
   name: string,
   args: Record<string, unknown>,
   ctx: AgentCtx,
-  effects: { navigate?: string; changed?: boolean },
+  effects: { navigate?: string; changed?: boolean; openUrl?: string },
 ): Promise<string> {
   // Marque les actions qui modifient des données (pour rafraîchir l'écran)
   if (
@@ -307,6 +349,31 @@ async function execTool(
       return `${target.prenom} ${target.nom} — ${periode} : ${hoursToHM(worked)} travaillées.`
     }
 
+    // ----- Catalogue WD -----
+    case 'chercher_wd': {
+      const found = searchWdItems(s(args.requete))
+      if (!found.length) return `Aucun fichier trouvé pour "${s(args.requete)}" dans le catalogue WD.`
+      return found
+        .map((it: WdItem) => `- ${it.nom}${it.dossier ? ` [${it.dossier}]` : ''}${it.description ? ` — ${it.description}` : ''}`)
+        .join('\n')
+    }
+    case 'lister_wd': {
+      let items = getWdItems()
+      if (args.dossier) {
+        const d = noAccents(s(args.dossier))
+        items = items.filter((it) => noAccents(it.dossier || '').includes(d))
+      }
+      if (!items.length) return 'Le catalogue WD est vide (ajoute des fichiers dans Documents).'
+      return items.map((it) => `- ${it.nom}${it.dossier ? ` [${it.dossier}]` : ''}`).join('\n')
+    }
+    case 'ouvrir_wd': {
+      const q = noAccents(s(args.nom))
+      const item = getWdItems().find((it) => noAccents(it.nom).includes(q)) || searchWdItems(s(args.nom))[0]
+      if (!item) return `Fichier "${s(args.nom)}" introuvable dans le catalogue WD.`
+      effects.openUrl = item.lien
+      return `Ouverture de "${item.nom}"…`
+    }
+
     // ----- Admin -----
     case 'creer_chantier': {
       let assignedUserId: string | undefined
@@ -390,7 +457,7 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
     { role: 'system', content: sys },
     ...history.map((m) => ({ role: m.role, content: m.content })),
   ]
-  const effects: { navigate?: string; changed?: boolean } = {}
+  const effects: { navigate?: string; changed?: boolean; openUrl?: string } = {}
 
   for (let step = 0; step < 5; step++) {
     let res
@@ -400,7 +467,12 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
       return { reply: `⚠️ ${(e as Error).message}` }
     }
     if (!res.toolCalls.length) {
-      return { reply: res.content || '(pas de réponse)', navigate: effects.navigate, changed: effects.changed }
+      return {
+        reply: res.content || '(pas de réponse)',
+        navigate: effects.navigate,
+        changed: effects.changed,
+        openUrl: effects.openUrl,
+      }
     }
     // Rejoue le tour assistant (avec ses appels d'outils) puis les résultats
     messages.push({ role: 'assistant', content: res.content || '', tool_calls: res.toolCalls })
@@ -418,8 +490,13 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
   // Sécurité : trop d'étapes → demande une réponse finale sans outils
   try {
     const final = await chatRaw(messages)
-    return { reply: final.content || 'Terminé.', navigate: effects.navigate, changed: effects.changed }
+    return {
+      reply: final.content || 'Terminé.',
+      navigate: effects.navigate,
+      changed: effects.changed,
+      openUrl: effects.openUrl,
+    }
   } catch {
-    return { reply: 'Action effectuée.', navigate: effects.navigate, changed: effects.changed }
+    return { reply: 'Action effectuée.', navigate: effects.navigate, changed: effects.changed, openUrl: effects.openUrl }
   }
 }
