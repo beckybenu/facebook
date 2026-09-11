@@ -1,5 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0b0e12"/>
-  <path d="M32 10 L54 32 L32 54 L10 32 Z" fill="none" stroke="#e08b4c" stroke-width="4" stroke-linejoin="round"/>
-  <circle cx="32" cy="32" r="7" fill="#e08b4c"/>
+  <!-- Neural Stark : la sphère traversée par la traînée lumineuse. -->
+  <defs>
+    <radialGradient id="sphere" cx="70%" cy="26%" r="84%">
+      <stop offset="0" stop-color="#3c2f78"/>
+      <stop offset="52%" stop-color="#150f2e"/>
+      <stop offset="100%" stop-color="#070515"/>
+    </radialGradient>
+    <linearGradient id="trainee" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#7b5cf0" stop-opacity=".2"/>
+      <stop offset="46%" stop-color="#c9b6ff"/>
+      <stop offset="100%" stop-color="#f2e6ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#08061a"/>
+  <circle cx="32" cy="32" r="21" fill="url(#sphere)"/>
+  <path d="M32 11a21 21 0 0 1 19.6 13.4" fill="none" stroke="#a78bfa" stroke-width="1.7"
+        stroke-linecap="round" opacity=".8"/>
+  <path d="M9 46.5C20 42.5 32 35.5 55 17" fill="none" stroke="url(#trainee)" stroke-width="2.7"
+        stroke-linecap="round"/>
+  <circle cx="52.8" cy="18.8" r="2.7" fill="#f4ecff"/>
 </svg>
