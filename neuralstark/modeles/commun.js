@@ -49,7 +49,7 @@ export function initVitrine(config = {}) {
     if (!key) return;
     document.documentElement.dataset.palette = key;
     swatches.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.palette === key)));
-    if (brain) brain.setColors(cssVar("--brain-cold"), cssVar("--brain-hot"));
+    if (brain) brain.setColors(cssVar("--brain-cold"), cssVar("--brain-hot"), cssVar("--flare"));
     if (remember) {
       try { localStorage.setItem(storeKey, key); } catch (e) { /* navigation privée */ }
     }
@@ -72,6 +72,7 @@ export function initVitrine(config = {}) {
         reducedMotion: reduced,
         cold: cssVar("--brain-cold"),
         hot: cssVar("--brain-hot"),
+        flare: cssVar("--flare"),
         ...opts.brain,
       });
       brain.start();

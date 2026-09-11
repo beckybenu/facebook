@@ -52,10 +52,18 @@ body {
 }
 .brand-mark {
   width: 38px; height: 38px; display: grid; place-items: center;
-  border-radius: 11px; font-size: 20px; color: white;
-  background: var(--accent-grad);
-  box-shadow: 0 6px 20px rgba(155,140,247,.45);
+  border-radius: 11px; color: #b3a7fa;
+  /* Tuile sombre et marque lumineuse, comme l'icône d'application de la charte. */
+  background: radial-gradient(120% 100% at 70% 26%, #2c2358, #0b0918 72%);
+  border: 1px solid rgba(155, 140, 247, .3);
+  box-shadow: 0 6px 20px rgba(71, 47, 194, .4);
 }
+/* Marque Neural Stark : l'anneau en retrait, la traînée et son flare en avant. */
+.brand-mark .m-anneau { opacity: .5; }
+.brand-mark .m-trainee { stroke: #cdc2ff; }
+.brand-mark .m-flare { fill: #f2e9ff; }
+.brand-text strong { text-transform: uppercase; letter-spacing: .16em; font-weight: 500; }
+.brand-text span { text-transform: uppercase; letter-spacing: .1em; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-text strong { font-size: 16px; letter-spacing: .2px; }
 .brand-text span { font-size: 11px; color: var(--muted); }

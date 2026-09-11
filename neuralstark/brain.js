@@ -17,6 +17,11 @@
   var COLD = [0.36, 0.50, 0.63];   // acier
   var HOT  = [0.88, 0.545, 0.30];  // cuivre
 
+  // À défaut de valeur donnée, le flare est la couleur chaude tirée vers le blanc.
+  function versFlare(rgb) {
+    return [rgb[0] + (1 - rgb[0]) * 0.62, rgb[1] + (1 - rgb[1]) * 0.62, rgb[2] + (1 - rgb[2]) * 0.62];
+  }
+
   // "#e08b4c" ou "224,139,76" → [r, v, b] normalisés
   function toRGB(value, fallback) {
     if (!value) return fallback.slice();
@@ -38,15 +43,15 @@
   }
 
   var STATES = {
-    hero:     { layout: "sphere",   dist: 7.6, offX: 1.35, offY: 0.15, spin: 0.055, docs: 0.0, shell: 0.0, opacity: 1.00, core: 1.0 },
-    scatter:  { layout: "scatter",  dist: 9.0, offX: 0.60, offY: -1.10, spin: 0.020, docs: 1.0, shell: 0.0, opacity: 0.85, core: 0.5 },
-    ingest:   { layout: "sphere",   dist: 8.2, offX: 0.10, offY: -1.35, spin: 0.050, docs: 1.0, shell: 0.0, opacity: 1.00, core: 1.0 },
-    route:    { layout: "tight",    dist: 5.8, offX: 0.45, offY: 1.30, spin: 0.070, docs: 0.0, shell: 0.0, opacity: 1.00, core: 1.6 },
-    clusters: { layout: "clusters", dist: 10.2, offX: 0.00, offY: 0.10, spin: 0.000, docs: 0.0, shell: 0.0, opacity: 1.00, core: 0.7 },
-    vault:    { layout: "core",     dist: 7.4, offX: -0.10, offY: -1.35, spin: 0.035, docs: 0.0, shell: 1.0, opacity: 0.95, core: 1.2 },
-    drift:    { layout: "sphere",   dist: 9.8, offX: -2.20, offY: -0.60, spin: 0.030, docs: 0.0, shell: 0.0, opacity: 0.75, core: 0.6 },
-    calm:     { layout: "sphere",   dist: 11.0, offX: 2.10, offY: -0.40, spin: 0.028, docs: 0.0, shell: 0.0, opacity: 0.55, core: 0.6 },
-    final:    { layout: "tight",    dist: 7.0, offX: 0.00, offY: -0.10, spin: 0.050, docs: 0.0, shell: 0.0, opacity: 0.95, core: 1.3 }
+    hero:     { layout: "sphere",   dist: 7.6, offX: 1.35, offY: 0.15, spin: 0.055, docs: 0.0, shell: 0.0, opacity: 1.00, core: 1.0, streak: 1.00 },
+    scatter:  { layout: "scatter",  dist: 9.0, offX: 0.60, offY: -1.10, spin: 0.020, docs: 1.0, shell: 0.0, opacity: 0.85, core: 0.5, streak: 0.22 },
+    ingest:   { layout: "sphere",   dist: 8.2, offX: 0.10, offY: -1.35, spin: 0.050, docs: 1.0, shell: 0.0, opacity: 1.00, core: 1.0, streak: 0.34 },
+    route:    { layout: "tight",    dist: 5.8, offX: 0.45, offY: 1.30, spin: 0.070, docs: 0.0, shell: 0.0, opacity: 1.00, core: 1.6, streak: 0.46 },
+    clusters: { layout: "clusters", dist: 10.2, offX: 0.00, offY: 0.10, spin: 0.000, docs: 0.0, shell: 0.0, opacity: 1.00, core: 0.7, streak: 0.18 },
+    vault:    { layout: "core",     dist: 7.4, offX: -0.10, offY: -1.35, spin: 0.035, docs: 0.0, shell: 1.0, opacity: 0.95, core: 1.2, streak: 0.34 },
+    drift:    { layout: "sphere",   dist: 9.8, offX: -2.20, offY: -0.60, spin: 0.030, docs: 0.0, shell: 0.0, opacity: 0.75, core: 0.6, streak: 0.28 },
+    calm:     { layout: "sphere",   dist: 11.0, offX: 2.10, offY: -0.40, spin: 0.028, docs: 0.0, shell: 0.0, opacity: 0.55, core: 0.6, streak: 0.28 },
+    final:    { layout: "tight",    dist: 7.0, offX: 0.00, offY: -0.10, spin: 0.050, docs: 0.0, shell: 0.0, opacity: 0.95, core: 1.3, streak: 1.00 }
   };
 
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -151,6 +156,7 @@
     this.canvas = canvas;
     this.cold = toRGB(opts.cold, COLD);
     this.hot = toRGB(opts.hot, HOT);
+    this.flare = opts.flare ? toRGB(opts.flare, versFlare(this.hot)) : versFlare(this.hot);
     // Fond clair : la fusion additive délave tout, on repasse en alpha classique.
     this.additive = opts.additive === undefined ? true : !!opts.additive;
     this.distScale = opts.distScale || 1;
@@ -181,6 +187,7 @@
     this.docsAmt = 0;
     this.shellAmt = 0;
     this.coreAmt = 1;
+    this.streakAmt = 1;
     this.spin = 0;
     this.pointer = { x: 0, y: 0, tx: 0, ty: 0 };
     this.time = 0;
@@ -196,6 +203,7 @@
     this._buildPulses();
     this._buildDocs();
     this._buildShell();
+    this._buildTrainee();
 
     this.resize();
   }
@@ -450,6 +458,115 @@
     }
   };
 
+  /* La traînée de la marque Neural Stark : un ruban lumineux qui traverse la
+     sphère en diagonale et ressort en flare. Il vit hors du groupe qui tourne,
+     pour que la diagonale reste celle du logo au lieu de pivoter avec la scène. */
+
+  var TRAINEE_VS = [
+    "attribute float aFondu;",
+    "attribute float aCourse;",
+    "varying float vFondu;",
+    "varying float vCourse;",
+    "void main() {",
+    "  vFondu = aFondu; vCourse = aCourse;",
+    "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+    "}"
+  ].join("\n");
+
+  var TRAINEE_FS = [
+    "uniform vec3 uHot;",
+    "uniform vec3 uFlare;",
+    "uniform float uOpacity;",
+    "varying float vFondu;",
+    "varying float vCourse;",
+    "void main() {",
+    "  vec3 c = mix(uHot, uFlare, smoothstep(0.55, 1.0, vCourse));",
+    "  float a = vFondu * uOpacity;",
+    "  if (a <= 0.001) discard;",
+    "  gl_FragColor = vec4(c, a);",
+    "}"
+  ].join("\n");
+
+  NeuralBrain.prototype._buildTrainee = function () {
+    var N = 72, LARGEUR = 0.115;
+    // courbe du logo : entrée en bas à gauche, sortie en haut à droite, ventre
+    // sous la corde pour que le trait parte raide et s'aplatisse.
+    var A = [-2.0, -0.92], C = [-0.2, -0.5], B = [1.98, 0.82];
+    var pos = new Float32Array(N * 3 * 3);
+    var fondu = new Float32Array(N * 3);
+    var course = new Float32Array(N * 3);
+    var idx = [];
+
+    for (var i = 0; i < N; i++) {
+      var t = i / (N - 1), u = 1 - t;
+      var x = u * u * A[0] + 2 * u * t * C[0] + t * t * B[0];
+      var y = u * u * A[1] + 2 * u * t * C[1] + t * t * B[1];
+      // tangente de la Bézier quadratique, puis normale dans le plan de l'écran
+      var tx = 2 * u * (C[0] - A[0]) + 2 * t * (B[0] - C[0]);
+      var ty = 2 * u * (C[1] - A[1]) + 2 * t * (B[1] - C[1]);
+      var n = Math.hypot(tx, ty) || 1;
+      var nx = -ty / n, ny = tx / n;
+
+      // le ruban naît fin à gauche et s'épaissit vers le flare
+      var forme = Math.pow(Math.sin(Math.PI * t), 0.6);
+      var w = LARGEUR * forme * (0.3 + 0.7 * t);
+      var a = Math.pow(t, 0.75);
+
+      for (var j = 0; j < 3; j++) {
+        var d = (j - 1) * w;                 // bord, axe, bord
+        var k = (i * 3 + j) * 3;
+        pos[k] = x + nx * d;
+        pos[k + 1] = y + ny * d;
+        pos[k + 2] = 0;
+        fondu[i * 3 + j] = (j === 1 ? 1 : 0) * a;
+        course[i * 3 + j] = t;
+      }
+      if (i < N - 1) {
+        var b = i * 3, b2 = (i + 1) * 3;
+        for (var q = 0; q < 2; q++) {
+          idx.push(b + q, b + q + 1, b2 + q + 1, b + q, b2 + q + 1, b2 + q);
+        }
+      }
+    }
+
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute("aFondu", new THREE.BufferAttribute(fondu, 1));
+    geo.setAttribute("aCourse", new THREE.BufferAttribute(course, 1));
+    geo.setIndex(idx);
+
+    this.traineeMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uOpacity: { value: 0 },
+        uHot: { value: new THREE.Vector3(this.hot[0], this.hot[1], this.hot[2]) },
+        uFlare: { value: new THREE.Vector3(this.flare[0], this.flare[1], this.flare[2]) }
+      },
+      vertexShader: TRAINEE_VS,
+      fragmentShader: TRAINEE_FS,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+
+    this.trainee = new THREE.Group();
+    var ruban = new THREE.Mesh(geo, this.traineeMat);
+    ruban.frustumCulled = false;
+    this.trainee.add(ruban);
+
+    // le flare, à l'endroit exact où la traînée quitte la sphère
+    this.flareSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTexture(this.flare), transparent: true, depthWrite: false, depthTest: false,
+      blending: THREE.AdditiveBlending, opacity: 0
+    }));
+    this.flareSprite.scale.set(1.0, 1.0, 1);
+    this.flareSprite.position.set(1.94, 0.8, 0);
+    this.trainee.add(this.flareSprite);
+
+    this.scene.add(this.trainee);
+  };
+
   NeuralBrain.prototype._buildShell = function () {
     this.shell = new THREE.Mesh(
       new THREE.IcosahedronGeometry(2.35, 1),
@@ -506,14 +623,19 @@
   };
 
   // Change de palette sans reconstruire la scène.
-  NeuralBrain.prototype.setColors = function (cold, hot) {
+  NeuralBrain.prototype.setColors = function (cold, hot, flare) {
     this.cold = toRGB(cold, this.cold);
     this.hot = toRGB(hot, this.hot);
+    this.flare = flare ? toRGB(flare, versFlare(this.hot)) : versFlare(this.hot);
     var mats = [this.nodeMat, this.edgeMat, this.pulseMat];
     for (var i = 0; i < mats.length; i++) {
       if (!mats[i]) continue;
       mats[i].uniforms.uCold.value.set(this.cold[0], this.cold[1], this.cold[2]);
       mats[i].uniforms.uHot.value.set(this.hot[0], this.hot[1], this.hot[2]);
+    }
+    if (this.traineeMat) {
+      this.traineeMat.uniforms.uHot.value.set(this.hot[0], this.hot[1], this.hot[2]);
+      this.traineeMat.uniforms.uFlare.value.set(this.flare[0], this.flare[1], this.flare[2]);
     }
     this.coreInner.material.color.setHex(toHex(this.hot));
     this.coreOuter.material.color.setHex(toHex(this.cold));
@@ -526,6 +648,11 @@
       this.halo.material.map = glowTexture(this.hot);
       this.halo.material.needsUpdate = true;
       this.haloRGB = this.hot.slice();
+      if (this.flareSprite) {
+        if (this.flareSprite.material.map) this.flareSprite.material.map.dispose();
+        this.flareSprite.material.map = glowTexture(this.flare);
+        this.flareSprite.material.needsUpdate = true;
+      }
     }
   };
 
@@ -602,6 +729,7 @@
     this.docsAmt = lerp(this.docsAmt, st.docs, k);
     this.shellAmt = lerp(this.shellAmt, st.shell, k);
     this.coreAmt = lerp(this.coreAmt, st.core, k);
+    this.streakAmt = lerp(this.streakAmt, st.streak === undefined ? 0 : st.streak, k);
 
     this.camera.position.z = this.dist;
     this.group.position.x = this.offX;
@@ -615,6 +743,18 @@
     else this.spin += dt * st.spin;
     this.group.rotation.y = this.spin + this.pointer.x * 0.32;
     this.group.rotation.x = Math.sin(this.time * 0.11) * 0.06 - this.pointer.y * 0.18;
+
+    // La traînée garde la diagonale du logo : elle suit la position du groupe,
+    // jamais sa rotation. Le flare respire très légèrement.
+    if (this.trainee) {
+      this.trainee.position.set(this.offX, this.offY, 0);
+      var souffle = this.reduced ? 1 : 0.92 + Math.sin(this.time * 0.8) * 0.08;
+      var f = this.streakAmt * this.opacity;
+      this.traineeMat.uniforms.uOpacity.value = f * 0.62;
+      this.flareSprite.material.opacity = f * souffle * 0.7;
+      var e = 1.0 * (0.9 + 0.1 * souffle);
+      this.flareSprite.scale.set(e, e, 1);
+    }
 
     // morphing des nœuds + respiration
     var target = this._targetArray();

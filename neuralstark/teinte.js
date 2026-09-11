@@ -59,6 +59,7 @@ export function initTeinte(vitrine) {
     ["--accent", "--accent-debut", "--accent-fin"],
     ["--accent-hi", "--accent-hi-debut", "--accent-hi-fin"],
     ["--accent-ink", "--accent-ink-debut", "--accent-ink-fin"],
+    ["--flare", "--flare-debut", "--flare-fin"],
     ["--brain-hot", "--accent-debut", "--accent-fin"],
     ["--brain-cold", "--brain-cold-debut", "--brain-cold-fin"],
   ].map(([cible, debut, fin]) => {
@@ -87,7 +88,7 @@ export function initTeinte(vitrine) {
       teintes[p.cible] = c;
     }
     const cerveau = vitrine && vitrine.brain;
-    if (cerveau) cerveau.setColors(teintes["--brain-cold"], teintes["--brain-hot"]);
+    if (cerveau) cerveau.setColors(teintes["--brain-cold"], teintes["--brain-hot"], teintes["--flare"]);
   }
 
   // Le défilement par plans avance par sauts : on rattrape la cible au lieu de
