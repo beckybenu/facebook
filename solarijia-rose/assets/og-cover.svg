@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fdfafa"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="28%" r="60%">
+      <stop offset="0%" stop-color="#f6e4df" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#f6e4df" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="blob" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f6e4df"/>
+      <stop offset="100%" stop-color="#efd0c8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <path d="M1000 40c120 70 180 220 120 350s-230 200-360 160-170-190-120-320 240-260 360-190z" fill="url(#blob)" opacity="0.85"/>
+  <g transform="translate(96,246)">
+    <circle cx="16" cy="14" r="16" fill="#c98a82"/>
+    <circle cx="16" cy="14" r="16" fill="none" stroke="#ffffff" stroke-width="5"/>
+    <text x="48" y="28" font-family="'Outfit', Arial, sans-serif" font-size="46" font-weight="600" letter-spacing="-1" fill="#3f3338">Solarijia</text>
+  </g>
+  <text x="94" y="366" font-family="'Outfit', Arial, sans-serif" font-size="78" font-weight="400" letter-spacing="-2" fill="#3f3338">Révélez <tspan font-family="Georgia, serif" font-style="italic" font-weight="400" fill="#b06f67">votre éclat</tspan></text>
+  <text x="96" y="420" font-family="'Outfit', Arial, sans-serif" font-size="29" font-weight="300" fill="#6f626a">Institut de beauté · soins visage, corps, regard &amp; plus</text>
+  <g transform="translate(96,468)">
+    <rect width="286" height="62" rx="31" fill="#c98a82"/>
+    <text x="143" y="40" text-anchor="middle" font-family="'Outfit', Arial, sans-serif" font-size="25" font-weight="500" fill="#ffffff">Prendre rendez-vous</text>
+  </g>
+</svg>

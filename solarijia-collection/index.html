@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1416" />
+  <title>Solarijia — Choisissez votre design</title>
+  <meta name="description" content="Quatre directions de design pour le site de l'institut de beauté Solarijia. Comparez et choisissez votre préférée." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" href="../solarijia/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#17110f; --bg2:#1f1714; --card:#241b17; --line:rgba(255,255,255,.1);
+      --ink:#f5ece3; --muted:#b6a99d; --gold:#d8b26a; --clay:#c08064;
+      --sans:"Inter",system-ui,sans-serif; --serif:"Fraunces",Georgia,serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--sans);background:
+        radial-gradient(60% 50% at 80% 0%,rgba(216,178,106,.14),transparent 60%),
+        radial-gradient(50% 50% at 0% 100%,rgba(192,128,100,.12),transparent 60%),
+        var(--bg);
+      color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+    .wrap{width:min(1180px,92vw);margin-inline:auto;padding:clamp(3rem,7vw,6rem) 0 5rem}
+    header.top{text-align:center;max-width:720px;margin:0 auto clamp(2.5rem,6vw,4rem)}
+    .kicker{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:600;
+      text-transform:uppercase;letter-spacing:.24em;color:var(--gold);
+      border:1px solid var(--line);border-radius:999px;padding:.5rem 1rem;margin-bottom:1.4rem}
+    .dot{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9c469,#c08064)}
+    h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,6vw,3.8rem);line-height:1.05;letter-spacing:-.02em}
+    h1 em{font-style:italic;color:var(--gold)}
+    .lead{color:var(--muted);margin-top:1.1rem;font-size:1.05rem}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;
+      display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .3s,border-color .3s}
+    .card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -30px rgba(0,0,0,.7);border-color:rgba(216,178,106,.4)}
+    .thumb{height:190px;position:relative;display:flex;align-items:flex-end;padding:1.1rem 1.3rem;overflow:hidden}
+    .thumb .mini{position:absolute;inset:0;opacity:.96}
+    .thumb h3{position:relative;font-family:var(--serif);font-size:1.7rem;font-weight:600;z-index:2}
+    .badge{position:absolute;top:1.1rem;right:1.1rem;z-index:2;font-size:.68rem;font-weight:600;
+      text-transform:uppercase;letter-spacing:.14em;background:rgba(0,0,0,.42);color:#fff;
+      padding:.35rem .7rem;border-radius:999px;backdrop-filter:blur(4px)}
+    /* thumbnails per theme */
+    .t-chaleureux{background:radial-gradient(60% 55% at 72% 30%,rgba(231,202,189,.8),transparent 60%),linear-gradient(145deg,#fbf4ee,#e7cabd 60%,#b9755f)}
+    .t-chaleureux h3{color:#2c211c}
+    .t-nuit{background:radial-gradient(50% 60% at 70% 20%,rgba(216,178,106,.5),transparent 60%),linear-gradient(145deg,#1a1210,#2a1d18 60%,#120c0a)}
+    .t-nuit h3{color:#e9c469}
+    .t-rose{background:radial-gradient(60% 55% at 30% 25%,rgba(246,228,223,.9),transparent 60%),linear-gradient(145deg,#ffffff,#f6e4df 70%,#efd0c8)}
+    .t-rose h3{color:#8a5d57}
+    .t-solaire{background:radial-gradient(55% 60% at 70% 25%,rgba(255,217,160,.95),transparent 60%),linear-gradient(145deg,#ff9e7a,#f5b14c 60%,#ffd9a0)}
+    .t-solaire h3{color:#3a2318}
+    .card-body{padding:1.5rem 1.4rem 1.6rem;display:flex;flex-direction:column;gap:.9rem;flex:1}
+    .card-body p{color:var(--muted);font-size:.95rem}
+    .tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:auto}
+    .tag{font-size:.72rem;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);
+      border-radius:999px;padding:.28rem .7rem}
+    .go{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.4rem;
+      font-weight:600;font-size:.95rem;padding:.8rem 1.2rem;border-radius:999px;
+      background:linear-gradient(135deg,var(--gold),#b98f49);color:#1a1210;transition:filter .2s,transform .2s}
+    .go:hover{filter:brightness(1.07)}
+    .go .arrow{transition:transform .2s}
+    .card:hover .go .arrow{transform:translateX(3px)}
+    a{text-decoration:none}
+    footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:3.5rem}
+    footer a{color:var(--gold)}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <span class="kicker"><span class="dot" aria-hidden="true"></span> Solarijia · Institut de beauté</span>
+      <h1>Quatre ambiances,<br /><em>un seul institut</em></h1>
+      <p class="lead">Nous avons imaginé plusieurs directions de design pour votre site.
+        Ouvrez-les, comparez, et dites-nous celle qui vous ressemble — nous la finaliserons avec vos vraies photos, prestations et coordonnées.</p>
+    </header>
+
+    <div class="grid">
+      <a class="card" href="../solarijia/">
+        <div class="thumb t-chaleureux"><span class="badge">01</span><h3>Chaleureux</h3></div>
+        <div class="card-body">
+          <p>Ivoire, terracotta et or, typographie serif élégante. Doux, féminin, intemporel — une valeur sûre.</p>
+          <div class="tags"><span class="tag">Clair</span><span class="tag">Serif</span><span class="tag">Chaleureux</span></div>
+          <span class="go">Voir ce design <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <a class="card" href="../solarijia-nuit/">
+        <div class="thumb t-nuit"><span class="badge">02</span><h3>Nuit dorée</h3></div>
+        <div class="card-body">
+          <p>Luxe sombre et éditorial, noir profond et or. Très premium, idéal pour une image haut de gamme.</p>
+          <div class="tags"><span class="tag">Sombre</span><span class="tag">Or</span><span class="tag">Premium</span></div>
+          <span class="go">Voir ce design <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <a class="card" href="../solarijia-rose/">
+        <div class="thumb t-rose"><span class="badge">03</span><h3>Rosé minimal</h3></div>
+        <div class="card-body">
+          <p>Épuré et aéré, blanc et blush, lignes fines. Moderne et délicat — l'élégance par la retenue.</p>
+          <div class="tags"><span class="tag">Minimal</span><span class="tag">Aéré</span><span class="tag">Moderne</span></div>
+          <span class="go">Voir ce design <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <a class="card" href="../solarijia-solaire/">
+        <div class="thumb t-solaire"><span class="badge">04</span><h3>Solaire</h3></div>
+        <div class="card-body">
+          <p>Lumineux et énergique, dégradés pêche, corail et or, formes rondes. Joyeux, chaleureux, plein de « glow ».</p>
+          <div class="tags"><span class="tag">Vif</span><span class="tag">Dégradés</span><span class="tag">Énergique</span></div>
+          <span class="go">Voir ce design <span class="arrow">→</span></span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      Astuce : ouvrez chaque design sur mobile aussi. ✦ Une préférence&nbsp;? Dites-le nous et nous peaufinons la variante choisie.
+    </footer>
+  </div>
+</body>
+</html>

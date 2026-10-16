@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://beckybenu.github.io/facebook/solarijia-solaire/sitemap.xml
