@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbfcf8"/>
+      <stop offset="100%" stop-color="#eef2e7"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="78%" cy="35%" r="58%">
+      <stop offset="0%" stop-color="#8a9a82" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#8a9a82" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a7b89d"/>
+      <stop offset="55%" stop-color="#8a9a82"/>
+      <stop offset="100%" stop-color="#6f8268"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- brins botaniques décoratifs -->
+  <g transform="translate(905 110)" opacity="0.9">
+    <path d="M90 420 C90 260 120 110 220 -10" fill="none" stroke="#7a8d72" stroke-width="5" stroke-linecap="round"/>
+    <path d="M150 230 C95 205 70 150 74 95 C132 118 168 175 150 230Z" fill="url(#leaf)"/>
+    <path d="M168 160 C222 128 250 70 248 12 C196 42 170 102 168 160Z" fill="url(#leaf)" opacity="0.92"/>
+    <path d="M128 300 C78 278 56 228 60 176 C114 200 146 252 128 300Z" fill="url(#leaf)" opacity="0.85"/>
+    <circle cx="250" cy="20" r="14" fill="#c9a24b"/>
+  </g>
+
+  <!-- marque -->
+  <g transform="translate(90,250)">
+    <g transform="translate(0 -6)">
+      <path d="M26 44 C26 24 22 6 6 -12 C42 -9 46 14 34 32 C30 40 29 42 26 44Z" fill="url(#leaf)"/>
+      <path d="M26 44 C26 20 34 -2 50 -14 C47 14 42 34 26 44Z" fill="url(#leaf)" opacity="0.92"/>
+    </g>
+    <text x="72" y="34" font-family="Georgia, serif" font-size="58" font-weight="600" fill="#2b3528">Solarijia</text>
+  </g>
+
+  <text x="92" y="362" font-family="Georgia, serif" font-size="74" font-weight="600" fill="#2b3528">Révélez votre éclat</text>
+  <text x="96" y="422" font-family="Inter, Arial, sans-serif" font-size="30" fill="#4a5844">Institut de beauté · soins visage, corps, regard &amp; plus</text>
+
+  <g transform="translate(96,472)">
+    <rect width="300" height="64" rx="32" fill="#6f8268"/>
+    <text x="150" y="41" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="600" fill="#ffffff">Prendre rendez-vous</text>
+  </g>
+</svg>
