@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect x="64" y="64" width="1072" height="502" fill="none" stroke="#161412" stroke-opacity="0.12"/>
+
+  <!-- marque -->
+  <g transform="translate(110,150)">
+    <circle cx="8" cy="8" r="8" fill="none" stroke="#161412" stroke-width="1.5"/>
+    <circle cx="8" cy="8" r="3" fill="#a89d8c"/>
+    <text x="30" y="16" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#161412">Solarijia</text>
+  </g>
+
+  <!-- label -->
+  <text x="110" y="248" font-family="Inter, Arial, sans-serif" font-size="20" letter-spacing="7" fill="#8a837a">INSTITUT DE BEAUTÉ</text>
+
+  <!-- titre éditorial -->
+  <text x="106" y="360" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="300" fill="#161412">L'art de révéler</text>
+  <text x="106" y="458" font-family="Georgia, 'Times New Roman', serif" font-size="96" font-weight="300" font-style="italic" fill="#8a7f6e">votre éclat</text>
+
+  <!-- filet + sous-titre -->
+  <line x1="110" y1="510" x2="430" y2="510" stroke="#161412" stroke-opacity="0.15" stroke-width="1"/>
+  <text x="110" y="540" font-family="Inter, Arial, sans-serif" font-size="22" fill="#4a453f">Soins visage, corps, regard &amp; plus</text>
+
+  <!-- accent discret -->
+  <g transform="translate(980,250)">
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#161412" stroke-opacity="0.1" stroke-width="1"/>
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#a89d8c" stroke-width="1"/>
+    <circle cx="0" cy="0" r="6" fill="#a89d8c"/>
+  </g>
+</svg>
