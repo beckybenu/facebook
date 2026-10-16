@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fbf4ee" />
+
+  <!-- ===================== SEO ===================== -->
+  <title>Solarijia — Institut de beauté | Soins visage, corps, épilation & regard</title>
+  <meta name="description" content="Solarijia, votre institut de beauté : soins du visage sur-mesure, modelage, épilation, beauté du regard (cils & sourcils), manucure et éclat lumineux. Prenez rendez-vous dans un écrin doux et chaleureux." />
+  <meta name="keywords" content="institut de beauté, soin du visage, épilation, modelage, beauté du regard, extension de cils, rehaussement de cils, manucure, pédicure, bronzage, Solarijia" />
+  <meta name="author" content="Solarijia" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://beckybenu.github.io/facebook/solarijia/" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="Solarijia" />
+  <meta property="og:title" content="Solarijia — révélez votre éclat" />
+  <meta property="og:description" content="Institut de beauté : soins du visage, modelage, épilation, beauté du regard et plus. Un moment pour soi, dans un cocon de douceur." />
+  <meta property="og:url" content="https://beckybenu.github.io/facebook/solarijia/" />
+  <meta property="og:image" content="assets/og-cover.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Solarijia — Institut de beauté" />
+  <meta name="twitter:description" content="Soins sur-mesure, mains expertes, résultats lumineux. Prenez rendez-vous." />
+  <meta name="twitter:image" content="assets/og-cover.svg" />
+
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- ===================== Données structurées (Schema.org) ===================== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BeautySalon",
+    "name": "Solarijia",
+    "image": "assets/og-cover.svg",
+    "url": "https://beckybenu.github.io/facebook/solarijia/",
+    "description": "Institut de beauté proposant soins du visage, modelage, épilation, beauté du regard, manucure et soins d'éclat.",
+    "priceRange": "€€",
+    "telephone": "+33 0 00 00 00 00",
+    "sameAs": ["https://www.instagram.com/solarijia/"],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Adresse à compléter",
+      "addressLocality": "Ville",
+      "postalCode": "00000",
+      "addressCountry": "FR"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday"], "opens": "10:00", "closes": "19:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday"], "opens": "09:30", "closes": "18:00" }
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Comment prendre rendez-vous chez Solarijia ?", "acceptedAnswer": { "@type": "Answer", "text": "Par message via le formulaire du site, par WhatsApp ou en message privé sur Instagram. Nous vous confirmons rapidement un créneau adapté." } },
+      { "@type": "Question", "name": "Proposez-vous des soins sur-mesure ?", "acceptedAnswer": { "@type": "Answer", "text": "Oui. Chaque prestation commence par un diagnostic afin d'adapter les produits et les gestes à votre peau et à vos envies." } },
+      { "@type": "Question", "name": "Quels moyens de paiement acceptez-vous ?", "acceptedAnswer": { "@type": "Answer", "text": "Carte bancaire et espèces. Des cartes cadeaux sont également disponibles pour offrir un moment de beauté." } },
+      { "@type": "Question", "name": "Faut-il annuler à l'avance en cas d'empêchement ?", "acceptedAnswer": { "@type": "Answer", "text": "Merci de prévenir au moins 24 h à l'avance afin que nous puissions proposer le créneau à une autre cliente." } }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Préloader -->
+  <div id="preloader" aria-hidden="true">
+    <div class="preloader-mark">
+      <span class="sun"></span>
+      <span>Solarijia</span>
+    </div>
+  </div>
+
+  <!-- Scène 3D (fond du héros) -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#top" aria-label="Solarijia, accueil">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Solarijia</span>
+      </a>
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a href="#soins">Soins</a>
+        <a href="#institut">L'institut</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#avis">Avis</a>
+        <a href="#contact">Contact</a>
+        <a href="#contact" class="btn btn-sm btn-primary magnetic">Réserver</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ===================== HÉRO ===================== -->
+    <section class="hero" id="accueil">
+      <div class="container hero-inner">
+        <p class="eyebrow" data-reveal>✦ Institut de beauté</p>
+        <h1 class="hero-title" data-reveal>
+          L'art de révéler<br /><em>votre éclat</em>
+        </h1>
+        <p class="hero-sub" data-reveal>
+          Des soins sur-mesure, des mains expertes et un cocon de douceur.
+          Chez&nbsp;Solarijia, chaque instant est pensé pour vous faire rayonner —
+          de la peau au regard.
+        </p>
+        <div class="hero-cta" data-reveal>
+          <a href="#contact" class="btn btn-primary magnetic">Prendre rendez-vous</a>
+          <a href="#soins" class="btn btn-ghost">Découvrir les soins</a>
+        </div>
+        <ul class="hero-trust" data-reveal>
+          <li><strong class="count" data-to="1200" data-suffix="+">0</strong><span>clientes choyées</span></li>
+          <li><strong class="count" data-to="12" data-suffix="">0</strong><span>soins signature</span></li>
+          <li><strong class="count" data-static="4.9★">0</strong><span>note moyenne</span></li>
+        </ul>
+      </div>
+      <a class="scroll-hint" href="#soins" aria-label="Faire défiler">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- Bandeau défilant -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Soin du visage</span><span>•</span><span>Modelage</span><span>•</span>
+        <span>Épilation</span><span>•</span><span>Beauté du regard</span><span>•</span>
+        <span>Manucure</span><span>•</span><span>Éclat lumineux</span><span>•</span>
+        <span>Soin du visage</span><span>•</span><span>Modelage</span><span>•</span>
+        <span>Épilation</span><span>•</span><span>Beauté du regard</span><span>•</span>
+        <span>Manucure</span><span>•</span><span>Éclat lumineux</span><span>•</span>
+      </div>
+    </div>
+
+    <!-- ===================== SOINS ===================== -->
+    <section class="section" id="soins">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Nos prestations</p>
+          <h2>Des rituels pensés pour chaque envie</h2>
+          <p class="section-lead">
+            Choisissez votre moment. Chaque soin débute par un diagnostic pour
+            adapter les gestes et les produits à votre peau.
+          </p>
+        </header>
+
+        <div class="cards">
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- visage -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3c4.5 0 7 3.2 7 7.5 0 2.4-.7 3.7-.7 5.2 0 2.1-2.3 5.3-6.3 5.3s-6.3-3.2-6.3-5.3c0-1.5-.7-2.8-.7-5.2C5 6.2 7.5 3 12 3Z"/><circle cx="9.3" cy="11" r=".8" fill="currentColor" stroke="none"/><circle cx="14.7" cy="11" r=".8" fill="currentColor" stroke="none"/><path d="M10 15c.6.5 1.3.7 2 .7s1.4-.2 2-.7"/></svg>
+            </div>
+            <h3>Soin du visage</h3>
+            <p>Nettoyage profond, exfoliation douce, masque sur-mesure et modelage. Une peau repulpée, lumineuse, apaisée.</p>
+            <p class="card-price">dès <strong>45&nbsp;€</strong></p>
+          </article>
+
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- corps / modelage -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 14c3-5 5-7 8-7s5 2 8 7"/><path d="M4 14c2 3 4 4 8 4s6-1 8-4"/><path d="M8 11c1-1.5 2.5-2.5 4-2.5s3 1 4 2.5"/></svg>
+            </div>
+            <h3>Modelage & corps</h3>
+            <p>Un massage enveloppant aux huiles chaudes pour relâcher les tensions et réveiller la circulation. Détente totale.</p>
+            <p class="card-price">dès <strong>55&nbsp;€</strong></p>
+          </article>
+
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- épilation -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 19 19 5"/><path d="M14 5h5v5"/><path d="M8.5 15.5 6 18l-2 .5.5-2 2.5-2.5Z"/></svg>
+            </div>
+            <h3>Épilation</h3>
+            <p>À la cire tiède ou sucre, pour une peau nette et confortable. Sourcils, visage, jambes, maillot — tout en douceur.</p>
+            <p class="card-price">dès <strong>12&nbsp;€</strong></p>
+          </article>
+
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- regard / cils -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/><path d="M12 6V3M6.5 7 5 4.8M17.5 7 19 4.8"/></svg>
+            </div>
+            <h3>Beauté du regard</h3>
+            <p>Rehaussement et teinture de cils, extensions, restructuration des sourcils. Un regard intense, sans mascara.</p>
+            <p class="card-price">dès <strong>35&nbsp;€</strong></p>
+          </article>
+
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- mains / vernis -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 11V5.5a1.5 1.5 0 0 1 3 0V10m0 0V4.5a1.5 1.5 0 0 1 3 0V10m0 0V6a1.5 1.5 0 0 1 3 0v6c0 4-2.5 7-6 7s-6-2.5-6-6v-1.5A1.5 1.5 0 0 1 7 10Z"/></svg>
+            </div>
+            <h3>Mains & pieds</h3>
+            <p>Manucure, pose de vernis semi-permanent, pédicure soin. Des ongles impeccables, une tenue qui dure des semaines.</p>
+            <p class="card-price">dès <strong>25&nbsp;€</strong></p>
+          </article>
+
+          <article class="card" data-reveal data-tilt>
+            <div class="card-icon" aria-hidden="true">
+              <!-- éclat / soleil -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>
+            </div>
+            <h3>Éclat & bonne mine</h3>
+            <p>Soin lumière, gommage corps et rituel bonne mine pour une peau dorée et un teint éclatant toute l'année.</p>
+            <p class="card-price">dès <strong>40&nbsp;€</strong></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== INSTITUT / À PROPOS ===================== -->
+    <section class="section section-institut" id="institut">
+      <div class="container split">
+        <div class="split-media" data-reveal aria-hidden="true">
+          <div class="media-frame">
+            <span class="media-tag">L'ambiance Solarijia</span>
+          </div>
+        </div>
+        <div class="split-text" data-reveal>
+          <p class="eyebrow">L'institut</p>
+          <h2>Un cocon où le temps ralentit</h2>
+          <p>
+            Lumière tamisée, parfums délicats, musique douce : chez Solarijia,
+            tout est pensé pour que vous vous sentiez enfin posée. Vous entrez
+            pour un soin, vous repartez apaisée et rayonnante.
+          </p>
+          <ul class="ticks">
+            <li><span class="tick">✓</span> Produits de qualité, sélectionnés avec soin</li>
+            <li><span class="tick">✓</span> Hygiène irréprochable, matériel à usage unique</li>
+            <li><span class="tick">✓</span> Diagnostic personnalisé à chaque visite</li>
+            <li><span class="tick">✓</span> Écoute, douceur et conseils sincères</li>
+          </ul>
+          <a href="#contact" class="btn btn-primary magnetic">Réserver mon moment</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ENGAGEMENTS / CHIFFRES ===================== -->
+    <section class="section section-dark" id="engagements">
+      <div class="container">
+        <header class="section-head center" data-reveal>
+          <p class="eyebrow">Pourquoi Solarijia</p>
+          <h2>Le soin, comme on l'aime</h2>
+        </header>
+        <div class="features">
+          <div class="feature" data-reveal>
+            <h3>Sur-mesure</h3>
+            <p>Aucun soin standardisé. On écoute, on adapte, on prend le temps qu'il faut pour vous.</p>
+          </div>
+          <div class="feature" data-reveal>
+            <h3>Expertise</h3>
+            <p>Des gestes maîtrisés et une formation continue pour des résultats visibles et durables.</p>
+          </div>
+          <div class="feature" data-reveal>
+            <h3>Douceur</h3>
+            <p>Un accueil chaleureux, zéro jugement. Juste une parenthèse de bien-être, rien que pour vous.</p>
+          </div>
+          <div class="feature" data-reveal>
+            <h3>Confiance</h3>
+            <p>Des conseils honnêtes, jamais de vente forcée. Votre satisfaction avant tout.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GALERIE / AMBIANCE ===================== -->
+    <section class="section" id="galerie">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">En images</p>
+          <h2>Quelques instants Solarijia</h2>
+          <p class="section-lead">Remplacez ces visuels par vos propres photos (soins, institut, résultats) pour un rendu encore plus personnel.</p>
+        </header>
+        <div class="gallery">
+          <div class="g g1" data-reveal><span>Soin visage</span></div>
+          <div class="g g2" data-reveal><span>Ambiance</span></div>
+          <div class="g g3" data-reveal><span>Regard</span></div>
+          <div class="g g4" data-reveal><span>Mains</span></div>
+          <div class="g g5" data-reveal><span>Détail</span></div>
+        </div>
+        <p class="gallery-note" data-reveal>
+          📸 Besoin d'un coup de main pour vos photos&nbsp;? Un smartphone récent,
+          une belle lumière naturelle et un fond épuré suffisent.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== TARIFS ===================== -->
+    <section class="section section-institut" id="tarifs">
+      <div class="container">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Tarifs</p>
+          <h2>Grille indicative</h2>
+          <p class="section-lead">À adapter à vos prestations réelles. Les durées sont approximatives.</p>
+        </header>
+        <div class="price-grid">
+          <div class="price-col" data-reveal>
+            <h3>Visage</h3>
+            <ul class="price-list">
+              <li><span>Soin éclat express <em>30&nbsp;min</em></span><b>45&nbsp;€</b></li>
+              <li><span>Soin signature complet <em>1&nbsp;h</em></span><b>70&nbsp;€</b></li>
+              <li><span>Soin anti-âge ciblé <em>1&nbsp;h15</em></span><b>90&nbsp;€</b></li>
+            </ul>
+          </div>
+          <div class="price-col" data-reveal>
+            <h3>Regard & cils</h3>
+            <ul class="price-list">
+              <li><span>Rehaussement de cils <em>45&nbsp;min</em></span><b>45&nbsp;€</b></li>
+              <li><span>Extensions cil à cil <em>1&nbsp;h30</em></span><b>75&nbsp;€</b></li>
+              <li><span>Restructuration sourcils <em>20&nbsp;min</em></span><b>18&nbsp;€</b></li>
+            </ul>
+          </div>
+          <div class="price-col" data-reveal>
+            <h3>Corps & épilation</h3>
+            <ul class="price-list">
+              <li><span>Modelage relaxant <em>1&nbsp;h</em></span><b>60&nbsp;€</b></li>
+              <li><span>Épilation jambes complètes</span><b>30&nbsp;€</b></li>
+              <li><span>Épilation sourcils</span><b>12&nbsp;€</b></li>
+            </ul>
+          </div>
+          <div class="price-col" data-reveal>
+            <h3>Mains & pieds</h3>
+            <ul class="price-list">
+              <li><span>Manucure + vernis semi-permanent</span><b>35&nbsp;€</b></li>
+              <li><span>Pose de vernis classique</span><b>18&nbsp;€</b></li>
+              <li><span>Pédicure soin complète</span><b>45&nbsp;€</b></li>
+            </ul>
+          </div>
+        </div>
+        <p class="price-foot" data-reveal>🎁 <strong>Cartes cadeaux</strong> disponibles — offrez un moment de beauté.</p>
+      </div>
+    </section>
+
+    <!-- ===================== AVIS ===================== -->
+    <section class="section" id="avis">
+      <div class="container">
+        <header class="section-head center" data-reveal>
+          <p class="eyebrow">Elles en parlent</p>
+          <h2>Ce que disent nos clientes</h2>
+        </header>
+        <div class="reviews">
+          <figure class="review" data-reveal>
+            <div class="stars" aria-label="5 sur 5">★★★★★</div>
+            <blockquote>Un vrai moment de détente, des mains en or. Je ressors à chaque fois le teint frais et le sourire aux lèvres.</blockquote>
+            <figcaption>— Camille L.</figcaption>
+          </figure>
+          <figure class="review" data-reveal>
+            <div class="stars" aria-label="5 sur 5">★★★★★</div>
+            <blockquote>Accueil adorable et conseils sincères. Mon rehaussement de cils tient parfaitement, je recommande les yeux fermés&nbsp;!</blockquote>
+            <figcaption>— Sarah B.</figcaption>
+          </figure>
+          <figure class="review" data-reveal>
+            <div class="stars" aria-label="5 sur 5">★★★★★</div>
+            <blockquote>Institut impeccable, ambiance apaisante. On se sent chouchoutée du début à la fin. Mon rendez-vous beauté préféré.</blockquote>
+            <figcaption>— Inès M.</figcaption>
+          </figure>
+        </div>
+        <p class="reviews-note" data-reveal>Remplacez par de vrais avis Google / Instagram pour renforcer la confiance.</p>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section class="section section-institut" id="faq">
+      <div class="container narrow">
+        <header class="section-head" data-reveal>
+          <p class="eyebrow">Questions fréquentes</p>
+          <h2>Tout ce qu'il faut savoir</h2>
+        </header>
+        <div class="faq" data-reveal>
+          <details>
+            <summary>Comment prendre rendez-vous&nbsp;?</summary>
+            <p>Via le formulaire ci-dessous, par WhatsApp, ou en message privé sur Instagram. Nous vous confirmons un créneau rapidement.</p>
+          </details>
+          <details>
+            <summary>Les soins sont-ils personnalisés&nbsp;?</summary>
+            <p>Toujours. Chaque prestation commence par un court diagnostic pour adapter les produits et les gestes à votre peau et à vos envies.</p>
+          </details>
+          <details>
+            <summary>Quels moyens de paiement acceptez-vous&nbsp;?</summary>
+            <p>Carte bancaire et espèces. Des cartes cadeaux sont aussi disponibles pour offrir un moment de beauté.</p>
+          </details>
+          <details>
+            <summary>Et si j'ai un empêchement&nbsp;?</summary>
+            <p>Merci de prévenir au moins 24&nbsp;h à l'avance, afin que nous puissions proposer le créneau à une autre cliente.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section" id="contact">
+      <div class="container split">
+        <div class="split-text" data-reveal>
+          <p class="eyebrow">Rendez-vous</p>
+          <h2>Offrez-vous un moment Solarijia</h2>
+          <p>Dites-nous ce qui vous ferait du bien. On vous recontacte vite pour trouver le créneau idéal.</p>
+          <ul class="contact-list">
+            <li><span class="ci" aria-hidden="true">📍</span> <span><strong>Adresse</strong><br />À compléter — ville & rue</span></li>
+            <li><span class="ci" aria-hidden="true">🕑</span> <span><strong>Horaires</strong><br />Mar–Ven 10 h–19 h · Sam 9 h 30–18 h</span></li>
+            <li><span class="ci" aria-hidden="true">✦</span> <span><strong>Instagram</strong><br /><a id="insta-link" href="https://www.instagram.com/solarijia/" target="_blank" rel="noopener">@solarijia</a></span></li>
+          </ul>
+          <div class="contact-cta">
+            <a id="whatsapp-link" class="btn btn-primary magnetic" href="#" target="_blank" rel="noopener">Écrire sur WhatsApp</a>
+            <a id="insta-btn" class="btn btn-ghost" href="https://www.instagram.com/solarijia/" target="_blank" rel="noopener">Message Instagram</a>
+          </div>
+        </div>
+
+        <form class="split-form" id="contact-form" data-reveal novalidate>
+          <div class="field">
+            <label for="f-name">Prénom & nom</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Votre nom" required />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-email">E-mail</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" placeholder="vous@exemple.com" required />
+            </div>
+            <div class="field">
+              <label for="f-phone">Téléphone</label>
+              <input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="06 00 00 00 00" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-service">Soin souhaité</label>
+            <select id="f-service" name="service">
+              <option value="">Choisir…</option>
+              <option>Soin du visage</option>
+              <option>Modelage & corps</option>
+              <option>Épilation</option>
+              <option>Beauté du regard</option>
+              <option>Mains & pieds</option>
+              <option>Éclat & bonne mine</option>
+              <option>Autre / conseil</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-message">Votre message</label>
+            <textarea id="f-message" name="message" rows="4" placeholder="Disponibilités, questions, envies…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block magnetic">Envoyer ma demande</button>
+          <p class="form-note" id="form-note" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Solarijia</span>
+        <p>Institut de beauté — révélez votre éclat.</p>
+      </div>
+      <nav class="footer-links" aria-label="Pied de page">
+        <a href="#soins">Soins</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#avis">Avis</a>
+        <a href="#contact">Contact</a>
+        <a href="https://www.instagram.com/solarijia/" target="_blank" rel="noopener">Instagram</a>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year">2026</span> Solarijia. Tous droits réservés.</p>
+      <p>Fait avec soin ✦</p>
+    </div>
+  </footer>
+
+  <!-- three.js (scène 3D) + fallback géré dans app.js -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
