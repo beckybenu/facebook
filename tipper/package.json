@@ -1,0 +1,16 @@
+{
+  "name": "tipper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tipper - application de pourboires contre des services entre particuliers (géolocalisation + wallet)",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n server,client -c blue,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "seed": "npm --prefix server run seed",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
