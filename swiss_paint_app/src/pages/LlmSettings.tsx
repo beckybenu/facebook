@@ -11,6 +11,7 @@ export default function LlmSettings() {
   const [baseUrl, setBaseUrl] = useState(existing?.baseUrl || LLM_PRESETS.groq.baseUrl)
   const [model, setModel] = useState(existing?.model || LLM_PRESETS.groq.model)
   const [status, setStatus] = useState<'idle' | 'testing' | 'ok' | 'ko'>('idle')
+  const [showKey, setShowKey] = useState(false)
   const [error, setError] = useState('')
   const [models, setModels] = useState<string[]>([])
   const [loadingModels, setLoadingModels] = useState(false)
@@ -92,17 +93,34 @@ export default function LlmSettings() {
 
         <div className="field">
           <label>Clé API</label>
-          <input
-            type="password"
-            value={apiKey}
-            onChange={(e) => {
-              setApiKey(e.target.value)
-              setStatus('idle')
-            }}
-            placeholder="gsk_..."
-            autoCapitalize="none"
-            autoCorrect="off"
-          />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input
+              style={{ flex: 1 }}
+              type={showKey ? 'text' : 'password'}
+              value={apiKey}
+              onChange={(e) => {
+                setApiKey(e.target.value)
+                setStatus('idle')
+              }}
+              placeholder="gsk_..."
+              autoCapitalize="none"
+              autoCorrect="off"
+            />
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => setShowKey((v) => !v)}
+              aria-label={showKey ? 'Masquer la clé' : 'Afficher la clé'}
+              style={{ flexShrink: 0 }}
+            >
+              {showKey ? '🙈 Masquer' : '👁 Afficher'}
+            </button>
+          </div>
+          {apiKey && (
+            <div className="card-sub" style={{ marginTop: 6 }}>
+              Clé enregistrée{apiKey.length > 8 ? ` (…${apiKey.slice(-4)})` : ''}.
+            </div>
+          )}
         </div>
         <div className="field">
           <label>URL de base</label>
