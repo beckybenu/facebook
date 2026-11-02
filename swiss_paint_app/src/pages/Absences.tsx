@@ -194,7 +194,7 @@ function TeamView({
         {rows.map((a) => (
           <tr key={a.id}>
             <td>{userName(a.userId)}</td>
-            <td>{ABSENCE_TYPE_LABELS[a.type]}</td>
+            <td>{isAdmin || a.userId === selfId ? ABSENCE_TYPE_LABELS[a.type] : 'Absent'}</td>
             <td>
               {formatDate(a.dateDebut)} → {formatDate(a.dateFin)}
             </td>
