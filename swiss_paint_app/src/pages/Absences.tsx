@@ -35,7 +35,9 @@ export default function Absences() {
   const restant = Math.max(0, Math.round((droit - pris) * 10) / 10)
 
   function decide(a: Absence, status: 'approuve' | 'refuse') {
-    absencesDb.update({ ...a, status, decisionBy: user?.id })
+    // Séparation des tâches : on ne valide pas sa propre demande
+    if (!user || a.userId === user.id) return
+    absencesDb.update({ ...a, status, decisionBy: user.id })
     reload()
   }
 
@@ -100,6 +102,7 @@ export default function Absences() {
           rows={canManage ? all : all.filter((a) => a.status === 'approuve')}
           userName={userName}
           isAdmin={canManage}
+          selfId={user?.id}
           onDecide={decide}
         />
       )}
@@ -159,11 +162,13 @@ function TeamView({
   rows,
   userName,
   isAdmin,
+  selfId,
   onDecide,
 }: {
   rows: Absence[]
   userName: (id: string) => string
   isAdmin: boolean
+  selfId?: string
   onDecide: (a: Absence, s: 'approuve' | 'refuse') => void
 }) {
   if (rows.length === 0) {
@@ -195,7 +200,7 @@ function TeamView({
             </td>
             <td className="r">{a.jours}</td>
             <td>
-              {isAdmin && a.status === 'en_attente' ? (
+              {isAdmin && a.status === 'en_attente' && a.userId !== selfId ? (
                 <div className="btn-row" style={{ gap: 6 }}>
                   <button className="btn btn-success btn-sm" onClick={() => onDecide(a, 'approuve')}>
                     ✓

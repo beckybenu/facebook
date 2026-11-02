@@ -51,7 +51,9 @@ export default function NotesFrais() {
   }
 
   function decide(n: NoteFrais, status: 'rembourse' | 'refuse') {
-    fraisDb.update({ ...n, status, decisionBy: user?.id })
+    // Séparation des tâches : on ne valide pas sa propre note de frais
+    if (!user || n.userId === user.id) return
+    fraisDb.update({ ...n, status, decisionBy: user.id })
     reload()
   }
 
@@ -142,7 +144,7 @@ export default function NotesFrais() {
                   )}
                 </td>
                 <td>
-                  {canManage && n.status === 'en_attente' ? (
+                  {canManage && n.status === 'en_attente' && n.userId !== user?.id ? (
                     <div className="btn-row" style={{ gap: 6 }}>
                       <button className="btn btn-success btn-sm" onClick={() => decide(n, 'rembourse')}>✓</button>
                       <button className="btn btn-outline btn-sm" onClick={() => decide(n, 'refuse')}>✕</button>

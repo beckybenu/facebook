@@ -138,6 +138,9 @@ export function logout() {
   cache.timeEntries = []
   cache.devis = []
   cache.documents = []
+  cache.absences = []
+  cache.notesFrais = []
+  cache.annonces = []
 }
 
 // ---------- Cache ----------

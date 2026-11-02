@@ -16,7 +16,8 @@ function sameDay(a: Date, b: Date) {
 }
 
 export default function Planning() {
-  const { user } = useAuth()
+  const { user, isAdmin, isRh } = useAuth()
+  const canSeeAbsenceType = isAdmin || isRh
   const [weekStart, setWeekStart] = useState(() => new Date(startOfWeek(new Date())))
 
   const days = useMemo(() => {
@@ -107,7 +108,9 @@ export default function Planning() {
                       <td key={i} className={sameDay(d, today) ? 'today' : ''}>
                         {absence && (
                           <span className="rh-chip" style={{ background: '#6b7280' }}>
-                            {ABSENCE_TYPE_LABELS[absence.type]}
+                            {canSeeAbsenceType || u.id === user?.id
+                              ? ABSENCE_TYPE_LABELS[absence.type]
+                              : 'Absent'}
                           </span>
                         )}
                         {dayEntries.map((e) => (
