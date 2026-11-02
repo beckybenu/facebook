@@ -1,10 +1,23 @@
 // Données de démonstration initiales (comme la base Adalo pré-remplie).
-import { KEYS, usersDb, tasksDb, docsDb, timeDb, devisDb, uid } from './db'
-import type { User, Task, Document, TimeEntry, Devis } from '../types'
+import { KEYS, usersDb, tasksDb, docsDb, timeDb, devisDb, absencesDb, annoncesDb, uid } from './db'
+import type { User, Task, Document, TimeEntry, Devis, Absence, Annonce } from '../types'
 import { DEFAULT_REMARQUES, DEFAULT_INTRO } from '../lib/company'
 
 export function seedIfNeeded(): void {
   if (localStorage.getItem(KEYS.seeded)) return
+
+  // Nettoie d'éventuelles données d'une version de démo précédente (évite les doublons de comptes)
+  ;[
+    KEYS.users,
+    KEYS.tasks,
+    KEYS.documents,
+    KEYS.timeEntries,
+    KEYS.devis,
+    KEYS.absences,
+    KEYS.notesFrais,
+    KEYS.annonces,
+    'sp_seeded_v3',
+  ].forEach((k) => localStorage.removeItem(k))
 
   const now = new Date().toISOString()
 
@@ -44,6 +57,20 @@ export function seedIfNeeded(): void {
     telephone: '+41 78 222 22 22',
     createdAt: now,
   }
+  const rh: User = {
+    id: uid('usr'),
+    email: 'rh@swisspaints.ch',
+    password: 'rh',
+    username: 'rh',
+    nom: 'Dubois',
+    prenom: 'Marc',
+    role: 'rh',
+    titre: 'Responsable RH',
+    telephone: '+41 79 444 44 44',
+    tauxActivite: 100,
+    joursVacances: 25,
+    createdAt: now,
+  }
   const client: User = {
     id: uid('usr'),
     email: 'client@example.com',
@@ -57,7 +84,7 @@ export function seedIfNeeded(): void {
     createdAt: now,
   }
 
-  ;[admin, ouvrier, ouvrier2, client].forEach((u) => usersDb.create(u))
+  ;[admin, ouvrier, ouvrier2, rh, client].forEach((u) => usersDb.create(u))
 
   const tasks: Task[] = [
     {
@@ -244,6 +271,43 @@ export function seedIfNeeded(): void {
     ],
   }
   devisDb.create(devis)
+
+  // ---- Démo RH : annonces (tableau blanc) ----
+  const annonces: Annonce[] = [
+    {
+      id: uid('ann'),
+      titre: 'Bienvenue sur SwissPaints RH',
+      contenu: 'Pensez à timbrer chaque jour à votre arrivée et à votre départ. Bonne saison à toutes et à tous !',
+      auteurId: rh.id,
+      auteurNom: `${rh.prenom} ${rh.nom}`,
+      epingle: true,
+      createdAt: now,
+    },
+    {
+      id: uid('ann'),
+      titre: 'Notes de frais — rappel',
+      contenu: "Merci de joindre systématiquement une photo du justificatif à chaque note de frais pour accélérer le remboursement.",
+      auteurId: rh.id,
+      auteurNom: `${rh.prenom} ${rh.nom}`,
+      createdAt: now,
+    },
+  ]
+  annonces.forEach((a) => annoncesDb.create(a))
+
+  // ---- Démo RH : une absence approuvée (visible dans Absences + Planning) ----
+  const inDays = (d: number) => new Date(Date.now() + d * 86400000).toISOString().slice(0, 10)
+  const absence: Absence = {
+    id: uid('abs'),
+    userId: ouvrier.id,
+    type: 'vacances',
+    dateDebut: inDays(7),
+    dateFin: inDays(9),
+    jours: 3,
+    status: 'approuve',
+    decisionBy: rh.id,
+    createdAt: now,
+  }
+  absencesDb.create(absence)
 
   localStorage.setItem(KEYS.seeded, '1')
 }

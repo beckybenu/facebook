@@ -13,6 +13,18 @@ const EMPTY = {
   titre: '',
   telephone: '',
   role: 'ouvrier' as UserRole,
+  // Contrat RH (chaînes dans le formulaire, converties en nombre à l'enregistrement)
+  heuresHebdo: '',
+  tauxActivite: '',
+  joursVacances: '',
+}
+
+// Convertit un champ texte en nombre, ou undefined si vide (→ valeur par défaut en code)
+function numOrUndef(v: string): number | undefined {
+  const t = v.trim().replace(',', '.')
+  if (t === '') return undefined
+  const n = parseFloat(t)
+  return isNaN(n) ? undefined : n
 }
 
 export default function AdminUserEdit() {
@@ -37,6 +49,9 @@ export default function AdminUserEdit() {
           titre: u.titre || '',
           telephone: u.telephone || '',
           role: u.role,
+          heuresHebdo: u.heuresHebdo != null ? String(u.heuresHebdo) : '',
+          tauxActivite: u.tauxActivite != null ? String(u.tauxActivite) : '',
+          joursVacances: u.joursVacances != null ? String(u.joursVacances) : '',
         })
       }
     }
@@ -57,10 +72,17 @@ export default function AdminUserEdit() {
       setError('Un autre compte utilise déjà cet email.')
       return
     }
+    // Sépare les champs "contrat" (texte) pour les convertir en nombres
+    const { heuresHebdo, tauxActivite, joursVacances, ...base } = form
+    const contrat = {
+      heuresHebdo: numOrUndef(heuresHebdo),
+      tauxActivite: numOrUndef(tauxActivite),
+      joursVacances: numOrUndef(joursVacances),
+    }
     if (isNew) {
-      usersDb.create({ id: uid('usr'), createdAt: new Date().toISOString(), ...form })
+      usersDb.create({ id: uid('usr'), createdAt: new Date().toISOString(), ...base, ...contrat })
     } else if (existing) {
-      usersDb.update({ ...existing, ...form })
+      usersDb.update({ ...existing, ...base, ...contrat })
     }
     navigate('/admin/users')
   }
@@ -109,10 +131,57 @@ export default function AdminUserEdit() {
           <select value={form.role} onChange={(e) => set('role', e.target.value as UserRole)}>
             <option value="client">Client</option>
             <option value="ouvrier">Ouvrier</option>
+            <option value="rh">RH</option>
             <option value="admin">Admin</option>
           </select>
         </div>
       </div>
+
+      {(form.role === 'ouvrier' || form.role === 'rh' || form.role === 'admin') && (
+        <>
+          <div className="section-title" style={{ marginTop: 18 }}>
+            Contrat RH
+          </div>
+          <div className="card">
+            <div className="field">
+              <label>Taux d'activité (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={form.tauxActivite}
+                onChange={(e) => set('tauxActivite', e.target.value)}
+                placeholder="100"
+              />
+            </div>
+            <div className="field">
+              <label>Heures hebdomadaires (base plein temps)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                value={form.heuresHebdo}
+                onChange={(e) => set('heuresHebdo', e.target.value)}
+                placeholder="42"
+              />
+            </div>
+            <div className="field">
+              <label>Jours de vacances par an</label>
+              <input
+                type="number"
+                min="0"
+                value={form.joursVacances}
+                onChange={(e) => set('joursVacances', e.target.value)}
+                placeholder="25"
+              />
+            </div>
+            <div className="muted" style={{ fontSize: 12 }}>
+              Laissez vide pour les valeurs par défaut (100 % · 42 h · 25 j). Le taux ajuste
+              automatiquement les heures et les vacances au prorata.
+            </div>
+          </div>
+        </>
+      )}
 
       <button className="btn btn-primary" onClick={save}>
         {isNew ? 'Créer le compte' : 'Enregistrer'}

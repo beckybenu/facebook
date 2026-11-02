@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 // Navigation du bas adaptée au rôle.
 // L'ouvrier a accès au pointage et aux chantiers ; le client a un accès limité.
 export default function BottomNav() {
-  const { isAdmin, isOuvrier } = useAuth()
+  const { isAdmin, isOuvrier, isRh } = useAuth()
 
   return (
     <nav className="bottom-nav">
@@ -13,14 +13,14 @@ export default function BottomNav() {
         Accueil
       </NavLink>
 
-      {(isOuvrier || isAdmin) && (
+      {(isOuvrier || isAdmin || isRh) && (
         <NavLink to="/pointage" className={({ isActive }) => (isActive ? 'active' : '')}>
           <span className="nav-icon">⏱️</span>
           Pointage
         </NavLink>
       )}
 
-      {(isOuvrier || isAdmin) && (
+      {(isOuvrier || isAdmin || isRh) && (
         <NavLink to="/chantiers" className={({ isActive }) => (isActive ? 'active' : '')}>
           <span className="nav-icon">🏗️</span>
           Chantiers

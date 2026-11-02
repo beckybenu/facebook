@@ -26,6 +26,7 @@ interface AuthContextValue {
   refresh: () => void
   isAdmin: boolean
   isOuvrier: boolean
+  isRh: boolean
   isClient: boolean
 }
 
@@ -138,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refresh,
       isAdmin: user?.role === 'admin',
       isOuvrier: user?.role === 'ouvrier',
+      isRh: user?.role === 'rh',
       isClient: user?.role === 'client',
     }),
     [user, loading, cloud],

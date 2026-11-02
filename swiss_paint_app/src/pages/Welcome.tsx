@@ -29,6 +29,8 @@ export default function Welcome() {
           <br />
           Ouvrier&nbsp;: <code>ouvrier@swisspaints.ch</code> / <code>ouvrier</code>
           <br />
+          RH&nbsp;: <code>rh@swisspaints.ch</code> / <code>rh</code>
+          <br />
           Client&nbsp;: <code>client@example.com</code> / <code>client</code>
         </div>
       </div>

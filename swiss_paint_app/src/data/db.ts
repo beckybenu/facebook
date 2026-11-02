@@ -1,6 +1,6 @@
 // Mini "backend" local basé sur localStorage.
 // Reproduit le rôle de la base de données intégrée d'Adalo, mais 100% côté client.
-import type { User, Task, Document, TimeEntry, Devis } from '../types'
+import type { User, Task, Document, TimeEntry, Devis, Absence, NoteFrais, Annonce } from '../types'
 import { isCloud, getCache, upsertLocal, removeLocal, type CollectionName } from './remote'
 
 const KEYS = {
@@ -9,8 +9,11 @@ const KEYS = {
   documents: 'sp_documents',
   timeEntries: 'sp_time_entries',
   devis: 'sp_devis',
+  absences: 'sp_absences',
+  notesFrais: 'sp_notes_frais',
+  annonces: 'sp_annonces',
   session: 'sp_session',
-  seeded: 'sp_seeded_v3',
+  seeded: 'sp_seeded_v4',
 } as const
 
 function read<T>(key: string): T[] {
@@ -96,6 +99,44 @@ export const timeDb = {
     timeDb.all().find((e) => e.userId === userId && !e.clockOut),
   create: (e: TimeEntry) => put('timeEntries', KEYS.timeEntries, e),
   update: (e: TimeEntry) => put('timeEntries', KEYS.timeEntries, e),
+}
+
+// ---------- RH : Absences ----------
+export const absencesDb = {
+  all: () =>
+    [...src<Absence>('absences', KEYS.absences)].sort((a, b) =>
+      b.dateDebut.localeCompare(a.dateDebut),
+    ),
+  forUser: (userId: string) => absencesDb.all().filter((a) => a.userId === userId),
+  byId: (id: string) => absencesDb.all().find((a) => a.id === id),
+  create: (a: Absence) => put('absences', KEYS.absences, a),
+  update: (a: Absence) => put('absences', KEYS.absences, a),
+  remove: (id: string) => del<Absence>('absences', KEYS.absences, id),
+}
+
+// ---------- RH : Notes de frais ----------
+export const fraisDb = {
+  all: () =>
+    [...src<NoteFrais>('notesFrais', KEYS.notesFrais)].sort((a, b) => b.date.localeCompare(a.date)),
+  forUser: (userId: string) => fraisDb.all().filter((n) => n.userId === userId),
+  byId: (id: string) => fraisDb.all().find((n) => n.id === id),
+  create: (n: NoteFrais) => put('notesFrais', KEYS.notesFrais, n),
+  update: (n: NoteFrais) => put('notesFrais', KEYS.notesFrais, n),
+  remove: (id: string) => del<NoteFrais>('notesFrais', KEYS.notesFrais, id),
+}
+
+// ---------- RH : Annonces (tableau blanc) ----------
+export const annoncesDb = {
+  all: () =>
+    [...src<Annonce>('annonces', KEYS.annonces)].sort((a, b) => {
+      // épinglées d'abord, puis par date décroissante
+      if (!!a.epingle !== !!b.epingle) return a.epingle ? -1 : 1
+      return b.createdAt.localeCompare(a.createdAt)
+    }),
+  byId: (id: string) => annoncesDb.all().find((a) => a.id === id),
+  create: (a: Annonce) => put('annonces', KEYS.annonces, a),
+  update: (a: Annonce) => put('annonces', KEYS.annonces, a),
+  remove: (id: string) => del<Annonce>('annonces', KEYS.annonces, id),
 }
 
 // ---------- Devis ----------

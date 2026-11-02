@@ -4,7 +4,7 @@
 //  - client  : utilisateur "normal" (hors société) -> accès site web, devis, réservations...
 //  - ouvrier : employé avec accès limité -> pointage, ses chantiers, documents
 //  - admin   : gestion complète (users, tâches, documents)
-export type UserRole = 'client' | 'ouvrier' | 'admin'
+export type UserRole = 'client' | 'ouvrier' | 'rh' | 'admin'
 
 export interface User {
   id: string
@@ -18,6 +18,10 @@ export interface User {
   telephone?: string
   image?: string // dataURL
   createdAt: string
+  // ---- Contrat RH (valeurs par défaut gérées en code si absentes) ----
+  heuresHebdo?: number // base contractuelle hebdomadaire (défaut 42)
+  tauxActivite?: number // % d'occupation (défaut 100)
+  joursVacances?: number // droit annuel en jours (défaut 25)
 }
 
 export type TaskStatus = 'a_faire' | 'en_cours' | 'termine'
@@ -114,4 +118,48 @@ export interface TimeEntry {
   onSite?: boolean // dans le rayon autorisé du chantier
   // Validation des heures par l'admin
   validated?: boolean
+}
+
+// ---------- RH : Absences / vacances ----------
+export type AbsenceType = 'vacances' | 'maladie' | 'accident' | 'sans_solde' | 'autre'
+export type AbsenceStatus = 'en_attente' | 'approuve' | 'refuse'
+
+export interface Absence {
+  id: string
+  userId: string
+  type: AbsenceType
+  dateDebut: string // ISO (jour)
+  dateFin: string // ISO (jour, inclus)
+  jours: number // nb de jours ouvrés demandés
+  motif?: string
+  status: AbsenceStatus
+  decisionBy?: string // userId de l'admin ayant décidé
+  createdAt: string
+}
+
+// ---------- RH : Notes de frais ----------
+export type NoteFraisStatus = 'en_attente' | 'rembourse' | 'refuse'
+
+export interface NoteFrais {
+  id: string
+  userId: string
+  date: string // ISO (jour de la dépense)
+  categorie: string // ex: "Carburant", "Matériel", "Repas", "Parking"
+  description?: string
+  montant: number // CHF
+  justificatif?: string // dataURL (photo / scan du reçu)
+  status: NoteFraisStatus
+  decisionBy?: string
+  createdAt: string
+}
+
+// ---------- RH : Tableau blanc (annonces internes) ----------
+export interface Annonce {
+  id: string
+  titre: string
+  contenu: string
+  auteurId: string
+  auteurNom: string
+  epingle?: boolean
+  createdAt: string
 }

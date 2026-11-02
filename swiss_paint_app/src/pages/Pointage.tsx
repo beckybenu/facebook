@@ -21,8 +21,14 @@ import {
   startOfMonth,
   downloadTimesheetCsv,
 } from '../lib/utils'
+import { heuresHebdo } from '../lib/rh'
 
 type Period = 'jour' | 'semaine' | 'mois'
+
+const DAY_NAMES = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi']
+function ymd(d: Date) {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+}
 
 // Nombre de jours ouvrés (lun–ven) écoulés dans le mois jusqu'à aujourd'hui
 function businessDaysThisMonth(): number {
@@ -44,6 +50,7 @@ export default function Pointage() {
   const [busy, setBusy] = useState(false)
   const [info, setInfo] = useState('')
   const [period, setPeriod] = useState<Period>('jour')
+  const [weekCursor, setWeekCursor] = useState(() => new Date(startOfWeek(new Date())))
   const [, setTick] = useState(0)
 
   function reload() {
@@ -142,6 +149,34 @@ export default function Pointage() {
     return { worked, target, diff: worked - target, count: inPeriod.length }
   }, [entries, period])
 
+  // ----- Historique hebdomadaire (Effectué / Prévu / Écart par jour) -----
+  const weekBase = heuresHebdo(user) // base contractuelle (42h × taux par défaut)
+  const dailyTarget = Math.round((weekBase / 5) * 100) / 100 // réparti lun–ven
+  const week = useMemo(() => {
+    const start = new Date(weekCursor)
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(start)
+      d.setDate(d.getDate() + i)
+      const key = ymd(d)
+      const dayEntries = entries.filter((e) => ymd(new Date(e.clockIn)) === key)
+      const effectue = dayEntries.reduce((s, e) => s + entryWorkedHours(e), 0)
+      const isWeekday = d.getDay() !== 0 && d.getDay() !== 6
+      const prevu = isWeekday ? dailyTarget : 0
+      return { date: d, pointages: dayEntries.length, effectue, prevu, ecart: effectue - prevu }
+    })
+    const totEff = days.reduce((s, x) => s + x.effectue, 0)
+    const totPrev = days.reduce((s, x) => s + x.prevu, 0)
+    return { days, totEff, totPrev, totEcart: totEff - totPrev }
+  }, [entries, weekCursor, dailyTarget])
+
+  const shiftWeek = (delta: number) => {
+    const d = new Date(weekCursor)
+    d.setDate(d.getDate() + delta * 7)
+    setWeekCursor(d)
+  }
+  const weekLabel = `${week.days[0].date.getDate()}/${week.days[0].date.getMonth() + 1} – ${week.days[6].date.getDate()}/${week.days[6].date.getMonth() + 1}`
+  const todayKey = ymd(new Date())
+
   // ----- Export CSV -----
   function exportCsv() {
     downloadTimesheetCsv(entries, taskName, `fiche-heures-${user?.username || 'ouvrier'}.csv`)
@@ -150,7 +185,7 @@ export default function Pointage() {
   const onBreak = open ? isOnBreak(open) : false
 
   return (
-    <Layout title="Temps de travail">
+    <Layout title="Timbrage" wide>
       {/* Carte de pointage */}
       <div className="card clock-card">
         <div className="muted">{formatDate(new Date().toISOString())}</div>
@@ -246,6 +281,61 @@ export default function Pointage() {
             {hoursToHM(summary.diff)}
           </span>
         </div>
+      </div>
+
+      {/* Historique hebdomadaire : Effectué / Prévu / Écart par jour */}
+      <div className="rh-toolbar" style={{ marginTop: 18 }}>
+        <div className="section-title" style={{ margin: 0 }}>
+          Historique · base {hoursToHM(weekBase)}/sem.
+        </div>
+        <div className="rh-nav">
+          <button onClick={() => shiftWeek(-1)} aria-label="Semaine précédente">‹</button>
+          <span className="rh-nav-label">Semaine du {weekLabel}</span>
+          <button onClick={() => shiftWeek(1)} aria-label="Semaine suivante">›</button>
+          <button onClick={() => setWeekCursor(new Date(startOfWeek(new Date())))}>Aujourd'hui</button>
+        </div>
+      </div>
+      <div style={{ overflowX: 'auto', marginBottom: 8 }}>
+        <table className="rh-table">
+          <thead>
+            <tr>
+              <th>Jour</th>
+              <th className="r">Pointages</th>
+              <th className="r">Effectué</th>
+              <th className="r">Prévu</th>
+              <th className="r">Écart</th>
+            </tr>
+          </thead>
+          <tbody>
+            {week.days.map((d) => {
+              const isToday = ymd(d.date) === todayKey
+              return (
+                <tr key={d.date.toISOString()} className={isToday ? 'today' : ''}>
+                  <td>
+                    {DAY_NAMES[d.date.getDay()]} {d.date.getDate()}/{d.date.getMonth() + 1}
+                  </td>
+                  <td className="r">{d.pointages || '—'}</td>
+                  <td className="r">{hoursToHM(d.effectue)}</td>
+                  <td className="r">{hoursToHM(d.prevu)}</td>
+                  <td className="r" style={{ color: d.ecart >= 0 ? 'var(--sp-success)' : 'var(--sp-red)', fontWeight: 600 }}>
+                    {d.ecart >= 0 ? '+' : ''}
+                    {hoursToHM(d.ecart)}
+                  </td>
+                </tr>
+              )
+            })}
+            <tr style={{ fontWeight: 700 }}>
+              <td>Total semaine</td>
+              <td className="r">—</td>
+              <td className="r">{hoursToHM(week.totEff)}</td>
+              <td className="r">{hoursToHM(week.totPrev)}</td>
+              <td className="r" style={{ color: week.totEcart >= 0 ? 'var(--sp-success)' : 'var(--sp-red)' }}>
+                {week.totEcart >= 0 ? '+' : ''}
+                {hoursToHM(week.totEcart)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

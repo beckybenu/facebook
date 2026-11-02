@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { LOGO } from '../lib/utils'
 
 export default function Home() {
-  const { user, isOuvrier, isAdmin } = useAuth()
+  const { user, isOuvrier, isAdmin, isRh } = useAuth()
   const navigate = useNavigate()
 
   // Tuiles "services" reprises de l'écran Accueil Adalo
@@ -45,7 +45,7 @@ export default function Home() {
       </div>
 
       {/* Raccourcis métier pour les employés */}
-      {(isOuvrier || isAdmin) && (
+      {(isOuvrier || isAdmin || isRh) && (
         <>
           <div className="section-title">Mon travail</div>
           <div className="home-grid">
@@ -64,6 +64,38 @@ export default function Home() {
             <button className="home-tile" onClick={() => navigate('/assistant')}>
               <span className="tile-icon">✨</span>
               Assistant IA
+            </button>
+          </div>
+
+          <div className="section-title">Ressources humaines</div>
+          <div className="home-grid">
+            <button className="home-tile" onClick={() => navigate('/tableau-de-bord')}>
+              <span className="tile-icon">📊</span>
+              Tableau de bord
+            </button>
+            <button className="home-tile" onClick={() => navigate('/pointage')}>
+              <span className="tile-icon">⏱️</span>
+              Timbrage
+            </button>
+            <button className="home-tile" onClick={() => navigate('/absences')}>
+              <span className="tile-icon">🌴</span>
+              Absences
+            </button>
+            <button className="home-tile" onClick={() => navigate('/planning')}>
+              <span className="tile-icon">📅</span>
+              Planning
+            </button>
+            <button className="home-tile" onClick={() => navigate('/notes-frais')}>
+              <span className="tile-icon">💳</span>
+              Notes de frais
+            </button>
+            <button className="home-tile" onClick={() => navigate('/annonces')}>
+              <span className="tile-icon">📌</span>
+              Tableau blanc
+            </button>
+            <button className="home-tile" onClick={() => navigate('/documents')}>
+              <span className="tile-icon">📄</span>
+              Documents
             </button>
           </div>
         </>

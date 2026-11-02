@@ -10,11 +10,16 @@ import Signup from './pages/Signup'
 
 // App
 import Home from './pages/Home'
+import TableauBord from './pages/TableauBord'
 import Profile from './pages/Profile'
 import Pointage from './pages/Pointage'
 import Chantiers from './pages/Chantiers'
 import TaskDetail from './pages/TaskDetail'
 import Documents from './pages/Documents'
+import Absences from './pages/Absences'
+import Planning from './pages/Planning'
+import NotesFrais from './pages/NotesFrais'
+import Annonces from './pages/Annonces'
 import ServerSettings from './pages/ServerSettings'
 import AIAssistant from './pages/AIAssistant'
 import LlmSettings from './pages/LlmSettings'
@@ -66,7 +71,7 @@ export default function App() {
       <Route
         path="/pointage"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <Pointage />
           </ProtectedRoute>
         }
@@ -74,7 +79,7 @@ export default function App() {
       <Route
         path="/chantiers"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <Chantiers />
           </ProtectedRoute>
         }
@@ -82,7 +87,7 @@ export default function App() {
       <Route
         path="/chantiers/:id"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <TaskDetail />
           </ProtectedRoute>
         }
@@ -92,6 +97,48 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Documents />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Module RH */}
+      <Route
+        path="/tableau-de-bord"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+            <TableauBord />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/absences"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+            <Absences />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/planning"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+            <Planning />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notes-frais"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+            <NotesFrais />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/annonces"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+            <Annonces />
           </ProtectedRoute>
         }
       />
@@ -106,7 +153,7 @@ export default function App() {
       <Route
         path="/assistant"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <AIAssistant />
           </ProtectedRoute>
         }
@@ -114,7 +161,7 @@ export default function App() {
       <Route
         path="/ia-config"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <LlmSettings />
           </ProtectedRoute>
         }
@@ -122,7 +169,7 @@ export default function App() {
       <Route
         path="/connecteur"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <ConnectorSettings />
           </ProtectedRoute>
         }
@@ -132,7 +179,7 @@ export default function App() {
       <Route
         path="/devis"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <DevisList />
           </ProtectedRoute>
         }
@@ -140,7 +187,7 @@ export default function App() {
       <Route
         path="/devis/new"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <DevisEdit />
           </ProtectedRoute>
         }
@@ -148,7 +195,7 @@ export default function App() {
       <Route
         path="/devis/:id"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <DevisView />
           </ProtectedRoute>
         }
@@ -156,7 +203,7 @@ export default function App() {
       <Route
         path="/devis/:id/edit"
         element={
-          <ProtectedRoute roles={['ouvrier', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
             <DevisEdit />
           </ProtectedRoute>
         }

@@ -1,12 +1,20 @@
 // Client de l'API SwissPaints (mode "cloud").
 // Un cache en mémoire miroir permet aux pages de rester synchrones ;
 // les écritures sont envoyées au serveur et le cache est rafraîchi par polling.
-import type { User, Task, Document, TimeEntry, Devis } from '../types'
+import type { User, Task, Document, TimeEntry, Devis, Absence, NoteFrais, Annonce } from '../types'
 
 const URL_KEY = 'sp_server_url'
 const TOKEN_KEY = 'sp_token'
 
-export type CollectionName = 'users' | 'tasks' | 'timeEntries' | 'devis' | 'documents'
+export type CollectionName =
+  | 'users'
+  | 'tasks'
+  | 'timeEntries'
+  | 'devis'
+  | 'documents'
+  | 'absences'
+  | 'notesFrais'
+  | 'annonces'
 
 interface Cache {
   users: User[]
@@ -14,9 +22,21 @@ interface Cache {
   timeEntries: TimeEntry[]
   devis: Devis[]
   documents: Document[]
+  absences: Absence[]
+  notesFrais: NoteFrais[]
+  annonces: Annonce[]
 }
 
-const cache: Cache = { users: [], tasks: [], timeEntries: [], devis: [], documents: [] }
+const cache: Cache = {
+  users: [],
+  tasks: [],
+  timeEntries: [],
+  devis: [],
+  documents: [],
+  absences: [],
+  notesFrais: [],
+  annonces: [],
+}
 
 // Mapping collection -> chemin d'API
 const PATHS: Record<CollectionName, string> = {
@@ -25,6 +45,9 @@ const PATHS: Record<CollectionName, string> = {
   timeEntries: 'timeentries',
   devis: 'devis',
   documents: 'documents',
+  absences: 'absences',
+  notesFrais: 'notesfrais',
+  annonces: 'annonces',
 }
 
 // ---------- Config ----------

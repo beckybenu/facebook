@@ -194,6 +194,7 @@ export const PRIORITY_LABELS: Record<TaskPriority, string> = {
 export const ROLE_LABELS: Record<UserRole, string> = {
   client: 'Client',
   ouvrier: 'Ouvrier',
+  rh: 'RH',
   admin: 'Admin',
 }
 
