@@ -518,7 +518,17 @@ export async function runAgent(history: ChatMessage[], ctx: AgentCtx): Promise<A
     try {
       res = await chatRaw(messages, tools)
     } catch (e) {
-      return { reply: `⚠️ ${(e as Error).message}` }
+      const msg = (e as Error).message || ''
+      // Certains modèles ne gèrent pas le "tool calling" → on répond en conversation simple
+      if (/tool/i.test(msg)) {
+        try {
+          const plain = await chatRaw(messages)
+          return { reply: plain.content || '(pas de réponse)' }
+        } catch (e2) {
+          return { reply: `⚠️ ${(e2 as Error).message}` }
+        }
+      }
+      return { reply: `⚠️ ${msg}` }
     }
     if (!res.toolCalls.length) {
       return {

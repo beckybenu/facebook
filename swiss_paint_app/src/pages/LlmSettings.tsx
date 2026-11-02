@@ -139,6 +139,21 @@ export default function LlmSettings() {
           ) : (
             <input value={model} onChange={(e) => setModel(e.target.value)} autoCapitalize="none" />
           )}
+          {provider === 'groq' && (
+            <div className="card-sub" style={{ marginTop: 6 }}>
+              Pour que l'assistant puisse <b>agir</b> (créer un devis, lister…), choisis un modèle qui
+              gère les outils, p.&nbsp;ex.{' '}
+              <button
+                type="button"
+                className="link"
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                onClick={() => setModel('llama-3.3-70b-versatile')}
+              >
+                llama-3.3-70b-versatile
+              </button>{' '}
+              ou <code>llama-3.1-8b-instant</code>. Sinon il répond mais ne peut pas exécuter d'actions.
+            </div>
+          )}
         </div>
         <button
           className="btn btn-ghost btn-sm"
