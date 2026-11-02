@@ -50,7 +50,7 @@ export default function AiFab() {
 
   const path = location.pathname
   const hidden = HIDDEN.some((h) => path === h)
-  const isEmploye = user?.role === 'admin' || user?.role === 'ouvrier'
+  const isEmploye = user?.role === 'admin' || user?.role === 'ouvrier' || user?.role === 'rh'
   const screen = SCREEN_NAMES.find((s) => s.match.test(path))?.name
 
   useEffect(() => {
