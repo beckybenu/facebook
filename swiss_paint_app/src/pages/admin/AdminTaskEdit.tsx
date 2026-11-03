@@ -4,6 +4,7 @@ import Layout from '../../components/Layout'
 import { tasksDb, usersDb, uid } from '../../data/db'
 import type { Task, TaskStatus, TaskPriority, User } from '../../types'
 import { getCurrentPosition } from '../../lib/utils'
+import { notifyMany } from '../../lib/notify'
 
 export default function AdminTaskEdit() {
   const { id } = useParams()
@@ -21,14 +22,16 @@ export default function AdminTaskEdit() {
     contact: '',
     projet: '',
     sousType: '',
-    assignedUserId: '',
+    assignedUserIds: [] as string[],
     adresse: '',
     lat: '' as string,
     lng: '' as string,
   })
 
   useEffect(() => {
-    setOuvriers(usersDb.all().filter((u) => u.role === 'ouvrier' || u.role === 'admin'))
+    setOuvriers(
+      usersDb.all().filter((u) => u.role === 'ouvrier' || u.role === 'sous_traitant' || u.role === 'admin'),
+    )
     if (!isNew && id) {
       const t = tasksDb.byId(id)
       if (t) {
@@ -41,7 +44,12 @@ export default function AdminTaskEdit() {
           contact: t.contact || '',
           projet: t.projet || '',
           sousType: t.sousType || '',
-          assignedUserId: t.assignedUserId || '',
+          assignedUserIds:
+            t.assignedUserIds && t.assignedUserIds.length
+              ? t.assignedUserIds
+              : t.assignedUserId
+                ? [t.assignedUserId]
+                : [],
           adresse: t.adresse || '',
           lat: t.lat != null ? String(t.lat) : '',
           lng: t.lng != null ? String(t.lng) : '',
@@ -71,6 +79,7 @@ export default function AdminTaskEdit() {
       setError('Le nom de la tâche est obligatoire.')
       return
     }
+    const ids = form.assignedUserIds
     const base: Task = {
       id: existing?.id ?? uid('tsk'),
       name: form.name.trim(),
@@ -80,7 +89,8 @@ export default function AdminTaskEdit() {
       contact: form.contact || undefined,
       projet: form.projet || undefined,
       sousType: form.sousType || undefined,
-      assignedUserId: form.assignedUserId || undefined,
+      assignedUserId: ids[0] || undefined,
+      assignedUserIds: ids.length ? ids : undefined,
       adresse: form.adresse || undefined,
       lat: form.lat ? Number(form.lat) : undefined,
       lng: form.lng ? Number(form.lng) : undefined,
@@ -90,6 +100,20 @@ export default function AdminTaskEdit() {
     }
     if (isNew) tasksDb.create(base)
     else tasksDb.update(base)
+
+    // Notifie les ouvriers nouvellement assignés
+    const prevIds = existing?.assignedUserIds?.length
+      ? existing.assignedUserIds
+      : existing?.assignedUserId
+        ? [existing.assignedUserId]
+        : []
+    const added = ids.filter((x) => !prevIds.includes(x))
+    if (added.length) {
+      notifyMany(added, 'chantier', `Nouveau chantier : ${base.name}`, {
+        message: base.adresse || base.projet || 'Un chantier vous a été attribué.',
+        lien: `/chantiers/${base.id}`,
+      })
+    }
     navigate('/admin/taches')
   }
 
@@ -117,15 +141,33 @@ export default function AdminTaskEdit() {
           />
         </div>
         <div className="field">
-          <label>Ouvrier assigné</label>
-          <select value={form.assignedUserId} onChange={(e) => set('assignedUserId', e.target.value)}>
-            <option value="">— Aucun —</option>
-            {ouvriers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.prenom} {u.nom} ({u.titre || u.role})
-              </option>
-            ))}
-          </select>
+          <label>Équipe assignée ({form.assignedUserIds.length})</label>
+          <div className="assignee-list">
+            {ouvriers.length === 0 && <div className="muted">Aucun ouvrier disponible.</div>}
+            {ouvriers.map((u) => {
+              const checked = form.assignedUserIds.includes(u.id)
+              return (
+                <label key={u.id} className={`assignee-item ${checked ? 'on' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) =>
+                      set(
+                        'assignedUserIds',
+                        e.target.checked
+                          ? [...form.assignedUserIds, u.id]
+                          : form.assignedUserIds.filter((x) => x !== u.id),
+                      )
+                    }
+                  />
+                  <span>
+                    {u.prenom} {u.nom}
+                    <small> · {u.titre || (u.role === 'sous_traitant' ? 'Sous-traitant' : u.role)}</small>
+                  </span>
+                </label>
+              )
+            })}
+          </div>
         </div>
         <div className="field">
           <label>Statut</label>

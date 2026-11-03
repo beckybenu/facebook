@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
-import { annoncesDb, uid } from '../data/db'
+import { annoncesDb, usersDb, uid } from '../data/db'
 import { formatDate } from '../lib/utils'
+import { notifyMany } from '../lib/notify'
 
 export default function Annonces() {
   const { user, isAdmin, isRh } = useAuth()
@@ -82,6 +83,12 @@ export default function Annonces() {
               auteurNom: `${user.prenom} ${user.nom}`.trim() || user.username,
               createdAt: new Date().toISOString(),
             })
+            // Notifie toute l'équipe (sauf l'auteur et les clients)
+            const dest = usersDb
+              .all()
+              .filter((u) => u.role !== 'client' && u.id !== user.id)
+              .map((u) => u.id)
+            notifyMany(dest, 'annonce', `Nouvelle annonce : ${titre}`, { lien: '/annonces' })
             setShowForm(false)
           }}
         />

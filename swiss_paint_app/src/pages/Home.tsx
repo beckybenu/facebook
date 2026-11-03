@@ -2,120 +2,95 @@ import { useNavigate } from 'react-router-dom'
 import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
 import { LOGO } from '../lib/utils'
+import { caps } from '../lib/roles'
+import { notifDb } from '../data/db'
+import { useLang } from '../lib/i18n'
 
 export default function Home() {
-  const { user, isOuvrier, isAdmin, isRh } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
+  const c = caps(user?.role)
+  const { t } = useLang()
+  const unread = user ? notifDb.unreadCount(user.id) : 0
 
-  // Tuiles "services" reprises de l'écran Accueil Adalo
-  // Coordonnées réelles : SwissPaints Group Sàrl, Ch. du Grand-Puits 66, 1217 Meyrin
-  const tiles = [
+  const services = [
     { icon: '🌐', label: 'Site Web', action: () => window.open('https://www.swisspaints.ch', '_blank') },
     { icon: '📞', label: 'Téléphone', action: () => (window.location.href = 'tel:+41225581219') },
-    {
-      icon: '📝',
-      label: 'Devis en ligne',
-      action: () => window.open('https://www.swisspaints.ch', '_blank'),
-    },
+    { icon: '📝', label: 'Devis en ligne', action: () => window.open('https://www.swisspaints.ch', '_blank') },
     { icon: '📅', label: 'Agenda', action: () => alert('Agenda — à venir') },
     {
       icon: '📍',
       label: 'Itinéraire',
       action: () =>
-        window.open(
-          'https://www.google.com/maps/search/?api=1&query=Rue+de+la+Prulay+19B,+1217+Meyrin',
-          '_blank',
-        ),
+        window.open('https://www.google.com/maps/search/?api=1&query=Rue+de+la+Prulay+19B,+1217+Meyrin', '_blank'),
     },
-    {
-      icon: '✉️',
-      label: 'Email',
-      action: () => (window.location.href = 'mailto:contact@swisspaints.ch'),
-    },
+    { icon: '✉️', label: 'Email', action: () => (window.location.href = 'mailto:contact@swisspaints.ch') },
   ]
 
+  // Tuiles RH filtrées par capacités du rôle
+  const rhTiles = [
+    c.tableauBord && { icon: '📊', label: t('nav.dashboard'), to: '/tableau-de-bord' },
+    c.pointer && { icon: '⏱️', label: t('nav.timesheet'), to: '/pointage' },
+    c.chantiers && { icon: '🏗️', label: t('nav.sites'), to: '/chantiers' },
+    c.absences && { icon: '🌴', label: t('nav.absences'), to: '/absences' },
+    c.planning && { icon: '📅', label: t('nav.planning'), to: '/planning' },
+    c.vehicules && { icon: '🚚', label: t('nav.vehicles'), to: '/vehicules' },
+    c.frais && { icon: '💳', label: t('nav.expenses'), to: '/notes-frais' },
+    c.devis && { icon: '🧾', label: t('nav.quotes'), to: '/devis' },
+    c.annonces && { icon: '📌', label: t('nav.board'), to: '/annonces' },
+    c.rappels && { icon: '⏰', label: t('nav.reminders'), to: '/rappels' },
+    c.assistant && { icon: '✨', label: t('nav.assistant'), to: '/assistant' },
+    { icon: '📄', label: t('nav.documents'), to: '/documents' },
+  ].filter(Boolean) as { icon: string; label: string; to: string }[]
+
   return (
-    <Layout title="Accueil">
+    <Layout title={t('nav.home')}>
       <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <img src={LOGO} alt="" style={{ height: 40, width: 'auto' }} />
-        <div>
-          <div className="card-title">Bonjour {user?.prenom} 👋</div>
-          <div className="card-sub">{user?.titre || 'Bienvenue sur SwissPaints'}</div>
+        <div style={{ flex: 1 }}>
+          <div className="card-title">{t('home.hello')} {user?.prenom} 👋</div>
+          <div className="card-sub">{user?.titre || t('home.welcome')}</div>
         </div>
+        {c.staff && (
+          <button
+            className="home-bell"
+            onClick={() => navigate('/notifications')}
+            aria-label="Notifications"
+          >
+            🔔{unread ? <span className="home-bell-badge">{unread > 9 ? '9+' : unread}</span> : null}
+          </button>
+        )}
       </div>
 
-      {/* Raccourcis métier pour les employés */}
-      {(isOuvrier || isAdmin || isRh) && (
+      {c.staff && (
         <>
-          <div className="section-title">Mon travail</div>
+          <div className="section-title">{t('home.workspace')}</div>
           <div className="home-grid">
-            <button className="home-tile" onClick={() => navigate('/pointage')}>
-              <span className="tile-icon">⏱️</span>
-              Pointer
-            </button>
-            <button className="home-tile" onClick={() => navigate('/chantiers')}>
-              <span className="tile-icon">🏗️</span>
-              Mes chantiers
-            </button>
-            <button className="home-tile" onClick={() => navigate('/devis')}>
-              <span className="tile-icon">🧾</span>
-              Devis
-            </button>
-            <button className="home-tile" onClick={() => navigate('/assistant')}>
-              <span className="tile-icon">✨</span>
-              Assistant IA
-            </button>
-          </div>
-
-          <div className="section-title">Ressources humaines</div>
-          <div className="home-grid">
-            <button className="home-tile" onClick={() => navigate('/tableau-de-bord')}>
-              <span className="tile-icon">📊</span>
-              Tableau de bord
-            </button>
-            <button className="home-tile" onClick={() => navigate('/pointage')}>
-              <span className="tile-icon">⏱️</span>
-              Timbrage
-            </button>
-            <button className="home-tile" onClick={() => navigate('/absences')}>
-              <span className="tile-icon">🌴</span>
-              Absences
-            </button>
-            <button className="home-tile" onClick={() => navigate('/planning')}>
-              <span className="tile-icon">📅</span>
-              Planning
-            </button>
-            <button className="home-tile" onClick={() => navigate('/notes-frais')}>
-              <span className="tile-icon">💳</span>
-              Notes de frais
-            </button>
-            <button className="home-tile" onClick={() => navigate('/annonces')}>
-              <span className="tile-icon">📌</span>
-              Tableau blanc
-            </button>
-            <button className="home-tile" onClick={() => navigate('/documents')}>
-              <span className="tile-icon">📄</span>
-              Documents
-            </button>
+            {rhTiles.map((t) => (
+              <button key={t.to} className="home-tile" onClick={() => navigate(t.to)}>
+                <span className="tile-icon">{t.icon}</span>
+                {t.label}
+              </button>
+            ))}
           </div>
         </>
       )}
 
-      <div className="section-title">Services</div>
+      <div className="section-title">{t('home.services')}</div>
       <div className="home-grid">
-        {tiles.map((t) => (
-          <button key={t.label} className="home-tile" onClick={t.action}>
-            <span className="tile-icon">{t.icon}</span>
-            {t.label}
+        {services.map((s) => (
+          <button key={s.label} className="home-tile" onClick={s.action}>
+            <span className="tile-icon">{s.icon}</span>
+            {s.label}
           </button>
         ))}
       </div>
 
-      {isAdmin && (
+      {c.manageUsers && (
         <>
-          <div className="section-title">Administration</div>
+          <div className="section-title">{t('home.admin')}</div>
           <button className="btn btn-dark" onClick={() => navigate('/admin')}>
-            ⚙️ Espace administrateur
+            ⚙️ {t('home.adminSpace')}
           </button>
         </>
       )}

@@ -1,7 +1,19 @@
 // Client de l'API SwissPaints (mode "cloud").
 // Un cache en mémoire miroir permet aux pages de rester synchrones ;
 // les écritures sont envoyées au serveur et le cache est rafraîchi par polling.
-import type { User, Task, Document, TimeEntry, Devis, Absence, NoteFrais, Annonce } from '../types'
+import type {
+  User,
+  Task,
+  Document,
+  TimeEntry,
+  Devis,
+  Absence,
+  NoteFrais,
+  Annonce,
+  Vehicule,
+  Rappel,
+  Notification,
+} from '../types'
 
 const URL_KEY = 'sp_server_url'
 const TOKEN_KEY = 'sp_token'
@@ -15,6 +27,9 @@ export type CollectionName =
   | 'absences'
   | 'notesFrais'
   | 'annonces'
+  | 'vehicules'
+  | 'rappels'
+  | 'notifications'
 
 interface Cache {
   users: User[]
@@ -25,6 +40,9 @@ interface Cache {
   absences: Absence[]
   notesFrais: NoteFrais[]
   annonces: Annonce[]
+  vehicules: Vehicule[]
+  rappels: Rappel[]
+  notifications: Notification[]
 }
 
 const cache: Cache = {
@@ -36,6 +54,9 @@ const cache: Cache = {
   absences: [],
   notesFrais: [],
   annonces: [],
+  vehicules: [],
+  rappels: [],
+  notifications: [],
 }
 
 // Mapping collection -> chemin d'API
@@ -48,6 +69,9 @@ const PATHS: Record<CollectionName, string> = {
   absences: 'absences',
   notesFrais: 'notesfrais',
   annonces: 'annonces',
+  vehicules: 'vehicules',
+  rappels: 'rappels',
+  notifications: 'notifications',
 }
 
 // ---------- Config ----------
@@ -141,6 +165,9 @@ export function logout() {
   cache.absences = []
   cache.notesFrais = []
   cache.annonces = []
+  cache.vehicules = []
+  cache.rappels = []
+  cache.notifications = []
 }
 
 // ---------- Cache ----------
@@ -218,5 +245,79 @@ export async function aiDevis(prompt: string): Promise<{ ok: boolean; devis?: un
     return { ok: true, devis: j }
   } catch {
     return { ok: false, error: 'Serveur injoignable.' }
+  }
+}
+
+// ---------- Recherche documentaire NAS (administrateur uniquement) ----------
+export interface NasSearchResult {
+  path: string
+  reference: string
+  extrait: string
+}
+
+export async function searchNasDocuments(
+  query: string
+): Promise<{ ok: boolean; results?: NasSearchResult[]; error?: string }> {
+  if (!isCloud()) {
+    return { ok: false, error: 'Connecte d’abord ton application au serveur SwissPaints.' }
+  }
+
+  try {
+    const response = await apiFetch('ai/documents', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: data.error || 'Recherche documentaire impossible.',
+      }
+    }
+
+    return { ok: true, results: data.results || [] }
+  } catch {
+    return { ok: false, error: 'Serveur SwissPaints injoignable.' }
+  }
+}
+
+// ---------- Assistant IA documentaire local (Qwen3 / Ollama) ----------
+export interface NasAiSource {
+  numero: number
+  reference: string
+  path: string
+}
+
+export async function askNasAi(
+  question: string
+): Promise<{ ok: boolean; reply?: string; sources?: NasAiSource[]; error?: string }> {
+  if (!isCloud()) {
+    return { ok: false, error: 'Connecte d’abord ton application au serveur SwissPaints.' }
+  }
+
+  try {
+    const response = await apiFetch('ai/nas-chat', {
+      method: 'POST',
+      body: JSON.stringify({ question }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: data.error || 'Assistant documentaire indisponible.',
+      }
+    }
+
+    return {
+      ok: true,
+      reply: data.reply || '',
+      sources: data.sources || [],
+    }
+  } catch {
+    return { ok: false, error: 'Connexion à l’assistant local impossible.' }
   }
 }

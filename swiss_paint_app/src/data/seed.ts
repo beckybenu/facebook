@@ -1,6 +1,18 @@
 // Données de démonstration initiales (comme la base Adalo pré-remplie).
-import { KEYS, usersDb, tasksDb, docsDb, timeDb, devisDb, absencesDb, annoncesDb, uid } from './db'
-import type { User, Task, Document, TimeEntry, Devis, Absence, Annonce } from '../types'
+import {
+  KEYS,
+  usersDb,
+  tasksDb,
+  docsDb,
+  timeDb,
+  devisDb,
+  absencesDb,
+  annoncesDb,
+  vehiculesDb,
+  rappelsDb,
+  uid,
+} from './db'
+import type { User, Task, Document, TimeEntry, Devis, Absence, Annonce, Vehicule, Rappel } from '../types'
 import { DEFAULT_REMARQUES, DEFAULT_INTRO } from '../lib/company'
 
 export function seedIfNeeded(): void {
@@ -16,7 +28,11 @@ export function seedIfNeeded(): void {
     KEYS.absences,
     KEYS.notesFrais,
     KEYS.annonces,
+    KEYS.vehicules,
+    KEYS.rappels,
+    KEYS.notifications,
     'sp_seeded_v3',
+    'sp_seeded_v4',
   ].forEach((k) => localStorage.removeItem(k))
 
   const now = new Date().toISOString()
@@ -71,6 +87,31 @@ export function seedIfNeeded(): void {
     joursVacances: 25,
     createdAt: now,
   }
+  const sousTraitant: User = {
+    id: uid('usr'),
+    email: 'soustraitant@swisspaints.ch',
+    password: 'soustraitant',
+    username: 'stgjonaj',
+    nom: 'Gjonaj',
+    prenom: 'Luan',
+    role: 'sous_traitant',
+    titre: 'Plâtrier (sous-traitant)',
+    telephone: '+41 78 555 55 55',
+    tauxActivite: 100,
+    createdAt: now,
+  }
+  const comptable: User = {
+    id: uid('usr'),
+    email: 'comptable@swisspaints.ch',
+    password: 'comptable',
+    username: 'comptable',
+    nom: 'Perret',
+    prenom: 'Claire',
+    role: 'comptable',
+    titre: 'Comptable',
+    telephone: '+41 79 666 66 66',
+    createdAt: now,
+  }
   const client: User = {
     id: uid('usr'),
     email: 'client@example.com',
@@ -84,7 +125,7 @@ export function seedIfNeeded(): void {
     createdAt: now,
   }
 
-  ;[admin, ouvrier, ouvrier2, rh, client].forEach((u) => usersDb.create(u))
+  ;[admin, ouvrier, ouvrier2, rh, sousTraitant, comptable, client].forEach((u) => usersDb.create(u))
 
   const tasks: Task[] = [
     {
@@ -308,6 +349,83 @@ export function seedIfNeeded(): void {
     createdAt: now,
   }
   absencesDb.create(absence)
+
+  // ---- Démo RH : flotte de véhicules ----
+  const inDaysDate = (d: number) => new Date(Date.now() + d * 86400000).toISOString().slice(0, 10)
+  const vehicules: Vehicule[] = [
+    {
+      id: uid('veh'),
+      nom: 'Fourgon blanc chantiers',
+      marque: 'Renault',
+      modele: 'Master',
+      plaque: 'GE 123456',
+      type: 'fourgon',
+      annee: 2021,
+      km: 84200,
+      assigneUserId: ouvrier.id,
+      controleTechnique: inDaysDate(20), // échéance proche (démo)
+      assuranceEcheance: inDaysDate(210),
+      statut: 'actif',
+      createdAt: now,
+    },
+    {
+      id: uid('veh'),
+      nom: 'Camionnette grise',
+      marque: 'Fiat',
+      modele: 'Ducato',
+      plaque: 'GE 654321',
+      type: 'camionnette',
+      annee: 2019,
+      km: 142500,
+      assigneUserId: ouvrier2.id,
+      controleTechnique: inDaysDate(150),
+      assuranceEcheance: inDaysDate(60),
+      statut: 'actif',
+      createdAt: now,
+    },
+    {
+      id: uid('veh'),
+      nom: 'Voiture de service',
+      marque: 'Skoda',
+      modele: 'Octavia',
+      plaque: 'GE 778899',
+      type: 'voiture',
+      annee: 2022,
+      km: 38000,
+      statut: 'entretien',
+      note: 'Révision en cours au garage.',
+      createdAt: now,
+    },
+  ]
+  vehicules.forEach((v) => vehiculesDb.create(v))
+
+  // ---- Démo RH : rappels / échéances ----
+  const rappels: Rappel[] = [
+    {
+      id: uid('rap'),
+      titre: 'Déclaration Tellco trimestrielle (LPP)',
+      type: 'tellco',
+      date: inDaysDate(12),
+      note: '2ᵉ pilier — cotisations du trimestre.',
+      createdAt: now,
+    },
+    {
+      id: uid('rap'),
+      titre: 'Renouvellement assurance flotte',
+      type: 'assurance',
+      date: inDaysDate(60),
+      createdAt: now,
+    },
+    {
+      id: uid('rap'),
+      titre: 'Fin de période d’essai — Luan Gjonaj',
+      type: 'contrat',
+      date: inDaysDate(-3), // en retard (démo)
+      cibleUserId: sousTraitant.id,
+      createdAt: now,
+    },
+  ]
+  rappels.forEach((r) => rappelsDb.create(r))
 
   localStorage.setItem(KEYS.seeded, '1')
 }

@@ -28,6 +28,8 @@ interface AuthContextValue {
   isOuvrier: boolean
   isRh: boolean
   isClient: boolean
+  isSousTraitant: boolean
+  isComptable: boolean
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -141,6 +143,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isOuvrier: user?.role === 'ouvrier',
       isRh: user?.role === 'rh',
       isClient: user?.role === 'client',
+      isSousTraitant: user?.role === 'sous_traitant',
+      isComptable: user?.role === 'comptable',
     }),
     [user, loading, cloud],
   )

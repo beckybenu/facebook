@@ -4,7 +4,7 @@
 //  - client  : utilisateur "normal" (hors société) -> accès site web, devis, réservations...
 //  - ouvrier : employé avec accès limité -> pointage, ses chantiers, documents
 //  - admin   : gestion complète (users, tâches, documents)
-export type UserRole = 'client' | 'ouvrier' | 'rh' | 'admin'
+export type UserRole = 'client' | 'ouvrier' | 'sous_traitant' | 'comptable' | 'rh' | 'admin'
 
 export interface User {
   id: string
@@ -36,7 +36,8 @@ export interface Task {
   contact?: string
   projet?: string // nom du chantier / projet
   sousType?: string // projet sous type
-  assignedUserId?: string // ouvrier assigné
+  assignedUserId?: string // ouvrier assigné (principal — conservé pour compatibilité)
+  assignedUserIds?: string[] // équipe assignée (plusieurs ouvriers/sous-traitants)
   // Géolocalisation du chantier
   lat?: number
   lng?: number
@@ -161,5 +162,54 @@ export interface Annonce {
   auteurId: string
   auteurNom: string
   epingle?: boolean
+  createdAt: string
+}
+
+// ---------- RH : Véhicules (flotte) ----------
+export type VehiculeType = 'fourgon' | 'camionnette' | 'voiture' | 'utilitaire' | 'autre'
+export type VehiculeStatut = 'actif' | 'entretien' | 'hors_service'
+
+export interface Vehicule {
+  id: string
+  nom: string // ex: "Fourgon blanc chantiers"
+  marque?: string // ex: "Renault"
+  modele?: string // ex: "Master"
+  plaque: string // immatriculation, ex: "GE 123456"
+  type: VehiculeType
+  annee?: number
+  km?: number
+  assigneUserId?: string // ouvrier / sous-traitant attribué
+  controleTechnique?: string // ISO (jour) — prochain contrôle
+  assuranceEcheance?: string // ISO (jour) — échéance assurance
+  statut: VehiculeStatut
+  note?: string
+  createdAt: string
+}
+
+// ---------- RH : Rappels (échéances RH : Tellco/LPP, contrôles…) ----------
+export type RappelType = 'tellco' | 'lpp' | 'assurance' | 'controle_technique' | 'contrat' | 'autre'
+
+export interface Rappel {
+  id: string
+  titre: string
+  type: RappelType
+  date: string // ISO (jour de l'échéance)
+  cibleUserId?: string // concerne un employé précis (facultatif)
+  note?: string
+  fait?: boolean
+  createdAt: string
+}
+
+// ---------- Notifications (ouvriers) ----------
+export type NotifType = 'chantier' | 'annonce' | 'absence' | 'frais' | 'info'
+
+export interface Notification {
+  id: string
+  userId: string // destinataire
+  type: NotifType
+  titre: string
+  message?: string
+  lien?: string // route interne (ex: /chantiers/xxx)
+  lu?: boolean
   createdAt: string
 }

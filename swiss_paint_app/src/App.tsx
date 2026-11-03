@@ -20,6 +20,9 @@ import Absences from './pages/Absences'
 import Planning from './pages/Planning'
 import NotesFrais from './pages/NotesFrais'
 import Annonces from './pages/Annonces'
+import Vehicules from './pages/Vehicules'
+import Rappels from './pages/Rappels'
+import Notifications from './pages/Notifications'
 import ServerSettings from './pages/ServerSettings'
 import AIAssistant from './pages/AIAssistant'
 import LlmSettings from './pages/LlmSettings'
@@ -29,6 +32,7 @@ import DevisEdit from './pages/DevisEdit'
 import DevisView from './pages/DevisView'
 
 // Admin
+import NasSearch from './pages/NasSearch'
 import AdminHome from './pages/admin/AdminHome'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminUserEdit from './pages/admin/AdminUserEdit'
@@ -71,7 +75,7 @@ export default function App() {
       <Route
         path="/pointage"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <Pointage />
           </ProtectedRoute>
         }
@@ -79,7 +83,7 @@ export default function App() {
       <Route
         path="/chantiers"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <Chantiers />
           </ProtectedRoute>
         }
@@ -87,7 +91,7 @@ export default function App() {
       <Route
         path="/chantiers/:id"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <TaskDetail />
           </ProtectedRoute>
         }
@@ -105,7 +109,7 @@ export default function App() {
       <Route
         path="/tableau-de-bord"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <TableauBord />
           </ProtectedRoute>
         }
@@ -113,7 +117,7 @@ export default function App() {
       <Route
         path="/absences"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <Absences />
           </ProtectedRoute>
         }
@@ -121,7 +125,7 @@ export default function App() {
       <Route
         path="/planning"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <Planning />
           </ProtectedRoute>
         }
@@ -129,7 +133,7 @@ export default function App() {
       <Route
         path="/notes-frais"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
             <NotesFrais />
           </ProtectedRoute>
         }
@@ -137,8 +141,32 @@ export default function App() {
       <Route
         path="/annonces"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <Annonces />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vehicules"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
+            <Vehicules />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/rappels"
+        element={
+          <ProtectedRoute roles={['rh', 'admin']}>
+            <Rappels />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
+            <Notifications />
           </ProtectedRoute>
         }
       />
@@ -153,7 +181,7 @@ export default function App() {
       <Route
         path="/assistant"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <AIAssistant />
           </ProtectedRoute>
         }
@@ -161,7 +189,7 @@ export default function App() {
       <Route
         path="/ia-config"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <LlmSettings />
           </ProtectedRoute>
         }
@@ -169,7 +197,7 @@ export default function App() {
       <Route
         path="/connecteur"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'rh', 'admin']}>
             <ConnectorSettings />
           </ProtectedRoute>
         }
@@ -179,7 +207,7 @@ export default function App() {
       <Route
         path="/devis"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
             <DevisList />
           </ProtectedRoute>
         }
@@ -187,7 +215,7 @@ export default function App() {
       <Route
         path="/devis/new"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
             <DevisEdit />
           </ProtectedRoute>
         }
@@ -195,7 +223,7 @@ export default function App() {
       <Route
         path="/devis/:id"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
             <DevisView />
           </ProtectedRoute>
         }
@@ -203,8 +231,21 @@ export default function App() {
       <Route
         path="/devis/:id/edit"
         element={
-          <ProtectedRoute roles={['ouvrier', 'rh', 'admin']}>
+          <ProtectedRoute roles={['ouvrier', 'sous_traitant', 'comptable', 'rh', 'admin']}>
             <DevisEdit />
+          </ProtectedRoute>
+        }
+      />
+
+
+      {/* Recherche NAS : administrateur autorisé, en mode serveur uniquement */}
+      <Route
+        path="/admin/nas"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            {user?.id === 'usr_mw0gfrh4_4lb1v9' && !!localStorage.getItem('sp_server_url')
+              ? <NasSearch />
+              : <Navigate to="/home" replace />}
           </ProtectedRoute>
         }
       />

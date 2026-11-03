@@ -1,20 +1,18 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { caps } from '../lib/roles'
+import { notifDb } from '../data/db'
+import { useLang, LANGS } from '../lib/i18n'
 
 // Barre latérale affichée uniquement sur grand écran (PC / tablette large).
 // Remplace la barre du bas et donne à l'app une vraie mise en page "bureau".
 export default function Sidebar() {
-  const { user, isAdmin, isOuvrier, isRh } = useAuth()
-  const employee = isOuvrier || isAdmin || isRh
+  const { user } = useAuth()
+  const c = caps(user?.role)
+  const { t, lang, setLang } = useLang()
+  const unread = user ? notifDb.unreadCount(user.id) : 0
 
-  const roleLabel =
-    user?.role === 'admin'
-      ? 'Administrateur'
-      : user?.role === 'rh'
-        ? 'Ressources humaines'
-        : user?.role === 'ouvrier'
-          ? 'Employé'
-          : 'Client'
+  const roleLabel = user ? t(`role.${user.role}`) : t('role.client')
   const fullName = user ? `${user.prenom} ${user.nom}`.trim() || user.username : ''
 
   return (
@@ -30,19 +28,34 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <SideLink to="/home" icon="🏠" label="Accueil" />
-        {employee && <SideLink to="/tableau-de-bord" icon="📊" label="Tableau de bord" />}
-        {employee && <SideLink to="/pointage" icon="⏱️" label="Timbrage" />}
-        {employee && <SideLink to="/absences" icon="🌴" label="Absences" />}
-        {employee && <SideLink to="/planning" icon="📅" label="Planning" />}
-        {employee && <SideLink to="/chantiers" icon="🏗️" label="Chantiers" />}
-        {employee && <SideLink to="/notes-frais" icon="💳" label="Notes de frais" />}
-        {employee && <SideLink to="/annonces" icon="📌" label="Tableau blanc" />}
-        <SideLink to="/documents" icon="📄" label="Documents" />
-        {employee && <SideLink to="/devis" icon="🧾" label="Devis" />}
-        {employee && <SideLink to="/assistant" icon="✨" label="Assistant IA" />}
-        {isAdmin && <SideLink to="/admin" icon="⚙️" label="Administration" />}
+        <SideLink to="/home" icon="🏠" label={t('nav.home')} />
+        {c.staff && <SideLink to="/notifications" icon="🔔" label={t('nav.notifications')} badge={unread} />}
+        {c.tableauBord && <SideLink to="/tableau-de-bord" icon="📊" label={t('nav.dashboard')} />}
+        {c.pointer && <SideLink to="/pointage" icon="⏱️" label={t('nav.timesheet')} />}
+        {c.absences && <SideLink to="/absences" icon="🌴" label={t('nav.absences')} />}
+        {c.planning && <SideLink to="/planning" icon="📅" label={t('nav.planning')} />}
+        {c.chantiers && <SideLink to="/chantiers" icon="🏗️" label={t('nav.sites')} />}
+        {c.vehicules && <SideLink to="/vehicules" icon="🚚" label={t('nav.vehicles')} />}
+        {c.frais && <SideLink to="/notes-frais" icon="💳" label={t('nav.expenses')} />}
+        {c.devis && <SideLink to="/devis" icon="🧾" label={t('nav.quotes')} />}
+        {c.annonces && <SideLink to="/annonces" icon="📌" label={t('nav.board')} />}
+        <SideLink to="/documents" icon="📄" label={t('nav.documents')} />
+        {c.assistant && <SideLink to="/assistant" icon="✨" label={t('nav.assistant')} />}
+        {c.rappels && <SideLink to="/rappels" icon="⏰" label={t('nav.reminders')} />}
+        {c.manageUsers && <SideLink to="/admin" icon="⚙️" label={t('nav.admin')} />}
       </nav>
+
+      <div className="sidebar-lang">
+        {LANGS.map((l) => (
+          <button
+            key={l.code}
+            className={`sidebar-lang-btn ${lang === l.code ? 'on' : ''}`}
+            onClick={() => setLang(l.code)}
+          >
+            {l.flag} {l.label}
+          </button>
+        ))}
+      </div>
 
       <NavLink to="/profil" className="sidebar-user">
         <div className="sidebar-avatar">
@@ -57,11 +70,12 @@ export default function Sidebar() {
   )
 }
 
-function SideLink({ to, icon, label }: { to: string; icon: string; label: string }) {
+function SideLink({ to, icon, label, badge }: { to: string; icon: string; label: string; badge?: number }) {
   return (
     <NavLink to={to} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
       <span className="sidebar-icon">{icon}</span>
       <span>{label}</span>
+      {badge ? <span className="sidebar-badge">{badge > 9 ? '9+' : badge}</span> : null}
     </NavLink>
   )
 }

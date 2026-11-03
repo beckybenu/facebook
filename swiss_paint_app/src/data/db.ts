@@ -1,6 +1,18 @@
 // Mini "backend" local basé sur localStorage.
 // Reproduit le rôle de la base de données intégrée d'Adalo, mais 100% côté client.
-import type { User, Task, Document, TimeEntry, Devis, Absence, NoteFrais, Annonce } from '../types'
+import type {
+  User,
+  Task,
+  Document,
+  TimeEntry,
+  Devis,
+  Absence,
+  NoteFrais,
+  Annonce,
+  Vehicule,
+  Rappel,
+  Notification,
+} from '../types'
 import { isCloud, getCache, upsertLocal, removeLocal, type CollectionName } from './remote'
 
 const KEYS = {
@@ -12,8 +24,11 @@ const KEYS = {
   absences: 'sp_absences',
   notesFrais: 'sp_notes_frais',
   annonces: 'sp_annonces',
+  vehicules: 'sp_vehicules',
+  rappels: 'sp_rappels',
+  notifications: 'sp_notifications',
   session: 'sp_session',
-  seeded: 'sp_seeded_v4',
+  seeded: 'sp_seeded_v5',
 } as const
 
 function read<T>(key: string): T[] {
@@ -72,7 +87,12 @@ export const usersDb = {
 export const tasksDb = {
   all: () => src<Task>('tasks', KEYS.tasks),
   byId: (id: string) => tasksDb.all().find((t) => t.id === id),
-  forUser: (userId: string) => tasksDb.all().filter((t) => t.assignedUserId === userId),
+  forUser: (userId: string) =>
+    tasksDb
+      .all()
+      .filter(
+        (t) => t.assignedUserId === userId || (t.assignedUserIds || []).includes(userId),
+      ),
   create: (t: Task) => put('tasks', KEYS.tasks, t),
   update: (t: Task) => put('tasks', KEYS.tasks, t),
   remove: (id: string) => del<Task>('tasks', KEYS.tasks, id),
@@ -137,6 +157,45 @@ export const annoncesDb = {
   create: (a: Annonce) => put('annonces', KEYS.annonces, a),
   update: (a: Annonce) => put('annonces', KEYS.annonces, a),
   remove: (id: string) => del<Annonce>('annonces', KEYS.annonces, id),
+}
+
+// ---------- RH : Véhicules (flotte) ----------
+export const vehiculesDb = {
+  all: () =>
+    [...src<Vehicule>('vehicules', KEYS.vehicules)].sort((a, b) => a.nom.localeCompare(b.nom)),
+  byId: (id: string) => vehiculesDb.all().find((v) => v.id === id),
+  forUser: (userId: string) => vehiculesDb.all().filter((v) => v.assigneUserId === userId),
+  create: (v: Vehicule) => put('vehicules', KEYS.vehicules, v),
+  update: (v: Vehicule) => put('vehicules', KEYS.vehicules, v),
+  remove: (id: string) => del<Vehicule>('vehicules', KEYS.vehicules, id),
+}
+
+// ---------- RH : Rappels / échéances ----------
+export const rappelsDb = {
+  all: () => [...src<Rappel>('rappels', KEYS.rappels)].sort((a, b) => a.date.localeCompare(b.date)),
+  byId: (id: string) => rappelsDb.all().find((r) => r.id === id),
+  create: (r: Rappel) => put('rappels', KEYS.rappels, r),
+  update: (r: Rappel) => put('rappels', KEYS.rappels, r),
+  remove: (id: string) => del<Rappel>('rappels', KEYS.rappels, id),
+}
+
+// ---------- Notifications ----------
+export const notifDb = {
+  all: () => src<Notification>('notifications', KEYS.notifications),
+  forUser: (userId: string) =>
+    notifDb
+      .all()
+      .filter((n) => n.userId === userId)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+  unreadCount: (userId: string) => notifDb.forUser(userId).filter((n) => !n.lu).length,
+  create: (n: Notification) => put('notifications', KEYS.notifications, n),
+  update: (n: Notification) => put('notifications', KEYS.notifications, n),
+  markAllRead: (userId: string) => {
+    notifDb.forUser(userId).forEach((n) => {
+      if (!n.lu) put('notifications', KEYS.notifications, { ...n, lu: true })
+    })
+  },
+  remove: (id: string) => del<Notification>('notifications', KEYS.notifications, id),
 }
 
 // ---------- Devis ----------

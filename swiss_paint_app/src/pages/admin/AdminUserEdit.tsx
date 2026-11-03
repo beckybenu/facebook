@@ -131,13 +131,15 @@ export default function AdminUserEdit() {
           <select value={form.role} onChange={(e) => set('role', e.target.value as UserRole)}>
             <option value="client">Client</option>
             <option value="ouvrier">Ouvrier</option>
+            <option value="sous_traitant">Sous-traitant</option>
+            <option value="comptable">Comptable</option>
             <option value="rh">RH</option>
             <option value="admin">Admin</option>
           </select>
         </div>
       </div>
 
-      {(form.role === 'ouvrier' || form.role === 'rh' || form.role === 'admin') && (
+      {(form.role === 'ouvrier' || form.role === 'sous_traitant' || form.role === 'rh' || form.role === 'admin') && (
         <>
           <div className="section-title" style={{ marginTop: 18 }}>
             Contrat RH

@@ -19,8 +19,8 @@ function isSafeJustificatif(url?: string): boolean {
 }
 
 export default function NotesFrais() {
-  const { user, isAdmin, isRh } = useAuth()
-  const canManage = isAdmin || isRh
+  const { user, isAdmin, isRh, isComptable } = useAuth()
+  const canManage = isAdmin || isRh || isComptable
   const [cursor, setCursor] = useState(() => new Date())
   const [showForm, setShowForm] = useState(false)
   const [scope, setScope] = useState<'mes' | 'equipe'>('mes')
