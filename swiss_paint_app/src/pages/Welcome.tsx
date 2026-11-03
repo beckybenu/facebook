@@ -1,24 +1,12 @@
 import { Link } from 'react-router-dom'
 import { LOGO } from '../lib/utils'
-import { useLang, LANGS } from '../lib/i18n'
+import { useLang } from '../lib/i18n'
 
 export default function Welcome() {
-  const { t, lang, setLang } = useLang()
+  const { t } = useLang()
   return (
     <div className="app-shell">
       <div className="auth-screen">
-        <div className="auth-lang">
-          {LANGS.map((l) => (
-            <button
-              key={l.code}
-              className={`auth-lang-btn ${lang === l.code ? 'on' : ''}`}
-              onClick={() => setLang(l.code)}
-            >
-              {l.flag} {l.label}
-            </button>
-          ))}
-        </div>
-
         <div className="auth-logo">
           <img src={LOGO} alt="SwissPaints Group Sàrl" />
           <div className="muted" style={{ marginTop: 10 }}>

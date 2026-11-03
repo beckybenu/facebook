@@ -17,6 +17,7 @@ export interface Caps {
   documents: boolean
   assistant: boolean
   rappels: boolean
+  changeLang: boolean // peut changer la langue de l'interface
 }
 
 export function caps(role?: UserRole): Caps {
@@ -43,6 +44,7 @@ export function caps(role?: UserRole): Caps {
     documents: true, // tous les connectés
     assistant: admin || rh || ouvrier, // IA réservée aux employés internes
     rappels: admin || rh,
+    changeLang: admin || ouvrier || st, // seuls l'admin, les ouvriers et sous-traitants changent la langue
   }
 }
 

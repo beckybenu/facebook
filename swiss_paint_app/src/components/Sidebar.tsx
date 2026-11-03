@@ -45,17 +45,19 @@ export default function Sidebar() {
         {c.manageUsers && <SideLink to="/admin" icon="⚙️" label={t('nav.admin')} />}
       </nav>
 
-      <div className="sidebar-lang">
-        {LANGS.map((l) => (
-          <button
-            key={l.code}
-            className={`sidebar-lang-btn ${lang === l.code ? 'on' : ''}`}
-            onClick={() => setLang(l.code)}
-          >
-            {l.flag} {l.label}
-          </button>
-        ))}
-      </div>
+      {c.changeLang && (
+        <div className="sidebar-lang">
+          {LANGS.map((l) => (
+            <button
+              key={l.code}
+              className={`sidebar-lang-btn ${lang === l.code ? 'on' : ''}`}
+              onClick={() => setLang(l.code)}
+            >
+              {l.flag} {l.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <NavLink to="/profil" className="sidebar-user">
         <div className="sidebar-avatar">
